@@ -12,8 +12,8 @@ import {
     Grid,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
-import PostCreationDialog from '../../components/content/community/PostCreationDialog.jsx';
-import SearchComponent from "../../components/team/SearchComponent.jsx";
+import PostCreationDialog from '../../../components/content/community/PostCreationDialog.jsx';
+import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {

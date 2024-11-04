@@ -22,11 +22,11 @@ import {
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
 import {useLocation, useParams} from "react-router-dom";
-import PostCreationDialog from '../../components/content/community/PostCreationDialog.jsx';
-import SearchComponent from "../../components/team/SearchComponent.jsx";
+import PostCreationDialog from '../../../components/content/community/PostCreationDialog.jsx';
+import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import AddIcon from "@mui/icons-material/Add";
-import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
-import bookProfileManAndSea from "../../assets/book-profile-man-and-sea.jpg";
+import StudyCreatgionDialog from "../../../components/team/StudyCreationDialog.jsx";
+import bookProfileManAndSea from "../../../assets/book-profile-man-and-sea.jpg";
 
 const BookDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();
