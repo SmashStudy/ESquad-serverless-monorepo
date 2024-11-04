@@ -1,0 +1,16 @@
+service: example-service
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-northeast-2
+
+functions:
+  testEndpoint:
+    handler: service/handler.js
+    events:
+      - http:
+          path: test
+          method: get
+          cors: true
+

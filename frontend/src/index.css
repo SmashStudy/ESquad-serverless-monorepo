@@ -1,0 +1,48 @@
+body {
+	margin: 0;
+	display: flex;
+	flex-direction: column; /* Avoid conflicting with child flex settings */
+	min-height: 100vh;
+	box-sizing: border-box; /* Ensure padding is included in total width/height calculations */
+}
+
+/* General styles for scrollbars */
+::-webkit-scrollbar {
+	width: 12px; /* Width of the scrollbar */
+	height: 5px;  /* Height of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #cccace; /* Home color for the scrollbar handle */
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: #f0f0f0; /* Track color */
+}
+
+@media (max-width: 1200px) {  /* 화면 너비가 '1200px' 이하인 경우 */
+	body {
+		flex-direction: column;   /* 'body' 요소에 'flex-direction:column;' 속성이 적용 */
+	}
+
+	/* Adjustments for AppBar and Home Content */
+	.appbar {
+		justify-content: space-between;
+	}
+}
+
+@media (max-width: 600px) { /* <= 600px */
+	body {
+		min-width: 500px; /* 작은 화면에서도 최소 너비를 '550px'로 설정하여 전체 레이아웃이 '500px'보다 좁아지지 않도록 설정 */
+	}
+
+	/* Sidebar Drawer Visibility */
+	.sidebar {
+		display: none; /* Hide sidebar completely for very small screens */
+	}
+
+	.drawer-open-button {
+		display: block; /* 사이드바가 숨겨져 있을 때 서랍을 열 수 있는 버튼 */
+	}
+}

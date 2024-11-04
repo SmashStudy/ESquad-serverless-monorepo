@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0; /* MUI 테마와 동일한 배경색 */
+  font-family: 'AppleSDGothicNeo', 'Noto Sans KR', sans-serif; /* 글로벌 폰트 설정 */
+}
+
+/* 추가적인 전역 스타일 정의 */
+h1, h2, h3 {
+  color: #8A2BE2; /* MUI 테마의 primary 색상 */
+}
+
+button {
+  background-color: #FFD700; /* MUI 테마의 secondary 색상 */
+}
