@@ -3,29 +3,15 @@ import {
     Box,
     Button,
     Typography,
-    InputBase,
-    Dialog,
-    DialogContent,
     Card,
     CardContent,
-    CardActions,
     Grid,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Drawer,
-    IconButton,
-    Avatar,
-    Divider,
     Fab,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
-import PostCreationDialog from '../../../components/content/community/PostCreationDialog.jsx';
-import SearchComponent from "../../../components/team/SearchComponent.jsx";
+import SearchComponent from "../../components/team/SearchComponent.jsx";
 import AddIcon from "@mui/icons-material/Add";
-import StudyCreatgionDialog from "../../../components/team/StudyCreationDialog.jsx";
-import bookProfileManAndSea from "../../../assets/book-profile-man-and-sea.jpg";
+import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
 const BookListPage = ({ isSmallScreen, isMediumScreen }) => {

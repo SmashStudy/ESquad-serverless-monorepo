@@ -15,8 +15,8 @@ import {
 import { alpha, useTheme } from '@mui/material';
 import { Link, Outlet } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
-import SearchComponent from "../../../components/team/SearchComponent.jsx";
-import StudyCreatgionDialog from "../../../components/team/StudyCreationDialog.jsx";
+import SearchComponent from "../../components/team/SearchComponent.jsx";
+import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
 
 const StudyPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();

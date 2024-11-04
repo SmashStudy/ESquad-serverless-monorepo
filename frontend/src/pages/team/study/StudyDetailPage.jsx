@@ -20,7 +20,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import bookProfileManAndSea from '../../../assets/book-profile-man-and-sea.jpg';
+import bookProfileManAndSea from '../../assets/book-profile-man-and-sea.jpg';
 import PropTypes from "prop-types";
 
 
@@ -69,7 +69,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
             });
             setUploadedFiles((prevFiles) => [...prevFiles, response.data]);
 
-            fetchFiles()
+            fetchFiles();
             setSelectedFile(null); // 업로드 후 선택된 파일 상태 초기화
         } catch (error) {
             console.error('Failed to upload file:', error);
