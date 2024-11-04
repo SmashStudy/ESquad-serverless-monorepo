@@ -3,15 +3,15 @@ import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
 import Join from "./pages/join/Join.jsx";
 import Login from "./pages/login/Login.jsx";
-import StudyPage from "./pages/team/StudyPage.jsx";
+import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import './index.css';
 import PostListPage from "./pages/community/PostListPage.jsx";
-import StudyListPage from "./pages/team/StudyListPage.jsx";
-import BookListPage from "./pages/team/BookListPage.jsx";
-import BookDetailPage from "./pages/team/BookDetailPage.jsx";
-import StudyDetailPage from "./pages/team/StudyDetailPage.jsx";
+import StudyListPage from "./pages/team/study/StudyListPage.jsx";
+import BookListPage from "./pages/team/book/BookListPage.jsx";
+import BookDetailPage from "./pages/team/book/BookDetailPage.jsx";
+import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 
 const theme = createTheme({
@@ -38,63 +38,67 @@ const theme = createTheme({
 });
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
 
     // Set login state based on token in localStorage
-    useEffect(() => {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            setIsLoggedIn(true);
-        }
-    }, [isLoggedIn]);
-
-    const ProtectedRoute = ({ children }) => {
-        const token = localStorage.getItem('jwt');
-        if (!token) {
-            return <Navigate to="/login" />;
-        }
-        return children;
-    };
-
-    const RedirectIfLoggedIn = ({ children }) => {
-        const token = localStorage.getItem('jwt');
-        if (token) {
-            return <Navigate to="/" />;
-        }
-        return children;
-    };
+    // useEffect(() => {
+    //     const token = localStorage.getItem('jwt');
+    //     if (token) {
+    //         setIsLoggedIn(true);
+    //     }
+    // }, [isLoggedIn]);
+    //
+    // const ProtectedRoute = ({ children }) => {
+    //     const token = localStorage.getItem('jwt');
+    //     if (!token) {
+    //         return <Navigate to="/login" />;
+    //     }
+    //     return children;
+    // };
+    //
+    // const RedirectIfLoggedIn = ({ children }) => {
+    //     const token = localStorage.getItem('jwt');
+    //     if (token) {
+    //         return <Navigate to="/" />;
+    //     }
+    //     return children;
+    // };
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <UserProvider>
+            {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
                         {/* Redirect logged-in users away from the login page */}
                         <Route path="/login" element={
-                            <RedirectIfLoggedIn>
+                            // <RedirectIfLoggedIn>
                                 <Login setIsLoggedIn={setIsLoggedIn} />
-                            </RedirectIfLoggedIn>
+                            // </RedirectIfLoggedIn>
                         } />
                         <Route path="/join" element={<Join />} />
 
+
                         {/* Protect routes that require authentication */}
                         <Route path="/" element={
-                            <ProtectedRoute>
+                            // <ProtectedRoute>
                                 <Home />
-                            </ProtectedRoute>
+                            // </ProtectedRoute>
                         }>
-                            {/*<Route path="community/questions" element={<PostListPage />} />*/}
-                            {/*<Route path="community/questions/:postId" element={<PostDetailsPage />} />*/}
-                            {/* Add other community routes as needed */}
-                            {/* <Route path="community/general" element={<PostListPage />} /> */}
-                            {/* <Route path="community/team-recruit" element={<PostListPage />} /> */}
 
+                            {/* community */}
+                            <Route path="community/questions" element={<PostListPage />} />
+                                <Route path=":postId" element={<PostDetailsPage />} />
+                            <Route path="community/general" element={<PostListPage />} />
+                            <Route path="community/team-recruit" element={<PostListPage />} />
+
+
+                            {/* team */}
                             <Route path="teams/:teamId" element={<StudyPage />}>
                                 <Route path="study" element={<StudyListPage />} />
-                                <Route path="study/:studyId" element={<StudyDetailPage />} />
+                                    <Route path=":studyId" element={<StudyDetailPage />} />
                                 <Route path="book/search" element={<BookListPage />} />
-                                <Route path="book/search/:bookId" element={<BookDetailPage />} />
+                                    <Route path=":bookId" element={<BookDetailPage />} />
                                 <Route path="questions" element={<StudyPage />} />
                             </Route>
                         </Route>
@@ -105,7 +109,7 @@ function App() {
                         } />
                     </Routes>
                 </BrowserRouter>
-            </UserProvider>
+            {/*</UserProvider>*/}
         </ThemeProvider>
     );
 }
