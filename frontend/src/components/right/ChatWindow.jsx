@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, useTheme } from '@mui/material';
+import {alpha, Box, Button, Typography, useTheme} from '@mui/material';
 import ChatMessages from './ChatMessages.jsx'; // ChatMessages 컴포넌트 임포트
 
 const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
@@ -55,10 +55,13 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         p: 1,
-                                        backgroundColor: currentChatRoom?.id === team.id ? theme.palette.primary.main : '#fff',
+                                        backgroundColor: currentChatRoom?.id === team.id ? alpha(theme.palette.primary.main, 0.1) : '#fff',
                                         borderRadius: 1,
+                                        '&:hover': {
+                                            backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                                        },
                                         border: '1px solid',
-                                        borderColor: currentChatRoom?.id === team.id ? '#D1C4E9' : theme.palette.primary.main,
+                                        borderColor: currentChatRoom?.id === team.id ? '#D1C4E9' : theme.palette.primary.light,
                                         minWidth: isSmallScreen ? '80px' : '120px',
                                         fontSize: isSmallScreen ? '0.75rem' : '1rem',
                                         mb: 1,
