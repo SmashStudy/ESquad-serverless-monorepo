@@ -3,17 +3,13 @@ import {
     Box,
     Button,
     Typography,
-    InputBase,
-    Dialog,
-    DialogContent,
     Card,
     CardContent,
     CardActions,
     Grid,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
-import PostCreationDialog from '../../components/content/community/PostCreationDialog.jsx';
-import SearchComponent from "../../components/team/SearchComponent.jsx";
+import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
@@ -29,16 +25,16 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         {"id": 13, "teamId": teamId, "bookId": 53, "title": "삐기삐끼", "members": 12},
         {"id": 23, "teamId": teamId,"bookId": 38, "title": "이디리딩딩딩", "members": 12},
     ]);
-    // const [isPostModalOpen, setIsPostModalOpen] = useState(false);  // 2차
 
-    // 2차
-    // const handleWriteButtonClick = () => {
-    //     setIsPostModalOpen(true);
-    // };
-    //
-    // const handleClosePostModal = () => {
-    //     setIsPostModalOpen(false);
-    // };
+    const [isPostModalOpen, setIsPostModalOpen] = useState(false);  // 2차
+
+    const handleWriteButtonClick = () => {
+        setIsPostModalOpen(true);
+    };
+
+    const handleClosePostModal = () => {
+        setIsPostModalOpen(false);
+    };
 
     return (
         <>

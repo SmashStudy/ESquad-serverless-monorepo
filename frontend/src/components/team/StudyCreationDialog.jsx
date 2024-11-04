@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent } from '@mui/material';
 import StudyCreationPage from "../../pages/team/study/StudyCreationPage.jsx";
 
-const StudyCreatgionDialog = ({ open, onClose, selectedTeamId, selectedBook }) => {
+const StudyCreationDialog = ({ open, onClose, selectedTeamId, selectedBook }) => {
 
     return (
         <Dialog open={open}
@@ -21,4 +21,4 @@ const StudyCreatgionDialog = ({ open, onClose, selectedTeamId, selectedBook }) =
     );
 };
 
-export default StudyCreatgionDialog;
+export default StudyCreationDialog;

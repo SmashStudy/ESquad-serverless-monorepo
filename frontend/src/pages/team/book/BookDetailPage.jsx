@@ -8,7 +8,7 @@ import {
 import { alpha, useTheme } from '@mui/material';
 import {useLocation, useParams} from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
-import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
+import StudyCreationDialog from "../../../components/team/StudyCreationDialog.jsx";
 
 const BookDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();
@@ -97,7 +97,7 @@ const BookDetailPage = ({ isSmallScreen, isMediumScreen }) => {
             </Fab>
 
             {/* Post Creation Modal */}
-            <StudyCreatgionDialog
+            <StudyCreationDialog
                 open={isStudyModalOpen}
                 onClose={handleCloseStudyModal}
                 selectedTeamId={params.teamId}

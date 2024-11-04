@@ -9,9 +9,9 @@ import {
     Fab,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
-import SearchComponent from "../../components/team/SearchComponent.jsx";
+import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import AddIcon from "@mui/icons-material/Add";
-import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
+import StudyCreationDialog from "../../../components/team/StudyCreationDialog.jsx";
 import {useNavigate, useParams} from "react-router-dom";
 
 const BookListPage = ({ isSmallScreen, isMediumScreen }) => {
@@ -142,7 +142,7 @@ const BookListPage = ({ isSmallScreen, isMediumScreen }) => {
             </Fab>
 
             {/* Post Creation Modal */}
-            <StudyCreatgionDialog open={isStudyModalOpen} onClose={handleCloseStudyModal} />
+            <StudyCreationDialog open={isStudyModalOpen} onClose={handleCloseStudyModal} />
         </>
     );
 };

@@ -20,7 +20,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import bookProfileManAndSea from '../../assets/book-profile-man-and-sea.jpg';
+import bookProfileManAndSea from '/src/assets/book-profile-man-and-sea.jpg';
 import PropTypes from "prop-types";
 
 
