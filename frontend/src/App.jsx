@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import Join from "./pages/join/Join.jsx";
-import Login from "./pages/login/Login.jsx";
+import JoinPage from "./pages/user/JoinPage.jsx";
+import LoginPage from "./pages/user/LoginPage.jsx";
 import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -13,6 +13,7 @@ import BookListPage from "./pages/team/book/BookListPage.jsx";
 import BookDetailPage from "./pages/team/book/BookDetailPage.jsx";
 import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
+import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 
 const theme = createTheme({
     palette: {
@@ -73,16 +74,16 @@ function App() {
                         {/* Redirect logged-in users away from the login page */}
                         <Route path="/login" element={
                             // <RedirectIfLoggedIn>
-                                <Login setIsLoggedIn={setIsLoggedIn} />
+                                <LoginPage setIsLoggedIn={setIsLoggedIn} />
                             // </RedirectIfLoggedIn>
                         } />
-                        <Route path="/join" element={<Join />} />
+                        <Route path="/join" element={<JoinPage />} />
 
 
                         {/* Protect routes that require authentication */}
                         <Route path="/" element={
                             // <ProtectedRoute>
-                                <Home />
+                            <Home />
                             // </ProtectedRoute>
                         }>
 
@@ -94,7 +95,7 @@ function App() {
 
 
                             {/* team */}
-                            <Route path="teams/:teamId" element={<StudyPage />}>
+                            <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
                                 <Route path="study" element={<StudyListPage />} />
                                     <Route path=":studyId" element={<StudyDetailPage />} />
                                 <Route path="book/search" element={<BookListPage />} />

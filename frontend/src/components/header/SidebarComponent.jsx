@@ -15,14 +15,7 @@ import { useTheme } from '@mui/material';
 import QuizIcon from '@mui/icons-material/Quiz';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import Groups3Icon from '@mui/icons-material/Groups3';
-import HomeIcon from '@mui/icons-material/Home';
-import ArticleIcon from '@mui/icons-material/Article';
-import FolderIcon from '@mui/icons-material/Folder';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import TagIcon from '@mui/icons-material/Tag';
 import PeopleIcon from '@mui/icons-material/People';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CommunityIcon from '@mui/icons-material/Groups2';
 import AbcIcon from '@mui/icons-material/Abc';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -73,6 +66,14 @@ const SidebarList = ({ items, drawerOpen, sidebarOpen }) => (
     </List>
 );
 
+function CommunityIcon() {
+    return null;
+}
+
+function DashboardIcon() {
+    return null;
+}
+
 const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawerClose, selectedTab, selectedTeam }) => {
     console.log(selectedTeam);
     const theme = useTheme();
@@ -99,7 +100,6 @@ const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawer
 
     const manageItems = [
         { text: '크루', icon: <PeopleIcon  />, link: '/manage/crew' },
-        // { text: 'Communities', icon: <CommunityIcon /> },
         // { text: '대시보드', icon: <DashboardIcon /> },
         { text: '설정', icon: <SettingsIcon  />, link: '/manage/settings' },
     ];

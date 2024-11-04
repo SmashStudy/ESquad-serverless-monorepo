@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import {
+    alpha,
+    useTheme,
+    styled,
     AppBar,
     Toolbar,
     IconButton,
@@ -19,7 +22,6 @@ import {
     Divider,
     ListItemAvatar
 } from '@mui/material';
-import { alpha, useTheme, styled } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -27,7 +29,6 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Link, NavLink, useNavigate} from "react-router-dom";
 import {useUser} from "../form/UserContext.jsx";
-import StudyCreatgionDialog from "../team/StudyCreationDialog.jsx";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 
 const Search = styled('div')(({ theme }) => ({
@@ -39,7 +40,7 @@ const Search = styled('div')(({ theme }) => ({
     },
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
-    border: '1px solid #FFD700', // Gold border for the search bar
+    border: `1px solid ${theme.palette.secondary.main}`, // Gold border for the search bar
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -63,9 +64,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, teams, updateTeam }) => {
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams }) => {
     const navigate = useNavigate();
-    const user = useUser();
+    // const { userInfo } = useUser();
 
     const handleLogout = () => {
         localStorage.removeItem('jwt');
@@ -109,7 +110,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, teams, u
     const handleAccountClose = () => { setAccountAnchorEl(null); };
 
     // 사용자의 팀탭에서 팀 선택
-    const handleTeam = (i) => { updateTeam(i); };
+    const handleSelectedTeam = (i) => {
+        updateSelectedTeam(i);
+    };
 
     // Handle create team dialog open/close
     const handleCreateTeamButtonClick = () => { setIsTeamCreationModalOpen(true); };
@@ -219,7 +222,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, teams, u
                                                 <Link to={`/teams/${team.id}`} className={`menu-team${index}`} key={index}>
                                                     <ListItem
                                                         button
-                                                        onClick={() => handleTeam(index)}
+                                                        onClick={() => updateSelectedTeam(index)}
                                                         sx={{ '&:hover': { cursor: 'pointer', fontSize: '1.4rem' } }}
                                                     >
                                                         <ListItemIcon>
@@ -281,7 +284,8 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, teams, u
                                     }}
                                 >
                                     <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
-                                    <Typography variant="body1">유저명</Typography>
+                                    {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
+                                    <Typography variant="body1">esquadback</Typography>
                                 </IconButton>
                             </Box>
                             <Menu
@@ -298,7 +302,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, teams, u
                                     }}
                                 >
                                     <Avatar />
-                                    <Typography variant="body1">프로필 보기</Typography>
+                                    <Link to= "/user/profile">
+                                        <Typography variant="body1">프로필 보기</Typography>
+                                    </Link>
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem onClick={handleAccountClose}>Google 계정</MenuItem>
