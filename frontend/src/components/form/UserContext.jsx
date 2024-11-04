@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
 
     // 커스텀 useAxios 훅을 사용하여 사용자 정보를 가져옴
     const { data, error, loading, refetch } = useAxios({
-        url: 'http://localhost:8080/api/users/inquiry',
+        // url: 'http://localhost:8080/api/users/inquiry',
         method: 'GET',
     });
 
