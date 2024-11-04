@@ -1,8 +1,8 @@
-// src/components/Join.jsx
+// src/components/JoinPage.jsx
 import React from 'react';
 import JoinForm from '../../components/form/JoinForm.jsx';
 
-const Join = () => {
+const JoinPage = () => {
   return (
     <div className="flex w-full h-screen">
       {/* Background Section */}
@@ -19,4 +19,4 @@ const Join = () => {
   );
 };
 
-export default Join;
+export default JoinPage;
