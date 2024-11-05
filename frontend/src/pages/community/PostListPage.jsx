@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Box, Button, Typography, List, InputBase } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
