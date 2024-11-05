@@ -32,85 +32,20 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState();
 
-    useEffect(() => {
-        const fetchFiles = async () => {
-            try {
-                const response = await axios.get(`/api/files/STUDY_PAGE/${studyId}`);
-                setUploadedFiles(response.data);
-            } catch (error) {
-                console.error('Failed to fetch files:', error);
-            }
-        };
-
-        fetchFiles().then();
-    }, [studyId]);
-
     const handleFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     };
+
     const handleFileUpload = async () => {
-        if (!selectedFile) {
-            return;
-        }
-        setIsUploading(true);
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('targetId', studyId);
-        formData.append('targetType', 'STUDY_PAGE');
-
-        try {
-            const token = localStorage.getItem('jwt');
-            const response = await axios.post(`/api/files`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`
-                },
-            });
-            setUploadedFiles((prevFiles) => [...prevFiles, response.data]);
-
-            fetchFiles();
-            setSelectedFile(null); // 업로드 후 선택된 파일 상태 초기화
-        } catch (error) {
-            console.error('Failed to upload file:', error);
-        } finally {
-            setIsUploading(false);
-        }
     };
 
     const handleFileDelete = async (storedFileName) => {
-        try {
-            await axios.delete(`/api/files/${storedFileName}`);
-            setUploadedFiles((prevFiles) =>
-                prevFiles.filter((file) => file.storedFileName !== storedFileName)
-            );
-        } catch (error) {
-            console.error('Failed to delete file:', error);
-        }
+
     };
 
     const handleFileDownload = async (storedFileName, originalFileName) => {
-        try {
-            const response = await axios.get(`/api/files/${storedFileName}`, {
-                responseType: 'blob', // Blob 형식으로 데이터 받기
-            });
 
-            const blob = new Blob([response.data],
-                {type: response.headers['content-type']});
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-
-            link.href = url;
-            link.download = originalFileName || storedFileName; // 다운로드할 파일 이름 지정
-            document.body.appendChild(link);
-            link.click();
-
-            // 다운로드가 완료된 후, URL과 링크를 정리
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Failed to download file:', error);
-        }
     };
 
 
