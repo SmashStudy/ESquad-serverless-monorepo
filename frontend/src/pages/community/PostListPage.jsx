@@ -136,15 +136,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
             content: '네트워크의 기본 개념',
             likes: 4,
         },
-        {
-            id: 15,
-            writer: '서지식',
-            title: '지식 공유',
-            views: 27,
-            createdAt: '2024-10-15',
-            content: '지식을 나누며 함께 성장하자',
-            likes: 8,
-        },
     ])
     const [teamId, setTeamId] = useState(1); // 임시로 팀 ID 설정
 
