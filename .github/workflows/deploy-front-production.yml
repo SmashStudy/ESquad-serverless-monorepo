@@ -42,4 +42,4 @@ jobs:
         run: aws s3 sync --region us-east-1 dist s3://s3-esquad-front --delete
 
       - name: Invalid CloudFront Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }}
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/*"
