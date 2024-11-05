@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
+    useTheme,
     Box,
     Button,
     Typography,
@@ -13,14 +14,13 @@ import {
     Step,
     StepLabel,
 } from '@mui/material';
-import { useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import CheckIcon from '@mui/icons-material/Check';
 import FaceIcon from '@mui/icons-material/Face';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import dayjs from 'dayjs';
-import { useUser } from '../form/UserContext.jsx';
+// import { useUser } from '../form/UserContext.jsx';
+import {fetchTeam} from "../../hooks/fetchTeam.jsx";
 
 const steps = ['스페이스명', '팀원 초대', '확인'];
 
@@ -59,7 +59,7 @@ function CrewManagement({ teamCrew, newCrew, handleNewCrewChange, searchCrew, se
         <Box sx={{ pt: 2 }}>
             <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>크루 초대하기</Typography>
             <Typography sx={{ mt: 2, mb: 5, fontSize: 'large' }}>동행할 크루를 초대하여 함께 성장해요!</Typography>
-            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>( 크루는 3명 이상, 11명 이하로 꾸려주세요 )</Typography>
+            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>( 크루는 본인을 제외하여 3명 이상, 11명 이하로 꾸려주세요 )</Typography>
 
             <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
                 <TextField
@@ -67,7 +67,7 @@ function CrewManagement({ teamCrew, newCrew, handleNewCrewChange, searchCrew, se
                     value={newCrew}
                     placeholder="아이디를 입력하세요"
                     onChange={handleNewCrewChange}
-                    disabled={teamCrew.length >= 11}
+                    disabled={teamCrew.length >= 12}
                     fullWidth
                 />
                 <Button
@@ -75,7 +75,7 @@ function CrewManagement({ teamCrew, newCrew, handleNewCrewChange, searchCrew, se
                     onClick={searchCrew}
                     size="large"
                     endIcon={<PersonSearchIcon />}
-                    disabled={teamCrew.length >= 11}
+                    disabled={teamCrew.length >= 12}
                 >
                     검색
                 </Button>
@@ -155,7 +155,7 @@ function ConfirmationStep({ teamName, teamCrew }) {
     );
 }
 
-const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
+const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
     const theme = useTheme();
     const [activeStep, setActiveStep] = useState(0);
     const [teamName, setTeamName] = useState('');
@@ -164,12 +164,18 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
     const [searchError, setSearchError] = useState('');
     const [teamNameError, setTeamNameError] = useState('');
     const [loading, setLoading] = useState(false);
-    const { userInfo } = useUser(); // 유저 정보
+    // const { userInfo } = useUser(); // 유저 정보
+    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+
+    const updateTeamCrew = () => {
+        setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
+    }
 
     useEffect(() => {
         // Add the current user as the first crew member when the component is mounted
-        if (userInfo) {
-            setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
+        if (userInfo && teamCrew.length === 0) {
+            // setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
+            updateTeamCrew();
         }
     }, [userInfo]);
 
@@ -180,7 +186,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
             const isValidTeamName = await validateTeamName();
             if (!isValidTeamName) return;
         }
-        if (activeStep === 1 && (teamCrew.length < 3 || teamCrew.length > 11)) return;
+        if (activeStep === 1 && (teamCrew.length < 4 || teamCrew.length > 12)) return;
         if (activeStep === steps.length - 1) {
             await handleCreateTeam();
         } else {
@@ -189,36 +195,11 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
     };
 
     const validateTeamName = async () => {
-        try {
-            const response = await axios.get(`/api/teams/new/${teamName}`);
-            if (response.status === 200) return true;
-        } catch (error) {
-            if (error.response && error.response.data.code === "TEAM-0001") {
-                setTeamNameError(error.response.data.message);
-            } else {
-                setTeamNameError('스페이스명 확인 중 오류가 발생했습니다. 처음부터 다시 진행해주세요.');
-                onCancel();
-            }
-            return false;
-        }
+        return true;
     };
 
     const searchCrew = async () => {
-        if (newCrew.trim() === '') return;
-        if (!validateNewCrew(newCrew)) return;
-        try {
-            const response = await axios.get(`/api/teams/new/search/${newCrew}`);
-            if (response.status === 200) {
-                addTeamCrew(response.data);
-            }
-        } catch (error) {
-            if (error.response && error.response.data.code === "USER-0001") {
-                setSearchError(error.response.data.message);
-            } else {
-                setSearchError('유저 검색 도중 문제가 발생했습니다. 다시 시도해주세요.');
-                onCancel();
-            }
-        }
+        addTeamCrew({id: 34, username: "tlinel542"});
     };
 
     const validateNewCrew = (newCrew) => {
@@ -226,7 +207,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
             setSearchError('팀원은 12명을 초과할 수 없습니다');
             return false;
         }
-        if (teamCrew.some((crew) => crew.username === newCrew)) {
+        if (teamCrew.some((crew) => crew.username.toUpperCase() === newCrew.toUpperCase())) {
             setSearchError('이미 추가한 유저입니다');
             return false;
         }
@@ -243,38 +224,19 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel }) => {
         setTeamCrew(teamCrew.filter((tm) => tm.username !== member.username));
     };
 
-    const handleCreateTeam = async () => {
-        setLoading(true);
-        console.log("Creating team with data:", {
-            teamName,
-            members: teamCrew.map((member, index) => ({
-                member: { id: member.id, username: member.username },
-                role: index === 0 ? 'manager' : 'crew',
-            })),
+    const getTeams = () => {
+        fetchTeam()
+            .then((response) => {
+                console.log(response);
+                updateTeams(response);
+            }).catch((error) => {
+            console.log(error);
         });
+    }
 
-        const teamData = {
-            teamName: teamName,
-            members: teamCrew.map((member, index) => ({
-                member: { id: member.id, username: member.username },
-                role: index === 0 ? 'manager' : 'crew',
-            })),
-        };
 
-        try {
-            const response = await axios.post('/api/teams/new', teamData);
-            console.log("Response from server:", response);
-            if (response.status === 201) {
-                alert(response.data);
-                handleReset();
-                onCancel(); // Close the dialog after creating the team
-            }
-        } catch (error) {
-            console.error("Error during team creation:", error);
-            setTeamNameError(error.response?.data?.message || "Unknown error occurred");
-        } finally {
-            setLoading(false);
-        }
+    const handleCreateTeam = async () => {
+
     };
 
 

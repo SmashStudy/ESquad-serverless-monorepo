@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BsFillMicMuteFill } from "react-icons/bs";
 import { FaMicrophoneSlash, FaRocketchat, FaSlideshare, FaUserFriends } from 'react-icons/fa';
-import ParticipantsSidebar from './ParticipantsSidebar.jsx';
+import ParticipantsSidebar from './ParticipantsSidebar';
 
 const LiveStreamWindow = ({ studyId }) => {
    // Dummy data for participants

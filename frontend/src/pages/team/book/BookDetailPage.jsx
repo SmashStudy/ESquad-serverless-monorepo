@@ -1,32 +1,14 @@
 import React, { useState } from 'react';
 import {
     Box,
-    Button,
     Typography,
-    InputBase,
-    Dialog,
-    DialogContent,
-    Card,
-    CardContent,
-    CardActions,
     Grid2,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Drawer,
-    IconButton,
-    Avatar,
-    Divider,
     Fab,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
 import {useLocation, useParams} from "react-router-dom";
-import PostCreationDialog from '../../components/content/community/PostCreationDialog.jsx';
-import SearchComponent from "../../components/team/SearchComponent.jsx";
 import AddIcon from "@mui/icons-material/Add";
-import StudyCreatgionDialog from "../../components/team/StudyCreationDialog.jsx";
-import bookProfileManAndSea from "../../assets/book-profile-man-and-sea.jpg";
+import StudyCreationDialog from "../../../components/team/StudyCreationDialog.jsx";
 
 const BookDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();
@@ -115,7 +97,7 @@ const BookDetailPage = ({ isSmallScreen, isMediumScreen }) => {
             </Fab>
 
             {/* Post Creation Modal */}
-            <StudyCreatgionDialog
+            <StudyCreationDialog
                 open={isStudyModalOpen}
                 onClose={handleCloseStudyModal}
                 selectedTeamId={params.teamId}

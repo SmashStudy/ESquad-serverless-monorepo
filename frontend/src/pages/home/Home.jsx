@@ -13,8 +13,8 @@ import { useTheme, useMediaQuery, styled, alpha } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
 import PostListPage from "../community/PostListPage.jsx";
-import ChatArea from "../../components/right/ChatArea.jsx";
-import StudyPage from "../team/StudyPage.jsx";
+import ChatWindow from "../../components/right/ChatWindow.jsx";
+import StudyPage from "../team/study/StudyPage.jsx";
 import {useUser} from "../../components/form/UserContext.jsx";
 import axios from "axios";
 import {fetchTeam} from "../../hooks/fetchTeam.jsx";
@@ -24,65 +24,30 @@ const Home = () => {
     const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [selectedSidebarItem, setSelectedSidebarItem] = useState(null);
-    const [teams, setTeams] = useState([{
-        "teamName": "none",
-    }]);
-    // const [teamName, setTeamName] = useState(...teams)
+    const [teams, setTeams] = useState([
+        // { "teamName": "none" },
+        { "id": 21, "teamName": "문법존" },
+        { "id": 28, "teamName": "몬다니" },
+    ]);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px
-    const isVerySmallScreen = useMediaQuery('(max-width: 30vw)');
 
-    const accessToken= localStorage.getItem('jwt');
-    const user = useUser();
+    // const accessToken= localStorage.getItem('jwt');
+    // const user = useUser();
 
-    // useAxios 커스텀 훅을 사용하여 POST 요청 설정
     // useEffect(() => {
-    //     if (accessToken) {
+    //     if(accessToken) {
+    //         // alert(accessToken);
     //         fetchTeam()
     //             .then((response) => {
-    //                 setTeams(response);
+    //                 console.log(response);
+    //                 response == null ? setTeams([]) : setTeams(response);
     //             }).catch((error) => {
     //             console.log(error);
     //         });
     //     }
     // }, [accessToken]);
-    //
-    // // Listen for changes in localStorage and update accessToken state
-    // useEffect(() => {
-    //     const handleStorageChange = () => {
-    //         setAccessToken(localStorage.getItem('accessToken'));
-    //     };
-    //     window.addEventListener('storage', handleStorageChange);
-    //
-    //     return () => {
-    //         window.removeEventListener('storage', handleStorageChange);
-    //     };
-    // }, []);
-
-    useEffect(() => {
-        if(accessToken) {
-            // alert(accessToken);
-            fetchTeam()
-                .then((response) => {
-                    console.log(response);
-                    response == null ? setTeams([]) : setTeams(response);
-                }).catch((error) => {
-                console.log(error);
-            });
-        }
-    }, [accessToken]);
-
-    // useEffect to log the selected team after it updates ( 확인용 )
-    useEffect(() => {
-        if (selectedTeam !== null) {
-            console.log(`Selected tab : ${JSON.stringify(selectedTab)}, selected team : ${JSON.stringify(selectedTeam)}`);
-        }
-        if(selectedTab === 0) {
-            console.log(`Selected tab : ${JSON.stringify(selectedTab)}, selected team : ${JSON.stringify(selectedTeam)}`);
-        }
-    }, [selectedTab, selectedTeam]);
 
     // Toggle the sidebar or open the drawer based on screen size
     const handleSidebarToggle = () => {
@@ -94,32 +59,29 @@ const Home = () => {
     };
 
     // Close the drawer
-    const handleDrawerClose = () => {
-        setDrawerOpen(false);
-    };
+    const handleDrawerClose = () => { setDrawerOpen(false); };
 
     // set selectedTab
-    const handleTabState = (i) => {
-        if(selectedTab !== i) {
-            setSelectedTab(0);
-            setSelectedTeam(null);
-        }
+    const handleTab = (tabIndex) => {
+        setSelectedTab(tabIndex);
+        setSelectedTeam(null);
     }
 
     // update selectedTeam
-    const updateTeamState = (i) => {
-        if (teams == null) {
-            return; // Prevent setting a selected team if there are no teams available
-        }
-
+    const updateSelectedTeam = (i) => {
         const changeSelectTeam = teams[i];
-        if (selectedTeam?.id !== changeSelectTeam.id) {
-            setSelectedTab(1);
+        if (selectedTeam?.id !== changeSelectTeam.id || selectedTeam == null) {
             setSelectedTeam(changeSelectTeam);
+            if(selectedTab !== 1) setSelectedTab(1);
         }
     };
 
-    console.log(teams);
+    const updateTeams = (team) => {
+        setTeams(...teams, team);
+    }
+
+    // console.log(teams);
+
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
             <CssBaseline />
@@ -127,10 +89,11 @@ const Home = () => {
             {/* AppBar/AppbarComponent */}
             <AppBarComponent
                 handleSidebarToggle={handleSidebarToggle}
-                handleTab={handleTabState}
+                handleTab={handleTab}
                 selectedTab={selectedTab}
+                updateSelectedTeam={updateSelectedTeam}
+                updateTeams={updateTeams}
                 teams={teams}
-                updateTeam={updateTeamState}
             />
 
             {/* Home Content Area with Sidebar */}
@@ -170,7 +133,6 @@ const Home = () => {
                     {/* Left Section - Community / Team Content */}
                     <Box
                         sx={{
-                            // border: '1px solid',        // Community / team area border
                             flex: isMediumScreen ? 6 : 7,
                             flexDirection: 'row',
                             gap: 1,
@@ -182,12 +144,12 @@ const Home = () => {
                     </Box>
 
                     {/* Right Section - Chat Area */}
-                    <ChatArea
+                    <ChatWindow
                         isSmallScreen={isSmallScreen}
                         isMediumScreen={isMediumScreen}
                         teams={teams}
                         selectedTeam={selectedTeam}
-                        user={user}
+                        // user={user}
                     />
                 </Box>
             </Box>

@@ -58,21 +58,21 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                         justifyContent: 'flex-start',
                     }}
                 >
-                    {/*<Button variant="text" sx={{ fontSize: 'medium', fontWeight: 'bold', borderBottom: '2px solid', borderColor: theme.palette.primary.main }}>전체</Button>*/}
-                    {/*<Button variant="text" sx={{ fontSize: 'medium' }}>미해결</Button>*/}
-                    {/*<Button variant="text" sx={{ fontSize: 'medium' }}>해결됨</Button>*/}
+                    <Button variant="text" sx={{ fontSize: 'medium', fontWeight: 'bold', borderBottom: '2px solid', borderColor: theme.palette.primary.main }}>전체</Button>
+                    <Button variant="text" sx={{ fontSize: 'medium' }}>미해결</Button>
+                    <Button variant="text" sx={{ fontSize: 'medium' }}>해결됨</Button>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, width: '90%' }}>
-                    {/*<InputBase*/}
-                    {/*    placeholder="궁금한 질문을 검색해보세요!"*/}
-                    {/*    sx={{*/}
-                    {/*        width: '100%',*/}
-                    {/*        p: 1,*/}
-                    {/*        border: '1px solid #ccc',*/}
-                    {/*        borderRadius: 1,*/}
-                    {/*    }}*/}
-                    {/*/>*/}
-                    {/*<Button variant="contained" sx={{ fontSize: 'medium', backgroundColor: theme.palette.primary.main }}>검색</Button>*/}
+                    <InputBase
+                        placeholder="궁금한 질문을 검색해보세요!"
+                        sx={{
+                            width: '100%',
+                            p: 1,
+                            border: '1px solid #ccc',
+                            borderRadius: 1,
+                        }}
+                    />
+                    <Button variant="contained" sx={{ fontSize: 'medium', backgroundColor: theme.palette.primary.main }}>검색</Button>
                 </Box>
             </Box>
 
@@ -88,10 +88,10 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 }}
             >
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                    {/*<Button variant="text" sx={{color: theme.palette.text.secondary}}>최신순</Button>*/}
-                    {/*<Button variant="text" sx={{color: theme.palette.text.secondary}}>정확도순</Button>*/}
-                    {/*<Button variant="text" sx={{color: theme.palette.text.secondary}}>답변많은순</Button>*/}
-                    {/*<Button variant="text" sx={{color: theme.palette.text.secondary}}>좋아요순</Button>*/}
+                    <Button variant="text" sx={{color: theme.palette.text.secondary}}>최신순</Button>
+                    <Button variant="text" sx={{color: theme.palette.text.secondary}}>정확도순</Button>
+                    <Button variant="text" sx={{color: theme.palette.text.secondary}}>답변많은순</Button>
+                    <Button variant="text" sx={{color: theme.palette.text.secondary}}>좋아요순</Button>
                 </Box>
                 <Button
                     variant="contained"

@@ -2,7 +2,7 @@ import React from 'react';
 import LoginForm from "../../components/form/LoginForm.jsx";
 import { Box } from '@mui/material';
 
-const Login = ({ setIsLoggedIn }) => {
+const LoginPage = ({ setIsLoggedIn }) => {
     return (
         <Box sx={{ display: 'flex', width: '100%', height: '100vh' }}>
             <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -42,4 +42,4 @@ const Login = ({ setIsLoggedIn }) => {
     );
 };
 
-export default Login;
+export default LoginPage;
