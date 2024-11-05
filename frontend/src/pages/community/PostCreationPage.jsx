@@ -1,13 +1,23 @@
-// PostCreationPage.js
+import axios from 'axios';
 import React, { useState } from 'react';
-import { Box, Button, Typography, InputBase, Divider, Chip, TextField } from '@mui/material';
+import { Box, Button, Typography, InputBase, Chip, TextField, IconButton } from '@mui/material';
 import { useTheme } from '@mui/material';
 import { Autocomplete } from '@mui/material';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useUser } from '/src/components/form/UserContext'; // 사용자 정보 사용
+import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 훅
 
 const PostCreationPage = ({ onCancel }) => {
     const theme = useTheme();
+    const navigate = useNavigate(); // 페이지 이동을 위한 훅 선언
+    // const { userInfo } = useUser();
+    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
     const [activeTab, setActiveTab] = useState('질문');
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
+    const [file, setFile] = useState(null);
 
     const renderTabContent = () => {
         const placeholders = {
@@ -103,9 +113,19 @@ const PostCreationPage = ({ onCancel }) => {
         );
     };
 
-    const handleSubmit = () => {
-        const urlSuffix = activeTab === '질문' ? 'type=qna' : activeTab === '고민있어요' ? 'type=worry' : 'type=study';
-        console.log(`Submit URL with suffix: ${urlSuffix}`);
+    const handleFileUpload = (event) => {
+        const uploadedFile = event.target.files[0];
+        if (uploadedFile) {
+            setFile(uploadedFile);
+        }
+    };
+
+    const handleFileDelete = () => {
+        setFile(null);
+    };
+
+    const handleSubmit = async () => {
+
     };
 
     return (
@@ -114,7 +134,7 @@ const PostCreationPage = ({ onCancel }) => {
                 // border: '1px solid',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1,
+                gap: 2,
                 maxWidth: '650px',  // modal 창 가로너비 고정
                 height: '80vh',     // modal 창 세로너비 고정 (전체 뷰포트 80%)
                 mx: 'auto',
@@ -123,24 +143,52 @@ const PostCreationPage = ({ onCancel }) => {
             }}
         >
             <Box sx={{ display: 'flex', gap: 3, mb: 2, borderBottom: `1px solid ${theme.palette.primary.light}`}}>
-                {['질문', '고민있어요', '스터디'].map((tab) => (
-                    <Button
-                        key={tab}
-                        variant="text"
-                        onClick={() => setActiveTab(tab)}
-                        sx={{
-                            fontSize: 'large',
-                            fontWeight: activeTab === tab ? 'bold' : 'normal',
-                            borderBottom: activeTab === tab ? '2px solid' : 'none',
-                            borderColor: activeTab === tab ? theme.palette.primary.main : 'transparent',
-                        }}
-                    >
-                        {tab}
-                    </Button>
-                ))}
+                {/* 탭 메뉴 */}
+                <Box sx={{ display: 'flex', gap: 3, mb: 2, borderBottom: `1px solid ${theme.palette.primary.light}` }}>
+                    {['질문', '고민있어요', '스터디'].map((tab) => (
+                        <Button
+                            key={tab}
+                            variant="text"
+                            onClick={() => setActiveTab(tab)}
+                            sx={{
+                                fontSize: 'large',
+                                fontWeight: activeTab === tab ? 'bold' : 'normal',
+                                borderBottom: activeTab === tab ? '2px solid' : 'none',
+                                borderColor: activeTab === tab ? theme.palette.primary.main : 'transparent',
+                            }}
+                        >
+                            {tab}
+                        </Button>
+                    ))}
+                </Box>
             </Box>
+
             {/*<Divider sx={{ mb: 2 }} />*/}
+
             {renderTabContent()}
+
+            {/* 파일 첨부 */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+                <Button
+                    variant="contained"
+                    component="label"
+                    startIcon={<AttachFileIcon />}
+                    sx={{ backgroundColor: theme.palette.primary.main, color: '#fff' }}
+                >
+                    파일 첨부
+                    <input type="file" hidden onChange={handleFileUpload} />
+                </Button>
+                {file && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2">{`${file.name} (${(file.size / 1024).toFixed(2)} KB)`}</Typography>
+                        <IconButton onClick={handleFileDelete} size="small">
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                )}
+            </Box>
+
+            {/* 등록/취소 버튼 */}
             <Box
                 sx={{
                     display: 'flex',
