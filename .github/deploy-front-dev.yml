@@ -1,0 +1,42 @@
+name: Deploy-Front-Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+      steps:
+        - name: Checkout Source Code.
+          uses: actions/checkout@v3
+        - name: Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: "npm"
+        - run: npm --force ci
+          working-directory: frontend
+
+        - name: Build Production.
+          run: CI=false npm run build --if-present
+          working-directory: frontend
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1
+        - name: Deploy to S3
+          env:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          run: aws s3 sync --region us-east1 build s3://${{ secrets.DEV_AWS_S3_FRONT }} --delete
+
+        - name: Invalid CloudFront Cache
+          run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DEV_AWS_DISTRIBUTION_ID }}
