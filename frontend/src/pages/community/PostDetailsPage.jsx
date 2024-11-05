@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { Box, Typography, Button, InputBase, Divider, IconButton } from '@mui/material';
 import { useTheme } from '@mui/material';
 import { ThumbUp } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUser } from '/src/components/form/UserContext';
 
 const PostDetailsPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();
-    const study = location.state.study;
+    // const study = location.state.study;
     const params = useParams();
     const { postId } = useParams();
     const navigate = useNavigate();
