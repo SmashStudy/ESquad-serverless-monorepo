@@ -89,7 +89,7 @@ function App() {
 
                             {/* community */}
                             <Route path="community/questions" element={<PostListPage />} />
-                                <Route path=":postId" element={<PostDetailsPage />} />
+                            <Route path="community/questions/:postId" element={<PostDetailsPage />} />
                             <Route path="community/general" element={<PostListPage />} />
                             <Route path="community/team-recruit" element={<PostListPage />} />
 
@@ -97,9 +97,9 @@ function App() {
                             {/* team */}
                             <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
                                 <Route path="study" element={<StudyListPage />} />
-                                    <Route path=":studyId" element={<StudyDetailPage />} />
+                                <Route path="study/:studyId" element={<StudyDetailPage />} />
                                 <Route path="book/search" element={<BookListPage />} />
-                                    <Route path=":bookId" element={<BookDetailPage />} />
+                                <Route path="book/search/:bookId" element={<BookDetailPage />} />
                                 <Route path="questions" element={<StudyPage />} />
                             </Route>
                         </Route>
