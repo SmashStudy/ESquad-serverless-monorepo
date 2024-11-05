@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout Source Code.
         uses: actions/checkout@v3
+
+      - name: List Files for Debugging
+        run: ls -la
+
       - name: Node.js
         uses: actions/setup-node@v3
         with:
