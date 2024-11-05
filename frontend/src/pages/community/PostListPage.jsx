@@ -29,7 +29,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
     return (
         <Box
             sx={{
-                border: '1px solid',    // 실제 community board / team 데이터 render
+                // border: '1px solid',    // 실제 community board / team 데이터 render
                 mb: 2,
                 height: '100%',
                 width: '100%',

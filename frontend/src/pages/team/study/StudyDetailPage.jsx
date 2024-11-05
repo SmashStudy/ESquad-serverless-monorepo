@@ -52,7 +52,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     return (
         <Box
             sx={{
-                border: '1px solid',
+                // border: '1px solid', // 추후 삭제
                 display: 'flex',
                 flexDirection: 'column',
                 // justifyContent: 'center',
@@ -174,14 +174,6 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
                     </List>
                 </AccordionDetails>
             </Accordion>
-
-            {/* Post Creation Modal */}
-            {/*<StudyCreatgionDialog*/}
-            {/*    open={isStudyModalOpen}*/}
-            {/*    onClose={handleCloseStudyModal}*/}
-            {/*    selectedTeamId={params.teamId}*/}
-            {/*    selectedBook={book}*/}
-            {/*/>*/}
         </Box>
     );
 };
