@@ -22,7 +22,7 @@ const TeamMainPage = ({ isSmallScreen, isMediumScreen }) => {
     return (
         <Box
             sx={{
-                border: '1px solid',     // 추후 삭제
+                // border: '1px solid',     // 추후 삭제
                 mb: 2,
                 height: '100%',
                 width: '100%',

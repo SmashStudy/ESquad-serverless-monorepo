@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     Button,
@@ -9,14 +9,18 @@ import {
     Grid,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material';
+import { useUser } from '/src/components/form/UserContext';
 import SearchComponent from "../../../components/team/SearchComponent.jsx";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from 'axios';
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
     const theme = useTheme();
     const params = useParams();
     const navigate = useNavigate();
     const teamId = params.teamId;
+
+    // 더미 스터디 리스트 데이터
     const [studys, setStudys] = useState([
         {"id": 2, "teamId": teamId, "bookId": 4, "title": "스터디읻이디리딩딩딩", "members": 12},
         {"id": 5, "teamId": teamId, "bookId": 2, "title": "케로케로케로디리딩딩딩", "members": 12},
@@ -25,16 +29,27 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         {"id": 13, "teamId": teamId, "bookId": 53, "title": "삐기삐끼", "members": 12},
         {"id": 23, "teamId": teamId,"bookId": 38, "title": "이디리딩딩딩", "members": 12},
     ]);
+    // const [studys, setStudys] = useState([]);
+    const [loading, setLoading] = useState(true); // 로딩 상태 관리
+    const [error, setError] = useState(false); // 에러 상태 관리
 
-    const [isPostModalOpen, setIsPostModalOpen] = useState(false);  // 2차
-
-    const handleWriteButtonClick = () => {
-        setIsPostModalOpen(true);
+    // const { userInfo } = useUser();
+    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const handleStreamingButtonClick = (username) => {
+        const popupUrl = `https://webrtc.store/esquad?name=${encodeURIComponent(username)}`;
+        window.open(popupUrl, '_blank', 'width=800,height=600');
     };
 
-    const handleClosePostModal = () => {
-        setIsPostModalOpen(false);
-    };
+
+
+    // 2차
+    // const handleWriteButtonClick = () => {
+    //     setIsPostModalOpen(true);
+    // };
+    //
+    // const handleClosePostModal = () => {
+    //     setIsPostModalOpen(false);
+    // };
 
     return (
         <>
@@ -130,21 +145,29 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                                         {study.title}
                                     </Typography>
                                 </Box>
-                                <Typography variant="body2" sx={{ color: theme.palette.grey[700], mb: 2 }}>
-                                    인원수: {study.members}명
-                                </Typography>
-                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                    {['react-native', 'typescript', 'nestjs', 'react-query', 'zustand'].map(
-                                        (tag, idx) => (
-                                            <Button key={idx} variant="outlined" size="small" sx={{ borderRadius: 4, fontSize: '0.7rem' }}>
-                                                {tag}
-                                            </Button>
-                                        )
-                                    )}
+                                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                                    <img src={study.image} alt="Study" style={{ maxWidth: '100%', borderRadius: 4 }} />
                                 </Box>
+                                {/*<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>*/}
+                                {/*    {['react-native', 'typescript', 'nestjs', 'react-query', 'zustand'].map(*/}
+                                {/*        (tag, idx) => (*/}
+                                {/*            <Button key={idx} variant="outlined" size="small" sx={{ borderRadius: 4, fontSize: '0.7rem' }}>*/}
+                                {/*                {tag}*/}
+                                {/*            </Button>*/}
+                                {/*        )*/}
+                                {/*    )}*/}
+                                {/*</Box>*/}
                             </CardContent>
                             <CardActions sx={{ justifyContent: 'flex-end' }}>
-                                <Button variant="outlined" size="small" sx={{ color: theme.palette.primary.main }}>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ color: theme.palette.primary.main }}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStreamingButtonClick(userInfo.username);
+                                    }}
+                                >
                                     스트리밍
                                 </Button>
                             </CardActions>
