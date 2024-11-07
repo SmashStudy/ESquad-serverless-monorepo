@@ -4,7 +4,7 @@ const BUCKET_NAME = process.env.S3_BUCKET;
 
 module.exports.handler = async (event) => {
   try {
-    const { fileKey, metadata } = JSON.parse(event.body);
+    const { fileKey, metadata } = event.body;
     const metadataKey = `metadata/${fileKey}.json`;
 
     const params = {
