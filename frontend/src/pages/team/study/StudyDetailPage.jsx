@@ -65,7 +65,20 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
         fileKey: uniqueFileName,
         contentType: selectedFile.type
       });
-      const { presignedUrl } = presignedResponse.data;
+
+      // if (presignedResponse && presignedResponse.data && presignedResponse.data.presignedUrl) {
+      //   const { presignedUrl } = presignedResponse.data;
+      //   console.log('Presigned URL:', presignedUrl);
+      //   console.log('Presigned URL:', presignedResponse.data.presignedUrl);
+      // } else {
+      //   console.error('Invalid response structure:', presignedResponse.data);
+      // }
+      // console.log('Presigned URL:', presignedResponse);
+      // console.log('Presigned URL:', presignedResponse.data);
+      // console.log('Presigned URL:', presignedResponse.data.presignedUrl);
+      // console.log(JSON.parse(presignedResponse.data.body).presignedUrl);
+      // const { presignedUrl } = presignedResponse.data;
+      const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
 
       // 2. Presigned URL을 통한 파일 업로드
       await axios.put(presignedUrl, selectedFile, {
@@ -73,20 +86,27 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
       });
 
       // 3. 파일 메타데이터 저장 요청
-      const metadataResponse = await axios.post(`${lambdaUrl}/metadata`, {
-        targetId: studyId,
-        targetType: 'STUDY_PAGE',
-        userId: 123, // 예시 사용자 ID
-        fileSize: selectedFile.size,
-        extension: selectedFile.type.split('/').pop(),
-        contentType: selectedFile.type,
-        originalFileName: selectedFile.name,
-        storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
-        title: selectedFile.name,
-        fileUrl: presignedUrl
+      const metadataResponse = await axios.post(`${lambdaUrl}/store-metadata`, {
+            fileKey: uniqueFileName,
+            metadata: { // metadata 필드 내에 필요한 정보들을 넣습니다.
+              targetId: studyId,
+              targetType: 'STUDY_PAGE',
+              userId: 123, // 예시 사용자 ID
+              fileSize: selectedFile.size,
+              extension: selectedFile.type.split('/').pop(),
+              contentType: selectedFile.type,
+              originalFileName: selectedFile.name,
+              storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
+              title: selectedFile.name,
+            }
+
       },
           // {headers: { Authorization: `Bearer ${token}` }}
       );
+
+      // console.log("test " + metadataResponse.data);
+      // console.log("test " + JSON.stringify(metadataResponse.data, null, 2));
+
 
       setUploadedFiles((prevFiles) => [...prevFiles, metadataResponse.data]);
       setSelectedFile(null);
