@@ -32,6 +32,14 @@ functions:
           method: delete
           cors: true
 
+  storeFileMetadata:
+    handler: service/storeFileMetadata.handler
+    events:
+      - http:
+          path: files/store-metadata
+          method: post
+          cors: true
+
 resources:
   Resources:
     GlueServiceRole:
@@ -71,7 +79,7 @@ resources:
       Properties:
         CatalogId: !Ref "AWS::AccountId"
         DatabaseInput:
-          Name: ${env:GLUE_DATABASE}  # Glue Database 이름
+          Name: ${env:GLUE_DATABASE}
 
     # Glue Crawler 생성
     GlueCrawler:
@@ -125,6 +133,7 @@ resources:
               Action:
                 - "s3:GetObject"
                 - "s3:PutObject"
+                - "s3:DeleteObject"
               Resource:
                 - "arn:aws:s3:::${env:S3_BUCKET}/*"
 
