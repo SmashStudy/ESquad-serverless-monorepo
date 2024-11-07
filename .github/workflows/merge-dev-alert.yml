@@ -1,0 +1,17 @@
+name: Develop Merge Webhook Alert
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord에 메시지 보내기 (develop 브랜치로 merge 됐을 때)
+        run: |
+          curl -X POST \
+          -H "Content-Type: application/json" \
+          -d "{\"content\": \":tada: '${{ github.event.pull_request.head.ref }}' 브랜치에서 develop 브랜치로 성공적으로 PR이 머지되었습니다!\n\n:bust_in_silhouette: 브랜치 작성자: ${{ github.event.pull_request.user.login }}\n:busts_in_silhouette: 머지한 사람: ${{ github.actor }}\n\n팀원 분들은 전부 Pull 받으세요~!!!\n```git pull origin develop```\"}" \
+          ${{secrets.DISCORD_WEBHOOK_DEV_MERGE_URL}}
