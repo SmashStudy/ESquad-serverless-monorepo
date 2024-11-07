@@ -3,11 +3,12 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.S3_BUCKET;
 
 module.exports.handler = async (event) => {
-  const { action, fileKey } = JSON.parse(event.body);
+  const { action, fileKey, contentType } = JSON.parse(event.body);
   const params = {
     Bucket: BUCKET_NAME,
     Key: fileKey,
-    Expires: 60 * 5, // Presigned URL 유효 시간 (5분)
+    Expires: 60 * 5,
+    ContentType: contentType,
   };
 
   let url;
