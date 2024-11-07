@@ -30,13 +30,13 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
-  const lambdaUrl = 'https://zlq2juurl2.execute-api.us-east-1.amazonaws.com/dev'
+  const lambdaUrl = 'https://zlq2juurl2.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
     // Fetch files metadata
     const fetchFiles = async () => {
       try {
-        const response = await axios.get(`${lambdaUrl}/files/metadata`, {
+        const response = await axios.get(`${lambdaUrl}/metadata`, {
           params: { targetId: studyId, targetType: 'STUDY_PAGE' }
         });
         setUploadedFiles(response.data);
@@ -56,12 +56,13 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     setIsUploading(true);
 
     try {
-      const token = localStorage.getItem('jwt');
+      // const token = localStorage.getItem('jwt');
+      const uniqueFileName = `${Date.now()}-${selectedFile.name}`; // 고유한 파일 이름 생성
 
       // 1. Presigned URL 요청
-      const presignedResponse = await axios.post(`${lambdaUrl}/files/presigned-url`, {
+      const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'putObject',
-        fileKey: selectedFile.name,
+        fileKey: uniqueFileName,
         contentType: selectedFile.type
       });
       const { presignedUrl } = presignedResponse.data;
@@ -72,7 +73,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
       });
 
       // 3. 파일 메타데이터 저장 요청
-      const metadataResponse = await axios.post(`${lambdaUrl}/files/metadata`, {
+      const metadataResponse = await axios.post(`${lambdaUrl}/metadata`, {
         targetId: studyId,
         targetType: 'STUDY_PAGE',
         userId: 123, // 예시 사용자 ID
@@ -80,12 +81,12 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
         extension: selectedFile.type.split('/').pop(),
         contentType: selectedFile.type,
         originalFileName: selectedFile.name,
-        storedFileName: `${Date.now()}-${selectedFile.name}`, // 고유 이름 생성
+        storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
         title: selectedFile.name,
         fileUrl: presignedUrl
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      },
+          // {headers: { Authorization: `Bearer ${token}` }}
+      );
 
       setUploadedFiles((prevFiles) => [...prevFiles, metadataResponse.data]);
       setSelectedFile(null);
@@ -96,9 +97,10 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
     }
   };
 
+
   const handleFileDelete = async (storedFileName) => {
     try {
-      await axios.delete(`${lambdaUrl}/files/${storedFileName}`);
+      await axios.delete(`${lambdaUrl}/${storedFileName}`);
       setUploadedFiles((prevFiles) =>
           prevFiles.filter((file) => file.storedFileName !== storedFileName)
       );
@@ -110,7 +112,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
   const handleFileDownload = async (storedFileName, originalFileName) => {
     try {
       // 1. Presigned URL 요청
-      const response = await axios.post(`${lambdaUrl}/files/presigned-url`, {
+      const response = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'getObject',
         fileKey: storedFileName,
       });
