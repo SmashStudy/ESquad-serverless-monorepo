@@ -1,16 +1,132 @@
-service: example-service
+service: storage-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  environment:
+    S3_BUCKET: ${env:S3_BUCKET}
+    GLUE_DATABASE: ${env:GLUE_DATABASE}
+    GLUE_CRAWLER: ${env:GLUE_CRAWLER}
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  generatePresignedUrl:
+    handler: service/generatePresignedUrl.handler
     events:
       - http:
-          path: test
+          path: files/presigned-url
+          method: post
+          cors: true
+  fetchFileMetadata:
+    handler: service/fetchFileMetadata.handler
+    events:
+      - http:
+          path: files/metadata
           method: get
           cors: true
+  deleteFile:
+    handler: service/deleteFile.handler
+    events:
+      - http:
+          path: files/{storedFileName}
+          method: delete
+          cors: true
 
+resources:
+  Resources:
+    GlueServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${env:GLUE_ROLE}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: glue.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: GlueS3AccessPolicy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "s3:GetObject"
+                    - "s3:PutObject"
+                    - "s3:DeleteObject"
+                  Resource:
+                    - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
+                    - "arn:aws:s3:::${env:S3_BUCKET}/athena-results/*"
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource: "*"
+
+    # Glue Database 생성
+    GlueDatabase:
+      Type: AWS::Glue::Database
+      Properties:
+        CatalogId: !Ref "AWS::AccountId"
+        DatabaseInput:
+          Name: ${env:GLUE_DATABASE}  # Glue Database 이름
+
+    # Glue Crawler 생성
+    GlueCrawler:
+      Type: AWS::Glue::Crawler
+      Properties:
+        Name: ${env:GLUE_CRAWLER}
+        Role: !GetAtt GlueServiceRole.Arn
+        DatabaseName: !Ref GlueDatabase
+        Targets:
+          S3Targets:
+            - Path: s3://${env:S3_BUCKET}/metadata/ # Glue가 스캔할 S3 경로
+        SchemaChangePolicy:
+          UpdateBehavior: UPDATE_IN_DATABASE
+          DeleteBehavior: DEPRECATE_IN_DATABASE
+
+    # S3 버킷 설정
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - DELETE
+                - POST
+
+    S3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${env:S3_BUCKET}
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:GLUE_ROLE} # Glue가 사용할 역할
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+                - "s3:DeleteObject"
+              Resource:
+                - "arn:aws:s3:::${env:S3_BUCKET}/*"
+            - Effect: Allow
+              Principal:
+                AWS: !GetAtt IamRoleLambdaExecution.Arn
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+              Resource:
+                - "arn:aws:s3:::${env:S3_BUCKET}/*"
+
+plugins:
+  - serverless-dotenv-plugin
