@@ -20,7 +20,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import bookProfileManAndSea from '../../../assets/book-profile-man-and-sea.jpg';
 import PropTypes from "prop-types";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
@@ -198,7 +197,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         <Box sx={{width: '100%', height: '20vh', overflowY: 'auto'}}>
           <Box
               component="img"
-              src={study.bookImage || bookProfileManAndSea}
+              src={study.bookImage || "https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg"}
               alt={study.title}
               sx={{width: '100%', objectFit: 'contain', mb: 2}}
           />
