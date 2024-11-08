@@ -3,7 +3,9 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 module.exports.handler = async (event) => {
-  const { targetId, targetType } = event.queryStringParameters || {};
+  const { targetId, targetType } = event.query || {};
+  // console.log(`event is ${JSON.stringify(event, null, 2 )}`);
+  // console.log(`targetId is ${targetId} and targetType is ${targetType}`);
 
   if (!targetId || !targetType) {
     return {

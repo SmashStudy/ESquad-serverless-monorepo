@@ -39,6 +39,9 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
         const response = await axios.get(`${lambdaUrl}/metadata`, {
           params: { targetId: studyId, targetType: 'STUDY_PAGE' }
         });
+        // console.log("API Response:", response);  // 응답 전체 확인
+        // console.log("Response Data:", response.data);  // 응답 본문만 확인
+
         const parsedData = JSON.parse(response.data.body)
         setUploadedFiles(parsedData);
       } catch (error) {
