@@ -3,12 +3,14 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 module.exports.handler = async (event) => {
-  const { storedFileName } = event.pathParameters;
+  console.log(`event is ${JSON.stringify(event, null, 2 )}`);
+
+  const {storedFileName} = event.path;
 
   try {
     const deleteParams = {
       TableName: TABLE_NAME,
-      Key: { id: storedFileName },
+      Key: { id: "files/"+storedFileName },
     };
 
     await dynamoDb.delete(deleteParams).promise();
