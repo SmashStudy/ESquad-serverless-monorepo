@@ -1,20 +1,20 @@
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
-const BUCKET_NAME = process.env.S3_BUCKET;
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const TABLE_NAME = process.env.METADATA_TABLE;
 
 module.exports.handler = async (event) => {
   try {
     const { fileKey, metadata } = event.body;
-    const metadataKey = `metadata/${fileKey}.json`;
 
     const params = {
-      Bucket: BUCKET_NAME,
-      Key: metadataKey,
-      Body: JSON.stringify(metadata),
-      ContentType: 'application/json',
+      TableName: TABLE_NAME,
+      Item: {
+        id: fileKey,
+        ...metadata,
+      },
     };
 
-    await s3.putObject(params).promise();
+    await dynamoDb.put(params).promise();
 
     return {
       statusCode: 200,

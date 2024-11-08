@@ -6,8 +6,19 @@ provider:
   region: ${env:REGION}
   environment:
     S3_BUCKET: ${env:S3_BUCKET}
-    GLUE_DATABASE: ${env:GLUE_DATABASE}
-    GLUE_CRAWLER: ${env:GLUE_CRAWLER}
+    METADATA_TABLE: ${env:METADATA_TABLE}
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Query
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/TargetIndex
 
 functions:
 
@@ -69,60 +80,31 @@ functions:
 
 resources:
   Resources:
-    GlueServiceRole:
-      Type: AWS::IAM::Role
+    MetadataTable:
+      Type: AWS::DynamoDB::Table
       Properties:
-        RoleName: ${env:GLUE_ROLE}
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: glue.amazonaws.com
-              Action: sts:AssumeRole
-        Policies:
-          - PolicyName: GlueS3AccessPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - "s3:GetObject"
-                    - "s3:PutObject"
-                    - "s3:DeleteObject"
-                  Resource:
-                    - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
-                    - "arn:aws:s3:::${env:S3_BUCKET}/athena-results/*"
-                - Effect: Allow
-                  Action:
-                    - "logs:CreateLogGroup"
-                    - "logs:CreateLogStream"
-                    - "logs:PutLogEvents"
-                  Resource: "*"
+        TableName: ${env:METADATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: targetId
+            AttributeType: S
+          - AttributeName: targetType
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: TargetIndex
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: targetType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
 
-    # Glue Database 생성
-    GlueDatabase:
-      Type: AWS::Glue::Database
-      Properties:
-        CatalogId: !Ref "AWS::AccountId"
-        DatabaseInput:
-          Name: ${env:GLUE_DATABASE}
-
-    # Glue Crawler 생성
-    GlueCrawler:
-      Type: AWS::Glue::Crawler
-      Properties:
-        Name: ${env:GLUE_CRAWLER}
-        Role: !GetAtt GlueServiceRole.Arn
-        DatabaseName: !Ref GlueDatabase
-        Targets:
-          S3Targets:
-            - Path: s3://${env:S3_BUCKET}/metadata/ # Glue가 스캔할 S3 경로
-        SchemaChangePolicy:
-          UpdateBehavior: UPDATE_IN_DATABASE
-          DeleteBehavior: DEPRECATE_IN_DATABASE
-
-    # S3 버킷 설정
     S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -147,22 +129,15 @@ resources:
           Statement:
             - Effect: Allow
               Principal:
-                AWS: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:GLUE_ROLE} # Glue가 사용할 역할
-              Action:
-                - "s3:GetObject"
-                - "s3:PutObject"
-                - "s3:DeleteObject"
-              Resource:
-                - "arn:aws:s3:::${env:S3_BUCKET}/*"
-            - Effect: Allow
-              Principal:
                 AWS: !GetAtt IamRoleLambdaExecution.Arn
               Action:
                 - "s3:GetObject"
                 - "s3:PutObject"
                 - "s3:DeleteObject"
               Resource:
-                - "arn:aws:s3:::${env:S3_BUCKET}/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/athena-results/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
 plugins:
   - serverless-dotenv-plugin
