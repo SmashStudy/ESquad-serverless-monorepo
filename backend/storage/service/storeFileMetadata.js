@@ -18,7 +18,7 @@ module.exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Metadata stored successfully' }),
+      body: JSON.stringify({ message: 'Metadata stored successfully', data: { id: fileKey, ...metadata } }),
     };
   } catch (error) {
     console.error('Error storing metadata:', error);
