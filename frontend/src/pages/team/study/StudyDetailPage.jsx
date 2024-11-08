@@ -139,13 +139,12 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
 
   const handleFileDownload = async (storedFileName, originalFileName) => {
     try {
-      // 1. Presigned URL 요청
-      const response = await axios.post(`${lambdaUrl}/presigned-url`, {
+      const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'getObject',
         fileKey: "files/"+storedFileName,
       });
 
-      const { presignedUrl } = response.data;
+      const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
 
       // 2. Presigned URL을 사용하여 파일 다운로드
       const downloadResponse = await axios.get(presignedUrl, { responseType: 'blob' });
