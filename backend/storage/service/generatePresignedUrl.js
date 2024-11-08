@@ -3,6 +3,7 @@ const s3 = new AWS.S3();
 const BUCKET_NAME = process.env.S3_BUCKET;
 
 module.exports.handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2 )}`);
   const { action, fileKey, contentType } = event.body;
   const params = {
     Bucket: BUCKET_NAME,
