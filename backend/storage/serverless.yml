@@ -1,16 +1,143 @@
-service: example-service
+service: storage-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  environment:
+    S3_BUCKET: ${env:S3_BUCKET}
+    METADATA_TABLE: ${env:METADATA_TABLE}
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Query
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/TargetIndex
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+
+  generatePresignedUrl:
+    handler: service/generatePresignedUrl.handler
     events:
       - http:
-          path: test
+          path: files/presigned-url
+          method: post
+          cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+
+  fetchFileMetadata:
+    handler: service/fetchFileMetadata.handler
+    events:
+      - http:
+          path: files/metadata
           method: get
           cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
+  deleteFile:
+    handler: service/deleteFile.handler
+    events:
+      - http:
+          path: files/{storedFileName}
+          method: delete
+          cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+
+  storeFileMetadata:
+    handler: service/storeFileMetadata.handler
+    events:
+      - http:
+          path: files/store-metadata
+          method: post
+          cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+
+resources:
+  Resources:
+    MetadataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:METADATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: targetId
+            AttributeType: S
+          - AttributeName: targetType
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: TargetIndex
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: targetType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - DELETE
+                - POST
+
+    S3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${env:S3_BUCKET}
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: !GetAtt IamRoleLambdaExecution.Arn
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+                - "s3:DeleteObject"
+              Resource:
+                - "arn:aws:s3:::${env:S3_BUCKET}/athena-results/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
+
+plugins:
+  - serverless-dotenv-plugin
