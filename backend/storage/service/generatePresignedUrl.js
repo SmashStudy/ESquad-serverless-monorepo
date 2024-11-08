@@ -16,6 +16,8 @@ module.exports.handler = async (event) => {
     url = await s3.getSignedUrlPromise('getObject', params);
   } else if (action === 'putObject') {
     url = await s3.getSignedUrlPromise('putObject', params);
+  } else if (action === 'deleteObject') {
+    url = await s3.getSignedUrlPromise('deleteObject', params);
   }
 
   return {
