@@ -30,7 +30,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
-  const lambdaUrl = 'https://zlq2juurl2.execute-api.us-east-1.amazonaws.com/dev/files'
+  const lambdaUrl = 'https://i6jmvlltoa.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
     // Fetch files metadata
@@ -39,7 +39,8 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
         const response = await axios.get(`${lambdaUrl}/metadata`, {
           params: { targetId: studyId, targetType: 'STUDY_PAGE' }
         });
-        setUploadedFiles(response.data);
+        const parsedData = JSON.parse(response.data.body)
+        setUploadedFiles(parsedData);
       } catch (error) {
         console.error('Failed to fetch files:', error);
       }
@@ -62,22 +63,10 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
       // 1. Presigned URL 요청
       const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'putObject',
-        fileKey: uniqueFileName,
+        fileKey: "files/"+uniqueFileName,
         contentType: selectedFile.type
       });
 
-      // if (presignedResponse && presignedResponse.data && presignedResponse.data.presignedUrl) {
-      //   const { presignedUrl } = presignedResponse.data;
-      //   console.log('Presigned URL:', presignedUrl);
-      //   console.log('Presigned URL:', presignedResponse.data.presignedUrl);
-      // } else {
-      //   console.error('Invalid response structure:', presignedResponse.data);
-      // }
-      // console.log('Presigned URL:', presignedResponse);
-      // console.log('Presigned URL:', presignedResponse.data);
-      // console.log('Presigned URL:', presignedResponse.data.presignedUrl);
-      // console.log(JSON.parse(presignedResponse.data.body).presignedUrl);
-      // const { presignedUrl } = presignedResponse.data;
       const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
 
       // 2. Presigned URL을 통한 파일 업로드
@@ -87,7 +76,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
 
       // 3. 파일 메타데이터 저장 요청
       const metadataResponse = await axios.post(`${lambdaUrl}/store-metadata`, {
-            fileKey: uniqueFileName,
+            fileKey: "files/"+uniqueFileName,
             metadata: { // metadata 필드 내에 필요한 정보들을 넣습니다.
               targetId: studyId,
               targetType: 'STUDY_PAGE',
@@ -97,18 +86,34 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
               contentType: selectedFile.type,
               originalFileName: selectedFile.name,
               storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
-              title: selectedFile.name,
+              createdAt: new Date().toISOString().slice(0, 16).replace("T", "-").replace(":", "-")
             }
 
       },
           // {headers: { Authorization: `Bearer ${token}` }}
       );
 
+      // console.log(metadataResponse);
+      // console.log(metadataResponse.data);
+      // console.log(metadataResponse.data.data);
+      // console.log(JSON.parse(metadataResponse.data.body).data);
       // console.log("test " + metadataResponse.data);
       // console.log("test " + JSON.stringify(metadataResponse.data, null, 2));
+      // const parsedBody = JSON.parse(metadataResponse.data.body).data;
+      // const newFileData = parsedBody.data;
+      // console.log("parsedBody + Data is : "+parsedBody);
+      // console.log("parsedBody + Data is : "+parsedBody.data);
+
+      const parsedBody = JSON.parse(metadataResponse.data.body);
+      // console.log("Parsed body is:", parsedBody);  // 여기서 parsedBody의 구조를 확인해 주세요.
+
+      const newFileData = parsedBody.data;  // data 속성 접근
+      // console.log("newFileData is:", newFileData);
 
 
-      setUploadedFiles((prevFiles) => [...prevFiles, metadataResponse.data]);
+      // setUploadedFiles((prevFiles) => [...prevFiles, JSON.parse(metadataResponse.data.body).data]);
+      setUploadedFiles((prevFiles) => Array.isArray(prevFiles) ? [...prevFiles, newFileData] : [newFileData]);
+
       setSelectedFile(null);
     } catch (error) {
       console.error('Failed to upload file:', error);
@@ -134,7 +139,7 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
       // 1. Presigned URL 요청
       const response = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'getObject',
-        fileKey: storedFileName,
+        fileKey: "files/"+storedFileName,
       });
 
       const { presignedUrl } = response.data;
@@ -256,11 +261,15 @@ StudyDetailPage.propTypes = {
   uploadedFiles: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
+        targetId: PropTypes.number.isRequired,
+        targetType: PropTypes.string.isRequired,
+        userId: PropTypes.number.isRequired,
+        fileSize: PropTypes.number.isRequired,
+        extension: PropTypes.string.isRequired,
+        contentType: PropTypes.string.isRequired,
         storedFileName: PropTypes.string.isRequired,
         originalFileName: PropTypes.string.isRequired,
-        userNickname: PropTypes.string.isRequired,
-        createdAt: PropTypes.string.isRequired,
-        fileSize: PropTypes.number.isRequired,
+        createdAt: PropTypes.string.isRequired
       })
   ).isRequired,
 };
