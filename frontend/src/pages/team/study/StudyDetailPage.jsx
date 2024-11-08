@@ -49,6 +49,33 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     fetchFiles();
   }, [studyId]);
 
+  const getFormattedDate = () => {
+    const now = new Date();
+
+    const koreanTime = new Date(now.setHours(now.getHours()));
+
+    // 원하는 포맷으로 변환
+    const year = koreanTime.getFullYear();
+    const month = String(koreanTime.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1 필요
+    const day = String(koreanTime.getDate()).padStart(2, '0');
+    const hours = String(koreanTime.getHours()).padStart(2, '0');
+    const minutes = String(koreanTime.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
+
+  const formatFileSize = (sizeInBytes) => {
+    if (sizeInBytes < 1024) {
+      return `${sizeInBytes} B`; // 바이트 단위
+    } else if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`; // KB 단위
+    } else if (sizeInBytes < 1024 * 1024 * 1024) {
+      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`; // MB 단위
+    } else {
+      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; // GB 단위
+    }
+  };
+
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -63,7 +90,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       // const token = localStorage.getItem('jwt');
       const uniqueFileName = `${Date.now()}-${selectedFile.name}`; // 고유한 파일 이름 생성
 
-      // 1. Presigned URL 요청
       const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'putObject',
         fileKey: "files/" + uniqueFileName,
@@ -72,12 +98,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
       const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
 
-      // 2. Presigned URL을 통한 파일 업로드
       await axios.put(presignedUrl, selectedFile, {
         headers: {'Content-Type': selectedFile.type}
       });
 
-      // 3. 파일 메타데이터 저장 요청
       const metadataResponse = await axios.post(`${lambdaUrl}/store-metadata`, {
             fileKey: "files/" + uniqueFileName,
             metadata: { // metadata 필드 내에 필요한 정보들을 넣습니다.
@@ -89,8 +113,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
               contentType: selectedFile.type,
               originalFileName: selectedFile.name,
               storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
-              createdAt: new Date().toISOString().slice(0, 16).replace("T",
-                  "-").replace(":", "-")
+              createdAt: getFormattedDate()
             }
 
           },
@@ -248,7 +271,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                         </ListItemIcon>
                         <ListItemText primary={file.originalFileName}/>
                         <ListItemText primary={file.createdAt}/>
-                        <ListItemText primary={file.fileSize}/>
+                        <ListItemText primary={formatFileSize(file.fileSize)}/>
 
                         <IconButton edge="end" aria-label="download"
                                     onClick={() => handleFileDownload(
