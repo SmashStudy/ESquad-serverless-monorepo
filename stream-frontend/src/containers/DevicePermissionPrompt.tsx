@@ -33,11 +33,11 @@ const DevicePermissionPrompt = () => {
           description={
             <>
               <p>
-                In order to select media devices, we need to do a quick
-                permissions check of your mic and camera.
+                미디어 장치를 선택하려면 다음을 수행해야 합니다 마이크 및
+                카메라의 권한 확인.
               </p>
               <p>
-                When the pop-up appears, choose <strong>Allow</strong>.
+                팝업이 나타나면 다음을 선택합니다 <strong>허용</strong>.
               </p>
             </>
           }
