@@ -13,4 +13,3 @@ functions:
           path: test
           method: get
           cors: true
-
