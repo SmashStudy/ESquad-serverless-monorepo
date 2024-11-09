@@ -1,6 +1,3 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
 import {
   useActiveSpeakersState,
   useAudioVideo,
@@ -8,25 +5,33 @@ import {
   useLocalVideo,
   useMeetingManager,
   useRosterState,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 import {
   AudioVideoObserver,
   VideoDownlinkObserver,
   VideoSource,
-} from 'amazon-chime-sdk-js';
-import React, { PropsWithChildren, createContext, useContext, useEffect, useReducer } from 'react';
-import { Layout } from '../../types';
-import { useAppState } from '../AppStateProvider';
+} from "amazon-chime-sdk-js";
+import React, {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
+import { Layout } from "../../types";
+import { useAppState } from "../AppStateProvider";
 import {
   Controls,
   initialState,
   reducer,
   State,
   VideoTileGridAction,
-} from './state';
+} from "./state";
 
 const VideoTileGridStateContext = createContext<State | undefined>(undefined);
-const VideoTileGridControlContext = createContext<Controls | undefined>(undefined);
+const VideoTileGridControlContext = createContext<Controls | undefined>(
+  undefined
+);
 
 const VideoTileGridProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { priorityBasedPolicy } = useAppState();
@@ -88,7 +93,8 @@ const VideoTileGridProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const observer: VideoDownlinkObserver = {
       tileWillBePausedByDownlinkPolicy: (tileId: number): void => {
-        const attendeeId = audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
+        const attendeeId = audioVideo.getVideoTile(tileId)?.state()
+          .boundAttendeeId;
         if (attendeeId) {
           dispatch({
             type: VideoTileGridAction.PauseVideoTile,
@@ -97,7 +103,8 @@ const VideoTileGridProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }
       },
       tileWillBeUnpausedByDownlinkPolicy: (tileId: number): void => {
-        const attendeeId = audioVideo.getVideoTile(tileId)?.state().boundAttendeeId;
+        const attendeeId = audioVideo.getVideoTile(tileId)?.state()
+          .boundAttendeeId;
         if (attendeeId) {
           dispatch({
             type: VideoTileGridAction.UnpauseVideoTile,
@@ -108,7 +115,7 @@ const VideoTileGridProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
 
     priorityBasedPolicy.addObserver(observer);
-    dispatch( {
+    dispatch({
       type: VideoTileGridAction.SetPriorityBasedPolicy,
       payload: { policy: priorityBasedPolicy },
     });
@@ -180,7 +187,7 @@ const useVideoTileGridState = (): State => {
 
   if (!state) {
     throw new Error(
-      'useVideoTileGridState must be used within a VideoTileGridProvider'
+      "useVideoTileGridState must be used within a VideoTileGridProvider"
     );
   }
 
@@ -191,9 +198,13 @@ const useVideoTileGridControl = (): Controls => {
 
   if (!context) {
     throw new Error(
-      'useVideoTileGridControl must be used within VideoTileGridProvider'
+      "useVideoTileGridControl must be used within VideoTileGridProvider"
     );
   }
   return context;
 };
-export { VideoTileGridProvider, useVideoTileGridState, useVideoTileGridControl };
+export {
+  VideoTileGridProvider,
+  useVideoTileGridState,
+  useVideoTileGridControl,
+};

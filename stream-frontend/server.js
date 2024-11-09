@@ -1,6 +1,3 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
 const express = require("express");
 const compression = require("compression");
 const { v4: uuidv4 } = require("uuid");

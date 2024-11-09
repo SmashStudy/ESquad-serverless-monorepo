@@ -1,26 +1,30 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React, { PropsWithChildren } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { AudioInputDevice, Device, VoiceFocusModelName, VoiceFocusTransformDevice } from 'amazon-chime-sdk-js';
+import React, { PropsWithChildren } from "react";
+import { Route, Routes } from "react-router-dom";
+import {
+  AudioInputDevice,
+  Device,
+  VoiceFocusModelName,
+  VoiceFocusTransformDevice,
+} from "amazon-chime-sdk-js";
 import {
   BackgroundBlurProvider,
   BackgroundReplacementProvider,
   MeetingProvider,
   useVoiceFocus,
   VoiceFocusProvider,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 
-import routes from '../../constants/routes';
-import { NavigationProvider } from '../../providers/NavigationProvider';
-import NoMeetingRedirect from '../NoMeetingRedirect';
-import { Meeting, Home, DeviceSetup } from '../../views';
-import MeetingEventObserver from '../MeetingEventObserver';
-import { useAppState } from '../../providers/AppStateProvider';
-import { VideoFiltersCpuUtilization } from '../../types';
+import routes from "../../constants/routes";
+import { NavigationProvider } from "../../providers/NavigationProvider";
+import NoMeetingRedirect from "../NoMeetingRedirect";
+import { Meeting, Home, DeviceSetup } from "../../views";
+import MeetingEventObserver from "../MeetingEventObserver";
+import { useAppState } from "../../providers/AppStateProvider";
+import { VideoFiltersCpuUtilization } from "../../types";
 
-const MeetingProviderWithDeviceReplacement: React.FC<PropsWithChildren> = ({ children }) => {
+const MeetingProviderWithDeviceReplacement: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   const { addVoiceFocus } = useVoiceFocus();
 
   const onDeviceReplacement = (
@@ -41,9 +45,15 @@ const MeetingProviderWithDeviceReplacement: React.FC<PropsWithChildren> = ({ chi
 };
 
 const MeetingProviderWrapper: React.FC = () => {
-  const { isWebAudioEnabled, videoTransformCpuUtilization, imageBlob, joinInfo } = useAppState();
+  const {
+    isWebAudioEnabled,
+    videoTransformCpuUtilization,
+    imageBlob,
+    joinInfo,
+  } = useAppState();
 
-  const isFilterEnabled = videoTransformCpuUtilization !== VideoFiltersCpuUtilization.Disabled;
+  const isFilterEnabled =
+    videoTransformCpuUtilization !== VideoFiltersCpuUtilization.Disabled;
 
   const getMeetingProviderWrapper = () => {
     return (
@@ -75,17 +85,20 @@ const MeetingProviderWrapper: React.FC = () => {
   };
 
   function voiceFocusName(name: string): VoiceFocusModelName {
-    if (name && ['default', 'ns_es'].includes(name)) {
+    if (name && ["default", "ns_es"].includes(name)) {
       return name as VoiceFocusModelName;
     }
-    return 'default';
+    return "default";
   }
 
   function getVoiceFocusSpecName(): VoiceFocusModelName {
-    if (joinInfo && joinInfo.Meeting?.MeetingFeatures?.Audio?.EchoReduction === 'AVAILABLE') {
-      return voiceFocusName('ns_es');
+    if (
+      joinInfo &&
+      joinInfo.Meeting?.MeetingFeatures?.Audio?.EchoReduction === "AVAILABLE"
+    ) {
+      return voiceFocusName("ns_es");
     }
-    return voiceFocusName('default');
+    return voiceFocusName("default");
   }
 
   const vfConfigValue = {
@@ -96,7 +109,9 @@ const MeetingProviderWrapper: React.FC = () => {
   const getMeetingProviderWrapperWithVF = (children: React.ReactNode) => {
     return (
       <VoiceFocusProvider {...vfConfigValue}>
-        <MeetingProviderWithDeviceReplacement>{children}</MeetingProviderWithDeviceReplacement>
+        <MeetingProviderWithDeviceReplacement>
+          {children}
+        </MeetingProviderWithDeviceReplacement>
       </VoiceFocusProvider>
     );
   };
@@ -106,10 +121,14 @@ const MeetingProviderWrapper: React.FC = () => {
     if (!filterCPUUtilization) {
       filterCPUUtilization = 40;
     }
-    console.log(`Using ${filterCPUUtilization} background blur and replacement`);
+    console.log(
+      `Using ${filterCPUUtilization} background blur and replacement`
+    );
     return (
       <BackgroundBlurProvider options={{ filterCPUUtilization }}>
-        <BackgroundReplacementProvider options={{ imageBlob, filterCPUUtilization }}>
+        <BackgroundReplacementProvider
+          options={{ imageBlob, filterCPUUtilization }}
+        >
           {children}
         </BackgroundReplacementProvider>
       </BackgroundBlurProvider>
@@ -134,7 +153,15 @@ const MeetingProviderWrapper: React.FC = () => {
     return children;
   };
 
-  return <>{imageBlob === undefined ? <div>Loading Assets</div> : getMeetingProviderWithFeatures()}</>;
+  return (
+    <>
+      {imageBlob === undefined ? (
+        <div>Loading Assets</div>
+      ) : (
+        getMeetingProviderWithFeatures()
+      )}
+    </>
+  );
 };
 
 const MeetingModeSelector: React.FC = () => {

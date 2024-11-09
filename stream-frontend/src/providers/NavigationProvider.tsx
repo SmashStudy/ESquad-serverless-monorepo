@@ -1,17 +1,14 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
 import React, {
   useState,
   useContext,
   useEffect,
   useRef,
   ReactNode,
-} from 'react';
-import { useLocation } from 'react-router-dom';
-import { useMeetingManager } from 'amazon-chime-sdk-component-library-react';
+} from "react";
+import { useLocation } from "react-router-dom";
+import { useMeetingManager } from "amazon-chime-sdk-component-library-react";
 
-import routes from '../constants/routes';
+import routes from "../constants/routes";
 
 export type NavigationContextType = {
   showNavbar: boolean;
@@ -71,8 +68,8 @@ const NavigationProvider = ({ children }: Props) => {
       }
     };
 
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
   }, []);
 
   const toggleRoster = (): void => {
@@ -125,7 +122,7 @@ const NavigationProvider = ({ children }: Props) => {
 const useNavigation = (): NavigationContextType => {
   const context = useContext(NavigationContext);
   if (!context) {
-    throw Error('Use useNavigation in NavigationProvider');
+    throw Error("Use useNavigation in NavigationProvider");
   }
   return context;
 };

@@ -1,8 +1,5 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ControlBarButton,
   Phone,
@@ -12,12 +9,12 @@ import {
   ModalButton,
   ModalButtonGroup,
   useLogger,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 
-import { endMeeting } from '../../utils/api';
-import { StyledP } from './Styled';
-import { useAppState } from '../../providers/AppStateProvider';
-import routes from '../../constants/routes';
+import { endMeeting } from "../../utils/api";
+import { StyledP } from "./Styled";
+import { useAppState } from "../../providers/AppStateProvider";
+import routes from "../../constants/routes";
 
 const EndMeetingControl: React.FC = () => {
   const logger = useLogger();
@@ -69,7 +66,12 @@ const EndMeetingControl: React.FC = () => {
                 label="Leave Meeting"
                 closesModal
               />,
-              <ModalButton key="cancel-meeting-ending" variant="secondary" label="Cancel" closesModal />,
+              <ModalButton
+                key="cancel-meeting-ending"
+                variant="secondary"
+                label="Cancel"
+                closesModal
+              />,
             ]}
           />
         </Modal>

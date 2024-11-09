@@ -1,7 +1,4 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyledSpinner = styled.dl`
   .spinner {
@@ -11,14 +8,12 @@ export const StyledSpinner = styled.dl`
   }
 
   @keyframes spin {
-  
     from {
       transform: rotate(0deg);
     }
-    
+
     to {
       transform: rotate(360deg);
     }
   }
 `;
-

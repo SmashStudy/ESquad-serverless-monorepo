@@ -1,16 +1,13 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from "react";
 import {
   useBackgroundReplacement,
   FormField,
   Select,
   useVideoInputs,
   useLogger,
-} from 'amazon-chime-sdk-component-library-react';
-import { createBlob } from '../../../utils/background-replacement';
-import { useAppState } from '../../../providers/AppStateProvider';
+} from "amazon-chime-sdk-component-library-react";
+import { createBlob } from "../../../utils/background-replacement";
+import { useAppState } from "../../../providers/AppStateProvider";
 
 interface Props {
   /* Title for the dropdown, defaults to `Background Replacement Dropdown` */
@@ -18,11 +15,18 @@ interface Props {
 }
 
 export const BackgroundReplacementDropdown: React.FC<Props> = ({
-  label = 'Background Replacement Dropdown',
+  label = "Background Replacement Dropdown",
 }) => {
   const { selectedDevice } = useVideoInputs();
-  const { backgroundReplacementOption, setBackgroundReplacementOption, replacementOptionsList } = useAppState();
-  const { isBackgroundReplacementSupported, changeBackgroundReplacementImage } = useBackgroundReplacement();
+  const {
+    backgroundReplacementOption,
+    setBackgroundReplacementOption,
+    replacementOptionsList,
+  } = useAppState();
+  const {
+    isBackgroundReplacementSupported,
+    changeBackgroundReplacementImage,
+  } = useBackgroundReplacement();
   const [isLoading, setIsLoading] = useState(false);
   const logger = useLogger();
 
@@ -36,14 +40,20 @@ export const BackgroundReplacementDropdown: React.FC<Props> = ({
     }
     try {
       setIsLoading(true);
-      const selectedOption = replacementOptionsList.find(option => selectReplacement === option.value);
+      const selectedOption = replacementOptionsList.find(
+        (option) => selectReplacement === option.value
+      );
       if (selectedOption) {
         const blob = await createBlob(selectedOption);
-        logger.info(`Video filter changed to Replacement - ${selectedOption.label}`);
+        logger.info(
+          `Video filter changed to Replacement - ${selectedOption.label}`
+        );
         await changeBackgroundReplacementImage(blob);
-        setBackgroundReplacementOption(selectedOption.label); 
+        setBackgroundReplacementOption(selectedOption.label);
       } else {
-        logger.error(`Error: Cannot find ${selectReplacement} in the replacementOptionsList: ${replacementOptionsList}`);
+        logger.error(
+          `Error: Cannot find ${selectReplacement} in the replacementOptionsList: ${replacementOptionsList}`
+        );
       }
     } catch (e) {
       logger.error(`Error trying to apply ${selectReplacement}: ${e}`);
@@ -54,16 +64,18 @@ export const BackgroundReplacementDropdown: React.FC<Props> = ({
 
   return (
     <>
-    {isBackgroundReplacementSupported ? (
-      <FormField
-        field={Select}
-        options={replacementOptionsList}
-        onChange={selectReplacement}
-        value={backgroundReplacementOption}
-        label={label}
-      />
-    ) : ''}
-  </>
+      {isBackgroundReplacementSupported ? (
+        <FormField
+          field={Select}
+          options={replacementOptionsList}
+          onChange={selectReplacement}
+          value={backgroundReplacementOption}
+          label={label}
+        />
+      ) : (
+        ""
+      )}
+    </>
   );
 };
 

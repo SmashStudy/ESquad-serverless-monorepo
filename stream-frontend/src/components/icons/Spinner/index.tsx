@@ -1,8 +1,5 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React from 'react';
-import { StyledSpinner } from './Styled';
+import React from "react";
+import { StyledSpinner } from "./Styled";
 
 const Spinner: React.FC = () => {
   return (
@@ -10,7 +7,7 @@ const Spinner: React.FC = () => {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        className='spinner'
+        className="spinner"
       >
         <g fill="none" fillRule="evenodd">
           <path d="M0 0H24V24H0z" />
@@ -82,4 +79,3 @@ const Spinner: React.FC = () => {
 };
 
 export default Spinner;
-

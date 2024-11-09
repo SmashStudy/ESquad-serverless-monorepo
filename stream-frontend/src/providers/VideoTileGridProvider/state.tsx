@@ -1,7 +1,7 @@
-import { RosterAttendeeType } from 'amazon-chime-sdk-component-library-react';
-import {VideoPriorityBasedPolicy, VideoSource} from 'amazon-chime-sdk-js';
-import { Layout } from '../../types';
-import { isContentShare, updateDownlinkPreferences } from './Utils';
+import { RosterAttendeeType } from "amazon-chime-sdk-component-library-react";
+import { VideoPriorityBasedPolicy, VideoSource } from "amazon-chime-sdk-js";
+import { Layout } from "../../types";
+import { isContentShare, updateDownlinkPreferences } from "./Utils";
 
 export interface GridState {
   layout: Layout;
@@ -75,7 +75,7 @@ type SetPriorityBasedPolicy = {
   payload: {
     policy: VideoPriorityBasedPolicy | undefined;
   };
-}
+};
 
 type UpdateVideoSources = {
   type: VideoTileGridAction.UpdateVideoSources;
@@ -155,7 +155,12 @@ export type Action =
   | ZoomOut;
 
 export function reducer(state: State, { type, payload }: Action): State {
-  const { gridState, attendeeStates, videoSourceState, priorityBasedPolicy } = state;
+  const {
+    gridState,
+    attendeeStates,
+    videoSourceState,
+    priorityBasedPolicy,
+  } = state;
 
   switch (type) {
     case VideoTileGridAction.UpdateAttendeeStates: {
@@ -170,7 +175,7 @@ export function reducer(state: State, { type, payload }: Action): State {
 
       // Add attendee that joined the meeting
       for (const attendeeId in roster) {
-        const name = roster[attendeeId]?.name || '';
+        const name = roster[attendeeId]?.name || "";
 
         if (attendeeId in attendeeStates) {
           attendeeStates[attendeeId].name = name;
@@ -198,24 +203,24 @@ export function reducer(state: State, { type, payload }: Action): State {
     }
 
     case VideoTileGridAction.UpdateVideoSources: {
-      const { videoSources, localAttendeeId } = payload as { videoSources: VideoSource[]; localAttendeeId: string | null };
+      const { videoSources, localAttendeeId } = payload as {
+        videoSources: VideoSource[];
+        localAttendeeId: string | null;
+      };
       const cameraSources: string[] = [];
       const videoSourceIdSet = new Set(
-        videoSources.map(videoSource => videoSource.attendee.attendeeId)
+        videoSources.map((videoSource) => videoSource.attendee.attendeeId)
       );
 
       for (const attendeeId in attendeeStates) {
-      // Reset the `videoEnabled` for all remote attendees
+        // Reset the `videoEnabled` for all remote attendees
         if (!localAttendeeId || attendeeId !== localAttendeeId) {
           attendeeStates[attendeeId].videoEnabled = false;
         }
 
         // Remove content share from attendeeStates,
         // if content share is not in video sources
-        if (
-          isContentShare(attendeeId) &&
-          !videoSourceIdSet.has(attendeeId)
-        ) {
+        if (isContentShare(attendeeId) && !videoSourceIdSet.has(attendeeId)) {
           delete attendeeStates[attendeeId];
         }
       }
@@ -226,13 +231,13 @@ export function reducer(state: State, { type, payload }: Action): State {
           if (isContentShare(attendeeId)) {
             attendeeStates[attendeeId] = {
               attendeeId,
-              name: 'content share',
+              name: "content share",
               bandwidthConstrained: false,
             } as AttendeeState;
           } else {
             attendeeStates[attendeeId] = {
               attendeeId,
-              name: '',
+              name: "",
               bandwidthConstrained: false,
             } as AttendeeState;
           }
@@ -258,12 +263,19 @@ export function reducer(state: State, { type, payload }: Action): State {
       // if this attendee close the camera while still active
       for (const attendeeId in videoSourceState.activeSpeakersWithCameraSource) {
         if (!attendeeStates[attendeeId]?.videoEnabled) {
-          videoSourceState.activeSpeakersWithCameraSource.filter(id => id !== attendeeId);
+          videoSourceState.activeSpeakersWithCameraSource.filter(
+            (id) => id !== attendeeId
+          );
         }
       }
 
       videoSourceState.cameraSources = cameraSources;
-      updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+      updateDownlinkPreferences(
+        gridState,
+        videoSourceState,
+        attendeeStates,
+        priorityBasedPolicy
+      );
 
       return {
         ...state,
@@ -287,7 +299,12 @@ export function reducer(state: State, { type, payload }: Action): State {
       }
 
       videoSourceState.activeSpeakersWithCameraSource = activeSpeakersWithCameraSource;
-      updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+      updateDownlinkPreferences(
+        gridState,
+        videoSourceState,
+        attendeeStates,
+        priorityBasedPolicy
+      );
 
       return {
         ...state,
@@ -311,7 +328,12 @@ export function reducer(state: State, { type, payload }: Action): State {
         attendeeStates[localAttendeeId].videoEnabled = isVideoEnabled;
       }
 
-      updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+      updateDownlinkPreferences(
+        gridState,
+        videoSourceState,
+        attendeeStates,
+        priorityBasedPolicy
+      );
 
       return {
         ...state,
@@ -323,7 +345,12 @@ export function reducer(state: State, { type, payload }: Action): State {
     case VideoTileGridAction.UpdateLayout: {
       const { layout } = payload;
       gridState.layout = layout;
-      updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+      updateDownlinkPreferences(
+        gridState,
+        videoSourceState,
+        attendeeStates,
+        priorityBasedPolicy
+      );
 
       return {
         ...state,
@@ -362,7 +389,12 @@ export function reducer(state: State, { type, payload }: Action): State {
 
       if (numberOfTiles > threshold) {
         gridState.isZoomed = true;
-        updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+        updateDownlinkPreferences(
+          gridState,
+          videoSourceState,
+          attendeeStates,
+          priorityBasedPolicy
+        );
       }
 
       return {
@@ -374,7 +406,12 @@ export function reducer(state: State, { type, payload }: Action): State {
     case VideoTileGridAction.ZoomOut: {
       if (gridState.isZoomed) {
         gridState.isZoomed = false;
-        updateDownlinkPreferences(gridState, videoSourceState, attendeeStates, priorityBasedPolicy);
+        updateDownlinkPreferences(
+          gridState,
+          videoSourceState,
+          attendeeStates,
+          priorityBasedPolicy
+        );
       }
 
       return {
@@ -383,7 +420,9 @@ export function reducer(state: State, { type, payload }: Action): State {
     }
 
     case VideoTileGridAction.SetPriorityBasedPolicy: {
-      const { policy } = payload as { policy: VideoPriorityBasedPolicy | undefined};
+      const { policy } = payload as {
+        policy: VideoPriorityBasedPolicy | undefined;
+      };
 
       return {
         ...state,
@@ -392,6 +431,6 @@ export function reducer(state: State, { type, payload }: Action): State {
     }
 
     default:
-      throw new Error('Incorrect type in VideoTileGridProvider');
+      throw new Error("Incorrect type in VideoTileGridProvider");
   }
 }

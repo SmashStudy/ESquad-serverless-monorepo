@@ -1,9 +1,10 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import { isVideoTransformDevice, VideoInputDevice, VideoTransformDevice } from 'amazon-chime-sdk-js';
-import React, { ReactNode, useEffect, useState } from 'react';
-import isEqual from 'lodash.isequal';
+import {
+  isVideoTransformDevice,
+  VideoInputDevice,
+  VideoTransformDevice,
+} from "amazon-chime-sdk-js";
+import React, { ReactNode, useEffect, useState } from "react";
+import isEqual from "lodash.isequal";
 import {
   useBackgroundBlur,
   useBackgroundReplacement,
@@ -18,47 +19,68 @@ import {
   useMeetingManager,
   isOptionActive,
   useLogger,
-} from 'amazon-chime-sdk-component-library-react';
-import { DeviceType } from '../../types';
-import useMemoCompare from '../../utils/use-memo-compare';
-import { VideoTransformOptions } from '../../types/index';
-import { createBlob } from '../../utils/background-replacement';
-import { useAppState } from '../../providers/AppStateProvider';
+} from "amazon-chime-sdk-component-library-react";
+import { DeviceType } from "../../types";
+import useMemoCompare from "../../utils/use-memo-compare";
+import { VideoTransformOptions } from "../../types/index";
+import { createBlob } from "../../utils/background-replacement";
+import { useAppState } from "../../providers/AppStateProvider";
 
 interface Props {
-  /** The label that will be shown for video input control, it defaults to `Video`. */
+  /** 비디오 입력 제어를 위해 표시되는 라벨은 기본적으로 '비디오'로 표시됩니다. */
   label?: string;
-  /** The label that will be shown for the background blur button, it defaults to 'Enable Background Blur'. */
+  /** 배경 흐림 버튼에 표시되는 라벨은 기본적으로 '배경 흐림 사용'으로 표시됩니다. */
   backgroundBlurLabel?: string;
-  /** The label that will be shown for the background replacement button, it defaults to 'Enable Background Replacement'. */
+  /** 배경 교체 버튼에 표시되는 라벨은 기본적으로 '배경 교체 활성화'로 표시됩니다. */
   backgroundReplacementLabel?: string;
 }
 
 const VideoInputTransformControl: React.FC<Props> = ({
-  label = 'Video',
-  backgroundBlurLabel = 'Enable Background Blur',
-  backgroundReplacementLabel = 'Enable Background Replacement',
+  label = "Video",
+  backgroundBlurLabel = "Enable Background Blur",
+  backgroundReplacementLabel = "Enable Background Replacement",
 }) => {
   const meetingManager = useMeetingManager();
   const logger = useLogger();
   const { devices, selectedDevice } = useVideoInputs();
   const { isVideoEnabled, toggleVideo } = useLocalVideo();
-  const { isBackgroundBlurSupported, createBackgroundBlurDevice } = useBackgroundBlur();
-  const { isBackgroundReplacementSupported, createBackgroundReplacementDevice, changeBackgroundReplacementImage, backgroundReplacementProcessor } = useBackgroundReplacement();
+  const {
+    isBackgroundBlurSupported,
+    createBackgroundBlurDevice,
+  } = useBackgroundBlur();
+  const {
+    isBackgroundReplacementSupported,
+    createBackgroundReplacementDevice,
+    changeBackgroundReplacementImage,
+    backgroundReplacementProcessor,
+  } = useBackgroundReplacement();
   const [isLoading, setIsLoading] = useState(false);
-  const [dropdownWithVideoTransformOptions, setDropdownWithVideoTransformOptions] = useState<ReactNode[] | null>(null);
-  const [activeVideoTransformOption, setActiveVideoTransformOption] = useState<string>(VideoTransformOptions.None);
-  const videoDevices: DeviceType[] = useMemoCompare(devices, (prev: DeviceType[] | undefined, next: DeviceType[] | undefined): boolean => isEqual(prev, next));
-  const { backgroundReplacementOption, setBackgroundReplacementOption, replacementOptionsList } = useAppState();
+  const [
+    dropdownWithVideoTransformOptions,
+    setDropdownWithVideoTransformOptions,
+  ] = useState<ReactNode[] | null>(null);
+  const [activeVideoTransformOption, setActiveVideoTransformOption] = useState<
+    string
+  >(VideoTransformOptions.None);
+  const videoDevices: DeviceType[] = useMemoCompare(
+    devices,
+    (prev: DeviceType[] | undefined, next: DeviceType[] | undefined): boolean =>
+      isEqual(prev, next)
+  );
+  const {
+    backgroundReplacementOption,
+    setBackgroundReplacementOption,
+    replacementOptionsList,
+  } = useAppState();
 
   useEffect(() => {
     resetDeviceToIntrinsic();
   }, []);
 
-  // Reset the video input to intrinsic if current video input is a transform device because this component
-  // does not know if blur or replacement was selected. This depends on how the demo is set up.
-  // TODO: use a hook in the appState to track whether blur or replacement was selected before this component mounts,
-  // or maintain the state of `activeVideoTransformOption` in `MeetingManager`.
+  // 현재 비디오 입력이 변환 장치인 경우 이 구성 요소로 인해 비디오 입력을 내재적으로 재설정합니다
+  // 블러 또는 교체가 선택되었는지 알 수 없습니다. 이는 데모가 설정되는 방식에 따라 달라집니다.
+  // TODO: AppState의 후크를 사용하여 이 구성 요소가 장착되기 전에 블러 또는 교체가 선택되었는지 추적합니다,
+  // 또는 '회의 관리자'에서 '액티브 비디오 변환 옵션' 상태를 유지합니다.
   const resetDeviceToIntrinsic = async () => {
     try {
       if (isVideoTransformDevice(selectedDevice)) {
@@ -66,11 +88,11 @@ const VideoInputTransformControl: React.FC<Props> = ({
         await meetingManager.selectVideoInputDevice(intrinsicDevice);
       }
     } catch (error) {
-      logger.error('Failed to reset Device to intrinsic device');
+      logger.error("Failed to reset Device to intrinsic device");
     }
   };
 
-  // Toggle background blur on/off.
+  // 배경 흐림 켜기/끄기 전환.
   const toggleBackgroundBlur = async () => {
     let current = selectedDevice;
     if (isLoading || current === undefined) {
@@ -80,39 +102,54 @@ const VideoInputTransformControl: React.FC<Props> = ({
       setIsLoading(true);
 
       if (!isVideoTransformDevice(current)) {
-        // Enable video transform on the default device.
-        current = await createBackgroundBlurDevice(current) as VideoTransformDevice;
-        logger.info(`Video filter turned on - selecting video transform device: ${JSON.stringify(current)}`);
+        // 기본 장치에서 비디오 변환 사용.
+        current = (await createBackgroundBlurDevice(
+          current
+        )) as VideoTransformDevice;
+        logger.info(
+          `Video filter turned on - selecting video transform device: ${JSON.stringify(
+            current
+          )}`
+        );
       } else {
-        // Switch back to intrinsicDevice.
+        // 내재적 장치로 다시 전환.
         const intrinsicDevice = await current.intrinsicDevice();
-        // Stop existing VideoTransformDevice.
+        // 기존 VideoTransform 장치 중지.
         await current.stop();
         current = intrinsicDevice;
-        // Switch to background blur device if old selection was background replacement otherwise switch to default intrinsic device.
+        // 오래된 선택이 배경 교체인 경우 배경 흐림 장치로 전환하거나 기본 고유 장치로 전환합니다.
         if (activeVideoTransformOption === VideoTransformOptions.Replacement) {
-          current = await createBackgroundBlurDevice(current) as VideoTransformDevice;
-          logger.info(`Video filter was turned on - video transform device: ${JSON.stringify(current)}`);
+          current = (await createBackgroundBlurDevice(
+            current
+          )) as VideoTransformDevice;
+          logger.info(
+            `Video filter was turned on - video transform device: ${JSON.stringify(
+              current
+            )}`
+          );
         } else {
-          logger.info(`Video filter was turned off - selecting inner device: ${JSON.stringify(current)}`);
+          logger.info(
+            `Video filter was turned off - selecting inner device: ${JSON.stringify(
+              current
+            )}`
+          );
         }
       }
 
       if (isVideoEnabled) {
-        // Use the new created video device as input.
+        // 새로 생성된 비디오 장치를 입력으로 사용합니다.
         await meetingManager.startVideoInputDevice(current);
       } else {
-        // Select the new created video device but don't start it.
+        // 새로 생성된 비디오 장치를 선택하지만 시작하지 않습니다.
         await meetingManager.selectVideoInputDevice(current);
       }
 
-      // Update the current selected transform.
+      // 현재 선택한 변환 업데이트.
       setActiveVideoTransformOption((activeVideoTransformOption) =>
         activeVideoTransformOption === VideoTransformOptions.Blur
           ? VideoTransformOptions.None
           : VideoTransformOptions.Blur
       );
-
     } catch (e) {
       logger.error(`Error trying to toggle background blur ${e}`);
     } finally {
@@ -128,39 +165,54 @@ const VideoInputTransformControl: React.FC<Props> = ({
     try {
       setIsLoading(true);
       if (!isVideoTransformDevice(current)) {
-        // Enable video transform on the non-transformed device.
-        current = await createBackgroundReplacementDevice(current) as VideoTransformDevice;
-        logger.info(`Video filter turned on - selecting video transform device: ${JSON.stringify(current)}`);
+        // 변환되지 않은 장치에서 비디오 변환 사용.
+        current = (await createBackgroundReplacementDevice(
+          current
+        )) as VideoTransformDevice;
+        logger.info(
+          `Video filter turned on - selecting video transform device: ${JSON.stringify(
+            current
+          )}`
+        );
       } else {
-        // Switch back to intrinsicDevice.
+        // 내재적 장치로 다시 전환.
         const intrinsicDevice = await current.intrinsicDevice();
-        // Stop existing VideoTransformDevice.
+        // 기존 VideoTransform 장치 중지.
         await current.stop();
         current = intrinsicDevice;
-        // Switch to background replacement device if old selection was background blur otherwise switch to default intrinsic device.
+        // 이전 선택이 배경 흐림인 경우 배경 교체 장치로 전환하거나 기본 고유 장치로 전환합니다.
         if (activeVideoTransformOption === VideoTransformOptions.Blur) {
-          current = await createBackgroundReplacementDevice(current) as VideoTransformDevice;
-          logger.info(`Video filter turned on - selecting video transform device: ${JSON.stringify(current)}`);
+          current = (await createBackgroundReplacementDevice(
+            current
+          )) as VideoTransformDevice;
+          logger.info(
+            `Video filter turned on - selecting video transform device: ${JSON.stringify(
+              current
+            )}`
+          );
         } else {
-          logger.info(`Video filter was turned off - selecting inner device: ${JSON.stringify(current)}`);
+          logger.info(
+            `Video filter was turned off - selecting inner device: ${JSON.stringify(
+              current
+            )}`
+          );
         }
       }
 
       if (isVideoEnabled) {
-        // Use the new created video device as input.
+        // 새로 생성된 비디오 장치를 입력으로 사용합니다.
         await meetingManager.startVideoInputDevice(current);
       } else {
-        // Select the new created video device but don't start it.
+        // 새로 생성된 비디오 장치를 선택하지만 시작하지 않습니다.
         await meetingManager.selectVideoInputDevice(current);
       }
 
-      // Update the current selected transform.
+      // 현재 선택한 변환 업데이트.
       setActiveVideoTransformOption((activeVideoTransformOption) =>
         activeVideoTransformOption === VideoTransformOptions.Replacement
           ? VideoTransformOptions.None
           : VideoTransformOptions.Replacement
       );
-
     } catch (e) {
       logger.error(`Error trying to toggle background replacement ${e}`);
     } finally {
@@ -168,24 +220,34 @@ const VideoInputTransformControl: React.FC<Props> = ({
     }
   };
 
-  const changeBackgroundReplacementOption = async (replacementOption: string) => {
+  const changeBackgroundReplacementOption = async (
+    replacementOption: string
+  ) => {
     let current = selectedDevice;
     if (isLoading || current === undefined) {
       return;
     }
     try {
       setIsLoading(true);
-      const selectedOption = replacementOptionsList.find(option => replacementOption === option.label);
+      const selectedOption = replacementOptionsList.find(
+        (option) => replacementOption === option.label
+      );
       if (selectedOption) {
         const blob = await createBlob(selectedOption);
-        logger.info(`Video filter changed to Replacement - ${selectedOption.label}`);
+        logger.info(
+          `Video filter changed to Replacement - ${selectedOption.label}`
+        );
         await changeBackgroundReplacementImage(blob);
-        setBackgroundReplacementOption(selectedOption.label); 
+        setBackgroundReplacementOption(selectedOption.label);
       } else {
-        logger.error(`Error: Cannot find ${replacementOption} in the replacementOptionsList: ${replacementOptionsList}`);
+        logger.error(
+          `Error: Cannot find ${replacementOption} in the replacementOptionsList: ${replacementOptionsList}`
+        );
       }
     } catch (error) {
-      logger.error(`Error trying to change background replacement image ${error}`);
+      logger.error(
+        `Error trying to change background replacement image ${error}`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -194,16 +256,16 @@ const VideoInputTransformControl: React.FC<Props> = ({
   useEffect(() => {
     const handleClick = async (deviceId: string): Promise<void> => {
       try {
-        // If background blur/replacement is on, then re-use the same video transform pipeline, but replace the inner device
-        // If background blur/replacement is not on, then do a normal video selection
+        // 배경 흐림/교체가 켜져 있는 경우 동일한 비디오 변환 파이프라인을 재사용하되 내부 장치를 교체합니다
+        // 배경 흐림/교체가 켜져 있지 않은 경우 일반 비디오 선택을 수행합니다
         let newDevice: VideoInputDevice = deviceId;
         if (isVideoTransformDevice(selectedDevice) && !isLoading) {
           setIsLoading(true);
-          if ('chooseNewInnerDevice' in selectedDevice) {
+          if ("chooseNewInnerDevice" in selectedDevice) {
             // @ts-ignore
             newDevice = selectedDevice.chooseNewInnerDevice(deviceId);
           } else {
-            logger.error('Transform device cannot choose new inner device');
+            logger.error("Transform device cannot choose new inner device");
             return;
           }
         }
@@ -213,24 +275,28 @@ const VideoInputTransformControl: React.FC<Props> = ({
           meetingManager.selectVideoInputDevice(newDevice);
         }
       } catch (error) {
-        logger.error('VideoInputTransformControl failed to select video input device');
+        logger.error(
+          "VideoInputTransformControl failed to select video input device"
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     const getDropdownWithVideoTransformOptions = async (): Promise<void> => {
-      const deviceOptions: ReactNode[] = await Promise.all(videoDevices.map(async (option) => (
-        <PopOverItem
-          key={option.deviceId}
-          checked={await isOptionActive(selectedDevice, option.deviceId)}
-          onClick={async () => await handleClick(option.deviceId)}
-        >
-          <span>{option.label}</span>
-        </PopOverItem>
-      )));
+      const deviceOptions: ReactNode[] = await Promise.all(
+        videoDevices.map(async (option) => (
+          <PopOverItem
+            key={option.deviceId}
+            checked={await isOptionActive(selectedDevice, option.deviceId)}
+            onClick={async () => await handleClick(option.deviceId)}
+          >
+            <span>{option.label}</span>
+          </PopOverItem>
+        ))
+      );
 
-      // Add 'Enable Background Blur' to the selection dropdown as an option if it's offered/supported.
+      // 선택 드롭다운에 '배경 블러 활성화'를 옵션으로 추가합니다(제공/지원되는 경우).
       if (isBackgroundBlurSupported) {
         const videoTransformOptions: ReactNode = (
           <PopOverItem
@@ -249,12 +315,14 @@ const VideoInputTransformControl: React.FC<Props> = ({
         deviceOptions.push(videoTransformOptions);
       }
 
-      // Add 'Enable Background Replacement' to the selection dropdown as an option if it's offered/supported.
+      // '배경 교체 활성화'가 제공/지원되는 경우 선택 드롭다운에 옵션으로 추가합니다.
       if (isBackgroundReplacementSupported) {
         const videoTransformOptions: ReactNode = (
           <PopOverItem
             key="backgroundReplacementFilter"
-            checked={activeVideoTransformOption === VideoTransformOptions.Replacement}
+            checked={
+              activeVideoTransformOption === VideoTransformOptions.Replacement
+            }
             disabled={isLoading}
             onClick={toggleBackgroundReplacement}
           >
@@ -268,7 +336,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
         deviceOptions.push(videoTransformOptions);
       }
 
-      // Add 'Select Background Replacement Filter' to the selection dropdown as an option if it's offered/supported.
+      // '배경 교체 필터 선택'이 제공/지원되는 경우 선택 드롭다운에 옵션으로 추가합니다.
       if (isBackgroundReplacementSupported && backgroundReplacementProcessor) {
         const replacementOptions: ReactNode = (
           <PopOverSubMenu
@@ -280,7 +348,9 @@ const VideoInputTransformControl: React.FC<Props> = ({
                 key={option.label}
                 checked={backgroundReplacementOption === option.label}
                 disabled={isLoading}
-                onClick={async () => await changeBackgroundReplacementOption(option.label)}
+                onClick={async () =>
+                  await changeBackgroundReplacementOption(option.label)
+                }
               >
                 <>
                   {isLoading && <Spinner width="1.5rem" height="1.5rem" />}

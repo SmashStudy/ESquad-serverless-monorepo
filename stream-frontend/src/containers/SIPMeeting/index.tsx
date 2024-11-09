@@ -1,23 +1,20 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React, { useState, useContext, FormEvent } from 'react';
+import React, { useState, useContext, FormEvent } from "react";
 import {
   Modal,
   ModalBody,
   ModalHeader,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 
-import Card from '../../components/Card';
-import SIPURI from '../SIPURI';
-import SIPMeetingForm from '../../components/SIPMeetingForm';
-import { getErrorContext } from '../../providers/ErrorProvider';
-import { useSIPMeetingManager } from '../../providers/SIPMeetingProvider';
+import Card from "../../components/Card";
+import SIPURI from "../SIPURI";
+import SIPMeetingForm from "../../components/SIPMeetingForm";
+import { getErrorContext } from "../../providers/ErrorProvider";
+import { useSIPMeetingManager } from "../../providers/SIPMeetingProvider";
 
 const SIPMeeting: React.FC = () => {
-  const [sipURI, setSipURI] = useState('');
-  const [meetingId, setMeetingId] = useState('');
-  const [voiceConnectorId, setVoiceConnectorId] = useState('');
+  const [sipURI, setSipURI] = useState("");
+  const [meetingId, setMeetingId] = useState("");
+  const [voiceConnectorId, setVoiceConnectorId] = useState("");
   const { errorMessage, updateErrorMessage } = useContext(getErrorContext());
   const sipMeetingManager = useSIPMeetingManager();
 
@@ -28,10 +25,10 @@ const SIPMeeting: React.FC = () => {
         meetingId,
         voiceConnectorId
       );
-      if (sipMeetingUri && typeof sipMeetingUri === 'string') {
+      if (sipMeetingUri && typeof sipMeetingUri === "string") {
         setSipURI(sipMeetingUri);
       } else {
-        updateErrorMessage('Could not generate SIPURI');
+        updateErrorMessage("Could not generate SIPURI");
       }
     } catch (error) {
       updateErrorMessage((error as Error).message);
@@ -39,7 +36,7 @@ const SIPMeeting: React.FC = () => {
   };
 
   const closeError = (): void => {
-    updateErrorMessage('');
+    updateErrorMessage("");
   };
 
   return (

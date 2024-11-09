@@ -22,7 +22,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "suppressImplicitAnyIndexErrors": true,
+    "suppressImplicitAnyIndexErrors": false,
     "baseUrl": ".",
     "paths": {
       "amazon-chime-sdk-js": ["./node_modules/amazon-chime-sdk-js"]

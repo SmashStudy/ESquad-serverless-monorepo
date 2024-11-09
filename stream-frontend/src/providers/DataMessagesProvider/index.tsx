@@ -1,16 +1,34 @@
-import { useAudioVideo, useMeetingManager } from 'amazon-chime-sdk-component-library-react';
-import { DataMessage } from 'amazon-chime-sdk-js';
-import React, { useEffect, useReducer, createContext, useContext, FC, useCallback, PropsWithChildren } from 'react';
-import { DATA_MESSAGE_LIFETIME_MS, DATA_MESSAGE_TOPIC } from '../../constants';
-import { useAppState } from '../AppStateProvider';
-import { DataMessagesActionType, initialState, ChatDataMessage, reducer } from './state';
+import {
+  useAudioVideo,
+  useMeetingManager,
+} from "amazon-chime-sdk-component-library-react";
+import { DataMessage } from "amazon-chime-sdk-js";
+import React, {
+  useEffect,
+  useReducer,
+  createContext,
+  useContext,
+  FC,
+  useCallback,
+  PropsWithChildren,
+} from "react";
+import { DATA_MESSAGE_LIFETIME_MS, DATA_MESSAGE_TOPIC } from "../../constants";
+import { useAppState } from "../AppStateProvider";
+import {
+  DataMessagesActionType,
+  initialState,
+  ChatDataMessage,
+  reducer,
+} from "./state";
 
 interface DataMessagesStateContextType {
   sendMessage: (message: string) => void;
   messages: ChatDataMessage[];
 }
 
-const DataMessagesStateContext = createContext<DataMessagesStateContextType | undefined>(undefined);
+const DataMessagesStateContext = createContext<
+  DataMessagesStateContextType | undefined
+>(undefined);
 
 export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
   const { localUserName } = useAppState();
@@ -22,7 +40,10 @@ export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
     if (!audioVideo) {
       return;
     }
-    audioVideo.realtimeSubscribeToReceiveDataMessage(DATA_MESSAGE_TOPIC, handler);
+    audioVideo.realtimeSubscribeToReceiveDataMessage(
+      DATA_MESSAGE_TOPIC,
+      handler
+    );
     return () => {
       audioVideo.realtimeUnsubscribeFromReceiveDataMessage(DATA_MESSAGE_TOPIC);
     };
@@ -32,7 +53,8 @@ export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
     (dataMessage: DataMessage) => {
       if (!dataMessage.throttled) {
         const isSelf =
-          dataMessage.senderAttendeeId === meetingManager.meetingSession?.configuration.credentials?.attendeeId;
+          dataMessage.senderAttendeeId ===
+          meetingManager.meetingSession?.configuration.credentials?.attendeeId;
         if (isSelf) {
           dispatch({
             type: DataMessagesActionType.ADD,
@@ -58,7 +80,7 @@ export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         }
       } else {
-        console.warn('DataMessage is throttled. Please resend');
+        console.warn("DataMessage is throttled. Please resend");
       }
     },
     [meetingManager]
@@ -76,8 +98,13 @@ export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
         return;
       }
       const payload = { message, senderName: localUserName };
-      const senderAttendeeId = meetingManager.meetingSession.configuration.credentials.attendeeId;
-      audioVideo.realtimeSendDataMessage(DATA_MESSAGE_TOPIC, payload, DATA_MESSAGE_LIFETIME_MS);
+      const senderAttendeeId =
+        meetingManager.meetingSession.configuration.credentials.attendeeId;
+      audioVideo.realtimeSendDataMessage(
+        DATA_MESSAGE_TOPIC,
+        payload,
+        DATA_MESSAGE_LIFETIME_MS
+      );
       handler(
         new DataMessage(
           Date.now(),
@@ -95,7 +122,11 @@ export const DataMessagesProvider: FC<PropsWithChildren> = ({ children }) => {
     sendMessage,
     messages: state.messages,
   };
-  return <DataMessagesStateContext.Provider value={value}>{children}</DataMessagesStateContext.Provider>;
+  return (
+    <DataMessagesStateContext.Provider value={value}>
+      {children}
+    </DataMessagesStateContext.Provider>
+  );
 };
 
 export const useDataMessages = (): {
@@ -106,7 +137,7 @@ export const useDataMessages = (): {
   const context = useContext(DataMessagesStateContext);
   if (!meetingManager || !context) {
     throw new Error(
-      'Use useDataMessages hook inside DataMessagesProvider. Wrap DataMessagesProvider under MeetingProvider.'
+      "Use useDataMessages hook inside DataMessagesProvider. Wrap DataMessagesProvider under MeetingProvider."
     );
   }
   return context;

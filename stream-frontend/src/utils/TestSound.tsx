@@ -1,10 +1,7 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
 import {
   DefaultAudioMixController,
   TimeoutScheduler,
-} from 'amazon-chime-sdk-js';
+} from "amazon-chime-sdk-js";
 
 class TestSound {
   constructor(
@@ -15,7 +12,13 @@ class TestSound {
     maxGainValue = 0.1
   ) {
     // @ts-ignore
-    const audioContext: AudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // const audioContext: AudioContext = new (window.AudioContext ||
+    //   window.webkitAudioContext)();
+    const audioContext: AudioContext =
+      window.AudioContext || (window as any).webkitAudioContext
+        ? new (window.AudioContext || (window as any).webkitAudioContext)()
+        : null;
+
     const gainNode = audioContext.createGain();
     gainNode.gain.value = 0;
     const oscillatorNode = audioContext.createOscillator();
@@ -39,12 +42,12 @@ class TestSound {
     const audioMixController = new DefaultAudioMixController();
 
     const handlingBindingAsynchronous = async () => {
-      if ('setSinkId' in HTMLAudioElement.prototype) {
+      if ("setSinkId" in HTMLAudioElement.prototype) {
         try {
           // @ts-ignore
           await audioMixController.bindAudioDevice({ deviceId: sinkId });
         } catch (e) {
-          console.error('Failed to bind audio device', e);
+          console.error("Failed to bind audio device", e);
         }
       }
 
@@ -52,7 +55,7 @@ class TestSound {
         // @ts-ignore
         await audioMixController.bindAudioElement(new Audio());
       } catch (e) {
-        console.error('Failed to bind audio element', e);
+        console.error("Failed to bind audio element", e);
       }
     };
 

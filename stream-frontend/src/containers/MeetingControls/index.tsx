@@ -1,7 +1,4 @@
-// Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React from 'react';
+import React from "react";
 import {
   ControlBar,
   AudioInputVFControl,
@@ -12,20 +9,21 @@ import {
   useUserActivityState,
   Dots,
   VideoInputControl,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 
-import EndMeetingControl from '../EndMeetingControl';
-import { useNavigation } from '../../providers/NavigationProvider';
-import { StyledControls } from './Styled';
-import { useAppState } from '../../providers/AppStateProvider';
-import { VideoFiltersCpuUtilization } from '../../types';
-import VideoInputTransformControl from '../../components/MeetingControls/VideoInputTransformControl';
+import EndMeetingControl from "../EndMeetingControl";
+import { useNavigation } from "../../providers/NavigationProvider";
+import { StyledControls } from "./Styled";
+import { useAppState } from "../../providers/AppStateProvider";
+import { VideoFiltersCpuUtilization } from "../../types";
+import VideoInputTransformControl from "../../components/MeetingControls/VideoInputTransformControl";
 
 const MeetingControls: React.FC = () => {
   const { toggleNavbar, closeRoster, showRoster } = useNavigation();
   const { isUserActive } = useUserActivityState();
   const { isWebAudioEnabled, videoTransformCpuUtilization } = useAppState();
-  const videoTransformsEnabled = videoTransformCpuUtilization !== VideoFiltersCpuUtilization.Disabled;
+  const videoTransformsEnabled =
+    videoTransformCpuUtilization !== VideoFiltersCpuUtilization.Disabled;
 
   const handleToggle = (): void => {
     if (showRoster) {
@@ -47,8 +45,12 @@ const MeetingControls: React.FC = () => {
           onClick={handleToggle}
           label="Menu"
         />
-        { isWebAudioEnabled ? <AudioInputVFControl /> :  <AudioInputControl /> }
-        { videoTransformsEnabled ? <VideoInputTransformControl /> : <VideoInputControl/> }
+        {isWebAudioEnabled ? <AudioInputVFControl /> : <AudioInputControl />}
+        {videoTransformsEnabled ? (
+          <VideoInputTransformControl />
+        ) : (
+          <VideoInputControl />
+        )}
         <ContentShareControl />
         <AudioOutputControl />
         <EndMeetingControl />

@@ -1,25 +1,22 @@
-// Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: MIT-0
-
-import React from 'react';
+import React from "react";
 
 import {
   useMediaStreamMetrics,
   useAudioVideo,
   PopOverHeader,
-} from 'amazon-chime-sdk-component-library-react';
+} from "amazon-chime-sdk-component-library-react";
 
-import MediaStatsList from '../../components/MediaStatsList/index';
-import MetricItem from '../../components/MediaStatsList/MetricItem';
-import { StyledMediaMetricsWrapper } from '../../components/MediaStatsList/Styled';
+import MediaStatsList from "../../components/MediaStatsList/index";
+import MetricItem from "../../components/MediaStatsList/MetricItem";
+import { StyledMediaMetricsWrapper } from "../../components/MediaStatsList/Styled";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isValidMetric(metric: any) {
-  return typeof metric === 'number' && !Number.isNaN(metric);
+  return typeof metric === "number" && !Number.isNaN(metric);
 }
 
 interface Props {
-  /** The Chime attendee ID */
+  /** Chime 참석자 ID */
   attendeeId: string;
 }
 
@@ -34,110 +31,110 @@ export const VideoStreamMetrics: React.FC<Props> = ({ attendeeId }) => {
     <StyledMediaMetricsWrapper>
       {showMetric && (
         <>
-          <PopOverHeader title={'Video Statistics'} />
+          <PopOverHeader title={"Video Statistics"} />
           <MediaStatsList>
             <MetricItem
               metricName="Bit rate (kbps)"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(streamMetric[ssrc].videoDownstreamBitrate)
                   ? Math.trunc(
-                    streamMetric[ssrc].videoDownstreamBitrate / 1000
-                  ).toString()
-                  : '';
+                      streamMetric[ssrc].videoDownstreamBitrate / 1000
+                    ).toString()
+                  : "";
               })}
             />
             <MetricItem
               metricName="Packet Loss"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoDownstreamPacketLossPercent
                 )
                   ? Math.trunc(
-                    streamMetric[ssrc].videoDownstreamPacketLossPercent
-                  ).toString()
-                  : '';
+                      streamMetric[ssrc].videoDownstreamPacketLossPercent
+                    ).toString()
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Rate"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoDownstreamFramesDecodedPerSecond
                 )
                   ? streamMetric[
-                    ssrc
-                  ].videoDownstreamFramesDecodedPerSecond.toString()
-                  : '';
+                      ssrc
+                    ].videoDownstreamFramesDecodedPerSecond.toString()
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Height"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoDownstreamFrameHeight
                 )
                   ? streamMetric[ssrc].videoDownstreamFrameHeight.toString()
-                  : '';
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Width"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoDownstreamFrameWidth
                 )
                   ? streamMetric[ssrc].videoDownstreamFrameWidth.toString()
-                  : '';
+                  : "";
               })}
             />
             <MetricItem
               metricName="Bit rate (kbps)"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(streamMetric[ssrc].videoUpstreamBitrate)
                   ? Math.trunc(
-                    streamMetric[ssrc].videoUpstreamBitrate / 1000
-                  ).toString()
-                  : '';
+                      streamMetric[ssrc].videoUpstreamBitrate / 1000
+                    ).toString()
+                  : "";
               })}
             />
             <MetricItem
               metricName="Packets Sent"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoUpstreamPacketsSent
                 )
                   ? streamMetric[ssrc].videoUpstreamPacketsSent.toString()
-                  : '';
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Rate"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoUpstreamFramesEncodedPerSecond
                 )
                   ? streamMetric[
-                    ssrc
-                  ].videoUpstreamFramesEncodedPerSecond.toString()
-                  : '';
+                      ssrc
+                    ].videoUpstreamFramesEncodedPerSecond.toString()
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Height"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(
                   streamMetric[ssrc].videoUpstreamFrameHeight
                 )
                   ? streamMetric[ssrc].videoUpstreamFrameHeight.toString()
-                  : '';
+                  : "";
               })}
             />
             <MetricItem
               metricName="Frame Width"
-              metricValues={ssrcArray.map(ssrc => {
+              metricValues={ssrcArray.map((ssrc) => {
                 return isValidMetric(streamMetric[ssrc].videoUpstreamFrameWidth)
                   ? streamMetric[ssrc].videoUpstreamFrameWidth.toString()
-                  : '';
+                  : "";
               })}
             />
           </MediaStatsList>

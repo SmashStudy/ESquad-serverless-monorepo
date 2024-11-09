@@ -4,16 +4,16 @@ import {
   VideoPreference,
   VideoPreferences,
   VideoPriorityBasedPolicy,
-} from 'amazon-chime-sdk-js';
-import { Layout } from '../../types';
-import { AttendeeState, GridState, VideoSourceState } from './state';
+} from "amazon-chime-sdk-js";
+import { Layout } from "../../types";
+import { AttendeeState, GridState, VideoSourceState } from "./state";
 
 type VideoSourceWithType = { attendeeId: string; type: VideoSourceType };
 
 enum VideoSourceType {
-  CONTENT_SHARE = 'contentShare',
-  ACTIVE_SPEAKER = 'activeSpeaker',
-  OTHER = 'other',
+  CONTENT_SHARE = "contentShare",
+  ACTIVE_SPEAKER = "activeSpeaker",
+  OTHER = "other",
 }
 
 export const isContentShare = (sourceId: string): boolean =>
@@ -46,7 +46,6 @@ export const calculateVideoSourcesToBeRendered = (
   let maximumNumberOfActiveSpeakers = 0;
 
   if (activeSpeakersWithCameraSource.length > 0) {
-
     if (layout === Layout.Gallery) {
       maximumNumberOfActiveSpeakers = 1;
     }
@@ -55,22 +54,22 @@ export const calculateVideoSourcesToBeRendered = (
         4 - (hasLocalVideo ? 1 : 0) - (contentShareId ? 1 : 0);
     }
 
-    activeSpeakers = activeSpeakersWithCameraSource.slice(0, maximumNumberOfActiveSpeakers);
+    activeSpeakers = activeSpeakersWithCameraSource.slice(
+      0,
+      maximumNumberOfActiveSpeakers
+    );
 
     videoSources.push(
-      ...activeSpeakers.map(attendeeId => ({
+      ...activeSpeakers.map((attendeeId) => ({
         attendeeId,
         type: VideoSourceType.ACTIVE_SPEAKER,
       }))
     );
 
-    commonSources = cameraSources.filter(
-      id => !activeSpeakers.includes(id)
-    );
+    commonSources = cameraSources.filter((id) => !activeSpeakers.includes(id));
   } else {
     commonSources = cameraSources;
   }
-
 
   // Last, add common video sources
   let gridSize = 0;
@@ -87,12 +86,16 @@ export const calculateVideoSourcesToBeRendered = (
     gridSize = 4;
   }
 
-  const numberOfAvailableTiles = gridSize - (hasLocalVideo ? 1 : 0) - (contentShareId ? 1 : 0) - activeSpeakers.length;
+  const numberOfAvailableTiles =
+    gridSize -
+    (hasLocalVideo ? 1 : 0) -
+    (contentShareId ? 1 : 0) -
+    activeSpeakers.length;
 
   videoSources.push(
     ...commonSources
       .slice(0, numberOfAvailableTiles)
-      .map(attendeeId => ({ attendeeId, type: VideoSourceType.OTHER }))
+      .map((attendeeId) => ({ attendeeId, type: VideoSourceType.OTHER }))
   );
 
   return videoSources;
@@ -104,7 +107,6 @@ export const updateDownlinkPreferences = (
   attendeeStates: { [attendeeId: string]: AttendeeState },
   priorityBasedPolicy: VideoPriorityBasedPolicy | undefined
 ): void => {
-
   if (!priorityBasedPolicy) {
     return;
   }
