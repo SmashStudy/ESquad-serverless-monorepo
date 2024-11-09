@@ -19,12 +19,12 @@ const DevicePermissionControl = (props: { deviceLabels: DeviceLabels }) => {
 
   const label =
     props.deviceLabels === DeviceLabels.AudioAndVideo
-      ? "Device"
+      ? "장치"
       : props.deviceLabels === DeviceLabels.Audio
-      ? "Audio"
+      ? "오디오"
       : props.deviceLabels === DeviceLabels.Video
-      ? "Video"
-      : "None";
+      ? "비디오"
+      : "없음";
 
   const icon =
     props.deviceLabels === DeviceLabels.AudioAndVideo ? (

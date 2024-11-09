@@ -38,11 +38,11 @@ const MeetingJoinDetails = () => {
     <>
       <Flex container alignItems="center" flexDirection="column">
         <PrimaryButton
-          label={isLoading ? "Loading..." : "Join meeting"}
+          label={isLoading ? "로딩중..." : "회의 참여하기"}
           onClick={handleJoinMeeting}
         />
         <Label style={{ margin: ".75rem 0 0 0" }}>
-          Joining meeting <b>{meetingId}</b> as <b>{localUserName}</b>
+          회의 참여 <b>{meetingId}</b> as <b>{localUserName}</b>
         </Label>
       </Flex>
       {error && (

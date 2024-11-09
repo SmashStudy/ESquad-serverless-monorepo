@@ -22,7 +22,7 @@ const SpeakerDevices = () => {
   return (
     <div>
       <SpeakerSelection onChange={handleChange} />
-      <SecondaryButton label="Test speakers" onClick={handleTestSpeaker} />
+      <SecondaryButton label="스피커 테스트" onClick={handleTestSpeaker} />
     </div>
   );
 };

@@ -16,21 +16,21 @@ const MeetingDetails = () => {
     <Flex container layout="fill-space-centered">
       <Flex mb="2rem" mr={{ md: "2rem" }} px="1rem">
         <Heading level={4} tag="h1" mb={2}>
-          Meeting information
+          회의 정보
         </Heading>
         <StyledList>
           <div>
-            <dt>Meeting ID</dt>
+            <dt>회의 ID</dt>
             <dd>{meetingId}</dd>
           </div>
           <div>
-            <dt>Hosted region</dt>
+            <dt>호스트의 리전</dt>
             <dd>{region}</dd>
           </div>
         </StyledList>
         <PrimaryButton
           mt={4}
-          label={theme === "light" ? "Dark mode" : "Light mode"}
+          label={theme === "light" ? "어두운 모드" : "밝은 모드"}
           onClick={toggleTheme}
         ></PrimaryButton>
       </Flex>

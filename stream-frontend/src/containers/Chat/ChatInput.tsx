@@ -28,7 +28,7 @@ export default function ChatInput() {
         value={message}
         onChange={handleMessageChange}
         onKeyPress={handleKeyPress}
-        placeholder="Message all attendees"
+        placeholder="대기 중인 메시지"
       />
     </StyledChatInputContainer>
   );

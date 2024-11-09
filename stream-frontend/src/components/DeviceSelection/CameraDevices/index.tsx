@@ -20,7 +20,7 @@ const CameraDevices = () => {
   return (
     <div>
       <Heading tag="h2" level={6} css={title}>
-        Video
+        비디오
       </Heading>
       <StyledInputGroup>
         <CameraSelection />
@@ -43,7 +43,7 @@ const CameraDevices = () => {
         ""
       )}
       <Label style={{ display: "block", marginBottom: ".5rem" }}>
-        Video preview
+        비디오 미리보기
       </Label>
       <PreviewVideo />
     </div>

@@ -8,7 +8,7 @@ const MicrophoneActivityPreview = () => {
   return (
     <StyledPreviewGroup>
       <Label style={{ display: "block", marginBottom: ".5rem" }}>
-        Microphone activity
+        마이크 활동
       </Label>
       <MicrophoneActivityPreviewBar />
     </StyledPreviewGroup>

@@ -11,7 +11,7 @@ const MicrophoneDevices = () => {
   return (
     <div>
       <Heading tag="h2" level={6} css={title}>
-        Audio
+        오디오
       </Heading>
       <MicSelection />
       <MicrophoneActivityPreview />

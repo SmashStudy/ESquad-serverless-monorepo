@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const VideoTransformDropdown: React.FC<Props> = ({
-  label = "Video Transform Dropdown",
+  label = "비디오 변환 드롭다운",
 }) => {
   const [transformOption, setTransformOption] = useState(
     VideoTransformOptions.None
@@ -58,7 +58,7 @@ export const VideoTransformDropdown: React.FC<Props> = ({
       value:
         isBackgroundBlurSupported === undefined ||
         isBackgroundBlurSupported === false
-          ? "Background Blur not supported"
+          ? "배경 블러 지원되지 않음"
           : VideoTransformOptions.Blur,
     },
     {
@@ -66,7 +66,7 @@ export const VideoTransformDropdown: React.FC<Props> = ({
       value:
         isBackgroundReplacementSupported === undefined ||
         isBackgroundReplacementSupported === false
-          ? "Background Replacement not supported"
+          ? "백그라운드 교체가 지원되지 않음"
           : VideoTransformOptions.Replacement,
     },
   ];
@@ -109,7 +109,7 @@ export const VideoTransformDropdown: React.FC<Props> = ({
       // 현재 선택한 변환 업데이트.
       setTransformOption(selectedTransform);
     } catch (e) {
-      console.error("Error trying to apply", selectTransform, e);
+      console.error("적용 시도 중 오류 발생", selectTransform, e);
     } finally {
       setIsLoading(false);
     }
