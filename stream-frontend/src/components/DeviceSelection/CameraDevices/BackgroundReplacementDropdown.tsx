@@ -10,7 +10,7 @@ import { createBlob } from "../../../utils/background-replacement";
 import { useAppState } from "../../../providers/AppStateProvider";
 
 interface Props {
-  /* Title for the dropdown, defaults to `Background Replacement Dropdown` */
+  /* 드롭다운 제목, 기본값은 '배경 교체 드롭다운'입니다 */
   label?: string;
 }
 
@@ -30,7 +30,7 @@ export const BackgroundReplacementDropdown: React.FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false);
   const logger = useLogger();
 
-  // Creates a image blob on the selections (Blue, Beach) and changes the background image.
+  // 선택 항목(파란색, 해변)에 이미지 얼룩을 만들고 배경 이미지를 변경합니다.
   const selectReplacement = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectReplacement = e.target.value;
     let currentDevice = selectedDevice;
