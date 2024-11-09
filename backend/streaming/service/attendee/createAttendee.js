@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: "us-east-1" });
-const { uuid } = require("./utils");
+const { uuid } = require("./utils/utils");
 const { putAttendee } = require("./attendeeService");
 
 module.exports.createAttendee = async (title, meetingInfo) => {

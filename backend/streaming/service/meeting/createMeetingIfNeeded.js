@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const chimeSDKMeetings = new AWS.ChimeSDKMeetings({ region: "us-east-1" });
-const { uuid } = require("./utils");
+const { uuid } = require("../utils/utils");
 const { getMeeting, putMeeting } = require("./meetingService");
 
 const getNotificationsConfig = () => {

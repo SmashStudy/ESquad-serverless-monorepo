@@ -1,5 +1,5 @@
 const { createMeetingIfNeeded, createAttendee } = require("./chimeService");
-const { uuid } = require("./utils");
+const { uuid } = require("./utils/utils");
 
 module.exports.join = async (event) => {
   const response = {
