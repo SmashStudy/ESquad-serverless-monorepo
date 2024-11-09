@@ -1,5 +1,42 @@
-.idea
+# 환경 설정 파일
 .env
-.serverless
-*node_modules
-*dist
+.env.local
+.env.*.local
+
+# IDE 및 에디터 설정 파일
+.idea/
+.vscode/
+*.suo
+*.DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log
+yarn-debug.log*
+
+# Serverless Framework 관련
+.serverless/
+.aws-sam/
+
+# 로그 및 디버그 파일
+logs/
+*.log
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# 빌드 및 배포 파일
+dist/              # 빌드 출력 디렉토리
+build/             # 빌드 출력 디렉토리
+out/               # 빌드 출력 디렉토리
+tmp/               # 임시 파일
+
+# AWS 설정 파일 (민감 정보)
+.aws/              # AWS CLI 및 SDK 설정 폴더
+
+# 백업 파일
+*.bak
+*.swp              # Vim 임시 파일
