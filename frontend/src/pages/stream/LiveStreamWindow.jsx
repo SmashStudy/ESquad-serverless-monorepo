@@ -1,12 +1,16 @@
 import React from "react";
-import { CardActions, Button } from "@mui/material"; // MUI 컴포넌트 import
+import { CardActions, Button } from "@mui/material";
 
 const LiveStreamWindow = ({ username, studyId }) => {
   const handleStreamingButtonClick = (e) => {
     // 이벤트 전파 방지
     e.stopPropagation();
-    const popupUrl = `https://localhost:9000/studyId=${studyId}?name=${encodeURIComponent(username)}`;
-    window.open(popupUrl, "_blank", "width=800,height=600");
+
+    // URL을 정상적인 형식으로 수정
+    const popupUrl = `https://localhost:9000/?studyId=${studyId}&name=${encodeURIComponent(username)}`;
+
+    // 팝업을 열고 URL 파라미터를 전달
+    window.open(popupUrl, "_blank", "width=1024,height=768,scrollbars=yes,resizable=yes");
   };
 
   return (
