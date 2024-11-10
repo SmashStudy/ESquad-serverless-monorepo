@@ -11,7 +11,7 @@ export default function Chat() {
   return (
     <StyledChat className="chat">
       <StyledTitle>
-        <div className="ch-title">Chat</div>
+        <div className="ch-title">채팅</div>
         <div className="close-button">
           <IconButton icon={<Remove />} label="Close" onClick={toggleChat} />
         </div>

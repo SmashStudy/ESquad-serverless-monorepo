@@ -32,7 +32,7 @@ const MeetingStatusNotifier: React.FC = () => {
         setStatus('connecting');
         dispatch({
           type: ActionType.ADD,
-          payload: getMeetingStatusPayload('Meeting connecting...', Severity.INFO),
+          payload: getMeetingStatusPayload('회의 연결중...', Severity.INFO),
         });
         break;
       case MeetingStatus.Succeeded:
@@ -40,12 +40,12 @@ const MeetingStatusNotifier: React.FC = () => {
         if (status === 'reconnecting') {
           dispatch({
             type: ActionType.ADD,
-            payload: getMeetingStatusPayload('Meeting reconnected', Severity.SUCCESS),
+            payload: getMeetingStatusPayload('회의가 다시 연결됨', Severity.SUCCESS),
           });
         } else {
           dispatch({
             type: ActionType.ADD,
-            payload: getMeetingStatusPayload('Meeting connected', Severity.SUCCESS),
+            payload: getMeetingStatusPayload('회의 연결됨', Severity.SUCCESS),
           });
         }
         break;
@@ -53,7 +53,7 @@ const MeetingStatusNotifier: React.FC = () => {
         setStatus('reconnecting');
         dispatch({
           type: ActionType.ADD,
-          payload: getMeetingStatusPayload('Meeting reconnecting...', Severity.WARNING),
+          payload: getMeetingStatusPayload('회의 다시 연결중...', Severity.WARNING),
         });
         break;
       case MeetingStatus.Failed:
@@ -61,7 +61,7 @@ const MeetingStatusNotifier: React.FC = () => {
         dispatch({
           type: ActionType.ADD,
           payload: getMeetingStatusPayload(
-            'Meeting failed even after reconnection attempts, redirecting to home',
+            '재연결 시도 후에도 회의가 실패하여 홈으로 리디렉션되었습니다',
             Severity.ERROR
           ),
         });
@@ -72,7 +72,7 @@ const MeetingStatusNotifier: React.FC = () => {
         dispatch({
           type: ActionType.ADD,
           payload: getMeetingStatusPayload(
-            'Meeting will not reconnect due to fatal failure, redirecting to home',
+            '치명적인 실패로 인해 회의가 다시 연결되지 않고 홈으로 리디렉션됩니다',
             Severity.ERROR
           ),
         });
