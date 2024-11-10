@@ -56,7 +56,7 @@ module.exports = {
   ],
   devServer: {
     proxy: {
-      context: ["/join", "/attendee", "/end", "/logs"],
+      context: ["/api/stream/join", "/api/stream/attendee", "/api/stream/end", "/api/stream/logs"],
       target: "http://127.0.0.1:8080",
     },
     historyApiFallback: {

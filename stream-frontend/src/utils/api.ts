@@ -37,7 +37,7 @@ export async function createMeetingAndAttendee(
     ns_es: String(echoReductionCapability),
   };
 
-  const res = await fetch(BASE_URL + "join", {
+  const res = await fetch(BASE_URL + "api/stream/join", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export async function getAttendee(
   };
 
   const res = await fetch(
-    BASE_URL + "attendee?" + new URLSearchParams(params),
+    BASE_URL + "api/stream/attendee?" + new URLSearchParams(params),
     {
       method: "GET",
     }
@@ -86,7 +86,7 @@ export async function endMeeting(title: string): Promise<void> {
     title: encodeURIComponent(title),
   };
 
-  const res = await fetch(BASE_URL + "end", {
+  const res = await fetch(BASE_URL + "api/stream/end", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
