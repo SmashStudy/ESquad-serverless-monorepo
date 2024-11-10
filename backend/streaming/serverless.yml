@@ -24,11 +24,11 @@ provider:
 
 functions:
   joinMeeting:
-    handler: service/meetingController.join
+    handler: service/controllers/join.join
     role: !GetAtt ChimeSdkJoinLambdaRole.Arn
     events:
       - http:
-          path: /join
+          path: /api/stream/join
           method: post
           cors: true
           integration: lambda
@@ -39,11 +39,11 @@ functions:
               Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   endMeeting:
-    handler: service/meetingController.end
+    handler: service/controllers/end.end
     role: !GetAtt ChimeSdkEndLambdaRole.Arn
     events:
       - http:
-          path: /end
+          path: /api/stream/end
           method: post
           cors: true
           integration: lambda
@@ -54,11 +54,11 @@ functions:
               Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   getAttendee:
-    handler: service/attendeeController.attendee
+    handler: service/controllers/attendee.attendee
     role: !GetAtt ChimeSdkAttendeeLambdaRole.Arn
     events:
       - http:
-          path: /attendee
+          path: /api/stream/attendee
           method: get
           cors: true
           integration: lambda
