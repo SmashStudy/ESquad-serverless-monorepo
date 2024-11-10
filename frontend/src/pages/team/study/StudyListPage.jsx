@@ -176,7 +176,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                 {/*</Box>*/}
               </CardContent>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <LiveStreamWindow username={userInfo.username} />{" "}
+                <LiveStreamWindow username={userInfo.username} studyId={study.id}/>{" "}
               </CardActions>
             </Card>
           </Grid>
