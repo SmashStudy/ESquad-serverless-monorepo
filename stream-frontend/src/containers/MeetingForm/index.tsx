@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Checkbox,
@@ -84,6 +84,21 @@ const MeetingForm: React.FC = () => {
   const navigate = useNavigate();
   const browserBehavior = new DefaultBrowserBehavior();
 
+  // URL에서 studyId와 name 추출
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const studyId = queryParams.get("studyId");
+    const name = queryParams.get("name");
+
+    if (studyId) {
+      setMeetingId(studyId);
+    }
+
+    if (name) {
+      setLocalUserName(name);
+    }
+  }, [setMeetingId, setLocalUserName]);
+
   const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = meetingId.trim().toLocaleLowerCase();
@@ -160,8 +175,6 @@ const MeetingForm: React.FC = () => {
 
   const closeError = (): void => {
     updateErrorMessage("");
-    setMeetingId("");
-    setLocalUserName("");
     setIsLoading(false);
   };
 
@@ -178,6 +191,7 @@ const MeetingForm: React.FC = () => {
         fieldProps={{
           name: "meetingId",
           placeholder: "회의 ID를 입력해주세요",
+          disabled: true, // 회의 ID 변경 불가
         }}
         errorText="올바른 회의 ID를 입력해주세요"
         error={meetingErr}
@@ -195,6 +209,7 @@ const MeetingForm: React.FC = () => {
         fieldProps={{
           name: "name",
           placeholder: "닉네임을 입력해주세요",
+          disabled: true, // 닉네임 변경 불가
         }}
         errorText="올바른 닉네임을 입력해주세요"
         error={nameErr}
@@ -227,7 +242,6 @@ const MeetingForm: React.FC = () => {
         onChange={toggleWebAudio}
         infoText="음성 포커스를 사용하도록 웹 오디오 활성화"
       />
-      {/* Amazon Chime Echo Reduction is a premium feature, please refer to the Pricing page for details.*/}
       {isWebAudioEnabled && (
         <FormField
           field={Checkbox}
@@ -238,8 +252,6 @@ const MeetingForm: React.FC = () => {
           infoText="에코 감소 사용(새 미팅만 해당)"
         />
       )}
-      {/* BlurSelection */}
-      {/* Background Video Transform Selections */}
       <FormField
         field={Select}
         options={VIDEO_TRANSFORM_FILTER_OPTIONS}
@@ -249,7 +261,6 @@ const MeetingForm: React.FC = () => {
         value={videoTransformCpuUtilization}
         label="백그라운드 필터 CPU 사용률"
       />
-      {/* Video uplink and downlink policies */}
       {browserBehavior.isSimulcastSupported() && (
         <FormField
           field={Checkbox}
@@ -259,7 +270,6 @@ const MeetingForm: React.FC = () => {
           onChange={toggleSimulcast}
         />
       )}
-
       {browserBehavior.supportDownlinkBandwidthEstimation() && (
         <FormField
           field={Checkbox}
@@ -284,16 +294,8 @@ const MeetingForm: React.FC = () => {
         onChange={toggleMeetingJoinDeviceSelection}
         infoText="회의에 성공적으로 참여하려면 장치를 수동으로 선택하세요"
       />
-      <Flex
-        container
-        layout="fill-space-centered"
-        style={{ marginTop: "2.5rem" }}
-      >
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <PrimaryButton label="계속" onClick={handleJoinMeeting} />
-        )}
+      <Flex container layout="fill-space-centered" style={{ marginTop: "2.5rem" }}>
+        {isLoading ? <Spinner /> : <PrimaryButton label="계속" onClick={handleJoinMeeting} />}
       </Flex>
       {errorMessage && (
         <Modal size="md" onClose={closeError}>
