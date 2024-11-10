@@ -1,19 +1,25 @@
 import React from "react";
+import { CardActions, Button } from "@mui/material"; // MUI 컴포넌트 import
 
 const LiveStreamWindow = ({ username }) => {
   const handleStreamingButtonClick = (e) => {
     // 이벤트 전파 방지
     e.stopPropagation();
-    const popupUrl = `https://webrtc.store/esquad?name=${encodeURIComponent(
-      username
-    )}`;
+    const popupUrl = `https://webrtc.store/esquad?name=${encodeURIComponent(username)}`;
     window.open(popupUrl, "_blank", "width=800,height=600");
   };
 
   return (
-    <div>
-      <button onClick={handleStreamingButtonClick}>스트리밍</button>
-    </div>
+    <CardActions sx={{ justifyContent: 'flex-end' }}>
+      <Button
+        variant="outlined"
+        size="small"
+        sx={{ color: (theme) => theme.palette.primary.main }}
+        onClick={handleStreamingButtonClick}
+      >
+        스트리밍
+      </Button>
+    </CardActions>
   );
 };
 
