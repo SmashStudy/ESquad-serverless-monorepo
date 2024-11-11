@@ -268,8 +268,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                         <ListItemIcon>
                           <AttachFileIcon/>
                         </ListItemIcon>
+                        <Typography variant="body2" color="textSecondary">
+                          파일명:
+                        </Typography>
                         <ListItemText primary={file.originalFileName}/>
+                        <Typography variant="body2" color="textSecondary">
+                          게시일:
+                        </Typography>
                         <ListItemText primary={file.createdAt}/>
+                        <Typography variant="body2" color="textSecondary">
+                          파일 크기:
+                        </Typography>
                         <ListItemText primary={formatFileSize(file.fileSize)}/>
 
                         <IconButton edge="end" aria-label="download"
