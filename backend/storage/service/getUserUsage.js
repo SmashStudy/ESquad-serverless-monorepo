@@ -4,22 +4,21 @@ const TABLE_NAME = process.env.METADATA_TABLE;
 
 module.exports.handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2 )}`);
-  const { targetId, targetType } = event.query || {};
+  const { userId } = event.query || {};
 
-  if (!targetId || !targetType) {
+  if (!userId) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Please provide both targetId and targetType.' }),
+      body: JSON.stringify({ error: 'Please provide userId' }),
     };
   }
 
   const params = {
     TableName: TABLE_NAME,
-    IndexName: 'FetchFileIndex', // 인덱스 생성 후 사용
-    KeyConditionExpression: 'targetId = :targetId and targetType = :targetType',
+    IndexName: 'UserUsageIndex', // 인덱스 생성 후 사용
+    KeyConditionExpression: 'userId = :userId',
     ExpressionAttributeValues: {
-      ':targetId': targetId,
-      ':targetType': targetType,
+      ':userId': userId,
     },
   };
 
