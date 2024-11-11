@@ -79,6 +79,19 @@ functions:
               Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
+  getUserUsage:
+    handler: service/getUserUsage.handler
+    events:
+      - http:
+          path: files/get-user-usage
+          method: get
+          cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
 resources:
   Resources:
