@@ -345,7 +345,13 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             )}
 
             {/* Sort Criteria Selection */}
-            <Box sx={{mb: 2, display:'flex', gap: 1, alignItems:'center', justifyContent: 'flex-end'}}>
+            <Box sx={{
+              mb: 2,
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              justifyContent: 'flex-end'
+            }}>
 
               <FormControl variant="outlined" sx={{minWidth: 80}}
                            size={'small'}>
@@ -393,16 +399,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                           justifyContent: 'space-between',
                           width: '100%'
                         }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Box sx={{display: 'flex', alignItems: 'center'}}>
                             <ListItemIcon>
-                              <AttachFileIcon />
+                              <AttachFileIcon/>
                             </ListItemIcon>
-                            <Typography variant="body2" color="textPrimary" sx={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              maxWidth: '600px'
-                            }}>
+                            <Typography variant="body1" color="textPrimary"
+                                        sx={{
+                                          whiteSpace: 'nowrap',
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          maxWidth: '600px'
+                                        }}>
                               {file.originalFileName}
                             </Typography>
                           </Box>
@@ -416,33 +423,42 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                           width: '100%',
                           mt: 1
                         }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                          <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 2
+                          }}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
+                              <Typography variant="body2" color="textSecondary"
+                                          sx={{mr: 1}}>
                                 파일 유형:
                               </Typography>
                               <Typography variant="body2" color="textPrimary">
                                 {file.extension}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
+                              <Typography variant="body2" color="textSecondary"
+                                          sx={{mr: 1}}>
                                 게시자:
                               </Typography>
                               <Typography variant="body2" color="textPrimary">
                                 {file.userId}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
+                              <Typography variant="body2" color="textSecondary"
+                                          sx={{mr: 1}}>
                                 게시일:
                               </Typography>
                               <Typography variant="body2" color="textPrimary">
                                 {file.createdAt}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
+                              <Typography variant="body2" color="textSecondary"
+                                          sx={{mr: 1}}>
                                 파일 크기:
                               </Typography>
                               <Typography variant="body2" color="textPrimary">
@@ -450,14 +466,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                               </Typography>
                             </Box>
                           </Box>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Box sx={{display: 'flex', gap: 1}}>
                             <IconButton edge="end" aria-label="download"
-                                        onClick={() => handleFileDownload(file.storedFileName, file.originalFileName)}>
-                              <DownloadIcon />
+                                        onClick={() => handleFileDownload(
+                                            file.storedFileName,
+                                            file.originalFileName)}>
+                              <DownloadIcon/>
                             </IconButton>
                             <IconButton edge="end" aria-label="delete"
-                                        onClick={() => handleFileDelete(file.storedFileName)}>
-                              <DeleteIcon />
+                                        onClick={() => handleFileDelete(
+                                            file.storedFileName)}>
+                              <DeleteIcon/>
                             </IconButton>
                           </Box>
                         </Box>
