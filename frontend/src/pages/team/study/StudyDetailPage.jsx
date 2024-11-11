@@ -303,34 +303,60 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             <List>
               {uploadedFiles && uploadedFiles.length > 0 ? (
                   uploadedFiles.map((file) => (
-                      <ListItem key={file.id}>
-                        <ListItemIcon>
-                          <AttachFileIcon/>
-                        </ListItemIcon>
-                        <Typography variant="body2" color="textSecondary">
-                          파일명:
-                        </Typography>
-                        <ListItemText primary={file.originalFileName}/>
-                        <Typography variant="body2" color="textSecondary">
-                          게시일:
-                        </Typography>
-                        <ListItemText primary={file.createdAt}/>
-                        <Typography variant="body2" color="textSecondary">
-                          파일 크기:
-                        </Typography>
-                        <ListItemText primary={formatFileSize(file.fileSize)}/>
+                      <ListItem key={file.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap' }}>
 
-                        <IconButton edge="end" aria-label="download"
-                                    onClick={() => handleFileDownload(
-                                        file.storedFileName,
-                                        file.originalFileName)}>
-                          <DownloadIcon/>
-                        </IconButton>
-                        <IconButton edge="end" aria-label="delete"
-                                    onClick={() => handleFileDelete(
-                                        file.storedFileName)}>
-                          <DeleteIcon/>
-                        </IconButton>
+                        {/* 파일명 */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', flex: 3, minWidth: '200px' }}>
+                          <ListItemIcon>
+                            <AttachFileIcon />
+                          </ListItemIcon>
+                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            파일명:
+                          </Typography>
+                          <Typography variant="body2" color="textPrimary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                            {file.originalFileName}
+                          </Typography>
+                        </Box>
+
+                        {/* 확장자명 */}
+                        <Box sx={{ flex: 1, minWidth: '150px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
+                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            파일 확장자:
+                          </Typography>
+                          <Typography variant="body2" color="textPrimary">
+                            {file.extension}
+                          </Typography>
+                        </Box>
+
+                        {/* 게시일 */}
+                        <Box sx={{ flex: 1, minWidth: '180px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
+                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            게시일:
+                          </Typography>
+                          <Typography variant="body2" color="textPrimary">
+                            {file.createdAt}
+                          </Typography>
+                        </Box>
+
+                        {/* 파일 크기 */}
+                        <Box sx={{ flex: 1, minWidth: '150px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
+                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                            파일 크기:
+                          </Typography>
+                          <Typography variant="body2" color="textPrimary">
+                            {formatFileSize(file.fileSize)}
+                          </Typography>
+                        </Box>
+
+                        {/* 다운로드 및 삭제 버튼 */}
+                        <Box sx={{ flex: '0 0 auto', display: 'flex', gap: 1 }}>
+                          <IconButton edge="end" aria-label="download" onClick={() => handleFileDownload(file.storedFileName, file.originalFileName)}>
+                            <DownloadIcon />
+                          </IconButton>
+                          <IconButton edge="end" aria-label="delete" onClick={() => handleFileDelete(file.storedFileName)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
                       </ListItem>
                   ))
               ) : (
@@ -339,6 +365,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                   </Typography>
               )}
             </List>
+
           </AccordionDetails>
         </Accordion>
 
