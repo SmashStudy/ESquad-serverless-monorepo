@@ -12,6 +12,8 @@ import {
   IconButton,
   Divider,
   Button,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import {useLocation, useParams} from "react-router-dom";
 import axios from 'axios';
@@ -20,6 +22,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+
 import PropTypes from "prop-types";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
@@ -29,6 +32,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState();
+  const [snackbar, setSnackbar] = useState(
+      {open: false, message: '', severity: 'success'})
   const lambdaUrl = 'https://i6jmvlltoa.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
@@ -42,11 +47,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         const parsedData = JSON.parse(response.data.body)
         setUploadedFiles(parsedData);
       } catch (error) {
+        setSnackbar(
+            {severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true})
         console.error('Failed to fetch files:', error);
       }
     };
     fetchFiles();
   }, [studyId]);
+
+  const handleSnackbarClose = () => {
+    setSnackbar({...snackbar, open: false});
+  }
 
   const getFormattedDate = () => {
     const now = new Date();
@@ -84,6 +95,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       return;
     }
     setIsUploading(true);
+    setSnackbar({severity: 'info', message: '파일 업로드 중...', open: true})
 
     try {
       // const token = localStorage.getItem('jwt');
@@ -119,7 +131,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           // {headers: { Authorization: `Bearer ${token}` }}
       );
 
-
       const parsedBody = JSON.parse(metadataResponse.data.body);
 
       const newFileData = parsedBody.data;  // data 속성 접근
@@ -129,8 +140,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
               : [newFileData]);
 
       setSelectedFile(null);
+      setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true})
     } catch (error) {
       console.error('Failed to upload file:', error);
+      setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true})
     } finally {
       setIsUploading(false);
     }
@@ -138,6 +151,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
   const handleFileDelete = async (storedFileName) => {
     try {
+      setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true})
+
       const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'deleteObject',
         fileKey: "files/" + storedFileName,
@@ -151,13 +166,18 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setUploadedFiles((prevFiles) => // 리스트업 돼있는 UI에서 삭제
           prevFiles.filter((file) => file.storedFileName !== storedFileName)
       );
+
+      setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true})
     } catch (error) {
+
+      setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true})
       console.error('Failed to delete file:', error);
     }
   };
 
   const handleFileDownload = async (storedFileName, originalFileName) => {
     try {
+      setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true})
       const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
         action: 'getObject',
         fileKey: "files/" + storedFileName,
@@ -180,7 +200,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
+
+      setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'})
     } catch (error) {
+      setSnackbar({severity: 'fail', message: '파일 다운로드 실패', open: true})
       console.error('Failed to download file:', error);
     }
   };
@@ -190,6 +213,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         border: '1px solid',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'center',
         mb: 3,
         p: 2,
         gap: 2
@@ -197,12 +221,26 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         <Box sx={{width: '100%', height: '20vh', overflowY: 'auto'}}>
           <Box
               component="img"
-              src={study.bookImage || "https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg"}
+              src={study.bookImage
+                  || "https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg"}
               alt={study.title}
               sx={{width: '100%', objectFit: 'contain', mb: 2}}
           />
         </Box>
         <Divider sx={{borderBottom: '1px solid #ddd'}}/>
+        {/* Snackbar Component for Notifications */}
+        <Snackbar
+            open={snackbar.open}
+            autoHideDuration={3000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{vertical: 'center', horizontal: 'center'}}
+        >
+          <Alert variant='filled' onClose={handleSnackbarClose}
+                 severity={snackbar.severity}
+                 sx={{width: '100%'}}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
 
         {/* Study Data Section */}
         <Box sx={{my: 4}}>
@@ -213,6 +251,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             {study.members}
           </Typography>
         </Box>
+
 
         {/* Attachments Section */}
         <Accordion>
@@ -302,6 +341,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             </List>
           </AccordionDetails>
         </Accordion>
+
       </Box>
   );
 };
