@@ -7,7 +7,7 @@ import ActivityBar from '../../../src/components/ActivityBar';
 describe('ActivityBar', () => {
   
   // 첫 번째 테스트: 컴포넌트가 정상적으로 렌더링되고 스타일이 정확한지 확인
-  test('renders correctly and has the correct styles', () => {
+  test('정상적으로 렌더링되고 스타일이 정확한지 확인', () => {
     // ActivityBar 컴포넌트를 렌더링하고, 렌더링된 DOM을 container로 받음
     const { container } = render(<ActivityBar />);
     
@@ -24,7 +24,7 @@ describe('ActivityBar', () => {
   });
 
   // 두 번째 테스트: ref가 Progress 컴포넌트로 제대로 전달되는지 확인
-  test('checks that ref is forwarded to Progress component', () => {
+  test('ref가 Progress 컴포넌트로 제대로 전달되는지 확인', () => {
     // Progress 컴포넌트를 위한 ref 생성
     const progressRef = React.createRef<HTMLDivElement>();
     
