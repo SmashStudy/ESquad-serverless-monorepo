@@ -66,8 +66,8 @@ export type VideoTransformDropdownOptionType = {
 
 // 캠 배경화면 교체 옵션
 export enum ReplacementOptions {
-  Blue = "Blue",
-  Beach = "Beach",
+  Blue = "파란색",
+  Beach = "해변",
 }
 
 export enum ReplacementType {

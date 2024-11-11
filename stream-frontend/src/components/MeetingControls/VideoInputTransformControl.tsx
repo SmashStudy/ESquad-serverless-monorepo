@@ -37,8 +37,8 @@ interface Props {
 
 const VideoInputTransformControl: React.FC<Props> = ({
   label = "Video",
-  backgroundBlurLabel = "Enable Background Blur",
-  backgroundReplacementLabel = "Enable Background Replacement",
+  backgroundBlurLabel = "배경 블러 사용",
+  backgroundReplacementLabel = "배경 교체 사용",
 }) => {
   const meetingManager = useMeetingManager();
   const logger = useLogger();
@@ -88,7 +88,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
         await meetingManager.selectVideoInputDevice(intrinsicDevice);
       }
     } catch (error) {
-      logger.error("Failed to reset Device to intrinsic device");
+      logger.error("디바이스를 내재적 디바이스로 재설정하지 못했습니다");
     }
   };
 
@@ -107,7 +107,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
           current
         )) as VideoTransformDevice;
         logger.info(
-          `Video filter turned on - selecting video transform device: ${JSON.stringify(
+          `비디오 필터 켜기 - 비디오 변환 장치 선택: ${JSON.stringify(
             current
           )}`
         );
@@ -123,13 +123,13 @@ const VideoInputTransformControl: React.FC<Props> = ({
             current
           )) as VideoTransformDevice;
           logger.info(
-            `Video filter was turned on - video transform device: ${JSON.stringify(
+            `비디오 필터가 켜져 있었습니다 - 비디오 변환 장치: ${JSON.stringify(
               current
             )}`
           );
         } else {
           logger.info(
-            `Video filter was turned off - selecting inner device: ${JSON.stringify(
+            `비디오 필터가 꺼져 있었습니다 - 내부 장치 선택: ${JSON.stringify(
               current
             )}`
           );
@@ -151,7 +151,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
           : VideoTransformOptions.Blur
       );
     } catch (e) {
-      logger.error(`Error trying to toggle background blur ${e}`);
+      logger.error(`배경 흐림을 전환하는 동안 오류가 발생했습니다 ${e}`);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +170,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
           current
         )) as VideoTransformDevice;
         logger.info(
-          `Video filter turned on - selecting video transform device: ${JSON.stringify(
+          `비디오 필터 켜기 - 비디오 변환 장치 선택: ${JSON.stringify(
             current
           )}`
         );
@@ -186,13 +186,13 @@ const VideoInputTransformControl: React.FC<Props> = ({
             current
           )) as VideoTransformDevice;
           logger.info(
-            `Video filter turned on - selecting video transform device: ${JSON.stringify(
+            `비디오 필터 켜기 - 비디오 변환 장치 선택: ${JSON.stringify(
               current
             )}`
           );
         } else {
           logger.info(
-            `Video filter was turned off - selecting inner device: ${JSON.stringify(
+            `비디오 필터가 꺼져 있었습니다 - 내부 장치 선택: ${JSON.stringify(
               current
             )}`
           );
@@ -214,7 +214,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
           : VideoTransformOptions.Replacement
       );
     } catch (e) {
-      logger.error(`Error trying to toggle background replacement ${e}`);
+      logger.error(`배경 교체를 전환하는 동안 오류가 발생했습니다 ${e}`);
     } finally {
       setIsLoading(false);
     }
@@ -235,18 +235,18 @@ const VideoInputTransformControl: React.FC<Props> = ({
       if (selectedOption) {
         const blob = await createBlob(selectedOption);
         logger.info(
-          `Video filter changed to Replacement - ${selectedOption.label}`
+          `비디오 필터가 교체로 변경되었습니다 - ${selectedOption.label}`
         );
         await changeBackgroundReplacementImage(blob);
         setBackgroundReplacementOption(selectedOption.label);
       } else {
         logger.error(
-          `Error: Cannot find ${replacementOption} in the replacementOptionsList: ${replacementOptionsList}`
+          `오류: 찾을 수 없음 ${replacementOption} 교체 옵션 목록에서: ${replacementOptionsList}`
         );
       }
     } catch (error) {
       logger.error(
-        `Error trying to change background replacement image ${error}`
+        `배경 교체 이미지를 변경하는 동안 오류가 발생했습니다 ${error}`
       );
     } finally {
       setIsLoading(false);
@@ -265,7 +265,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
             // @ts-ignore
             newDevice = selectedDevice.chooseNewInnerDevice(deviceId);
           } else {
-            logger.error("Transform device cannot choose new inner device");
+            logger.error("변환 장치는 새 내부 장치를 선택할 수 없습니다");
             return;
           }
         }
@@ -276,7 +276,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
         }
       } catch (error) {
         logger.error(
-          "VideoInputTransformControl failed to select video input device"
+          "비디오 입력 변환제어가 비디오 입력 장치를 선택하지 못했습니다"
         );
       } finally {
         setIsLoading(false);
@@ -341,7 +341,7 @@ const VideoInputTransformControl: React.FC<Props> = ({
         const replacementOptions: ReactNode = (
           <PopOverSubMenu
             key="backgrounReplacementFilterList"
-            text="Select Background Replacement Filter"
+            text="배경 교체 필터 선택"
           >
             {replacementOptionsList.map((option) => (
               <PopOverItem
