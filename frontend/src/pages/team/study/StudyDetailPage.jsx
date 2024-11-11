@@ -48,6 +48,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
         const parsedData = JSON.parse(response.data.body)
         setUploadedFiles(parsedData);
+        console.log(`test ${JSON.stringify(parsedData)}`);
+        console.log(`test2 ${JSON.stringify(uploadedFiles)}`);
       } catch (error) {
         setSnackbar(
             {severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true})
@@ -104,6 +106,12 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       case 'name':
         comparison = a.originalFileName.localeCompare(b.originalFileName);
         break;
+      case 'extension':
+        comparison = a.extension.localeCompare(b.extension);
+        break;
+      case 'userId':
+        comparison = a.userId.localeCompare(b.userId);
+        break;
       case 'createdAt':
         comparison = new Date(a.createdAt) - new Date(b.createdAt);
         break;
@@ -153,7 +161,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             metadata: { // metadata 필드 내에 필요한 정보들을 넣습니다.
               targetId: studyId,
               targetType: 'STUDY_PAGE',
-              userId: 123, // 예시 사용자 ID
+              userId: '말똥말똥성게', // 예시 사용자 ID
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,
@@ -270,7 +278,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             open={snackbar.open}
             autoHideDuration={3000}
             onClose={handleSnackbarClose}
-            anchorOrigin={{vertical: 'center', horizontal: 'center'}}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
         >
           <Alert variant='filled' onClose={handleSnackbarClose}
                  severity={snackbar.severity}
@@ -345,6 +353,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 <Select value={sortCriteria} onChange={handleSortChange}
                         label="정렬 기준">
                   <MenuItem value="name">파일명</MenuItem>
+                  <MenuItem value="extension">파일 유형</MenuItem>
+                  <MenuItem value="userId">게시자</MenuItem>
                   <MenuItem value="createdAt">게시일</MenuItem>
                   <MenuItem value="fileSize">파일 크기</MenuItem>
                 </Select>
@@ -369,100 +379,87 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                   sortedFiles.map((file) => (
                       <ListItem key={file.id} sx={{
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
                         width: '100%',
-                        flexWrap: 'wrap'
+                        flexWrap: 'wrap',
+                        padding: 2,
+                        borderBottom: '1px solid #ddd'
                       }}>
-
-                        {/* 파일명 */}
+                        {/* 첫 번째 줄: 파일명과 확장자 */}
                         <Box sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          flex: 3,
-                          minWidth: '200px'
+                          justifyContent: 'space-between',
+                          width: '100%'
                         }}>
-                          <ListItemIcon>
-                            <AttachFileIcon/>
-                          </ListItemIcon>
-                          <Typography variant="body2" color="textSecondary"
-                                      sx={{mr: 1}}>
-                            파일명:
-                          </Typography>
-                          <Typography variant="body2" color="textPrimary" sx={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            maxWidth: '200px'
-                          }}>
-                            {file.originalFileName}
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ListItemIcon>
+                              <AttachFileIcon />
+                            </ListItemIcon>
+                            <Typography variant="body2" color="textPrimary" sx={{
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              maxWidth: '600px'
+                            }}>
+                              {file.originalFileName}
+                            </Typography>
+                          </Box>
                         </Box>
 
-                        {/* 확장자명 */}
+                        {/* 두 번째 줄: 게시자, 게시일, 파일 크기, 다운로드 및 삭제 버튼 */}
                         <Box sx={{
-                          flex: 1,
-                          minWidth: '150px',
-                          textAlign: 'left',
                           display: 'flex',
-                          alignItems: 'center'
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          mt: 1
                         }}>
-                          <Typography variant="body2" color="textSecondary"
-                                      sx={{mr: 1}}>
-                            파일 확장자:
-                          </Typography>
-                          <Typography variant="body2" color="textPrimary">
-                            {file.extension}
-                          </Typography>
-                        </Box>
-
-                        {/* 게시일 */}
-                        <Box sx={{
-                          flex: 1,
-                          minWidth: '180px',
-                          textAlign: 'left',
-                          display: 'flex',
-                          alignItems: 'center'
-                        }}>
-                          <Typography variant="body2" color="textSecondary"
-                                      sx={{mr: 1}}>
-                            게시일:
-                          </Typography>
-                          <Typography variant="body2" color="textPrimary">
-                            {file.createdAt}
-                          </Typography>
-                        </Box>
-
-                        {/* 파일 크기 */}
-                        <Box sx={{
-                          flex: 1,
-                          minWidth: '150px',
-                          textAlign: 'left',
-                          display: 'flex',
-                          alignItems: 'center'
-                        }}>
-                          <Typography variant="body2" color="textSecondary"
-                                      sx={{mr: 1}}>
-                            파일 크기:
-                          </Typography>
-                          <Typography variant="body2" color="textPrimary">
-                            {formatFileSize(file.fileSize)}
-                          </Typography>
-                        </Box>
-
-                        {/* 다운로드 및 삭제 버튼 */}
-                        <Box sx={{flex: '0 0 auto', display: 'flex', gap: 1}}>
-                          <IconButton edge="end" aria-label="download"
-                                      onClick={() => handleFileDownload(
-                                          file.storedFileName,
-                                          file.originalFileName)}>
-                            <DownloadIcon/>
-                          </IconButton>
-                          <IconButton edge="end" aria-label="delete"
-                                      onClick={() => handleFileDelete(
-                                          file.storedFileName)}>
-                            <DeleteIcon/>
-                          </IconButton>
+                          <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                파일 유형:
+                              </Typography>
+                              <Typography variant="body2" color="textPrimary">
+                                {file.extension}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                게시자:
+                              </Typography>
+                              <Typography variant="body2" color="textPrimary">
+                                {file.userId}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                게시일:
+                              </Typography>
+                              <Typography variant="body2" color="textPrimary">
+                                {file.createdAt}
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                                파일 크기:
+                              </Typography>
+                              <Typography variant="body2" color="textPrimary">
+                                {formatFileSize(file.fileSize)}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <IconButton edge="end" aria-label="download"
+                                        onClick={() => handleFileDownload(file.storedFileName, file.originalFileName)}>
+                              <DownloadIcon />
+                            </IconButton>
+                            <IconButton edge="end" aria-label="delete"
+                                        onClick={() => handleFileDelete(file.storedFileName)}>
+                              <DeleteIcon />
+                            </IconButton>
+                          </Box>
                         </Box>
                       </ListItem>
                   ))
@@ -472,6 +469,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                   </Typography>
               )}
             </List>
+
 
           </AccordionDetails>
         </Accordion>
