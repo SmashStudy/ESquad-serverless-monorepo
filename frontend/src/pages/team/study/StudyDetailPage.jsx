@@ -13,7 +13,7 @@ import {
   Divider,
   Button,
   Snackbar,
-  Alert
+  Alert, MenuItem, Select, InputLabel, FormControl
 } from '@mui/material';
 import {useLocation, useParams} from "react-router-dom";
 import axios from 'axios';
@@ -34,6 +34,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [selectedFile, setSelectedFile] = useState();
   const [snackbar, setSnackbar] = useState(
       {open: false, message: '', severity: 'success'})
+  const [sortCriteria, setSortCriteria] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('asc');
   const lambdaUrl = 'https://i6jmvlltoa.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
@@ -54,6 +56,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     };
     fetchFiles();
   }, [studyId]);
+
+  // >>>>>>>>>>>> Utils >>>>>>>>>>>>
 
   const handleSnackbarClose = () => {
     setSnackbar({...snackbar, open: false});
@@ -85,6 +89,37 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`; // GB 단위
     }
   };
+
+  const handleSortChange = (event) => {
+    setSortCriteria(event.target.value);
+  };
+
+  const handleSortOrderChange = (event) => {
+    setSortOrder(event.target.value);
+  }
+
+  const sortedFiles = [...uploadedFiles].sort((a, b) => {
+    let comparison = 0;
+    switch (sortCriteria) {
+      case 'name':
+        comparison = a.originalFileName.localeCompare(b.originalFileName);
+        break;
+      case 'createdAt':
+        comparison = new Date(a.createdAt) - new Date(b.createdAt);
+        break;
+      case 'fileSize':
+        comparison = a.fileSize - b.fileSize;
+        break;
+      default:
+        return 0;
+    }
+
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+
+  // <<<<<<<<<<<< Utils <<<<<<<<<<<<
+
+  // >>>>>>>>>>>> Functions >>>>>>>>>>>>
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -208,6 +243,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
   };
 
+  // <<<<<<<<<<<< Functions <<<<<<<<<<<<
+
   return (
       <Box sx={{
         border: '1px solid',
@@ -299,28 +336,74 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 </Box>
             )}
 
+            {/* Sort Criteria Selection */}
+            <FormControl variant="outlined" sx={{minWidth: 80}}>
+              <InputLabel>정렬 기준</InputLabel>
+              <Select value={sortCriteria} onChange={handleSortChange}
+                      label="정렬 기준">
+                <MenuItem value="name">파일명</MenuItem>
+                <MenuItem value="createdAt">게시일</MenuItem>
+                <MenuItem value="fileSize">파일 크기</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Sort Order Selection */}
+            <FormControl variant="outlined" sx={{minWidth: 80}}>
+              <InputLabel>정렬 순서</InputLabel>
+              <Select value={sortOrder} onChange={handleSortOrderChange}
+                      label="정렬 순서">
+                <MenuItem value="asc">오름차순</MenuItem>
+                <MenuItem value="desc">내림차순</MenuItem>
+              </Select>
+            </FormControl>
+
+
             {/* Attachments List */}
             <List>
-              {uploadedFiles && uploadedFiles.length > 0 ? (
-                  uploadedFiles.map((file) => (
-                      <ListItem key={file.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap' }}>
+              {sortedFiles && sortedFiles.length > 0 ? (
+                  sortedFiles.map((file) => (
+                      <ListItem key={file.id} sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        flexWrap: 'wrap'
+                      }}>
 
                         {/* 파일명 */}
-                        <Box sx={{ display: 'flex', alignItems: 'center', flex: 3, minWidth: '200px' }}>
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          flex: 3,
+                          minWidth: '200px'
+                        }}>
                           <ListItemIcon>
-                            <AttachFileIcon />
+                            <AttachFileIcon/>
                           </ListItemIcon>
-                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                          <Typography variant="body2" color="textSecondary"
+                                      sx={{mr: 1}}>
                             파일명:
                           </Typography>
-                          <Typography variant="body2" color="textPrimary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                          <Typography variant="body2" color="textPrimary" sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            maxWidth: '200px'
+                          }}>
                             {file.originalFileName}
                           </Typography>
                         </Box>
 
                         {/* 확장자명 */}
-                        <Box sx={{ flex: 1, minWidth: '150px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
-                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                        <Box sx={{
+                          flex: 1,
+                          minWidth: '150px',
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}>
+                          <Typography variant="body2" color="textSecondary"
+                                      sx={{mr: 1}}>
                             파일 확장자:
                           </Typography>
                           <Typography variant="body2" color="textPrimary">
@@ -329,8 +412,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                         </Box>
 
                         {/* 게시일 */}
-                        <Box sx={{ flex: 1, minWidth: '180px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
-                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                        <Box sx={{
+                          flex: 1,
+                          minWidth: '180px',
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}>
+                          <Typography variant="body2" color="textSecondary"
+                                      sx={{mr: 1}}>
                             게시일:
                           </Typography>
                           <Typography variant="body2" color="textPrimary">
@@ -339,8 +429,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                         </Box>
 
                         {/* 파일 크기 */}
-                        <Box sx={{ flex: 1, minWidth: '150px', textAlign: 'left', display: 'flex', alignItems: 'center' }}>
-                          <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }}>
+                        <Box sx={{
+                          flex: 1,
+                          minWidth: '150px',
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center'
+                        }}>
+                          <Typography variant="body2" color="textSecondary"
+                                      sx={{mr: 1}}>
                             파일 크기:
                           </Typography>
                           <Typography variant="body2" color="textPrimary">
@@ -349,12 +446,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                         </Box>
 
                         {/* 다운로드 및 삭제 버튼 */}
-                        <Box sx={{ flex: '0 0 auto', display: 'flex', gap: 1 }}>
-                          <IconButton edge="end" aria-label="download" onClick={() => handleFileDownload(file.storedFileName, file.originalFileName)}>
-                            <DownloadIcon />
+                        <Box sx={{flex: '0 0 auto', display: 'flex', gap: 1}}>
+                          <IconButton edge="end" aria-label="download"
+                                      onClick={() => handleFileDownload(
+                                          file.storedFileName,
+                                          file.originalFileName)}>
+                            <DownloadIcon/>
                           </IconButton>
-                          <IconButton edge="end" aria-label="delete" onClick={() => handleFileDelete(file.storedFileName)}>
-                            <DeleteIcon />
+                          <IconButton edge="end" aria-label="delete"
+                                      onClick={() => handleFileDelete(
+                                          file.storedFileName)}>
+                            <DeleteIcon/>
                           </IconButton>
                         </Box>
                       </ListItem>
