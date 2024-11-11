@@ -71,7 +71,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleLogout = () => {
         localStorage.removeItem('jwt');
         alert("로그아웃 되었습니다. 다음에 또 만나요!")
-        navigate('/login');
+        navigate('/google');
     };
 
     const theme = useTheme();

@@ -15,6 +15,7 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
+import GoogleLogin from './components/google/GoolgeLogin.jsx';
 
 const theme = createTheme({
     palette: {
@@ -78,6 +79,7 @@ function App() {
                                 <LoginPage setIsLoggedIn={setIsLoggedIn} />
                             // </RedirectIfLoggedIn>
                         } />
+                        <Route path="/google" element={<GoogleLogin />} />
                         <Route path="/join" element={<JoinPage />} />
 
 
