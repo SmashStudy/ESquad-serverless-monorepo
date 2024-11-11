@@ -1,11 +1,13 @@
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.METADATA_TABLE;
 
-module.exports.handler = async (event) => {
-  console.log(`event is ${JSON.stringify(event, null, 2 )}`);
+export const handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
   try {
-    const { fileKey, metadata } = event.body;
+    const body = JSON.parse(event.body);
+    const { fileKey, metadata } = body;
 
     const params = {
       TableName: TABLE_NAME,
@@ -19,12 +21,22 @@ module.exports.handler = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+      },
       body: JSON.stringify({ message: 'Metadata stored successfully', data: { id: fileKey, ...metadata } }),
     };
   } catch (error) {
     console.error('Error storing metadata:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+      },
       body: JSON.stringify({ error: `Failed to store metadata: ${error.message}` }),
     };
   }
