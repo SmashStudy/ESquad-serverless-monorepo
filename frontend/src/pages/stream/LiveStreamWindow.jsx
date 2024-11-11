@@ -10,7 +10,7 @@ const LiveStreamWindow = ({ username, studyId }) => {
     const popupUrl = `https://localhost:9000/?studyId=${studyId}&name=${encodeURIComponent(username)}`;
 
     // 팝업을 열고 URL 파라미터를 전달
-    window.open(popupUrl, "_blank", "width=1024,height=768,scrollbars=yes,resizable=yes");
+    window.open(popupUrl, "_blank", "width=900,height=700,scrollbars=yes,resizable=yes");
   };
 
   return (
