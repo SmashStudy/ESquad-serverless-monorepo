@@ -48,8 +48,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
         const parsedData = JSON.parse(response.data.body)
         setUploadedFiles(parsedData);
-        console.log(`test ${JSON.stringify(parsedData)}`);
-        console.log(`test2 ${JSON.stringify(uploadedFiles)}`);
       } catch (error) {
         setSnackbar(
             {severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true})
@@ -158,7 +156,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
       const metadataResponse = await axios.post(`${lambdaUrl}/store-metadata`, {
             fileKey: "files/" + uniqueFileName,
-            metadata: { // metadata 필드 내에 필요한 정보들을 넣습니다.
+            metadata: {
               targetId: studyId,
               targetType: 'STUDY_PAGE',
               userId: '말똥말똥성게', // 예시 사용자 ID
