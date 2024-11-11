@@ -18,7 +18,8 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
-        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/TargetIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/UserUsageIndex
 
 functions:
 
@@ -78,6 +79,20 @@ functions:
               Access-Control-Allow-Headers: "'Content-Type,Authorization'"
               Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
+  getUserUsage:
+    handler: service/getUserUsage.handler
+    events:
+      - http:
+          path: files/get-user-usage
+          method: get
+          cors: true
+          integration: lambda
+          response:
+            headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+
 resources:
   Resources:
     MetadataTable:
@@ -91,16 +106,24 @@ resources:
             AttributeType: S
           - AttributeName: targetType
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: TargetIndex
+          - IndexName: FetchFileIndex
             KeySchema:
               - AttributeName: targetId
                 KeyType: HASH
               - AttributeName: targetType
                 KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserUsageIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
