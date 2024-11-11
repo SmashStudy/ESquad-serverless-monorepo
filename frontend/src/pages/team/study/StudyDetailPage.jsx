@@ -337,25 +337,30 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             )}
 
             {/* Sort Criteria Selection */}
-            <FormControl variant="outlined" sx={{minWidth: 80}}>
-              <InputLabel>정렬 기준</InputLabel>
-              <Select value={sortCriteria} onChange={handleSortChange}
-                      label="정렬 기준">
-                <MenuItem value="name">파일명</MenuItem>
-                <MenuItem value="createdAt">게시일</MenuItem>
-                <MenuItem value="fileSize">파일 크기</MenuItem>
-              </Select>
-            </FormControl>
+            <Box sx={{mb: 2, display:'flex', gap: 1, alignItems:'center', justifyContent: 'flex-end'}}>
 
-            {/* Sort Order Selection */}
-            <FormControl variant="outlined" sx={{minWidth: 80}}>
-              <InputLabel>정렬 순서</InputLabel>
-              <Select value={sortOrder} onChange={handleSortOrderChange}
-                      label="정렬 순서">
-                <MenuItem value="asc">오름차순</MenuItem>
-                <MenuItem value="desc">내림차순</MenuItem>
-              </Select>
-            </FormControl>
+              <FormControl variant="outlined" sx={{minWidth: 80}}
+                           size={'small'}>
+                <InputLabel>정렬 기준</InputLabel>
+                <Select value={sortCriteria} onChange={handleSortChange}
+                        label="정렬 기준">
+                  <MenuItem value="name">파일명</MenuItem>
+                  <MenuItem value="createdAt">게시일</MenuItem>
+                  <MenuItem value="fileSize">파일 크기</MenuItem>
+                </Select>
+              </FormControl>
+
+              {/* Sort Order Selection */}
+              <FormControl variant="outlined" sx={{minWidth: 80}}
+                           size={'small'}>
+                <InputLabel>정렬 순서</InputLabel>
+                <Select value={sortOrder} onChange={handleSortOrderChange}
+                        label="정렬 순서">
+                  <MenuItem value="asc">오름차순</MenuItem>
+                  <MenuItem value="desc">내림차순</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
 
 
             {/* Attachments List */}
