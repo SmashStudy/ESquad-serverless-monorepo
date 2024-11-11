@@ -1,16 +1,145 @@
-service: example-service
+service: google-login-cognito-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  stage: dev
+  region: ${env:REGION}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+          Resource:
+            - arn:aws:dynamodb:${env:REGION}:430118855167:table/${env:DYNAMODB_USER_TABLE_NAME}
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  authorizer:
+    handler: service/handler.authorizer
     events:
       - http:
-          path: test
-          method: get
-          cors: true
+          path: authorize
+          method: post
 
+  saveUserToDynamoDB:
+    handler: service/handler.saveUserToDynamoDB
+    events:
+      - cognitoUserPool:
+          pool: ${env:COGNITO_USER_POOL_NAME}
+          trigger: PostAuthentication
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${env:COGNITO_USER_POOL_NAME}
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: false
+          - Name: name
+            Required: true
+            Mutable: true
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      DependsOn:
+        - GoogleIdentityProvider
+      Properties:
+        ClientName: ${env:COGNITO_USER_POOL_CLIENT_NAME}
+        UserPoolId:
+          Ref: CognitoUserPool
+        AllowedOAuthFlows:
+          - code
+        AllowedOAuthScopes:
+          - email
+          - openid
+          - profile
+        CallbackURLs:
+          - ${env:CALLBACK_URL}
+        SupportedIdentityProviders:
+          - Google
+        GenerateSecret: false
+        AllowedOAuthFlowsUserPoolClient: true
+
+    CognitoIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${env:COGNITO_IDENTITY_POOL_NAME}
+        AllowUnauthenticatedIdentities: false
+        CognitoIdentityProviders:
+          - ClientId:
+              Ref: CognitoUserPoolClient
+            ProviderName:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - ProviderName
+
+    CognitoUserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        Domain: ${env:COGNITO_DOMAIN}
+        UserPoolId:
+          Ref: CognitoUserPool
+
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:DYNAMODB_USER_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    GoogleIdentityProvider:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        ProviderName: Google
+        UserPoolId: 
+          Ref: CognitoUserPool
+        ProviderType: Google
+        AttributeMapping:
+          email: email
+          name: name
+          phone_number: phone_number
+        ProviderDetails:
+          client_id: ${env:COGNITO_GOOGLE_CLIENT_ID}
+          client_secret: ${env:COGNITO_GOOGLE_CLIENT_SECRET}
+          authorize_scopes: ${env:COGNITO_AUTHORIZE_SCOPES}
+
+  Outputs:
+    UserPoolId:
+      Value:
+        Ref: CognitoUserPool
+    UserPoolClientId:
+      Value:
+        Ref: CognitoUserPoolClient
+    IdentityPoolId:
+      Value:
+        Ref: CognitoIdentityPool
+    UserTableName:
+      Value:
+        Ref: UserTable
+
+package:
+  individually: true
+  include:
+    - node_modules/**
+    - backend/user/service/handler.js
+
+plugins:
+  - serverless-dotenv-plugin
