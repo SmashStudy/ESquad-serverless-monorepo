@@ -1,9 +1,10 @@
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.METADATA_TABLE;
 
-module.exports.handler = async (event) => {
-  console.log(`event is ${JSON.stringify(event, null, 2 )}`);
+export const handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
   try {
     const { fileKey, metadata } = event.body;
 
