@@ -1,11 +1,12 @@
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
+
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const TABLE_NAME = process.env.METADATA_TABLE;
 
-module.exports.handler = async (event) => {
-  console.log(`event is ${JSON.stringify(event, null, 2 )}`);
+export const handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  let {storedFileName} = event.path;
+  let { storedFileName } = event.pathParameters;
 
   try {
     // 인코딩 여부에 따라 디코딩 시도
@@ -18,18 +19,28 @@ module.exports.handler = async (event) => {
   try {
     const deleteParams = {
       TableName: TABLE_NAME,
-      Key: { id: "files/"+storedFileName },
+      Key: { id: `files/${storedFileName}` },
     };
 
     await dynamoDb.delete(deleteParams).promise();
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+      },
       body: JSON.stringify({ message: `Metadata for ${storedFileName} deleted successfully` }),
     };
   } catch (error) {
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+      },
       body: JSON.stringify({ error: `Failed to delete metadata: ${error.message}` }),
     };
   }

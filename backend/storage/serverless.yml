@@ -30,12 +30,6 @@ functions:
           path: files/presigned-url
           method: post
           cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   fetchFileMetadata:
     handler: service/fetchFileMetadata.handler
@@ -44,12 +38,6 @@ functions:
           path: files/metadata
           method: get
           cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   deleteFile:
     handler: service/deleteFile.handler
@@ -58,12 +46,6 @@ functions:
           path: files/{storedFileName}
           method: delete
           cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   storeFileMetadata:
     handler: service/storeFileMetadata.handler
@@ -72,12 +54,6 @@ functions:
           path: files/store-metadata
           method: post
           cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
   getUserUsage:
     handler: service/getUserUsage.handler
@@ -86,12 +62,6 @@ functions:
           path: files/get-user-usage
           method: get
           cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
 resources:
   Resources:
