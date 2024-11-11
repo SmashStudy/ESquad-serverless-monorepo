@@ -5,7 +5,8 @@ const BUCKET_NAME = process.env.S3_BUCKET;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
-  const { action, fileKey, contentType } = event.body;
+  const body = JSON.parse(event.body);
+  const { action, fileKey, contentType } = body;
   const params = {
     Bucket: BUCKET_NAME,
     Key: fileKey,
@@ -24,6 +25,11 @@ export const handler = async (event) => {
 
   return {
     statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+      'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+    },
     body: JSON.stringify({ presignedUrl: url }),
   };
 };
