@@ -62,6 +62,7 @@ export const VideoTransformOptions = {
 export type VideoTransformDropdownOptionType = {
   label: string;
   value: string;
+  disabled?: boolean;
 };
 
 // 캠 배경화면 교체 옵션

@@ -52,24 +52,46 @@ export const VideoTransformDropdown: React.FC<Props> = ({
     {
       label: VideoTransformOptions.None,
       value: VideoTransformOptions.None,
+      disabled: false,
     },
     {
       label: VideoTransformOptions.Blur,
-      value:
-        isBackgroundBlurSupported === undefined ||
-        isBackgroundBlurSupported === false
-          ? "배경 블러 지원되지 않음"
-          : VideoTransformOptions.Blur,
+      value: isBackgroundBlurSupported
+        ? VideoTransformOptions.Blur
+        : "배경 블러 지원되지 않음",
+      disabled: !isBackgroundBlurSupported, // 블러 기능이 지원되지 않으면 비활성화
     },
     {
       label: VideoTransformOptions.Replacement,
-      value:
-        isBackgroundReplacementSupported === undefined ||
-        isBackgroundReplacementSupported === false
-          ? "백그라운드 교체가 지원되지 않음"
-          : VideoTransformOptions.Replacement,
+      value: isBackgroundReplacementSupported
+        ? VideoTransformOptions.Replacement
+        : "백그라운드 교체가 지원되지 않음",
+      disabled: !isBackgroundReplacementSupported, // 교체 기능이 지원되지 않으면 비활성화
     },
   ];
+  
+  // const options: VideoTransformDropdownOptionType[] = [
+  //   {
+  //     label: VideoTransformOptions.None,
+  //     value: VideoTransformOptions.None,
+  //   },
+  //   {
+  //     label: VideoTransformOptions.Blur,
+  //     value:
+  //       isBackgroundBlurSupported === undefined ||
+  //       isBackgroundBlurSupported === false
+  //         ? "배경 블러 지원되지 않음"
+  //         : VideoTransformOptions.Blur,
+  //   },
+  //   {
+  //     label: VideoTransformOptions.Replacement,
+  //     value:
+  //       isBackgroundReplacementSupported === undefined ||
+  //       isBackgroundReplacementSupported === false
+  //         ? "백그라운드 교체가 지원되지 않음"
+  //         : VideoTransformOptions.Replacement,
+  //   },
+  // ];
 
   // 선택 항목( 없음, 흐림, 교체)을 기반으로 장치를 생성하고 이를 입력으로 사용합니다.
   const selectTransform = async (e: ChangeEvent<HTMLSelectElement>) => {
