@@ -1,6 +1,3 @@
-// test/components/DeviceSelection/CameraDevices/VideoTransformDropdown.test.tsx
-
-// 1. jest.mock 호출을 최상단으로 이동
 jest.mock('amazon-chime-sdk-component-library-react', () => ({
     useBackgroundBlur: jest.fn(),
     useBackgroundReplacement: jest.fn(),
@@ -28,7 +25,6 @@ jest.mock('amazon-chime-sdk-component-library-react', () => ({
     };
   });
   
-  // 2. 이후에 필요한 모듈을 임포트
   import React from 'react';
   import { render, screen, fireEvent, waitFor } from '@testing-library/react';
   import VideoTransformDropdown from '../../../../src/components/DeviceSelection/CameraDevices/VideoTransformDropdown';
