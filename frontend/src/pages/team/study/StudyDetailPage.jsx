@@ -36,7 +36,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       {open: false, message: '', severity: 'success'})
   const [sortCriteria, setSortCriteria] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('asc');
-  const lambdaUrl = 'https://i6jmvlltoa.execute-api.us-east-1.amazonaws.com/dev/files'
+  const lambdaUrl = 'https://ntja9tz0ra.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
     // Fetch files metadata

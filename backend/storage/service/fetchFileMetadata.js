@@ -15,7 +15,7 @@ module.exports.handler = async (event) => {
 
   const params = {
     TableName: TABLE_NAME,
-    IndexName: 'TargetIndex', // 인덱스 생성 후 사용
+    IndexName: 'FetchFileIndex', // 인덱스 생성 후 사용
     KeyConditionExpression: 'targetId = :targetId and targetType = :targetType',
     ExpressionAttributeValues: {
       ':targetId': targetId,
