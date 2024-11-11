@@ -46,8 +46,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           params: {targetId: studyId, targetType: 'STUDY_PAGE'}
         });
 
-        const parsedData = JSON.parse(response.data.body)
-        setUploadedFiles(parsedData);
+        setUploadedFiles(response.data);
       } catch (error) {
         setSnackbar(
             {severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true})
@@ -136,55 +135,63 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       return;
     }
     setIsUploading(true);
-    setSnackbar({severity: 'info', message: '파일 업로드 중...', open: true})
+    setSnackbar({severity: 'info', message: '파일 업로드 중...', open: true});
 
     try {
       // const token = localStorage.getItem('jwt');
-      const uniqueFileName = `${Date.now()}-${selectedFile.name}`; // 고유한 파일 이름 생성
+      const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
 
-      const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
-        action: 'putObject',
-        fileKey: "files/" + uniqueFileName,
-        contentType: selectedFile.type
-      });
+      const presignedResponse = await axios.post(
+          `${lambdaUrl}/presigned-url`,
+          {
+            action: 'putObject',
+            fileKey: `files/${uniqueFileName}`,
+            contentType: selectedFile.type,
+          },
+          {
+            headers: {'Content-Type': 'application/json'},
+          }
+      );
 
-      const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
+      const presignedUrl = presignedResponse.data.presignedUrl;
 
       await axios.put(presignedUrl, selectedFile, {
-        headers: {'Content-Type': selectedFile.type}
+        headers: {'Content-Type': selectedFile.type},
       });
 
-      const metadataResponse = await axios.post(`${lambdaUrl}/store-metadata`, {
-            fileKey: "files/" + uniqueFileName,
+      const metadataResponse = await axios.post(
+          `${lambdaUrl}/store-metadata`,
+          {
+            fileKey: `files/${uniqueFileName}`,
             metadata: {
               targetId: studyId,
               targetType: 'STUDY_PAGE',
-              userId: '말똥말똥성게', // 예시 사용자 ID
+              userId: '말똥말똥성게',
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,
               originalFileName: selectedFile.name,
-              storedFileName: uniqueFileName, // 고유 파일 이름을 메타데이터에 저장
-              createdAt: getFormattedDate()
-            }
-
+              storedFileName: uniqueFileName,
+              createdAt: getFormattedDate(),
+            },
           },
           // {headers: { Authorization: `Bearer ${token}` }}
+          {
+            headers: {'Content-Type': 'application/json'},
+          }
       );
 
-      const parsedBody = JSON.parse(metadataResponse.data.body);
+      const newFileData = metadataResponse.data.data;
 
-      const newFileData = parsedBody.data;  // data 속성 접근
-
-      setUploadedFiles(
-          (prevFiles) => Array.isArray(prevFiles) ? [...prevFiles, newFileData]
-              : [newFileData]);
+      setUploadedFiles((prevFiles) =>
+          Array.isArray(prevFiles) ? [...prevFiles, newFileData] : [newFileData]
+      );
 
       setSelectedFile(null);
-      setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true})
+      setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true});
     } catch (error) {
       console.error('Failed to upload file:', error);
-      setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true})
+      setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true});
     } finally {
       setIsUploading(false);
     }
@@ -192,59 +199,78 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
   const handleFileDelete = async (storedFileName) => {
     try {
-      setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true})
+      setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
 
-      const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
-        action: 'deleteObject',
-        fileKey: "files/" + storedFileName,
-      });
+      const presignedResponse = await axios.post(
+          `${lambdaUrl}/presigned-url`,
+          {
+            action: 'deleteObject',
+            fileKey: `files/${storedFileName}`,
+          },
+          {
+            headers: {'Content-Type': 'application/json'},
+          }
+      );
 
-      const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
+      const presignedUrl = presignedResponse.data.presignedUrl;
 
-      await axios.delete(presignedUrl); // S3 객체 삭제
-      await axios.delete(`${lambdaUrl}/${storedFileName}`); // 메타데이터 삭제
+      // S3 객체 삭제
+      await axios.delete(presignedUrl);
 
-      setUploadedFiles((prevFiles) => // 리스트업 돼있는 UI에서 삭제
+      // 메타데이터 삭제 요청
+      await axios.delete(`${lambdaUrl}/${storedFileName}`);
+
+      // UI 업데이트
+      setUploadedFiles((prevFiles) =>
           prevFiles.filter((file) => file.storedFileName !== storedFileName)
       );
 
-      setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true})
+      setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
     } catch (error) {
-
-      setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true})
+      setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
       console.error('Failed to delete file:', error);
     }
   };
 
   const handleFileDownload = async (storedFileName, originalFileName) => {
     try {
-      setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true})
-      const presignedResponse = await axios.post(`${lambdaUrl}/presigned-url`, {
-        action: 'getObject',
-        fileKey: "files/" + storedFileName,
+      setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
+
+      const presignedResponse = await axios.post(
+          `${lambdaUrl}/presigned-url`,
+          {
+            action: 'getObject',
+            fileKey: `files/${storedFileName}`,
+          },
+          {
+            headers: {'Content-Type': 'application/json'},
+          }
+      );
+
+      const presignedUrl = presignedResponse.data.presignedUrl;
+
+      // S3에서 파일 다운로드
+      const downloadResponse = await axios.get(presignedUrl, {
+        responseType: 'blob',
       });
 
-      const presignedUrl = JSON.parse(presignedResponse.data.body).presignedUrl;
-
-      const downloadResponse = await axios.get(presignedUrl,
-          {responseType: 'blob'});
-
-      const blob = new Blob([downloadResponse.data],
-          {type: downloadResponse.headers['content-type']});
+      const blob = new Blob([downloadResponse.data], {
+        type: downloadResponse.headers['content-type'],
+      });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
 
       link.href = url;
-      link.download = originalFileName || storedFileName; // 다운로드할 파일 이름 설정
+      link.download = originalFileName || storedFileName;
       document.body.appendChild(link);
       link.click();
 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'})
+      setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'});
     } catch (error) {
-      setSnackbar({severity: 'fail', message: '파일 다운로드 실패', open: true})
+      setSnackbar({severity: 'fail', message: '파일 다운로드 실패', open: true});
       console.error('Failed to download file:', error);
     }
   };
