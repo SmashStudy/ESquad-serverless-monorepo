@@ -126,3 +126,38 @@ export const getTeamProfile = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: "Error retrieving team profile" }) };
     }
 };
+
+
+/**
+ * 팀 수정
+ */
+export const updateTeam = async (event) => {
+    const teamId = event.pathParameters.teamId;
+    const { teamName, description } = JSON.parse(event.body);
+    const changedteamId = decodeURIComponent(teamId);
+
+    const params = {
+        TableName: TEAM_TABLE,
+        Key: {
+            PK: changedteamId,
+            SK: changedteamId
+        },
+        UpdateExpression: "SET teamName = :teamName, description = :description",
+        ExpressionAttributeValues: {
+            ":teamName": teamName,
+            ":description": description
+        },
+        ReturnValues: "ALL_NEW"
+    };
+
+    try {
+        const result = await dynamoDb.send(new UpdateCommand(params));
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Team updated successfully", data: result.Attributes })
+        };
+    } catch (error) {
+        console.error(error);
+        return { statusCode: 500, body: JSON.stringify({ error: "Error updating team" }) };
+    }
+};
