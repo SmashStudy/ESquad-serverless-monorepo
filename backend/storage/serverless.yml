@@ -1,4 +1,6 @@
-service: storage-service
+service: service-storage
+app: esquad-monorepo
+org: persii
 
 provider:
   name: aws
@@ -9,7 +11,13 @@ provider:
     METADATA_TABLE: ${env:METADATA_TABLE}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
 
-  iamRoleStatements:
+  logs:
+    restApi:
+      roleManagedExternally: true # 역할 생성을 비활성화
+      executionLogging: false     # 실행 로그 비활성화
+      accessLogging: false        # 액세스 로그 비활성화
+
+  iamRoleStatements:  # Lambda 함수에 필요한 IAM 권한 정책 정의
     - Effect: Allow
       Action:
         - dynamodb:PutItem
@@ -97,6 +105,7 @@ resources:
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+#      DeletionPolicy: Delete
 
     S3Bucket:
       Type: AWS::S3::Bucket
@@ -132,5 +141,19 @@ resources:
                 - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
                 - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
+  extensions:
+    S3Bucket:
+      DeletionPolicy: Delete
+    MetadataTable:
+      DeletionPolicy: Delete
+
+useDotenv: true
 plugins:
   - serverless-dotenv-plugin
+  - serverless-s3-remover
+
+custom:
+  s3Remover:
+    buckets:
+      - ${env:S3_BUCKET}
+

@@ -1,4 +1,4 @@
-service: example-service
+service: service-community
 
 provider:
   name: aws

@@ -1,0 +1,18 @@
+services:
+  service-chatting:
+    path: ./chatting
+
+  service-community:
+    path: ./community
+
+  service-storage:
+    path: ./storage
+
+  service-streaming:
+    path: ./streaming
+
+  service-team:
+    path: ./team
+
+  service-user:
+    path: ./user

@@ -1,4 +1,4 @@
-service: example-service
+service: service-team
 
 provider:
   name: aws
