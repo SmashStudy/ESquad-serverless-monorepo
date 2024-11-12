@@ -96,3 +96,33 @@ export const getAllTeamSpaces = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: "Error retrieving teams" }) };
     }
 };
+
+
+/**
+ * 팀 프로필 조회
+ */
+export const getTeamProfile = async (event) => {
+    const teamId = event.pathParameters.teamId;
+    const changedteamId = decodeURIComponent(teamId);
+    console.log("Received teamId:", teamId);  
+
+    const params = {
+        TableName: TEAM_TABLE,
+        Key: {
+            PK: changedteamId,
+            SK: changedteamId
+        }
+    };
+
+    try {
+        const result = await dynamoDb.send(new GetCommand(params));
+        if (result.Item) {
+            return { statusCode: 200, body: JSON.stringify(result.Item) };
+        } else {
+            return { statusCode: 404, body: JSON.stringify({ error: "Team not found" }) };
+        }
+    } catch (error) {
+        console.error(error);
+        return { statusCode: 500, body: JSON.stringify({ error: "Error retrieving team profile" }) };
+    }
+};
