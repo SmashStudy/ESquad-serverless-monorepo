@@ -161,3 +161,83 @@ export const updateTeam = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: "Error updating team" }) };
     }
 };
+
+
+/**
+* 팀 삭제
+*/
+export const deleteTeam = async (event) => {
+    const teamId = event.pathParameters.teamId;
+    const changedTeamId = decodeURIComponent(teamId);
+
+    const queryParams = {
+        TableName: TEAM_TABLE,
+        KeyConditionExpression: "PK = :pk",
+        ExpressionAttributeValues: {
+            ":pk": changedTeamId
+        }
+    };
+
+    try {
+        const queryResult = await dynamoDb.send(new QueryCommand(queryParams));
+
+        if (queryResult.Items && queryResult.Items.length > 0) {
+            const deletePromises = queryResult.Items.map((item) => {
+                const deleteParams = {
+                    TableName: TEAM_TABLE,
+                    Key: {
+                        PK: item.PK,
+                        SK: item.SK
+                    }
+                };
+                return dynamoDb.send(new DeleteCommand(deleteParams));
+            });
+            await Promise.all(deletePromises);
+        }
+
+        const relatedItemsQueryParams = {
+            TableName: TEAM_TABLE,
+            IndexName: "teamID-Index",
+            KeyConditionExpression: "teamID = :teamID",
+            ExpressionAttributeValues: {
+                ":teamID": changedTeamId
+            }
+        };
+        
+        const relatedItemsResult = await dynamoDb.send(new QueryCommand(relatedItemsQueryParams));
+        if (relatedItemsResult.Items && relatedItemsResult.Items.length > 0) {
+            const relatedDeletePromises = relatedItemsResult.Items.map((item) => {
+                const deleteParams = {
+                    TableName: TEAM_TABLE,
+                    KeyConditionExpression: "PK = :pk",
+                    ExpressionAttributeValues: {
+                        ":pk": item.PK
+                    }
+                };
+                return dynamoDb.send(new QueryCommand(deleteParams)).then((result) => {
+                    if (result.Items && result.Items.length > 0) {
+                        const deleteSubItemsPromises = result.Items.map((subItem) => {
+                            const subItemDeleteParams = {
+                                TableName: TEAM_TABLE,
+                                Key: {
+                                    PK: subItem.PK,
+                                    SK: subItem.SK
+                                }
+                            };
+                            return dynamoDb.send(new DeleteCommand(subItemDeleteParams));
+                        });
+                        return Promise.all(deleteSubItemsPromises);
+                    }
+                });
+            });
+            await Promise.all(relatedDeletePromises);
+        }
+
+        return { statusCode: 200, body: JSON.stringify({ message: "Team and related items deleted successfully" }) };
+    } catch (error) {
+        console.error("Error deleting team and related items:", error);
+        return { statusCode: 500, body: JSON.stringify({ error: "Error deleting team and related items" }) };
+    }
+};
+
+
