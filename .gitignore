@@ -1,5 +1,6 @@
 # 환경 설정 파일
 .env
+.env.*
 .env.local
 .env.*.local
 
@@ -14,6 +15,7 @@ node_modules/
 npm-debug.log*
 yarn-error.log
 yarn-debug.log*
+package-lock.json
 
 # Serverless Framework 관련
 .serverless/
