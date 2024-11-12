@@ -24,7 +24,12 @@ provider:
       statements:
         - Effect: Allow
           Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
             - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
@@ -36,6 +41,18 @@ functions:
       - httpApi:
           path: /api/community/{boardType}/new
           method: POST
+  getCommunityPost:
+    handler: service/getPost.handler
+    events:
+      - httpApi:
+          path: /api/community/{boardType}/{postId}
+          method: GET
+  listCommunityPosts:
+    handler: service/listPost.handler
+    events:
+      - httpApi:
+          path: /api/community/{boardType}
+          method: GET
 
 resources:
   Resources:
@@ -49,11 +66,22 @@ resources:
             AttributeType: S
           - AttributeName: SK
             AttributeType: S
+          - AttributeName: boardType
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
           - AttributeName: SK
             KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: BoardIndex
+            KeySchema:
+              - AttributeName: boardType
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         SSESpecification:
           SSEEnabled: true
 
