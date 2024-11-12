@@ -70,3 +70,29 @@ export const checkTeamName = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ error: "Error dchecking team name" }) };
     }
 };
+
+/**
+ * 유저가 소속된 모든 팀 조회
+ */
+export const getAllTeamSpaces = async (event) => {
+    //const userId = event.requestContext.authorizer.claims.sub;
+    const userId = "USER#123"
+    const params = {
+        TableName: TEAM_TABLE,
+        IndexName: "SK-Index",
+        KeyConditionExpression: "SK = :sk",
+        FilterExpression: "itemType = :itemType",
+        ExpressionAttributeValues: {
+            ":sk": userId,
+            ":itemType": "TeamSpaceUser"
+        }
+    };
+
+    try {
+        const result = await dynamoDb.send(new QueryCommand(params));
+        return { statusCode: 200, body: JSON.stringify(result.Items) };
+    } catch (error) {
+        console.error(error);
+        return { statusCode: 500, body: JSON.stringify({ error: "Error retrieving teams" }) };
+    }
+};
