@@ -1,16 +1,61 @@
-service: example-service
+service: community-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  environment:
+    DYNAMODB_TABLE: ${env:METADATA_TABLE}
+    REGION: ${aws:region}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+          Resource:
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  createCommunityPost:
+    handler: service/createPost.handler
     events:
-      - http:
-          path: test
-          method: get
-          cors: true
+      - httpApi:
+          path: /api/community/{boardType}/new
+          method: POST
 
+resources:
+  Resources:
+    EsquadPostsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        SSESpecification:
+          SSEEnabled: true
+
+plugins:
+  - serverless-dotenv-plugin
