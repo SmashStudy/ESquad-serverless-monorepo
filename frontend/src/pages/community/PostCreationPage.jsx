@@ -89,6 +89,7 @@ const PostCreationPage = ({ onCancel }) => {
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
+                  key={`tag-${index}`}
                   variant="outlined"
                   size="small"
                   label={option}
@@ -150,13 +151,15 @@ const PostCreationPage = ({ onCancel }) => {
           name: userInfo.name,
           email: userInfo.email,
         },
-        tags: tags.length > 0 ? tags : [], // 태그가 없어도 빈 배열로 전송
+        tags: tags.length > 0 ? tags : [],
+        ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 
       const response = await axios.post(url, data);
 
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
+        onCancel();
         navigate(`/community/${boardType}`);
       } else {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
