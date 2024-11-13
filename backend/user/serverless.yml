@@ -1,5 +1,4 @@
-service: google-login-cognito-service
-
+service: esquad-google-login
 provider:
   name: aws
   runtime: nodejs20.x
@@ -24,10 +23,6 @@ functions:
 
   saveUserToDynamoDB:
     handler: service/handler.saveUserToDynamoDB
-    events:
-      - cognitoUserPool:
-          pool: ${env:COGNITO_USER_POOL_NAME}
-          trigger: PostAuthentication
 
 resources:
   Resources:
@@ -47,10 +42,16 @@ resources:
         Schema:
           - Name: email
             Required: true
-            Mutable: false
+            Mutable: true
           - Name: name
             Required: true
             Mutable: true
+        LambdaConfig:
+          PostConfirmation: 
+            Fn::GetAtt:
+              - SaveUserToDynamoDBLambdaFunction
+              - Arn
+
 
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient

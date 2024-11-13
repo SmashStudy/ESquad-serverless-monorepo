@@ -1,11 +1,4 @@
-module.exports.test = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify('test'),
-  };
-};
 // handler.js
-
 const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
 // const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
@@ -13,6 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 // Configure DynamoDB DocumentClient
 const dynamoDb = new DynamoDBClient({ region: 'us-east-1' });
 // const dynamoDb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
+
+const { jwtDecode } = require("jwt-decode");
 
 // Function to handle Cognito Post Authentication trigger and save user data to DynamoDB
 module.exports.saveUserToDynamoDB = async (event, context) => {
@@ -25,7 +20,7 @@ module.exports.saveUserToDynamoDB = async (event, context) => {
 
     const userId = uuidv4();
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
       Item: {
         userId: { S: userId }, // 문자열 타입 지정
         email: { S: userAttributes.email },
