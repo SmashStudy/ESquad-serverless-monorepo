@@ -5,4 +5,5 @@ export const COGNITO_CONFIG = {
   domain: import.meta.env.VITE_COGNITO_DOMAIN,
   scope: import.meta.env.VITE_COGNITO_SCOPE,
   responseType: import.meta.env.VITE_COGNITO_RESPONSE_TYPE,
+  logoutRedirectUri: import.meta.env.VITE_COGNITO_LOGOUT_URI
 };
