@@ -9,7 +9,7 @@ const TEAM_TABLE = "TeamTable";
  * 팀 생성
  */
 export const createTeam = async (event) => {
-    const { teamName, description, userId } = JSON.parse(event.body);
+    const { teamName, description, userIds } = JSON.parse(event.body);
     const teamId = `TEAM#${uuidv4()}`;
 
     const teamParams = {
@@ -23,19 +23,22 @@ export const createTeam = async (event) => {
         }
     };
 
-    const teamUserParams = {
-        TableName: TEAM_TABLE,
-        Item: {
-            PK: teamId,
-            SK: userId,
-            itemType: "TeamSpaceUser",
-            role: "Manager"
-        }
-    };
-
     try {
         await dynamoDb.send(new PutCommand(teamParams));
-        await dynamoDb.send(new PutCommand(teamUserParams));
+        
+        const userPromises = userIds.map((userId) => {
+            const teamUserParams = {
+                TableName: TEAM_TABLE,
+                Item: {
+                    PK: teamId,
+                    SK: userId,
+                    itemType: "TeamSpaceUser",
+                    role: "Member"
+                }
+            };
+            return dynamoDb.send(new PutCommand(teamUserParams));
+        });
+        await Promise.all(userPromises);
         return { statusCode: 201, body: JSON.stringify({ teamId, teamName }) };
     } catch (error) {
         console.error(error);
@@ -70,6 +73,7 @@ export const checkTeamName = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ error: "Error dchecking team name" }) };
     }
 };
+
 
 /**
  * 유저가 소속된 모든 팀 조회
@@ -239,5 +243,3 @@ export const deleteTeam = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ error: "Error deleting team and related items" }) };
     }
 };
-
-
