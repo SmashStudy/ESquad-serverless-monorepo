@@ -1,0 +1,80 @@
+org: persii
+app: esquad-monorepo
+service: service-notification
+frameworkVersion: '^3.15.0'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${env:REGION} # AWS 리전 설정
+  environment:
+    TEAM_DYNAMODB_TABLE: TeamFilesTable # DynamoDB 테이블 이름
+    USERS_TABLE: UsersTable # 유저 테이블 이름
+    SNS_TOPIC_PREFIX: TeamTopic # SNS 주제 이름 접두사
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID} # AWS 계정 ID
+
+functions:
+  dynamoDBStreamHandler:
+    handler: handler.dynamoDBStreamHandler # Lambda 핸들러 함수
+    environment:
+      TEAM_DYNAMODB_TABLE: ${self:provider.environment.TEAM_DYNAMODB_TABLE}
+      USERS_TABLE: ${self:provider.environment.USERS_TABLE}
+      SNS_TOPIC_PREFIX: ${self:provider.environment.SNS_TOPIC_PREFIX}
+    events:
+      - stream:
+          type: dynamodb # DynamoDB Streams 트리거
+          arn:
+            Fn::GetAtt: [TeamFilesTable, StreamArn] # DynamoDB 테이블의 Stream ARN 참조
+          batchSize: 5 # 스트림 배치 처리 크기
+          startingPosition: LATEST # 최신 이벤트부터 시작
+
+resources:
+  Resources:
+    # DynamoDB 테이블 정의
+    TeamFilesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TeamFilesTable
+        AttributeDefinitions:
+          - AttributeName: teamId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: teamId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES # DynamoDB Streams에 새 데이터 및 이전 데이터 제공
+        BillingMode: PAY_PER_REQUEST
+
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UsersTable
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    TeamSNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:provider.environment.SNS_TOPIC_PREFIX}
+
+  Outputs:
+    TeamFilesStreamARN:
+      Description: ARN of the DynamoDB Stream
+      Value:
+        Fn::GetAtt: [TeamFilesTable, StreamArn]
+    SNSTopicARN:
+      Description: ARN of the SNS Topic
+      Value:
+        Ref: TeamSNSTopic
+
+plugins:
+  - serverless-offline # 로컬 개발용 플러그인
