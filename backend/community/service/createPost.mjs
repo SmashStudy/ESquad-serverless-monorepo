@@ -5,7 +5,9 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   try {
-    const { title, content, writer, book, tags } = JSON.parse(event.body);
+    const body =
+      typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+    const { title, content, writer, book, tags } = body;
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -78,7 +80,10 @@ export const handler = async (event) => {
     console.error("Error creating post:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error" }),
+      body: JSON.stringify({
+        message: "Internal server error",
+        error: error.message,
+      }),
     };
   }
 };
