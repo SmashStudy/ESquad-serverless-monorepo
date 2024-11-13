@@ -1,13 +1,12 @@
 {
   "dependencies": {
+    "aws-sdk-mock": "^6.2.0",
     "serverless-dotenv-plugin": "^6.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"
   },
-
-  "scripts" : {
-    "test" : "jest"
+  "scripts": {
+    "test": "jest"
   }
-
 }
