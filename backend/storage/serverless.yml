@@ -136,3 +136,7 @@ resources:
 
 plugins:
   - serverless-dotenv-plugin
+
+package:
+  exclude:
+    - test/**
