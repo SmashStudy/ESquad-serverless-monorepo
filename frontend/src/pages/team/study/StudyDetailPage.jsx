@@ -37,6 +37,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [sortCriteria, setSortCriteria] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('asc');
   const lambdaUrl = 'https://ntja9tz0ra.execute-api.us-east-1.amazonaws.com/dev/files'
+  const [currentPage, setCurrentPage] = useState(1);  // 현재 페이지 번호
+  const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);  // 각 페이지별 LastEvaluatedKey 저장
+  const [totalPages, setTotalPages] = useState(5);  // 예시로 총 5페이지로 설정
 
   useEffect(() => {
     // Fetch files metadata
@@ -513,6 +516,31 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
               )}
             </List>
 
+
+            {/* Pagination Controls */}
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+              >
+                이전
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => (
+                  <Button
+                      key={i + 1}
+                      onClick={() => handlePageChange(i + 1)}
+                      variant={currentPage === i + 1 ? 'contained' : 'outlined'}
+                  >
+                    {i + 1}
+                  </Button>
+              ))}
+              <Button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+              >
+                다음
+              </Button>
+            </Box>
 
           </AccordionDetails>
         </Accordion>
