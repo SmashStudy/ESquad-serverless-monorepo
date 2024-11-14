@@ -358,7 +358,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                             </Box>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
                               <Typography variant="body2" color="textSecondary"
-                                          sx={{mr: 1}}>게시자:</Typography>
+                                          sx={{mr: 1}}>업로더:</Typography>
                               <Typography variant="body2"
                                           color="textPrimary">{file.userId}</Typography>
                             </Box>
