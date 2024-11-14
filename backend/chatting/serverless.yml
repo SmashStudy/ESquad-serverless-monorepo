@@ -1,16 +1,263 @@
-service: example-service
+# Serverless Framework 버전 4 사용
+frameworkVersion: "4"
+# 서비스 이름 정의
+service: ${env:CHATTING_SERVICE_NAME}
+plugins:
+  - serverless-dotenv-plugin
+# 애플리케이션 이름
+app: backend
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  stage: ${opt:stage, env:CHATTING_STAGE, 'dev'}  # 기본값 'dev'를 사용
+  region: ${opt:region, 'us-east-1'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+          Resource:
+            - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - !GetAtt chatappChatMessages.Arn
+            - !GetAtt chatappChatUserlist.Arn
+            - !Sub "${chatappChatMessages.Arn}/index/*"
+            - !Sub "${chatappChatUserlist.Arn}/index/room_id-user_id-index"
+  httpApi:
+    cors:
+      allowedOrigins:
+        - '*'
+      allowedHeaders:
+        - authorization
+        - content-type
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+      allowCredentials: false # CORS 활성화
+  websocket: {} # WebSocket API 설정
+  tags: # 리소스에 태그 추가
+    Service: ${self:service}
+    Environment: ${self:provider.stage}
+  stackTags: # CloudFormation 스택에 태그 추가
+    Service: ${self:service}
+    Environment: ${self:provider.stage}
+  stackName: stack-${self:service}-${self:provider.stage} # CloudFormation 스택 이름
+  timeout: 29 # Lambda 함수 최대 실행 시간 (초)
+  environment: # 환경 변수 설정
+    service: ${self:service}
+    stage: ${self:provider.stage}
+    region: ${self:provider.region}
+    app: ${self:app}
+    socket_api_gateway_id: !Ref WebsocketApi # WebSocket API ID 추가
+    MESSAGES_TABLE_NAME: ${self:service}-${self:provider.stage}-chat-messages
+    USERLIST_TABLE_NAME: ${self:service}-${self:provider.stage}-chat-userlist
+  deploymentBucket: # 배포에 사용할 S3 버킷 설정
+    name: ${self:service}-deploy-${self:provider.stage}
+    serverSideEncryption: AES256
+    blockPublicAccess: true
+    versioning: true
 
+# 패키징 설정
+package:
+  individually: true # 각 함수를 개별적으로 패키징
+  patterns:
+    - "backend/chatting/**"
+    - "package.json"
+    - "package-lock.json"
+    - "node_modules/**"
+
+# Lambda 함수 정의
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  get: # GET 요청 처리 함수
+    handler: service/get.handler
     events:
-      - http:
-          path: test
+      - httpApi:
+          path: /chat/read
           method: get
-          cors: true
+    package:
+      patterns:
+        - service/get.js
 
+  update : # update 요청 처리 함수
+    handler: service/update.handler
+    events:
+      - httpApi:
+          path: /chat/update
+          method: put
+    package:
+      patterns:
+        - service/update.js
+
+  put: # PUT 요청 처리 함수
+    handler: service/put.handler
+    events:
+      - httpApi:
+          path: /chat/send
+          method: put
+    package:
+      patterns:
+        - service/put.js
+        - node_modules/**
+
+  delete:
+    handler: service/delete.handler
+    events:
+      - httpApi:
+          path: /chat/delete
+          method: delete
+    package:
+      patterns:
+        - service/delete.js
+        - node_modules/**
+
+  handleStream: # DynamoDB 스트림 처리 함수
+    handler: service/handleStream.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt chatappChatMessages.StreamArn
+    package:
+      patterns:
+        - service/handleStream.js
+
+  onConnect: # WebSocket 연결 시 처리 함수
+    handler: service/onConnect.handler
+    events:
+      - websocket:
+          route: $connect
+    package:
+      patterns:
+        - service/onConnect.js
+        - lib/ddbUtil.js
+        - node_modules/**
+
+  onDisconnect: # WebSocket 연결 해제 시 처리 함수
+    handler: service/onDisconnect.handler
+    events:
+      - websocket:
+          route: $disconnect
+    package:
+      patterns:
+        - service/onDisconnect.js
+
+  sendMessage:
+    handler: service/sendMessage.handler
+    events:
+      - websocket:
+          route: sendmessage
+    package:
+      patterns:
+        - service/sendMessage.js
+        - lib/ddbUtil.js
+        - node_modules/**
+
+# 추가 리소스 정의
+resources:
+  Resources:
+    DefaultRole: # 기본 Lambda 실행 역할
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:service}-${self:provider.stage}-LambdaRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+        Policies:
+          - PolicyName: LambdaPolicy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:*
+                    - ssm:*
+                    - execute-api:*
+                    - sqs:*
+                  Resource: "*"
+                - Effect: Allow # DynamoDB 스트림 읽기 권한 추가
+                  Action:
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:DescribeStream
+                    - dynamodb:ListStreams
+                  Resource: !GetAtt chatappChatMessages.StreamArn
+                - Effect: Allow # WebSocket 메시지 전송 권한 추가
+                  Action:
+                    - execute-api:ManageConnections
+                  Resource:
+                    - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
+
+    chatappChatMessages: # 채팅 메시지 DynamoDB 테이블
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-chat-messages
+        AttributeDefinitions:
+          - AttributeName: room_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+        KeySchema:
+          - AttributeName: room_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+
+    chatappChatUserlist: # 채팅 사용자 목록 DynamoDB 테이블
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-chat-userlist
+        AttributeDefinitions:
+          - AttributeName: connection_id
+            AttributeType: S
+          - AttributeName: room_id
+            AttributeType: S
+          - AttributeName: user_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: connection_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: room_id-user_id-index
+            KeySchema:
+              - AttributeName: room_id
+                KeyType: HASH
+              - AttributeName: user_id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        TimeToLiveSpecification: # TTL 설정 추가
+          AttributeName: TTL
+          Enabled: true
+
+    WebsocketApi: # WebSocket API 정의 추가
+      Type: AWS::ApiGatewayV2::Api
+      Properties:
+        Name: ${self:service}-${self:provider.stage}-websocket-api
+        ProtocolType: WEBSOCKET
+        RouteSelectionExpression: $request.body.action
+
+# 사용자 정의 설정 (필요한 경우 여기에 추가)
+custom:
