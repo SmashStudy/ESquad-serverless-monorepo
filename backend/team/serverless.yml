@@ -27,7 +27,8 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/SK-Index
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/teamID-Index
       managedPolicies:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
       assumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -92,7 +93,7 @@ functions:
     handler: service/team-handler.createTeam
     events:
       - http:
-          path: /api/teams
+          path: /api/teams/new
           method: post
   checkTeamName:
     handler: service/team-handler.checkTeamName
@@ -124,12 +125,6 @@ functions:
       - http:
           path: /api/teams/{teamId}
           method: delete
-
-  searchBooks:
-    handler: service/book-handler.searchBooks
-    events:
-      - http:
-          path: /api/book/search
-          method: get
+          
 plugins:
   - serverless-dotenv-plugin
