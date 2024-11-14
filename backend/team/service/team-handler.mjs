@@ -2,16 +2,22 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {PutCommand, GetCommand, QueryCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
 
-const dynamoDb = new DynamoDBClient({ region: 'us-east-2' });
-const TEAM_TABLE = "TeamTable";
+const dynamoDb = new DynamoDBClient(process.region);
+const TEAM_TABLE = process.env.TEAM_TABLE;
 
 /**
  * 팀 생성
  */
 export const createTeam = async (event) => {
-    const { teamName, description, userIds } = JSON.parse(event.body);
+    const { teamName, description, userIds = [] } = JSON.parse(event.body);
     const teamId = `TEAM#${uuidv4()}`;
-
+    if (userIds.length === 0) {
+        console.error('No user IDs provided');
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'User IDs are required' }),
+        };
+      }
     const teamParams = {
         TableName: TEAM_TABLE,
         Item: {
@@ -26,19 +32,22 @@ export const createTeam = async (event) => {
     try {
         await dynamoDb.send(new PutCommand(teamParams));
         
-        const userPromises = userIds.map((userId) => {
+        const teamPromises = userIds.map((userId, index) => {
+            const role = index === 0 ? "Manager" : "Member";  // 첫 번째 요소는 Manager, 나머지는 Member
+          
             const teamUserParams = {
-                TableName: TEAM_TABLE,
-                Item: {
-                    PK: teamId,
-                    SK: userId,
-                    itemType: "TeamSpaceUser",
-                    role: "Member"
-                }
+              TableName: TEAM_TABLE,
+              Item: {
+                PK: teamId,
+                SK: userId,
+                itemType: "TeamSpaceUser",
+                role: role,  // 역할을 동적으로 할당
+              }
             };
+          
             return dynamoDb.send(new PutCommand(teamUserParams));
         });
-        await Promise.all(userPromises);
+        await Promise.all(teamPromises);
         return { statusCode: 201, body: JSON.stringify({ teamId, teamName }) };
     } catch (error) {
         console.error(error);
