@@ -53,6 +53,18 @@ functions:
       - httpApi:
           path: /api/community/{boardType}
           method: GET
+  updatePost:
+    handler: service/updatePost.handler
+    events:
+      - httpApi:
+          path: /api/community/{boardType}/{postId}
+          method: PUT
+  deletePost:
+    handler: service/deletePost.handler
+    events:
+      - httpApi:
+          path: /api/community/{boardType}/{postId}
+          method: DELETE
 
 resources:
   Resources:
