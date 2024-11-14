@@ -36,9 +36,11 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       {open: false, message: '', severity: 'success'})
   const [sortCriteria, setSortCriteria] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('asc');
-  const lambdaUrl = 'https://ntja9tz0ra.execute-api.us-east-1.amazonaws.com/dev/files'
+  const lambdaUrl = 'https://235g2jjtqc.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
+    console.log("StudyId:", studyId);
+
     // Fetch files metadata
     const fetchFiles = async () => {
       try {
@@ -166,7 +168,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             metadata: {
               targetId: studyId,
               targetType: 'STUDY_PAGE',
-              userId: '말똥말똥성게',
+              userId: 'USER#123',
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,
@@ -525,9 +527,9 @@ StudyDetailPage.propTypes = {
   uploadedFiles: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-        targetId: PropTypes.number.isRequired,
+        targetId: PropTypes.string.isRequired,
         targetType: PropTypes.string.isRequired,
-        userId: PropTypes.number.isRequired,
+        userId: PropTypes.string.isRequired,
         fileSize: PropTypes.number.isRequired,
         extension: PropTypes.string.isRequired,
         contentType: PropTypes.string.isRequired,

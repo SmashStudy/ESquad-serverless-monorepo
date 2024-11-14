@@ -1,4 +1,5 @@
-service: storage-service
+service: service-storage
+frameworkVersion: '^3.15.0'
 
 provider:
   name: aws
@@ -97,6 +98,8 @@ resources:
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: KEYS_ONLY
 
     S3Bucket:
       Type: AWS::S3::Bucket
@@ -132,5 +135,13 @@ resources:
                 - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
                 - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
-plugins:
-  - serverless-dotenv-plugin
+useDotenv: true
+#plugins:
+#  - serverless-dotenv-plugin
+#  - serverless-s3-remover
+#
+#custom:
+#  s3Remover:
+#    prompt: true
+#    buckets:
+#      - ${env:S3_BUCKET}

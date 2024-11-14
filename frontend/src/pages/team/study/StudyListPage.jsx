@@ -22,19 +22,15 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
 
     // 더미 스터디 리스트 데이터
     const [studys, setStudys] = useState([
-        {"id": 2, "teamId": teamId, "bookId": 4, "title": "스터디읻이디리딩딩딩", "members": 12},
-        {"id": 5, "teamId": teamId, "bookId": 2, "title": "케로케로케로디리딩딩딩", "members": 12},
-        {"id": 1, "teamId": teamId, "bookId": 66, "title": "디리딩디읻", "members": 12},
-        {"id": 9, "teamId": teamId, "bookId": 16, "title": "쿵쿵타리", "members": 12},
-        {"id": 13, "teamId": teamId, "bookId": 53, "title": "삐기삐끼", "members": 12},
-        {"id": 23, "teamId": teamId,"bookId": 38, "title": "이디리딩딩딩", "members": 12},
+        {"id": encodeURIComponent("STUDYPAGE#101"), "teamId": teamId, "bookId": 'BOOK#301', "title": "스터디읻이디리딩딩딩", "members": 12},
+        {"id": encodeURIComponent("STUDYPAGE#105"), "teamId": teamId, "bookId": 'BOOK#305', "title": "케로케로케로디리딩딩딩", "members": 12},
     ]);
     // const [studys, setStudys] = useState([]);
     const [loading, setLoading] = useState(true); // 로딩 상태 관리
     const [error, setError] = useState(false); // 에러 상태 관리
 
     // const { userInfo } = useUser();
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const userInfo = { id: 'USER#123', username: 'esquadback'}      // 유저 더미 데이터
     const handleStreamingButtonClick = (username) => {
         const popupUrl = `https://webrtc.store/esquad?name=${encodeURIComponent(username)}`;
         window.open(popupUrl, '_blank', 'width=800,height=600');
@@ -51,6 +47,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
     //     setIsPostModalOpen(false);
     // };
 
+    console.log(studys);
     return (
         <>
             {/* Filters and Search */}

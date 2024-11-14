@@ -165,7 +165,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
     const [teamNameError, setTeamNameError] = useState('');
     const [loading, setLoading] = useState(false);
     // const { userInfo } = useUser(); // 유저 정보
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const userInfo = { id: 'USER#123', username: 'esquadback'}      // 유저 더미 데이터
 
     const updateTeamCrew = () => {
         setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);

@@ -1,6 +1,7 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDBClient({});
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
@@ -9,10 +10,10 @@ export const handler = async (event) => {
   let { storedFileName } = event.pathParameters;
 
   try {
-    // 인코딩 여부에 따라 디코딩 시도
+    // Attempt to decode the file name
     storedFileName = decodeURIComponent(storedFileName);
   } catch (error) {
-    // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
+    // If already decoded, log and proceed
     console.log("File name did not require decoding:", storedFileName);
   }
 
@@ -22,26 +23,32 @@ export const handler = async (event) => {
       Key: { id: `files/${storedFileName}` },
     };
 
-    await dynamoDb.delete(deleteParams).promise();
+    const command = new DeleteCommand(deleteParams);
+    await dynamoDb.send(command);
 
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
-      body: JSON.stringify({ message: `Metadata for ${storedFileName} deleted successfully` }),
+      body: JSON.stringify({
+        message: `Metadata for ${storedFileName} deleted successfully`,
+      }),
     };
   } catch (error) {
+    console.error("Error deleting metadata:", error);
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
-      body: JSON.stringify({ error: `Failed to delete metadata: ${error.message}` }),
+      body: JSON.stringify({
+        error: `Failed to delete metadata: ${error.message}`,
+      }),
     };
   }
 };

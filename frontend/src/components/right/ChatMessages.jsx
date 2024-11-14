@@ -18,7 +18,7 @@ const ChatMessages = ({ currentChatRoom }) => {
     // const userId = userInfo ? userInfo.id : "";
     // const username = userInfo ? userInfo.username : "";
 
-    const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
+    const userInfo = { id: 'USER#123', username: "esquadback"}  // 더미 유저
     const userId = userInfo.id;              // 더미 유저
     const username = userInfo.username;   // 더미 유저
     const roomId = currentChatRoom.id;

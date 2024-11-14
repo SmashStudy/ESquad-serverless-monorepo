@@ -1,6 +1,6 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDBClient({});
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
@@ -19,13 +19,15 @@ export const handler = async (event) => {
     IndexName: 'FetchFileIndex', // 인덱스 생성 후 사용
     KeyConditionExpression: 'targetId = :targetId and targetType = :targetType',
     ExpressionAttributeValues: {
-      ':targetId': targetId,
-      ':targetType': targetType,
+      ':targetId': { S: targetId },
+      ':targetType': { S: targetType },
     },
   };
 
   try {
-    const data = await dynamoDb.query(params).promise();
+    const command = new QueryCommand(params);
+    const data = await dynamoDb.send(command);
+
     return {
       headers: {
         'Access-Control-Allow-Origin': '*',

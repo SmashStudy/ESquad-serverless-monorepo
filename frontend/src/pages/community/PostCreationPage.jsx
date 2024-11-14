@@ -12,7 +12,7 @@ const PostCreationPage = ({ onCancel }) => {
     const theme = useTheme();
     const navigate = useNavigate(); // 페이지 이동을 위한 훅 선언
     // const { userInfo } = useUser();
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const userInfo = { id: 'USER#123', username: 'esquadback'}      // 유저 더미 데이터
     const [activeTab, setActiveTab] = useState('질문');
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');

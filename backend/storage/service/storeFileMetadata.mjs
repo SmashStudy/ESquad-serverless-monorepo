@@ -1,13 +1,27 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDBClient({});
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
+
   try {
     const body = JSON.parse(event.body);
     const { fileKey, metadata } = body;
+
+    if (!fileKey || !metadata) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+        },
+        body: JSON.stringify({ error: "fileKey and metadata are required." }),
+      };
+    }
 
     const params = {
       TableName: TABLE_NAME,
@@ -17,27 +31,33 @@ export const handler = async (event) => {
       },
     };
 
-    await dynamoDb.put(params).promise();
+    const command = new PutCommand(params);
+    await dynamoDb.send(command);
 
     return {
       statusCode: 200,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
-      body: JSON.stringify({ message: 'Metadata stored successfully', data: { id: fileKey, ...metadata } }),
+      body: JSON.stringify({
+        message: "Metadata stored successfully",
+        data: { id: fileKey, ...metadata },
+      }),
     };
   } catch (error) {
-    console.error('Error storing metadata:', error);
+    console.error("Error storing metadata:", error);
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
-      body: JSON.stringify({ error: `Failed to store metadata: ${error.message}` }),
+      body: JSON.stringify({
+        error: `Failed to store metadata: ${error.message}`,
+      }),
     };
   }
 };

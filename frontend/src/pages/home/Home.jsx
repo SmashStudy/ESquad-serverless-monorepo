@@ -26,8 +26,8 @@ const Home = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [teams, setTeams] = useState([
         // { "teamName": "none" },
-        { "id": 21, "teamName": "문법존" },
-        { "id": 28, "teamName": "몬다니" },
+        { "id": 'TEAM001', "teamName": "문법존" },
+        { "id": 'TEAM002', "teamName": "몬다니" },
     ]);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px

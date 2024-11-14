@@ -35,7 +35,7 @@ const BookListPage = ({ isSmallScreen, isMediumScreen }) => {
     // const [books, setBooks] = useState([]);
 
     // const { userInfo } = useUser();
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const userInfo = { id: 'USER#123', username: 'esquadback'}      // 유저 더미 데이터
 
     const [query, setQuery] = useState('');
     const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);

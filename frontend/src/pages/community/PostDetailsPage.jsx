@@ -11,7 +11,7 @@ const PostDetailsPage = ({ isSmallScreen, isMediumScreen }) => {
     const { postId } = useParams();
     const navigate = useNavigate();
     // const { userInfo } = useUser();
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
+    const userInfo = { id: 'USER#123', username: 'esquadback'}      // 유저 더미 데이터
     // const [post, setPost] = useState(null);
     const [post, setPost] = useState( {"id": 32, "writer": "룰루레몬", "title": "테스트부치기", "views": 5, "createdAt": "2024-10-11" ,"description": "룰루랄라라람", "likes": 2} );   // 더미 포스트
     // const [comments, setComments] = useState([]);
