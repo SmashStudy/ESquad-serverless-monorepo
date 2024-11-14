@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {PutCommand, GetCommand, QueryCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
 
-const dynamoDb = new DynamoDBClient(process.region);
+const dynamoDb = new DynamoDBClient( {region: process.region});
 const TEAM_TABLE = process.env.TEAM_TABLE;
 
 /**
@@ -16,8 +16,13 @@ export const createTeam = async (event) => {
         return {
           statusCode: 400,
           body: JSON.stringify({ error: 'User IDs are required' }),
+          headers: {
+            "Access-Control-Allow-Origin": "*",  // CORS 허용
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
+          }
         };
-      }
+    }
     const teamParams = {
         TableName: TEAM_TABLE,
         Item: {
@@ -34,26 +39,39 @@ export const createTeam = async (event) => {
         
         const teamPromises = userIds.map((userId, index) => {
             const role = index === 0 ? "Manager" : "Member";  // 첫 번째 요소는 Manager, 나머지는 Member
-          
             const teamUserParams = {
-              TableName: TEAM_TABLE,
-              Item: {
-                PK: teamId,
-                SK: userId,
-                itemType: "TeamSpaceUser",
-                role: role,  // 역할을 동적으로 할당
-              }
+                TableName: TEAM_TABLE,
+                Item: {
+                    PK: teamId,
+                    SK: userId,
+                    itemType: "TeamSpaceUser",
+                    role: role,  // 역할을 동적으로 할당
+                }
             };
-          
             return dynamoDb.send(new PutCommand(teamUserParams));
         });
         await Promise.all(teamPromises);
-        return { statusCode: 201, body: JSON.stringify({ teamId, teamName }) };
+        return {
+            statusCode: 201,
+            body: JSON.stringify({ teamId, teamName }),
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // CORS 허용
+                "Content-Type": "application/json"
+            }
+        };
     } catch (error) {
         console.error(error);
-        return { statusCode: 500, body: JSON.stringify({ error: "Error creating team" }) };
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "Error creating team" }),
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // CORS 허용
+                "Content-Type": "application/json"
+            }
+        };
     }
 };
+
 
 
 /**
@@ -76,10 +94,27 @@ export const checkTeamName = async (event) => {
         if (result.Items.length > 0) {
             return { statusCode: 400, body: "Team name already exists" };
         }
-        return { statusCode: 200, body: "Team name is available" };
+        return { 
+            statusCode: 200, 
+            body: "Team name is available",          
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // CORS 허용
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
+            } 
+        };
     } catch (error) {
         console.error(error);
-        return { statusCode: 400, body: JSON.stringify({ error: "Error dchecking team name" }) };
+        return { 
+            statusCode: 400, 
+            body: JSON.stringify({ 
+            error: "Error dchecking team name" }),          
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // CORS 허용
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT,DELETE"
+            } 
+        };
     }
 };
 
