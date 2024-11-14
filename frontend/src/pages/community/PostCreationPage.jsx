@@ -141,7 +141,10 @@ const PostCreationPage = ({ onCancel }) => {
 
   const handleSubmit = async () => {
     try {
-      const url = `https://klemqwe7g0.execute-api.us-east-1.amazonaws.com/api/community/${boardType}/new`;
+      const apiUrl =
+        "https://0gfhd6yh1c.execute-api.us-east-1.amazonaws.com/api/community";
+      console.log(apiUrl);
+      const url = `${apiUrl}/${boardType}/new`;
 
       const data = {
         title,
