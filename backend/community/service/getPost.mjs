@@ -58,7 +58,7 @@ export const handler = async (event) => {
       updatedAt: data.Item.updatedAt.S,
       viewCount: parseInt(data.Item.viewCount.N, 10),
       likeCount: parseInt(data.Item.likeCount.N, 10),
-      resolved: data.Item.resolved.BOOL,
+      resolved: data.Item.resolved?.BOOL || false, //  resolved 값이 없으면 기본값 false(자유게시판)
     };
 
     return {
