@@ -1,214 +1,201 @@
-service: streaming-service
+service: meeting
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ${env:REGION}
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
   environment:
-    MEETINGS_TABLE_NAME: ${env:MEETINGS_TABLE_NAME}
-    ATTENDEES_TABLE_NAME: ${env:ATTENDEES_TABLE_NAME}
-    SQS_QUEUE_ARN: !Ref MeetingNotificationsQueue
-    BROWSER_LOG_GROUP_NAME: "/aws/chime/browser-logs"
-    AWS_ACCOUNT_ID: !Ref AWS::AccountId
+    MEETINGS_TABLE_NAME:
+      Ref: Meetings
+    ATTENDEES_TABLE_NAME:
+      Ref: Attendees
+    SQS_QUEUE_ARN:
+      Fn::GetAtt:
+        - MeetingNotificationsQueue
+        - Arn
+    BROWSER_LOG_GROUP_NAME:
+      Ref: ChimeBrowserLogs
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:GetItem
-        - dynamodb:Query
-        - dynamodb:DeleteItem
-      Resource:
-        - !Sub arn:aws:dynamodb:${env:REGION}:${AWS::AccountId}:table/${env:MEETINGS_TABLE_NAME}
-        - !Sub arn:aws:dynamodb:${env:REGION}:${AWS::AccountId}:table/${env:MEETINGS_TABLE_NAME}/index/TargetIndex
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "chime:CreateMeeting"
+            - "chime:CreateAttendee"
+          Resource: "arn:aws:chime:*:*:meeting/*"
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+          Resource:
+            - Fn::GetAtt:
+                - Meetings
+                - Arn
+            - Fn::GetAtt:
+                - Attendees
+                - Arn
+        - Effect: "Allow"
+          Action:
+            - "kms:Decrypt"
+          Resource: "*"
+
+custom:
+  useEventBridge: ${opt:useEventBridge, 'false'}
+
+  chimeEventBridgeEvents:
+    true:
+      - eventBridge:
+          pattern:
+            source:
+              - aws.chime
+            detail-type:
+              - 'Chime Meeting State Change'
+    false: []
 
 functions:
-  joinMeeting:
-    handler: service/controllers/join.join
-    role: !GetAtt ChimeSdkJoinLambdaRole.Arn
+  ChimeSdkIndexLambda:
+    handler: src/index.handler
+    events:
+      - http:
+          path: /
+          method: get
+      - http:
+          path: /{proxy+}
+          method: any
+
+  ChimeSdkJoinLambda:
+    handler: src/join.handler
     events:
       - http:
           path: /api/stream/join
           method: post
-          cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+    environment:
+      USE_EVENT_BRIDGE: ${self:custom.useEventBridge}
 
-  endMeeting:
-    handler: service/controllers/end.end
-    role: !GetAtt ChimeSdkEndLambdaRole.Arn
+  ChimeSdkEndLambda:
+    handler: src/end.handler
     events:
       - http:
           path: /api/stream/end
           method: post
-          cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
 
-  getAttendee:
-    handler: service/controllers/attendee.attendee
-    role: !GetAtt ChimeSdkAttendeeLambdaRole.Arn
+  ChimeSdkAttendeeLambda:
+    handler: src/attendee.handler
     events:
       - http:
           path: /api/stream/attendee
           method: get
-          cors: true
-          integration: lambda
-          response:
-            headers:
-              Access-Control-Allow-Origin: "'*'"
-              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
-              Access-Control-Allow-Methods: "'OPTIONS,POST,GET,DELETE'"
+
+  ChimeSQSQueueLambda:
+    handler: src/sqs_handler.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MeetingNotificationsQueue
+              - Arn
+          batchSize: 10
+
+  ChimeEventBridgeLambda:
+    handler: src/event_bridge_handler.handler
+    events: ${self:custom.chimeEventBridgeEvents.${self:custom.useEventBridge}}
+
+  ChimeSdkBrowserLogsLambda:
+    handler: src/logs.handler
+    events:
+      - http:
+          path: /api/stream/logs
+          method: post
 
 resources:
   Resources:
-    MeetingsTable:
+    Meetings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${env:MEETINGS_TABLE_NAME}
+        TableName: 'MeetingsTable'
         AttributeDefinitions:
-          - AttributeName: "Title"
-            AttributeType: "S"
-          - AttributeName: "Passcode"
-            AttributeType: "S"
+          - AttributeName: 'Title'
+            AttributeType: 'S'
+          - AttributeName: 'Passcode'
+            AttributeType: 'S'
         KeySchema:
-          - AttributeName: "Title"
+          - AttributeName: 'Title'
             KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
         GlobalSecondaryIndexes:
-          - IndexName: "Passcode"
+          - IndexName: 'Passcode'
             KeySchema:
-              - AttributeName: "Passcode"
+              - AttributeName: 'Passcode'
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: 'TTL'
+          Enabled: true
 
-    AttendeesTable:
+    Attendees:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${env:ATTENDEES_TABLE_NAME}
+        TableName: 'AttendeesTable'
         AttributeDefinitions:
-          - AttributeName: "AttendeeId"
-            AttributeType: "S"
+          - AttributeName: 'AttendeeId'
+            AttributeType: 'S'
         KeySchema:
-          - AttributeName: "AttendeeId"
+          - AttributeName: 'AttendeeId'
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
 
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        KmsMasterKeyId: !Sub alias/ChimeKMS-${AWS::StackName}
+        QueueName: 'MeetingNotificationsQueue'
+        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS
 
     ChimeBrowserLogs:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: "/aws/chime/browser-logs"
-        RetentionInDays: 30
+        LogGroupName: 'ChimeBrowserLogs'
 
-    ChimeMeetingsAccessPolicy:
-      Type: AWS::IAM::Policy
+    ChimeKMSKey:
+      Type: AWS::KMS::Key
       Properties:
-        PolicyName: ChimeMeetingsAccess
-        PolicyDocument:
-          Version: "2012-10-17"
+        Description: Custom KMS Key with Chime access
+        KeyPolicy:
+          Version: '2012-10-17'
           Statement:
-            - Effect: Allow
-              Action:
-                - "chime:CreateMeeting"
-                - "chime:DeleteMeeting"
-                - "chime:GetMeeting"
-                - "chime:ListMeetings"
-                - "chime:BatchCreateAttendee"
-                - "chime:CreateAttendee"
-                - "chime:DeleteAttendee"
-                - "chime:GetAttendee"
-                - "chime:ListAttendees"
-              Resource: "*"
-        Roles:
-          - Ref: ChimeSdkJoinLambdaRole
-          - Ref: ChimeSdkAttendeeLambdaRole
-          - Ref: ChimeSdkEndLambdaRole
-
-    ChimeSdkJoinLambdaRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - sts:AssumeRole
+            - Sid: Allow access for Chime Service
+              Effect: Allow
               Principal:
-                Service: lambda.amazonaws.com
-        Policies:
-          - PolicyName: ChimeSdkJoinLambdaPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - dynamodb:PutItem
-                    - dynamodb:GetItem
-                    - dynamodb:Query
-                    - dynamodb:DeleteItem
-                  Resource:
-                    - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${env:MEETINGS_TABLE_NAME}
-
-    ChimeSdkEndLambdaRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
+                Service: chime.amazonaws.com
               Action:
-                - sts:AssumeRole
+                - kms:GenerateDataKey
+                - kms:Decrypt
+              Resource: '*'
+            - Sid: Enable IAM User Permissions
+              Effect: Allow
               Principal:
-                Service: lambda.amazonaws.com
-        Policies:
-          - PolicyName: ChimeSdkEndLambdaPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - dynamodb:PutItem
-                    - dynamodb:GetItem
-                    - dynamodb:Query
-                    - dynamodb:DeleteItem
-                  Resource:
-                    - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${env:MEETINGS_TABLE_NAME}
+                AWS:
+                  Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+              Action: kms:*
+              Resource: '*'
 
-    ChimeSdkAttendeeLambdaRole:
-      Type: AWS::IAM::Role
+    ChimeKMSAlias:
+      Type: AWS::KMS::Alias
       Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - sts:AssumeRole
-              Principal:
-                Service: lambda.amazonaws.com
-        Policies:
-          - PolicyName: ChimeSdkAttendeeLambdaPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - dynamodb:PutItem
-                    - dynamodb:GetItem
-                    - dynamodb:Query
-                    - dynamodb:DeleteItem
-                  Resource:
-                    - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${env:MEETINGS_TABLE_NAME}
+        AliasName:
+          Fn::Sub: 'alias/ChimeKMS-${AWS::StackName}'
+        TargetKeyId:
+          Ref: ChimeKMSKey
+
+outputs:
+  ApiURL:
+    Description: 'API endpoint URL for ${self:provider.stage} environment'
+    Value:
+      Fn::Sub: 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${self:provider.stage}/'
+
+plugins:
+  - serverless-iam-roles-per-function
+
