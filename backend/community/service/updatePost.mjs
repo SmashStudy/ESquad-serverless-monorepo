@@ -2,6 +2,24 @@ import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
+const convertDynamoDBItem = (item) => {
+  const convertedItem = {};
+  for (const key in item) {
+    if (item[key].S) {
+      convertedItem[key] = item[key].S;
+    } else if (item[key].N) {
+      convertedItem[key] = parseInt(item[key].N, 10);
+    } else if (item[key].BOOL !== undefined) {
+      convertedItem[key] = item[key].BOOL;
+    } else if (item[key].SS) {
+      convertedItem[key] = item[key].SS;
+    } else if (item[key].M) {
+      convertedItem[key] = convertDynamoDBItem(item[key].M);
+    }
+  }
+  return convertedItem;
+};
+
 export const handler = async (event) => {
   try {
     const postId = event.pathParameters.postId;
@@ -76,11 +94,14 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new UpdateItemCommand(params));
 
+    // 변환된 데이터 반환
+    const updatedPost = convertDynamoDBItem(data.Attributes);
+
     return {
       statusCode: 200,
       body: JSON.stringify({
         message: "Post updated successfully",
-        updatedPost: data.Attributes,
+        updatedPost,
       }),
     };
   } catch (error) {
