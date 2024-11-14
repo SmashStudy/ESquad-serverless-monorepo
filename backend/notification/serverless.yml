@@ -6,60 +6,44 @@ frameworkVersion: '^3.15.0'
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ${env:REGION} # AWS 리전 설정
+  region: ${env:REGION}
   environment:
-    TEAM_DYNAMODB_TABLE: TeamFilesTable # DynamoDB 테이블 이름
-    USERS_TABLE: UsersTable # 유저 테이블 이름
-    SNS_TOPIC_PREFIX: TeamTopic # SNS 주제 이름 접두사
-    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID} # AWS 계정 ID
+    STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
+    TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
+    NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
+    SNS_TOPIC_PREFIX: StudyPageStorageTopic
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
 
 functions:
-  dynamoDBStreamHandler:
-    handler: handler.dynamoDBStreamHandler # Lambda 핸들러 함수
+  storageDBEventHandler:
+    handler: ./service/storageEventHandler.handler # Lambda 핸들러 함수
     environment:
-      TEAM_DYNAMODB_TABLE: ${self:provider.environment.TEAM_DYNAMODB_TABLE}
-      USERS_TABLE: ${self:provider.environment.USERS_TABLE}
+      STORAGE_TABLE: ${self:provider.environment.STORAGE_DYNAMODB_TABLE}
+      TEAM_TABLE: ${self:provider.environment.TEAM_DYNAMODB_TABLE}
+      NOTIFICATIONS_TABLE: ${self:provider.environment.NOTIFICATION_DYNAMODB_TABLE}
       SNS_TOPIC_PREFIX: ${self:provider.environment.SNS_TOPIC_PREFIX}
     events:
       - stream:
           type: dynamodb # DynamoDB Streams 트리거
-          arn:
-            Fn::GetAtt: [TeamFilesTable, StreamArn] # DynamoDB 테이블의 Stream ARN 참조
-          batchSize: 5 # 스트림 배치 처리 크기
-          startingPosition: LATEST # 최신 이벤트부터 시작
+          arn: arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:STORAGE_TABLE}/stream/label
+          batchSize: 5              # 스트림 배치 처리 크기
+          startingPosition: LATEST  # 최신 이벤트부터 시작
 
 resources:
   Resources:
     # DynamoDB 테이블 정의
-    TeamFilesTable:
+    NotificationsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: TeamFilesTable
+        TableName: ${self:provider.environment.NOTIFICATION_DYNAMODB_TABLE}
         AttributeDefinitions:
-          - AttributeName: teamId
-            AttributeType: S
-          - AttributeName: id
-            AttributeType: S
+        - AttributeName: notificationId
+          AttributeType: S
         KeySchema:
-          - AttributeName: teamId
+          - AttributeName: notificationId
             KeyType: HASH
-          - AttributeName: id
-            KeyType: RANGE
-        StreamSpecification:
-          StreamViewType: NEW_AND_OLD_IMAGES # DynamoDB Streams에 새 데이터 및 이전 데이터 제공
         BillingMode: PAY_PER_REQUEST
 
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: UsersTable
-        AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: userId
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
 
     TeamSNSTopic:
       Type: AWS::SNS::Topic
