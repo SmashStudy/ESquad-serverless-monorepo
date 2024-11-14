@@ -5,6 +5,7 @@ provider:
   runtime: nodejs20.x
   region: ${env:REGION}
   environment:
+    API_URL: ${env:VITE_APP_API_URL}
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
   httpApi:
