@@ -43,17 +43,28 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new QueryCommand(params));
 
-    const posts = data.Items.map((item) => ({
-      postId: item.PK.S.split("#")[1],
-      boardType: item.boardType.S,
-      title: item.title.S,
-      content: item.content.S,
-      createdAt: item.createdAt.S,
-      updatedAt: item.updatedAt.S,
-      viewCount: parseInt(item.viewCount.N, 10),
-      likeCount: parseInt(item.likeCount.N, 10),
-      resolved: item.resolved?.BOOL || false,
-    }));
+    // 각 게시글에 대해 반환할 데이터 필드 설정
+    const posts = data.Items.map((item) => {
+      const post = {
+        postId: item.PK.S.split("#")[1],
+        boardType: item.boardType.S,
+        title: item.title.S,
+        content: item.content.S,
+        createdAt: item.createdAt.S,
+        updatedAt: item.updatedAt.S,
+        viewCount: parseInt(item.viewCount.N, 10),
+        likeCount: parseInt(item.likeCount.N, 10),
+      };
+
+      // boardType에 따라 다른 필드를 반환
+      if (item.boardType.S === "questions") {
+        post.resolved = item.resolved?.BOOL || false;
+      } else if (item.boardType.S === "team-recruit") {
+        post.recruitStatus = item.recruitStatus?.BOOL || false;
+      }
+
+      return post;
+    });
 
     return {
       statusCode: 200,
