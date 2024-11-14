@@ -35,20 +35,20 @@ provider:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
 
 functions:
-  createCommunityPost:
+  createPost:
     handler: service/createPost.handler
     events:
       - httpApi:
           path: /api/community/{boardType}/new
           method: POST
-  getCommunityPost:
+  getPost:
     handler: service/getPost.handler
     events:
       - httpApi:
           path: /api/community/{boardType}/{postId}
           method: GET
-  listCommunityPosts:
-    handler: service/listPost.handler
+  listPosts:
+    handler: service/listPosts.handler
     events:
       - httpApi:
           path: /api/community/{boardType}
