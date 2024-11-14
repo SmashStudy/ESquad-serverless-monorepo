@@ -36,7 +36,7 @@ export const handler = async (event) => {
     }
 
     const post = {
-      postId: data.Item.PK.S,
+      postId: data.Item.PK.S.split("#")[1],
       boardType: data.Item.boardType.S,
       title: data.Item.title.S,
       content: data.Item.content.S,
@@ -58,7 +58,14 @@ export const handler = async (event) => {
       updatedAt: data.Item.updatedAt.S,
       viewCount: parseInt(data.Item.viewCount.N, 10),
       likeCount: parseInt(data.Item.likeCount.N, 10),
-      resolved: data.Item.resolved?.BOOL || false, //  resolved 값이 없으면 기본값 false(자유게시판)
+      resolved:
+        data.Item.boardType.S === "questions"
+          ? data.Item.resolved?.BOOL
+          : undefined,
+      recruitStatus:
+        data.Item.boardType.S === "team-recruit"
+          ? data.Item.recruitStatus?.BOOL
+          : undefined,
     };
 
     return {
