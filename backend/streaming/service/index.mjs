@@ -1,0 +1,16 @@
+import fs from 'fs';
+
+export const handler = async (event, context, callback) => {
+  const response = {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'text/html',
+    },
+    body: '',
+    isBase64Encoded: false,
+  };
+  
+  response.body = fs.readFileSync('./index.html', { encoding: 'utf8' });
+  
+  callback(null, response);
+};
