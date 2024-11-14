@@ -29,14 +29,14 @@ Thumbs.db
 ehthumbs.db
 
 # 빌드 및 배포 파일
-dist/              # 빌드 출력 디렉토리
-build/             # 빌드 출력 디렉토리
-out/               # 빌드 출력 디렉토리
-tmp/               # 임시 파일
+dist/
+build/
+out/
+tmp/
 
 # AWS 설정 파일 (민감 정보)
-.aws/              # AWS CLI 및 SDK 설정 폴더
+.aws/
 
 # 백업 파일
 *.bak
-*.swp              # Vim 임시 파일
+*.swp
