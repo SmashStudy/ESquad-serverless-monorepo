@@ -18,7 +18,7 @@ import PostEditPage from "./pages/community/PostEditPage.jsx";
 import GoogleLogin from './components/google/GoolgeLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
-import SetNickname from './components/google/Nickname.jsx'
+import UserProfile from './components/user/UserProfile.jsx';
 
 
 
@@ -88,7 +88,7 @@ function App() {
                         <Route path="/join" element={<JoinPage />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
-                        <Route path="/google/sign-up" element={<SetNickname />} />
+                        <Route path='/user/profile' element={<UserProfile />} />
 
 
                         {/* Protect routes that require authentication */}
