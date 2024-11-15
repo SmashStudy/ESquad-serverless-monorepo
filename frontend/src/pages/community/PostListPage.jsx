@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
@@ -13,7 +13,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   const [texts, setText] = useState([]);
 
   // URL 경로에 따라 boardType 설정
-  const getBoardTypeFromPath = () => {
+  const getBoardTypeFromPath = useCallback(() => {
     if (location.pathname.includes("team-recruit")) {
       setText(["전체", "모집중", "모집완료"]);
       return "team-recruit";
@@ -27,12 +27,11 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
       setText(["전체", "미해결", "해결됨"]);
       return "questions";
     }
-  };
+  }, [location.pathname]);
 
   const [boardType, setBoardType] = useState(getBoardTypeFromPath);
 
-  // 게시글 목록을 불러오는 함수
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const response = await fetch(
         `https://api.esquad.click/api/community/${boardType}?limit=10`
@@ -45,15 +44,15 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
-  };
-
-  useEffect(() => {
-    setBoardType(getBoardTypeFromPath()); // 경로 변경 시 boardType 업데이트
-  }, [location.pathname]);
-
-  useEffect(() => {
-    fetchPosts(); // boardType이 변경될 때 게시글 목록 불러오기
   }, [boardType]);
+
+  useEffect(() => {
+    setBoardType(getBoardTypeFromPath());
+  }, [location.pathname, getBoardTypeFromPath]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [boardType, fetchPosts]);
 
   const handleWriteButtonClick = () => {
     setIsPostModalOpen(true);
