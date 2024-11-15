@@ -30,44 +30,51 @@ provider:
         - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
         - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
 
+custom:
+  customDomain:
+    domainName: api.esquad.click
+    basePath: dev/api/teams/new 
+    stage: dev
+    createRoute53Record: true
+
 functions:
   createTeam:
-    handler: handler/team-handler.createTeam
+    handler:  src/handlers/team-handler.createTeam
     events:
       - http:
           path: /new
           method: post
           cors: true
   checkTeamName:
-    handler: handler/steam-handler.checkTeamName
+    handler:  src/handlers/team-handler.checkTeamName
     events:
       - http:
           path: /new/{teamName}
           method: get
           cors: true    
   getAllTeamSpaces:
-    handler: handler/team-handler.getAllTeamSpaces
+    handler:  src/handlers/team-handler.getAllTeams
     events:
       - http:
-          path: 
+          path: /
           method: get
           cors: true
   getTeamProfile:
-    handler: handler/team-handler.getTeamProfile
+    handler:  src/handlers/team-handler.getTeamProfile
     events:
       - http:
           path: /{teamId}
           method: get
           cors: true
   updateTeam:
-    handler: handler/team-handler.updateTeam
+    handler:  src/handlers/team-handler.updateTeam
     events:
       - http:
           path: /{teamId}
           method: put
           cors: true
   deleteTeam:
-    handler: handler/team-handler.deleteTeam
+    handler:  src/handlers/team-handler.deleteTeam
     events:
       - http:
           path: /{teamId}

@@ -1,7 +1,7 @@
 // 팀 핸들러 로직
 
-import { createResponse } from '../util/responseHelper.mjs';
-import * as TeamService from '../service/teamService.mjs';
+import { createResponse } from '../utils/responseHelper.mjs';
+import * as TeamService from '../services/teamService.mjs';
 
 /**
  * 팀 생성 핸들러
@@ -39,7 +39,7 @@ export const checkTeamName = async (event) => {
  */
 export const getAllTeams = async (event) => {
     try {
-        const userId = event.requestContext?.authorizer?.claims?.sub || 'USER#123';
+        const userId = event.requestContext?.authorizer?.claims?.sub || 'user1';
         const teams = await TeamService.getAllTeamsService(userId);
         return createResponse(200, { message: 'Team created successfully', data: teams });
     } catch (error) {
