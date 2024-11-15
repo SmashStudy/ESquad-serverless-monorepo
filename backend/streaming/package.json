@@ -11,11 +11,10 @@
     "dependencies": {
         "@aws-sdk/client-chime-sdk-meetings": "^3.490.0",
         "@aws-sdk/client-cloudwatch-logs": "^3.490.0",
-        "@aws-sdk/client-dynamodb": "^3.494.0",
-        "aws-sdk": "^2.1692.0"
+        "@aws-sdk/client-dynamodb": "^3.693.0",
+        "@aws-sdk/client-s3": "^3.693.0"
     },
     "devDependencies": {
-        "serverless-dynamodb-local": "^0.2.40",
         "serverless-iam-roles-per-function": "^3.2.0",
         "serverless-offline": "^14.3.4",
         "serverless-plugin-dotenv": "^1.0.0",
