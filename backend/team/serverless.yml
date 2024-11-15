@@ -3,12 +3,12 @@ service: team-service
 provider:
   name: aws
   runtime: nodejs20.x
+  stage: dev
   region: ${env:REGION}
   environment:
     TABLE: ${env:TEAM_TABLE}  
     CLIENT_ID: ${env:CLIENT_ID}
     CLIENT_SECRET: ${env:CLIENT_SECRET}
-
   iam:
     role:
       statements:
@@ -27,17 +27,53 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/SK-Index
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/teamID-Index
       managedPolicies:
-        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
-        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-      assumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: 
-                - lambda.amazonaws.com
-            Action: 
-              - sts:AssumeRole
+        - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+
+functions:
+  createTeam:
+    handler: handler/team-handler.createTeam
+    events:
+      - http:
+          path: /new
+          method: post
+          cors: true
+  checkTeamName:
+    handler: handler/steam-handler.checkTeamName
+    events:
+      - http:
+          path: /new/{teamName}
+          method: get
+          cors: true    
+  getAllTeamSpaces:
+    handler: handler/team-handler.getAllTeamSpaces
+    events:
+      - http:
+          path: 
+          method: get
+          cors: true
+  getTeamProfile:
+    handler: handler/team-handler.getTeamProfile
+    events:
+      - http:
+          path: /{teamId}
+          method: get
+          cors: true
+  updateTeam:
+    handler: handler/team-handler.updateTeam
+    events:
+      - http:
+          path: /{teamId}
+          method: put
+          cors: true
+  deleteTeam:
+    handler: handler/team-handler.deleteTeam
+    events:
+      - http:
+          path: /{teamId}
+          method: delete
+          cors: true
+   
 resources:
   Resources:
     TeamTable:
@@ -78,6 +114,9 @@ resources:
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+       
+plugins:
+  - serverless-dotenv-plugin
 
 package:
   individually: true
@@ -87,44 +126,3 @@ package:
     - node_modules/uuid/**
     - node_modules/axios/**
     - "!.env"
-
-functions:
-  createTeam:
-    handler: service/team-handler.createTeam
-    events:
-      - http:
-          path: /api/teams/new
-          method: post
-  checkTeamName:
-    handler: service/team-handler.checkTeamName
-    events:
-      - http:
-          path: /api/teams/new/{teamName}
-          method: get
-  getAllTeamSpaces:
-    handler: service/team-handler.getAllTeamSpaces
-    events:
-      - http:
-          path: /api/teams
-          method: get
-  getTeamProfile:
-    handler: service/team-handler.getTeamProfile
-    events:
-      - http:
-          path: /api/teams/{teamId}
-          method: get
-  updateTeam:
-    handler: service/team-handler.updateTeam
-    events:
-      - http:
-          path: /api/teams/{teamId}
-          method: put
-  deleteTeam:
-    handler: service/team-handler.deleteTeam
-    events:
-      - http:
-          path: /api/teams/{teamId}
-          method: delete
-          
-plugins:
-  - serverless-dotenv-plugin
