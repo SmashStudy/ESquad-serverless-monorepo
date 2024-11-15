@@ -52,8 +52,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           lastEvaluatedKey: lastEvaluatedKey || undefined,
         },
       });
-      console.log('Current Page:', currentPage);
-      console.log('Last Evaluated Key:', lastEvaluatedKey);
 
       setUploadedFiles(response.data.items);
 
@@ -64,7 +62,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         } else if (currentPage < totalPages) {
           newKeys[currentPage] = null; // 다음 페이지가 없음을 명확히 설정
         }
-        console.log(`Updated lastEvaluateKeys: ${JSON.stringify(newKeys)}`);
         return newKeys;
       });
 
