@@ -6,26 +6,41 @@ frameworkVersion: '^3.15.0'
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ${env:REGION}
+  region: ${env:AWS_REGION}
   environment:
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
-    SNS_TOPIC_PREFIX: StudyPageStorageTopic
+    SNS_TOPIC_PREFIX: StudyPageFileTopic
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
+    METADATA_TABLE_STREAM_LABEL: ${env:METADATA_TABLE_STREAM_LABEL}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+        - sns:Publish
+      Resource:
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
+        - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:StudyPageFileTopic
 
 functions:
-  storageDBEventHandler:
-    handler: ./service/storageEventHandler.handler # Lambda 핸들러 함수
+  notifyUsersOnFileUpload:
+    handler: ./service/notifyUsersOnFileUpload.handler # Lambda 핸들러 함수
     environment:
-      STORAGE_TABLE: ${self:provider.environment.STORAGE_DYNAMODB_TABLE}
-      TEAM_TABLE: ${self:provider.environment.TEAM_DYNAMODB_TABLE}
-      NOTIFICATIONS_TABLE: ${self:provider.environment.NOTIFICATION_DYNAMODB_TABLE}
-      SNS_TOPIC_PREFIX: ${self:provider.environment.SNS_TOPIC_PREFIX}
+      TEAM_TABLE_NAME: ${env:TEAM_TABLE}
+      NOTIFICATIONS_TABLE_NAME: ${env:NOTIFICATION_TABLE}
+      FILE_CHANGE_NOTIFICATION_TOPIC:
+        Ref: StudyPageNotificationsTopic
     events:
       - stream:
           type: dynamodb # DynamoDB Streams 트리거
-          arn: arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:STORAGE_TABLE}/stream/label
+          arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/stream/${env:METADATA_TABLE_STREAM_LABEL}
           batchSize: 5              # 스트림 배치 처리 크기
           startingPosition: LATEST  # 최신 이벤트부터 시작
 
@@ -35,30 +50,41 @@ resources:
     NotificationsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.NOTIFICATION_DYNAMODB_TABLE}
+        TableName: ${env:NOTIFICATION_TABLE}
         AttributeDefinitions:
-        - AttributeName: notificationId
-          AttributeType: S
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
         KeySchema:
-          - AttributeName: notificationId
+          - AttributeName: PK
             KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
 
-
-    TeamSNSTopic:
+    StudyPageNotificationsTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: ${self:provider.environment.SNS_TOPIC_PREFIX}
+        TopicName: StudyPageFileTopic   # SNS Topic 명
+
+    HTTPSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn:
+          Ref: StudyPageNotificationsTopic
+        Protocol: http
+        Endpoint: http://localhost:5173/notifications
 
   Outputs:
-    TeamFilesStreamARN:
-      Description: ARN of the DynamoDB Stream
-      Value:
-        Fn::GetAtt: [TeamFilesTable, StreamArn]
+    NotificationsTableName:
+      Description: ARN of the Notifications Table
+      Value: ${env:NOTIFICATION_TABLE}
     SNSTopicARN:
       Description: ARN of the SNS Topic
       Value:
-        Ref: TeamSNSTopic
+        Ref: StudyPageNotificationsTopic # 기존 `StudyPageFileSNSTopic`에서 수정
+      Export:
+        Name: StudyPageNotificationsTopic
 
-plugins:
-  - serverless-offline # 로컬 개발용 플러그인
+useDotenv: true

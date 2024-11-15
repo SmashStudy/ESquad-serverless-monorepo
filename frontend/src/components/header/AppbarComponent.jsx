@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     alpha,
     useTheme,
@@ -24,12 +24,15 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
+import DoneIcon from '@mui/icons-material/Done';
+import CircleIcon from '@mui/icons-material/Circle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Link, NavLink, useNavigate} from "react-router-dom";
 import {useUser} from "../form/UserContext.jsx";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
+import studyPage from "../../pages/team/study/StudyPage.jsx";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -80,14 +83,32 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [accountAnchorEl, setAccountAnchorEl] = useState(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
     const [notifications, setNotifications] = useState([
-        { id: 1, title: "Brunch this weekend?", content: "I'll be in your neighborhood doing errands this…", avatar: "/static/images/avatar/1.jpg" },
-        { id: 2, title: "Meeting Reminder", content: "Don't forget about the meeting tomorrow at 10 AM.", avatar: "/static/images/avatar/2.jpg" },
+        { id: 1, studyPageName: "페이지명1", message: "Brunch this weekend?", readStatus: false, avatar: "/static/images/avatar/1.jpg" },
+        { id: 2, studyPageName: "페이지명2", message: "Meeting Reminder", readStatus: false, avatar: "/static/images/avatar/2.jpg" },
     ]);
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
     const isVerySmallScreen = useMediaQuery('(max-width: 30vw)');
 
     const teamTabOpen = Boolean(teamAnchorEl);
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+
+    useEffect(() => {
+        const eventSource = new EventSource("http://localhost:5000/sse");
+
+        eventSource.onmessage = (event) => {
+            const newNotification = JSON.parse(event.data);
+            setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+        };
+
+        eventSource.onerror = (error) => {
+            console.error("Error with SSE connection:", error);
+            eventSource.close();
+        };
+
+        return () => {
+            eventSource.close();
+        };
+    }, []);
 
     // Handle team menu open/close
     const handleTeamMenuClick = (event) => { setTeamAnchorEl(event.currentTarget); };
@@ -98,12 +119,12 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleNotificationsClose = () => { setNotificationsAnchorEl(null); };
 
     // Handle deleting a single notification
-    const handleDeleteNotification = (id) => {
-        setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
-    };
+    // const handleDeleteNotification = (id) => {
+    //     setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
+    // };
 
     // Handle deleting all notifications
-    const handleDeleteAllNotifications = () => { setNotifications([]); };
+    // const handleDeleteAllNotifications = () => { setNotifications([]); };
 
     // Handle account menu open/close
     const handleAccountClick = (event) => { setAccountAnchorEl(event.currentTarget); };
@@ -117,6 +138,13 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     // Handle create team dialog open/close
     const handleCreateTeamButtonClick = () => { setIsTeamCreationModalOpen(true); };
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
+
+    const handleMarkAsRead = async (notificationId) => {
+        await fetch(`/api/notifications/${notificationId}/read`, {method: "PATCH"});
+        setNotifications((prev) =>
+            prev.map((n) => (n.notificationId === notificationId ? {...n, readStatus: true} : n))
+        );
+    };
 
     return (
         <AppBar position="fixed" color="inherit" elevation={1} sx={{ width: `100%`, backgroundColor: '#fff' }}>
@@ -328,20 +356,8 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
                                 {notifications.length > 0 && (
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Button
-                                            onClick={handleDeleteAllNotifications}
-                                            sx={{
-                                                width: '50%',
-                                                borderRadius: 0,
-                                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                                '&:hover': {
-                                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                                                },
-                                            }}
-                                        >
-                                            모든 알림 삭제
-                                        </Button>
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+
                                         <Button
                                             onClick={handleNotificationsClose}
                                             sx={{
@@ -375,7 +391,14 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                     <Avatar alt={notification.title} src={notification.avatar} />
                                                 </ListItemAvatar>
                                                 <ListItemText
-                                                    primary={notification.title}
+                                                    primary={
+                                                        <>
+                                                            {!notification.read && (
+                                                                <CircleIcon sx={{ color: theme.palette.info.main, fontSize: 10, marginRight: '8px' }} />
+                                                            )}
+                                                            {notification.title}
+                                                        </>
+                                                    }
                                                     secondary={
                                                         <React.Fragment>
                                                             <Typography
@@ -383,15 +406,24 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                                 variant="body2"
                                                                 sx={{ color: 'text.primary', display: 'inline' }}
                                                             >
-                                                                Ali Connors
+                                                                {notification.studyPageName}
                                                             </Typography>
-                                                            {` — ${notification.content}`}
+                                                            <Typography
+                                                                component="span"
+                                                                variant="body2"
+                                                                sx={{ color: 'text.primary', display: 'inline' }}
+                                                            >
+                                                                {notification.message}
+                                                            </Typography>
                                                         </React.Fragment>
                                                     }
                                                 />
-                                                <IconButton edge="end" onClick={() => handleDeleteNotification(notification.id)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                                {/* 읽음 처리 버튼 */}
+                                                {!notification.read && (
+                                                    <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>
+                                                        <DoneIcon />
+                                                    </IconButton>
+                                                )}
                                             </ListItem>
                                         ))
                                     )}
