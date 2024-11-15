@@ -14,6 +14,8 @@ module.exports.saveUserToDynamoDB = async (event, context) => {
     }
 
     const userId = uuidv4();
+
+    
     const params = {
       TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
       Item: {
@@ -35,6 +37,7 @@ module.exports.saveUserToDynamoDB = async (event, context) => {
     throw error;
   }
 };
+
 
 module.exports.authorizer = async (event, context) => {
   
