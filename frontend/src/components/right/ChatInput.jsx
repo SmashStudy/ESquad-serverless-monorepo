@@ -11,16 +11,16 @@ import { fileUpload } from "./chatApi/ChatFileApi.jsx";
 const ChatInput = ({
                        message,
                        onMessageChange,
-                       userId,
                        handleUploadClick,
-                       editMessageId,
+                       editMessage,
+                       editingMessage,
                        onSaveMessage,
                        handleSend,
                        handleRemoveFile,
                        selectedFile,
-                       handleSendMessage,
                        targetId
                    }) => {
+
     const handleSendClick = async () => {
         if (selectedFile) {
             const uploadResponse = await fileUpload(selectedFile, targetId);
@@ -31,10 +31,10 @@ const ChatInput = ({
                 alert("파일 업로드 실패");
             }
         } else if (message.trim()) {
-            if (editMessageId) {
+            if (editingMessage) {
                 onSaveMessage();
             } else {
-                handleSend(message, null);
+                handleSend(message);
             }
         } else {
             alert("메시지를 입력해주세요.");
@@ -66,36 +66,35 @@ const ChatInput = ({
                     hiddenLabel
                     id="filled-hidden-label-normal"
                     variant="filled"
-                    placeholder="Enter your message here..."
+                    placeholder="Input Message Here ! :P"
                     value={message}
                     onChange={onMessageChange}
-                    disabled={!userId}
                     fullWidth
                     sx={{
                         backgroundColor: '#e5e7eb',
                         borderRadius: '4px',
                         '& .MuiInputBase-input': {
-                            color: '#000000', // 텍스트를 검은색으로 설정
+                            color: '#000000',
                             padding: '0.8rem',
                         },
                         '& .MuiInputBase-input::placeholder': {
-                            color: '#000000', // 플레이스홀더 텍스트도 검은색으로 설정
+                            color: '#000000',
                             opacity: 0.6,
                         },
                         marginRight: '8px'
                     }}
                 />
             )}
-            <IconButton color="success" onClick={handleUploadClick} disabled={!userId} aria-label="파일 업로드">
+
+            <IconButton color="success" onClick={handleUploadClick} aria-label="파일 업로드">
                 <AttachFileIcon />
             </IconButton>
 
             <IconButton
                 color="primary"
-                onClick={handleSendClick}
+                onClick={editMessage ? onSaveMessage : handleSendClick}
                 className="send-button"
-                disabled={!userId}
-                aria-label={editMessageId ? "메시지 저장" : "메시지 전송"}
+                aria-label={editMessage ? "메시지 저장" : "메시지 전송"}
                 sx={{ marginLeft: '8px' }}
             >
                 <SendIcon />
