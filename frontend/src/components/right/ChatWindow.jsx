@@ -5,8 +5,7 @@ import ChatMessages from './ChatMessages.jsx'; // ChatMessages 컴포넌트 임�
 const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
     const theme = useTheme();
     const [currentChatRoom, setCurrentChatRoom] = useState(teams[0] || null); // 초기값을 null로 설정
-
-    // Chat Room Selection Handler
+    // 채팅방 선택 핸들러
     const handleChatRoomSelect = (room) => {
         setCurrentChatRoom(room);
     };
@@ -14,6 +13,7 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
     return (
         <Box
             sx={{
+                border: '1px solid black', // 범위 확인 용도
                 flex: isMediumScreen ? 4 : 3,
                 gap: 1,
                 p: 2,
@@ -24,19 +24,22 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                 flexDirection: 'column',
             }}
         >
-            {/* 팀이 없는 경우 메시지 표시 */}
+            {/* 팀이 없는 경우 메시지 표시할 영역 */}
             {teams.length === 0 ? (
-                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{
+                    border: '1px solid blue', // 영역 확인 용도
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography variant="h6" color={theme.palette.text.secondary}>
                         현재 가입된 팀이 없습니다. 팀에 가입해주세요!
                     </Typography>
                 </Box>
             ) : (
                 <>
-                    {/* Chat Rooms - Top Row for Larger Viewports */}
+                    {/* 상단에 존재하는 팀을 선택하는 영역 */}
                     {!isMediumScreen && (
                         <Box
                             sx={{
+                                border: '1px solid green', // 영역 확인 용도
                                 display: 'flex',
                                 flexDirection: 'row',
                                 gap: 1,
@@ -77,6 +80,7 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                     {isMediumScreen && (
                         <Box
                             sx={{
+                                border: '1px solid pink', // 범위 확인 용도
                                 display: 'flex',
                                 flexDirection: 'row',
                                 gap: 1,
@@ -85,9 +89,10 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                                 pb: 2,
                             }}
                         >
-                            {/* Chat Rooms - Left Column */}
+                            {/* 가로 모드 일때 팀을 선택할 수 있는 영역 */}
                             <Box
                                 sx={{
+                                    border: '1px solid red',
                                     flex: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -121,9 +126,10 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                                 ))}
                             </Box>
 
-                            {/* Chat Messages - Right Column */}
+                            {/* 가로 모드 일때 메시지 보여주는 영역 */}
                             <Box
                                 sx={{
+                                    border: '1px solid yellow',// 범위 확인 용도
                                     flex: 8,
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -136,10 +142,12 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                         </Box>
                     )}
 
-                    {/* Chat Messages - Home Column for Larger Viewports */}
+                    {/* 세로모드 메시지 리스트 화면 */}
                     {!isMediumScreen && (
+                        // 여기 안에 ChatInput 들어있는데 분리해서 chatInput 이 항상 고정되도록 할 것.
                         <Box
                             sx={{
+                                border: '1px solid purple',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: 1,
@@ -147,8 +155,10 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                                 flexGrow: 1,
                                 borderRadius: 3,
                                 overflowY: 'auto',
+                                position: 'relative'
                             }}
                         >
+                            {/* Entered : 팀명 ( 선택한 팀 명시해주는 부분 ) */}
                             <Typography variant="body1" sx={{ color: theme.palette.primary.main, mb: 2 }}>Entered: {currentChatRoom.teamName}</Typography>
                             <ChatMessages currentChatRoom={currentChatRoom} /> {/* ChatMessages 컴포넌트 호출 */}
                         </Box>

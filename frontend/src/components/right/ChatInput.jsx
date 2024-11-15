@@ -46,12 +46,13 @@ const ChatInput = ({
             display="flex"
             alignItems="center"
             sx={{
+                border: '1px dotted blue',
                 flexDirection: 'row',
                 padding: '0.6rem',
                 backgroundColor: '#f3f4f6',
                 borderRadius: '8px',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                marginTop: '1rem'
+                marginTop: '1rem',
             }}
         >
             {selectedFile ? (

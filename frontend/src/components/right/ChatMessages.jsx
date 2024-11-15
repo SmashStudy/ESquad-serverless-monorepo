@@ -22,7 +22,6 @@ function ChatMessages({currentChatRoom}) {
 
     // websocket 연결 및 메시지 수신
     useEffect(() => {
-        console.log("currentChatRoom: " , currentChatRoom);
         if(currentChatRoom && room_id) {
             connectWebSocket(room_id);
         }
@@ -47,7 +46,6 @@ function ChatMessages({currentChatRoom}) {
         setSocket(newSocket);
 
         newSocket.onopen = () => {
-            console.log("webSocket 연결됨");
             loadMessages(room_id);
         };
 
@@ -60,7 +58,7 @@ function ChatMessages({currentChatRoom}) {
         };
 
         newSocket.onclose = () => {
-            console.log("webSocket 연결 끊김");
+
         }
     }
 
