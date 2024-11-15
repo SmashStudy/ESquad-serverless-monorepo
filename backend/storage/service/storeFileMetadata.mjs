@@ -11,18 +11,6 @@ export const handler = async (event) => {
     const body = JSON.parse(event.body);
     const { fileKey, metadata } = body;
 
-    if (!fileKey || !metadata) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type,Authorization",
-          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
-        },
-        body: JSON.stringify({ error: "fileKey and metadata are required." }),
-      };
-    }
-
     const params = {
       TableName: TABLE_NAME,
       Item: {

@@ -39,15 +39,12 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const lambdaUrl = 'https://235g2jjtqc.execute-api.us-east-1.amazonaws.com/dev/files'
 
   useEffect(() => {
-    console.log("StudyId:", studyId);
-
     // Fetch files metadata
     const fetchFiles = async () => {
       try {
         const response = await axios.get(`${lambdaUrl}/metadata`, {
-          params: {targetId: studyId, targetType: 'STUDY_PAGE'}
+          params: {targetId: encodeURIComponent(studyId), targetType: 'STUDY_PAGE'}
         });
-
         setUploadedFiles(response.data);
       } catch (error) {
         setSnackbar(
@@ -123,6 +120,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
     return sortOrder === 'asc' ? comparison : -comparison;
   });
+
 
   // <<<<<<<<<<<< Utils <<<<<<<<<<<<
 
@@ -526,7 +524,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 StudyDetailPage.propTypes = {
   uploadedFiles: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
         targetId: PropTypes.string.isRequired,
         targetType: PropTypes.string.isRequired,
         userId: PropTypes.string.isRequired,

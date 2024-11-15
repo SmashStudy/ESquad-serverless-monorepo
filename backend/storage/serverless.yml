@@ -30,7 +30,12 @@ functions:
       - http:
           path: files/presigned-url
           method: post
-          cors: true
+          cors:
+            origins:
+              - http://localhost:5173
+            headers:
+              - Content-Type
+              - Authorization
 
   fetchFileMetadata:
     handler: service/fetchFileMetadata.handler
@@ -38,7 +43,12 @@ functions:
       - http:
           path: files/metadata
           method: get
-          cors: true
+          cors:
+            origins:
+              - http://localhost:5173
+            headers:
+              - Content-Type
+              - Authorization
 
   deleteFile:
     handler: service/deleteFile.handler
@@ -46,7 +56,12 @@ functions:
       - http:
           path: files/{storedFileName}
           method: delete
-          cors: true
+          cors:
+            origins:
+              - http://localhost:5173
+            headers:
+              - Content-Type
+              - Authorization
 
   storeFileMetadata:
     handler: service/storeFileMetadata.handler
@@ -54,7 +69,12 @@ functions:
       - http:
           path: files/store-metadata
           method: post
-          cors: true
+          cors:
+            origins:
+              - http://localhost:5173
+            headers:
+              - Content-Type
+              - Authorization
 
   getUserUsage:
     handler: service/getUserUsage.handler
@@ -62,8 +82,12 @@ functions:
       - http:
           path: files/get-user-usage
           method: get
-          cors: true
-
+          cors:
+            origins:
+              - http://localhost:5173
+            headers:
+              - Content-Type
+              - Authorization
 resources:
   Resources:
     MetadataTable:
