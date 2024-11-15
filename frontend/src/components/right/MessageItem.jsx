@@ -4,12 +4,14 @@ import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage, onDownloadFile }) => {
-    const timestamp = new Date(message.timestamp).toLocaleTimeString();
+const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }) => {
+    const timestamp = new Date(message.timestamp).toLocaleTimeString()
 
     const isImage = (url) => {
-        return url && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif'));
+        return url && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif') || url.endsWith('.svg') || url.endsWith('.webp'));
     };
+
+    // console.log(message);
 
     return (
         <div
@@ -41,7 +43,7 @@ const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage,
                     className="message-user"
                     style={{ fontWeight: 'bold', color: '#333', marginBottom: '0.3rem' }}
                 >
-                    {message.username || message.userId} {/* 사용자 이름 표시 */}
+                    {/*{message.username || message.userId} /!* 사용자 이름 표시 *!/*/}
                 </span>
 
                 {message.message && (
@@ -81,7 +83,7 @@ const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage,
                     <IconButton
                         color="secondary"
                         size="small"
-                        onClick={() => onEditMessage(message.id, message.message)}
+                        onClick={() => onEditMessage(Number(message.timestamp), message.message, String(message.room_id))}
                         aria-label="메시지 수정"
                         style={{ marginRight: '0.5rem' }}
                     >
@@ -92,7 +94,7 @@ const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage,
                 <IconButton
                     color="error"
                     size="small"
-                    onClick={() => onDeleteMessage(message.id, message.fileUrl)}
+                    onClick={() => onDeleteMessage(message)}
                     aria-label="메시지 삭제"
                 >
                     <DeleteIcon />
