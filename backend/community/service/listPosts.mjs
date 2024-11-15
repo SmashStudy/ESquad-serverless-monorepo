@@ -35,7 +35,7 @@ export const handler = async (event) => {
         ":boardType": { S: boardType },
       },
       Limit: limit,
-      ExclusiveStartKey: lastEvaluatedKey, // Pagination 처리를 위한 파라미터
+      ExclusiveStartKey: lastEvaluatedKey,
       ScanIndexForward: false,
     };
 
@@ -43,7 +43,6 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new QueryCommand(params));
 
-    // 각 게시글에 대해 반환할 데이터 필드 설정
     const posts = data.Items.map((item) => {
       const post = {
         postId: item.PK.S.split("#")[1],
@@ -56,10 +55,11 @@ export const handler = async (event) => {
         likeCount: parseInt(item.likeCount.N, 10),
       };
 
-      // boardType에 따라 다른 필드를 반환
       if (item.boardType.S === "questions") {
         post.resolved = item.resolved?.BOOL || false;
-      } else if (item.boardType.S === "team-recruit") {
+      }
+
+      if (item.boardType.S === "team-recruit") {
         post.recruitStatus = item.recruitStatus?.BOOL || false;
       }
 
@@ -74,7 +74,7 @@ export const handler = async (event) => {
       },
       body: JSON.stringify({
         items: posts,
-        lastEvaluatedKey: data.LastEvaluatedKey, // Pagination 처리를 위한 lastEvaluatedKey 반환
+        lastEvaluatedKey: data.LastEvaluatedKey,
       }),
     };
   } catch (error) {
