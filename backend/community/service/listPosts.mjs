@@ -53,6 +53,7 @@ export const handler = async (event) => {
         updatedAt: item.updatedAt.S,
         viewCount: parseInt(item.viewCount.N, 10),
         likeCount: parseInt(item.likeCount.N, 10),
+        tags: item.tags?.SS || [],
       };
 
       if (item.boardType.S === "questions") {
