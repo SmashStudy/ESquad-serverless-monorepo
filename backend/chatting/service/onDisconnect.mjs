@@ -1,10 +1,11 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
   DynamoDBDocumentClient,
   DeleteCommand,
-} = require("@aws-sdk/lib-dynamodb");
+} from "@aws-sdk/lib-dynamodb";
 
-const client = new DynamoDBClient({ region: "us-east-1" });
+// DynamoDB 클라이언트 초기화
+const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
 async function deleteItem(tableName, key) {
@@ -17,24 +18,20 @@ async function deleteItem(tableName, key) {
     await docClient.send(new DeleteCommand(params));
     console.log("Delete succeeded");
   } catch (err) {
-    console.error(
-      "Unable to delete item. Error:",
-      JSON.stringify(err, null, 2)
-    );
+    console.error("Unable to delete item. Error:", JSON.stringify(err, null, 2));
     throw err;
   }
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const connectionId = event.requestContext.connectionId;
 
   try {
-    await deleteItem( process.env.CHATTING_USERLIST_TABLE_NAME, {
+    await deleteItem(process.env.USERLIST_TABLE_NAME, {
       connection_id: connectionId,
     });
-
 
     return {
       statusCode: 200,

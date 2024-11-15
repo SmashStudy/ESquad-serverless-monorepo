@@ -1,13 +1,10 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {
-    DynamoDBDocumentClient,
-    UpdateCommand
-} = require("@aws-sdk/lib-dynamodb");
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     const { room_id, message, newMessage, timestamp } = JSON.parse(event.body);
 
     if (!room_id || !message || !newMessage || !timestamp) {
@@ -20,7 +17,7 @@ exports.handler = async (event) => {
 
     try {
         const command = new UpdateCommand({
-            TableName: process.env.MESSAGES_TABLE_NAME,
+            TableName: process.env.MESSAGE_TABLE_NAME,
             Key: {
                 room_id: room_id,
                 timestamp: Number(timestamp),

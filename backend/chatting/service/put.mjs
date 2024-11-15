@@ -1,11 +1,12 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
-const moment = require("moment");
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import moment from "moment";
 
+// DynamoDB 클라이언트 초기화
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-// 메시지 전송함수
+// 메시지 전송 함수
 async function putItem(tableName, item) {
   const params = {
     TableName: tableName,
@@ -21,8 +22,8 @@ async function putItem(tableName, item) {
   }
 }
 
-// 메시지 수신함수
-exports.handler = async (event) => {
+// 메시지 수신 함수
+export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = JSON.parse(event.body);
@@ -43,10 +44,9 @@ exports.handler = async (event) => {
     user_id,
   };
 
-  // DynamoDB 에 메시지 PUT 하기
+  // DynamoDB에 메시지 PUT 하기
   try {
-
-    await putItem( process.env.CHATTING_MESSAGE_TABLE_NAME,item);
+    await putItem(process.env.MESSAGE_TABLE_NAME, item);
 
     return {
       statusCode: 200,

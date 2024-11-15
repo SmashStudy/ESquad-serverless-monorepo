@@ -1,18 +1,18 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, ScanCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
 // 메시지 조회 테스트
 const client = new DynamoDBClient();
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     const roomId = event.queryStringParameters?.room_id;
 
     try {
         let command;
         if (roomId) {
             command = new QueryCommand({
-                TableName: process.env.MESSAGES_TABLE_NAME,
+                TableName: process.env.MESSAGE_TABLE_NAME,
                 KeyConditionExpression: 'room_id = :roomId',
                 ExpressionAttributeValues: {
                     ':roomId': roomId
@@ -20,7 +20,7 @@ exports.handler = async (event) => {
             });
         } else {
             command = new ScanCommand({
-                TableName: process.env.MESSAGES_TABLE_NAME
+                TableName: process.env.MESSAGE_TABLE_NAME
             });
         }
 

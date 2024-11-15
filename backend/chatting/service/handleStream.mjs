@@ -1,14 +1,10 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const {
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
   DynamoDBDocumentClient,
   QueryCommand,
-  DeleteCommand
-} = require("@aws-sdk/lib-dynamodb");
-
-const {
-  ApiGatewayManagementApiClient,
-  PostToConnectionCommand,
-} = require("@aws-sdk/client-apigatewaymanagementapi");
+  DeleteCommand,
+} from "@aws-sdk/lib-dynamodb";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 
 // DynamoDB 클라이언트 초기화
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
@@ -16,10 +12,10 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 // DynamoDB 쿼리 함수
 async function query(
-  tableName,
-  keyConditionExpression,
-  expressionAttributeValues,
-  options = {}
+    tableName,
+    keyConditionExpression,
+    expressionAttributeValues,
+    options = {}
 ) {
   const params = {
     TableName: tableName,
@@ -54,7 +50,7 @@ async function deleteItem(tableName, key) {
 }
 
 // Lambda 핸들러 함수
-exports.handler = async (event) => {
+export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
   console.log("Environment variables:", JSON.stringify(process.env, null, 2));
 
@@ -92,8 +88,8 @@ exports.handler = async (event) => {
   const item = {
     room_id: newImage.room_id?.S,
     timestamp: newImage.timestamp?.N
-      ? parseInt(newImage.timestamp.N)
-      : Date.now(),
+        ? parseInt(newImage.timestamp.N)
+        : Date.now(),
     message: newImage.message?.S,
     user_id: newImage.user_id?.S,
     name: newImage.name?.S,
@@ -113,10 +109,10 @@ exports.handler = async (event) => {
   try {
     // 해당 방의 모든 연결된 사용자 조회
     const users = await query(
-      process.env.CHATTING_USERLIST_TABLE_NAME,
-      "room_id = :room_id",
-      { ":room_id": item.room_id },
-      { IndexName: "room_id-user_id-index" }
+        process.env.USERLIST_TABLE_NAME,
+        "room_id = :room_id",
+        { ":room_id": item.room_id },
+        { IndexName: "room_id-user_id-index" }
     );
 
     // API Gateway Management API 클라이언트 초기화
@@ -129,24 +125,24 @@ exports.handler = async (event) => {
     const apigwManagementApi = new ApiGatewayManagementApiClient({
       apiVersion: "2018-11-29",
       endpoint: endpoint,
-      region: process.env.AWS_REGION,
+      region: process.env.CHATTING_REGION,
     });
 
     // 모든 연결된 사용자에게 메시지 전송
     const postCalls = users.map(async ({ connection_id }) => {
       try {
         await apigwManagementApi.send(
-          new PostToConnectionCommand({
-            connection_id: connection_id,
-            Data: JSON.stringify(item),
-          })
+            new PostToConnectionCommand({
+              connection_id: connection_id,
+              Data: JSON.stringify(item),
+            })
         );
       } catch (e) {
         if (e.statusCode === 410) {
           console.log(`Found stale connection, deleting ${connection_id}`);
           try {
             // 오래된 연결 삭제
-            await deleteItem( process.env.CHATTING_USERLIST_TABLE_NAME, {
+            await deleteItem(process.env.USERLIST_TABLE_NAME, {
               connection_id: connection_id,
             });
           } catch (deleteErr) {

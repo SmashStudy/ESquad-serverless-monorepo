@@ -1,16 +1,25 @@
-# Serverless Framework 버전 4 사용
-frameworkVersion: "4"
+frameworkVersion: "3"
+
 # 서비스 이름 정의
 service: ${env:CHATTING_SERVICE_NAME}
-plugins:
-  - serverless-dotenv-plugin
+
 # 애플리케이션 이름
 app: backend
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+
+custom:
+  dotenv:
+    path: .env.dev
+    overwrite: true
 
 provider:
   name: aws
   runtime: nodejs20.x
-  stage: ${opt:stage, env:CHATTING_STAGE, 'dev'}  # 기본값 'dev'를 사용
+  stage: ${opt:stage, 'dev'}  # --stage 옵션이 없으면 dev로 기본값 설정
   region: ${opt:region, 'us-east-1'}
   iam:
     role:
@@ -45,6 +54,7 @@ provider:
         - POST
         - PUT
         - DELETE
+        - OPTIONS
       allowCredentials: false # CORS 활성화
   websocket: {} # WebSocket API 설정
   tags: # 리소스에 태그 추가
@@ -77,6 +87,7 @@ package:
     - "package.json"
     - "package-lock.json"
     - "node_modules/**"
+    - "lib/ddbUtil.mjs"
 
 # Lambda 함수 정의
 functions:
@@ -84,42 +95,42 @@ functions:
     handler: service/get.handler
     events:
       - httpApi:
-          path: /chat/read
+          path: /read
           method: get
     package:
       patterns:
-        - service/get.js
+        - service/get.mjs
 
-  update : # update 요청 처리 함수
+  update: # PUT 요청 처리 함수
     handler: service/update.handler
     events:
       - httpApi:
-          path: /chat/update
+          path: /update
           method: put
     package:
       patterns:
-        - service/update.js
+        - service/update.mjs
 
   put: # PUT 요청 처리 함수
     handler: service/put.handler
     events:
       - httpApi:
-          path: /chat/send
+          path: /send
           method: put
     package:
       patterns:
-        - service/put.js
+        - service/put.mjs
         - node_modules/**
 
-  delete:
+  delete: # DELETE 요청 처리 함수
     handler: service/delete.handler
     events:
       - httpApi:
-          path: /chat/delete
+          path: /delete
           method: delete
     package:
       patterns:
-        - service/delete.js
+        - service/delete.mjs
         - node_modules/**
 
   handleStream: # DynamoDB 스트림 처리 함수
@@ -130,7 +141,7 @@ functions:
           arn: !GetAtt chatappChatMessages.StreamArn
     package:
       patterns:
-        - service/handleStream.js
+        - service/handleStream.mjs
 
   onConnect: # WebSocket 연결 시 처리 함수
     handler: service/onConnect.handler
@@ -139,8 +150,8 @@ functions:
           route: $connect
     package:
       patterns:
-        - service/onConnect.js
-        - lib/ddbUtil.js
+        - service/onConnect.mjs
+        - lib/ddbUtil.mjs
         - node_modules/**
 
   onDisconnect: # WebSocket 연결 해제 시 처리 함수
@@ -150,17 +161,17 @@ functions:
           route: $disconnect
     package:
       patterns:
-        - service/onDisconnect.js
+        - service/onDisconnect.mjs
 
-  sendMessage:
+  sendMessage: # WebSocket 메시지 전송 처리 함수
     handler: service/sendMessage.handler
     events:
       - websocket:
           route: sendmessage
     package:
       patterns:
-        - service/sendMessage.js
-        - lib/ddbUtil.js
+        - service/sendMessage.mjs
+        - lib/ddbUtil.mjs
         - node_modules/**
 
 # 추가 리소스 정의
@@ -258,6 +269,3 @@ resources:
         Name: ${self:service}-${self:provider.stage}-websocket-api
         ProtocolType: WEBSOCKET
         RouteSelectionExpression: $request.body.action
-
-# 사용자 정의 설정 (필요한 경우 여기에 추가)
-custom:

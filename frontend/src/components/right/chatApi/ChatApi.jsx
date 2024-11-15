@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "https://nfrsy8mlm4.execute-api.us-east-1.amazonaws.com";
+const apiUrl = "https://api.esquad.click/chat";
 
 const apiClient = axios.create({
     baseURL: apiUrl,
@@ -12,7 +12,7 @@ const apiClient = axios.create({
 // 메시지 조회
 export const fetchMessageAPI = async (room_id) => {
     try {
-        const response = await apiClient.get(`/chat/read`, {
+        const response = await apiClient.get(`/read`, {
             params: {room_id}
         });
         return response.data;
@@ -37,7 +37,7 @@ export const sendMessageAPI = async (socket, messageData) => {
 export const editMessageAPI = async (editingMessage, newMessageContent) => {
     const {room_id, content, timestamp} = editingMessage;
     try {
-        await apiClient.put("/chat/update", {
+        await apiClient.put("/update", {
             room_id: room_id,
             message: content,
             newMessage: newMessageContent,
@@ -53,7 +53,7 @@ export const editMessageAPI = async (editingMessage, newMessageContent) => {
 // 메시지 삭제
 export const deleteMessageAPI = async (deleteMessage) => {
     try {
-        await apiClient.delete(`/chat/delete`, {
+        await apiClient.delete(`/delete`, {
             data: {
                 room_id: deleteMessage.room_id,
                 timestamp: Number(deleteMessage.timestamp),
