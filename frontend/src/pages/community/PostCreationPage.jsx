@@ -141,7 +141,7 @@ const PostCreationPage = ({ onCancel }) => {
 
   const handleSubmit = async () => {
     try {
-      const url = `https://klemqwe7g0.execute-api.us-east-1.amazonaws.com/api/community/${boardType}/new`;
+      const url = `https://api.esquad.click/api/community/${boardType}/new`;
 
       const data = {
         title,
