@@ -53,6 +53,9 @@ const ChatInput = ({
                 borderRadius: '8px',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
                 marginTop: '1rem',
+                position: 'sticky',
+                bottom: 0,
+                zIndex: 10, // 다른 요소들 위에 표시되도록 설정
             }}
         >
             {selectedFile ? (
@@ -82,7 +85,7 @@ const ChatInput = ({
                             color: '#000000',
                             opacity: 0.6,
                         },
-                        marginRight: '8px'
+                        marginRight: '8px',
                     }}
                 />
             )}

@@ -131,21 +131,28 @@ function ChatMessages({currentChatRoom}) {
     const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
-        <div className="chat-messages">
-            <MessageList
-                messages={messages}
-                onEditMessage = {handleEditMessage}
-                onDeleteMessage = {deleteMessage}
-                username={username}
-                userId={userId}
-            />
-            <ChatInput
-                message={messageInput}
-                onMessageChange={handleMessageInput}
-                handleSend={sendMessage}
-                editMessage = {editingMessage?.timestamp}
-                onSaveMessage={onSaveMessage}
-            />
+        <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {/* 메시지 리스트 영역 */}
+            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid purple', borderRadius: '8px', paddingBottom: 0, height:'600px'}}>
+                <MessageList
+                    messages={messages}
+                    onEditMessage={handleEditMessage}
+                    onDeleteMessage={deleteMessage}
+                    username={username}
+                    userId={userId}
+                />
+            </div>
+
+            {/* 메시지 입력창 영역 */}
+            <div style={{ flexShrink: 0, position: 'sticky', bottom: 0, backgroundColor: '#f3f4f6', zIndex: 10, paddingBottom: '0px', marginTop: '0px' }}>
+                <ChatInput
+                    message={messageInput}
+                    onMessageChange={handleMessageInput}
+                    handleSend={sendMessage}
+                    editMessage={editingMessage?.timestamp}
+                    onSaveMessage={onSaveMessage}
+                />
+            </div>
         </div>
     );
 }
