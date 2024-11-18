@@ -1,38 +1,34 @@
-import React, {useEffect, useState} from 'react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MenuIcon from '@mui/icons-material/Menu';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SearchIcon from '@mui/icons-material/Search';
 import {
     alpha,
-    useTheme,
-    styled,
     AppBar,
-    Toolbar,
-    IconButton,
+    Avatar,
+    Badge,
     Box,
     Button,
-    Menu,
-    MenuItem,
-    Avatar,
-    Typography,
-    Badge,
-    useMediaQuery,
+    Divider,
+    IconButton,
     InputBase,
     List,
     ListItem,
-    ListItemText,
+    ListItemAvatar,
     ListItemIcon,
-    Divider,
-    ListItemAvatar
+    ListItemText,
+    Menu,
+    MenuItem,
+    styled,
+    Toolbar,
+    Typography,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import DoneIcon from '@mui/icons-material/Done';
-import CircleIcon from '@mui/icons-material/Circle';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import DeleteIcon from "@mui/icons-material/Delete";
-import {Link, NavLink, useNavigate} from "react-router-dom";
-import {useUser} from "../form/UserContext.jsx";
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import markNotificationsAsRead from '../../hooks/markNotificationsAsRead.jsx';
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import studyPage from "../../pages/team/study/StudyPage.jsx";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -82,33 +78,50 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [teamAnchorEl, setTeamAnchorEl] = useState(null);
     const [accountAnchorEl, setAccountAnchorEl] = useState(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
-    const [notifications, setNotifications] = useState([
-        { id: 1, studyPageName: "페이지명1", message: "Brunch this weekend?", readStatus: false, avatar: "/static/images/avatar/1.jpg" },
-        { id: 2, studyPageName: "페이지명2", message: "Meeting Reminder", readStatus: false, avatar: "/static/images/avatar/2.jpg" },
-    ]);
+    const [notifications, setNotifications] = useState([]);
+    //     { id: 1, studyPageName: "페이지명1", message: "Brunch this weekend?", readStatus: false, avatar: "/static/images/avatar/1.jpg" },
+    //     { id: 2, studyPageName: "페이지명2", message: "Meeting Reminder", readStatus: false, avatar: "/static/images/avatar/2.jpg" },
+    // ]);
+    // const { notifications, addNotification } = useNotifications();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
     const isVerySmallScreen = useMediaQuery('(max-width: 30vw)');
 
     const teamTabOpen = Boolean(teamAnchorEl);
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+    const endpointURl = "https://vise3jaz20.execute-api.us-east-1.amazonaws.com/dev";
+    const userId = "USER#123";
 
+    console.log(notifications);
     useEffect(() => {
-        const eventSource = new EventSource("http://localhost:5000/sse");
-
-        eventSource.onmessage = (event) => {
-            const newNotification = JSON.parse(event.data);
-            setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+        const encodedUserId = encodeURIComponent(userId);
+        let eventSource;
+        
+        const connectToEventSource = () => {
+            eventSource = new EventSource(`${endpointURl}/notification/stream?userId=${encodedUserId}`);
+    
+            eventSource.onopen = () => {
+                console.log("SSE connection opened. readyState:", eventSource.readyState);
+            };
+    
+            eventSource.onmessage = (event) => {
+                const parsedData = JSON.parse(event.data);
+                console.log("Received notification:", parsedData);
+                setNotifications((prev) => [...prev, parsedData]); // Append to existing notifications
+            };
+    
+            eventSource.onerror = (error) => {
+                console.error("Error with EventSource:", error);
+                eventSource.close(); // Close the connection
+                // setTimeout(connectToEventSource, 3000); // Retry connection after 3 seconds
+            };
         };
-
-        eventSource.onerror = (error) => {
-            console.error("Error with SSE connection:", error);
-            eventSource.close();
-        };
-
+    
+        connectToEventSource();
+    
         return () => {
-            eventSource.close();
+            if (eventSource) eventSource.close();
         };
-    }, []);
+    }, [userId]);
 
     // Handle team menu open/close
     const handleTeamMenuClick = (event) => { setTeamAnchorEl(event.currentTarget); };
@@ -140,9 +153,10 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
 
     const handleMarkAsRead = async (notificationId) => {
-        await fetch(`/api/notifications/${notificationId}/read`, {method: "PATCH"});
+        const unReadIds = notifications.filter((notifi) => !notifi.isRead).map((notifi) => notifi.id);
+        markNotificationsAsRead(unReadIds, endpointURl);
         setNotifications((prev) =>
-            prev.map((n) => (n.notificationId === notificationId ? {...n, readStatus: true} : n))
+            prev.map((notifi) => ({ ...notifi, isRead: 1}))
         );
     };
 
@@ -379,51 +393,53 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                             <ListItemText primary="알림이 없습니다." />
                                         </ListItem>
                                     ) : (
-                                        notifications.map((notification) => (
+                                        notifications.map((notification, index) => (
                                             <ListItem
-                                                key={notification.id}
+                                                // key={notification.id}
+                                                key={index}
                                                 alignItems="flex-start"
                                                 sx={{
                                                     '&:hover': { cursor: 'pointer', backgroundColor: alpha(theme.palette.common.black, 0.1) },
                                                 }}
                                             >
                                                 <ListItemAvatar>
-                                                    <Avatar alt={notification.title} src={notification.avatar} />
+                                                    {/*<Avatar alt={notification.title} src={notification.avatar} />*/}
+                                                    <Avatar src="/static/images/avatar/1.jpg"/>
                                                 </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={
-                                                        <>
-                                                            {!notification.read && (
-                                                                <CircleIcon sx={{ color: theme.palette.info.main, fontSize: 10, marginRight: '8px' }} />
-                                                            )}
-                                                            {notification.title}
-                                                        </>
-                                                    }
-                                                    secondary={
-                                                        <React.Fragment>
-                                                            <Typography
-                                                                component="span"
-                                                                variant="body2"
-                                                                sx={{ color: 'text.primary', display: 'inline' }}
-                                                            >
-                                                                {notification.studyPageName}
-                                                            </Typography>
-                                                            <Typography
-                                                                component="span"
-                                                                variant="body2"
-                                                                sx={{ color: 'text.primary', display: 'inline' }}
-                                                            >
-                                                                {notification.message}
-                                                            </Typography>
-                                                        </React.Fragment>
-                                                    }
-                                                />
+                                                {/*<ListItemText*/}
+                                                {/*    primary={*/}
+                                                {/*        <>*/}
+                                                {/*            {!notification.read && (*/}
+                                                {/*                <CircleIcon sx={{ color: theme.palette.info.main, fontSize: 10, marginRight: '8px' }} />*/}
+                                                {/*            )}*/}
+                                                {/*            {notification.title}*/}
+                                                {/*        </>*/}
+                                                {/*    }*/}
+                                                {/*    secondary={*/}
+                                                {/*        <React.Fragment>*/}
+                                                {/*            <Typography*/}
+                                                {/*                component="span"*/}
+                                                {/*                variant="body2"*/}
+                                                {/*                sx={{ color: 'text.primary', display: 'inline' }}*/}
+                                                {/*            >*/}
+                                                {/*                {notification.studyPageName}*/}
+                                                {/*            </Typography>*/}
+                                                {/*            <Typography*/}
+                                                {/*                component="span"*/}
+                                                {/*                variant="body2"*/}
+                                                {/*                sx={{ color: 'text.primary', display: 'inline' }}*/}
+                                                {/*            >*/}
+                                                {/*                {notification.message}*/}
+                                                {/*            </Typography>*/}
+                                                {/*        </React.Fragment>*/}
+                                                {/*    }*/}
+                                                {/*/>*/}
                                                 {/* 읽음 처리 버튼 */}
-                                                {!notification.read && (
-                                                    <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>
-                                                        <DoneIcon />
-                                                    </IconButton>
-                                                )}
+                                                {/*{!notification.read && (*/}
+                                                {/*    <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>*/}
+                                                {/*        <DoneIcon />*/}
+                                                {/*    </IconButton>*/}
+                                                {/*)}*/}
                                             </ListItem>
                                         ))
                                     )}
