@@ -70,7 +70,7 @@ const ChatInput = ({
                     hiddenLabel
                     id="filled-hidden-label-normal"
                     variant="filled"
-                    placeholder="Input Message Here ! :P"
+                    placeholder="Input Message Here! :D"
                     value={message}
                     onChange={onMessageChange}
                     fullWidth
@@ -99,7 +99,7 @@ const ChatInput = ({
                 onClick={editMessage ? onSaveMessage : handleSendClick}
                 className="send-button"
                 aria-label={editMessage ? "메시지 저장" : "메시지 전송"}
-                sx={{ marginLeft: '8px' }}
+                sx={{ marginRight: '8px' }}
             >
                 <SendIcon />
             </IconButton>

@@ -82,7 +82,7 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                                 flexDirection: 'row',
                                 gap: 1,
                                 overflowX: 'auto',
-                                borderBottom: `1px solid ${theme.palette.divider}`,
+                                // borderBottom: `1px solid ${theme.palette.divider}`,
                                 pb: 1,
                                 width: '100%', // 너비 고정 (부모 요소 기준으로 설정)
                                 height: '60px', // 높이 고정

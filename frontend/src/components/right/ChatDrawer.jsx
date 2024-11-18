@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import IconButton from '@mui/material/IconButton';
-import EmailIcon from '@mui/icons-material/Email';
 import ChatWindow from './ChatWindow.jsx';
 
 export default function ChatDrawer({ isSmallScreen, isMediumScreen, teams, isOpen, toggleDrawer }) {

@@ -321,6 +321,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 </Badge>
                             </IconButton>
                             {/* chatting sidebar*/}
+
                             <IconButton
                                 color="inherit"
                                 onClick={toggleChatDrawer}
