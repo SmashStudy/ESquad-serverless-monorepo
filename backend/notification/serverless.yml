@@ -41,7 +41,7 @@ provider:
         - dynamodb:ListStreams
         - sns:Publish
 #        - sns:Subscribe
-        - execute-api:Invoke
+#        - execute-api:Invoke
       Resource:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
@@ -49,7 +49,11 @@ provider:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_INDEX}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
         - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:EsquadNotificationTopic
-#        - arn:aws:execute-api:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${ApiGatewayRestApi}/notification/send
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+      Resource:
+        - "arn:aws:execute-api:${env:AWS_REGION}:*:*/@connections/*"
 
 functions:
   # 연결 ID를 저장
@@ -68,13 +72,13 @@ functions:
       - websocket:
           route: $disconnect  # Remove connection IDs when clients disconnect.
 
- # 클라이언트가 보낸 메시지를 처리
+ # Push notifications to connected clients
   websocketSendNotification:
     handler: ./service/websocketSendNotification.handler
     runtime: nodejs20.x
     events:
       - websocket:
-          route: sendNotification   # Push notifications to connected clients
+          route: sendNotification
 
   # SNS 을 구독하는 Lambda : 모든 WebSocket 클라이언트에 SNS 메시지를 브로드캐스트
   broadcastNotification:
@@ -130,10 +134,22 @@ resources:
         AttributeDefinitions:
           - AttributeName: connectionId
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
           - AttributeName: connectionId
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
 
     NotificationsTable:
       Type: AWS::DynamoDB::Table
