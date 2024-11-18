@@ -27,8 +27,9 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import markNotificationsAsRead from '../../hooks/markNotificationsAsRead.jsx';
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
+import axios from "axios";
+// import useNotificationWebSocket from "../../hooks/useNotificationWebSocket.mjs";
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -88,38 +89,49 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
 
     const teamTabOpen = Boolean(teamAnchorEl);
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
-    const endpointURl = "https://vise3jaz20.execute-api.us-east-1.amazonaws.com/dev";
+
+    const [ws, setWs] = useState(null);
     const userId = "USER#123";
 
     console.log(notifications);
     useEffect(() => {
-        const encodedUserId = encodeURIComponent(userId);
-        let eventSource;
-        
-        const connectToEventSource = () => {
-            eventSource = new EventSource(`${endpointURl}/notification/stream?userId=${encodedUserId}`);
-    
-            eventSource.onopen = () => {
-                console.log("SSE connection opened. readyState:", eventSource.readyState);
-            };
-    
-            eventSource.onmessage = (event) => {
-                const parsedData = JSON.parse(event.data);
-                console.log("Received notification:", parsedData);
-                setNotifications((prev) => [...prev, parsedData]); // Append to existing notifications
-            };
-    
-            eventSource.onerror = (error) => {
-                console.error("Error with EventSource:", error);
-                eventSource.close(); // Close the connection
-                // setTimeout(connectToEventSource, 3000); // Retry connection after 3 seconds
-            };
+        const wsUrl = `wss://44rocqtmsa.execute-api.us-east-1.amazonaws.com/dev`;
+        const socket = new WebSocket(wsUrl);
+
+        // Handle WebSocket events
+        socket.onopen = () => {
+            console.log("WebSocket connection established.");
+            // Optional: Send an initial message, such as authentication
+            socket.send(JSON.stringify({ action: "subscribe", userId }));
         };
-    
-        connectToEventSource();
-    
+
+        socket.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                console.log("WebSocket message received:", message);
+                setNotifications((prev) => [...prev, message]);
+            } catch (error) {
+                console.error("Error parsing WebSocket message:", error);
+            }
+        };
+
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
+
+        socket.onclose = (event) => {
+            console.log("WebSocket connection closed:", event.reason);
+            // Optionally, reconnect after a delay
+            setTimeout(() => {
+                console.log("Reconnecting to WebSocket...");
+                setWs(null); // Trigger a reconnection
+            }, 3000);
+        };
+
+        setWs(socket);
+
         return () => {
-            if (eventSource) eventSource.close();
+            socket.close();
         };
     }, [userId]);
 
@@ -153,11 +165,13 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
 
     const handleMarkAsRead = async (notificationId) => {
-        const unReadIds = notifications.filter((notifi) => !notifi.isRead).map((notifi) => notifi.id);
-        markNotificationsAsRead(unReadIds, endpointURl);
-        setNotifications((prev) =>
-            prev.map((notifi) => ({ ...notifi, isRead: 1}))
-        );
+        try {
+            await axios.post(`${endpointURl}/notifications/mark-as-read`, { notificationId });
+            alert("Notifications marked as read!");
+        } catch (error) {
+            console.error("Error marking notifications as read:", error);
+        }
+        setNotifications((prev) => [...prev, notificationId]);
     };
 
     return (
