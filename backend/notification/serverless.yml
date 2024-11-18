@@ -1,6 +1,6 @@
-org: persii
-app: esquad-monorepo
 service: service-notification
+org: persii
+#app: esquad-monorepo
 frameworkVersion: '^3.15.0'
 
 provider:
@@ -11,32 +11,84 @@ provider:
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
-    SNS_TOPIC_PREFIX: StudyPageFileTopic
+    NOTIFICATION_INDEX: ${env:NOTIFICATION_INDEX}
+    SNS_TOPIC_PREFIX: EsquadNotificationTopic
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     METADATA_TABLE_STREAM_LABEL: ${env:METADATA_TABLE_STREAM_LABEL}
+    # API_GATEWAY_ID:
+    #   Fn::ImportValue: ApiGatewayEndpoint   # 출력되는 엔드포인트
+    # ServiceEndpoint: 
+    #   Fn::ImportValue: ServiceEndpoint      # "https://${API_GATEWAY_ID}.execute-api.${env:AWS_REGION}.amazonaws.com/${opt:stage}"
+
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:PutItem
+        - dynamodb:BatchWriteItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:UpdateItem
         - dynamodb:Query
         - dynamodb:DescribeStream
         - dynamodb:GetRecords
         - dynamodb:GetShardIterator
         - dynamodb:ListStreams
         - sns:Publish
+        - sns:Subscribe
+        - execute-api:Invoke
       Resource:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
-        - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:StudyPageFileTopic
-
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/UserIdIndex
+        - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:EsquadNotificationTopic
+        - arn:aws:execute-api:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${ApiGatewayRestApi}/notification/send
 functions:
-  notifyUsersOnFileUpload:
-    handler: ./service/notifyUsersOnFileUpload.handler # Lambda 핸들러 함수
+
+  # SNS 을 구독하는 Lambda 설정
+  snsSubscribe:
+    handler: ./service/snsSubscribe.handler   
+    events:
+      - http:
+          path: notification/send   # Endpoint
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Sns-Message-Type
+              - Cache-Control
+              - Connection
+
+  # 
+  streamNotifications:
+    handler: ./service/streamNotification.handler
+    events:
+      - http:
+          path: notification/stream
+          method: get
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - Cache-Control
+              - Connection
+
+  markAsRead:
+    handler: ./service/markAsRead.handler
+    events:
+      - http:
+          path: notifications/mark-as-read
+          method: post
+          cors: true
+
+  pubNotificationOnFileUpload:
+    handler: ./service/pubNotificationOnFileUpload.handler # Lambda 핸들러 함수
     environment:
       TEAM_TABLE_NAME: ${env:TEAM_TABLE}
       NOTIFICATIONS_TABLE_NAME: ${env:NOTIFICATION_TABLE}
       FILE_CHANGE_NOTIFICATION_TOPIC:
-        Ref: StudyPageNotificationsTopic
+        Ref: EsquadNotificationTopic
     events:
       - stream:
           type: dynamodb # DynamoDB Streams 트리거
@@ -52,29 +104,41 @@ resources:
       Properties:
         TableName: ${env:NOTIFICATION_TABLE}
         AttributeDefinitions:
-          - AttributeName: PK
+          - AttributeName: id
             AttributeType: S
-          - AttributeName: SK
+          - AttributeName: userId
             AttributeType: S
+          - AttributeName: isRead
+            AttributeType: N
         KeySchema:
-          - AttributeName: PK
+          - AttributeName: id
             KeyType: HASH
-          - AttributeName: SK
+          - AttributeName: userId
             KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH # Partition Key for GSI
+              - AttributeName: isRead
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # Include all attributes in the GSI
         BillingMode: PAY_PER_REQUEST
 
-    StudyPageNotificationsTopic:
+    EsquadNotificationTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: StudyPageFileTopic   # SNS Topic 명
+        TopicName: EsquadNotificationTopic   # SNS Topic 명
 
-    HTTPSubscription:
+    EsquadNotificationTopicSubscription:
       Type: AWS::SNS::Subscription
       Properties:
         TopicArn:
-          Ref: StudyPageNotificationsTopic
-        Protocol: http
-        Endpoint: http://localhost:5173/notifications
+          Ref: EsquadNotificationTopic
+        Protocol: https
+        Endpoint:
+          Fn::Sub: "https://${ApiGatewayRestApi}.execute-api.${env:AWS_REGION}.amazonaws.com/${opt:stage}/notification/send"   # SNS 주제에 대해 API Gateway 엔드포인트를 구독
 
   Outputs:
     NotificationsTableName:
@@ -83,8 +147,15 @@ resources:
     SNSTopicARN:
       Description: ARN of the SNS Topic
       Value:
-        Ref: StudyPageNotificationsTopic # 기존 `StudyPageFileSNSTopic`에서 수정
+        Ref: EsquadNotificationTopic
       Export:
-        Name: StudyPageNotificationsTopic
+        Name: EsquadNotificationTopics
+    ApiGatewayEndpoint:
+      Description: API Gateway Base URL
+      Value:
+        Ref: ApiGatewayRestApi
+      Export:
+        Name: ApiGatewayId
 
+      
 useDotenv: true

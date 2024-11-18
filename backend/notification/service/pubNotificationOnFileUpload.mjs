@@ -1,11 +1,11 @@
-import { DynamoDBClient, QueryCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
-import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
+import { BatchWriteItemCommand, DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
 
 const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-const TEAM_TABLE = process.env.TEAM_TABLE;
-const NOTIFICATIONS_TABLE = process.env.NOTIFICATIONS_TABLE;
+const TEAM_TABLE = process.env.TEAM_DYNAMODB_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 
 export const handler = async (event) => {
     try {
@@ -30,14 +30,14 @@ export const handler = async (event) => {
 
             // 1. StudyPage 정보 가져오기 ( 유저ID 및 studyPageName)
             const teamQueryCommand = new QueryCommand({
-                TableName: process.env.TEAM_TABLE_NAME,
+                TableName: TEAM_TABLE,
                 KeyConditionExpression: "PK = :pk",
                 ExpressionAttributeValues: {
                     ":pk": { S: targetId },
                 },
             });
 
-            const teamResponse = await dynamoDbClient.send(teamQueryCommand);
+            const teamResponse = await dynamoClient.send(teamQueryCommand);
             console.log(teamResponse.Items);
 
             if (!teamResponse.Items || teamResponse.Items.length === 0) {
@@ -46,34 +46,53 @@ export const handler = async (event) => {
             }
 
             // 2. 스터디페이지명과 유저정보 분리
-            const studyPageName = teamResponse.Items.find((item) => item.itemType.S === "StudyPage")?.StudyPageName.S;
+            const studyPageName = teamResponse.Items.find((item) => item.itemType.S === "StudyPage")?.studyPageName.S;
             const users = teamResponse.Items.filter((item) => item.itemType.S === "StudyPageUser").map((item) => item.SK.S);
 
             // 3. 알림 메시지 생성
             const message = `${userId} 가 파일 "${fileName}" 을 "${studyPageName}" 스터디에 공유했습니다.`;
 
-            // 3. 알림 저장 및 SNS 전송
-            for (const user of users) {
-                const notificationItem = {
-                    PK: { S: `NOTIFICATION#${Date.now()}` },
-                    SK: { S: `USER#${user.split("#")[1]}` },
-                    message: { S: message },
-                    isRead: { BOOL: false },
-                    createdAt: { S: new Date().toISOString() },
-                };
+            // 3. 알림 저장
+            const writeRequests = users.map((user) => ({
+                PutRequest: {
+                    Item: {
+                        id: { S: `NOTIFICATION#${Date.now()}` },
+                        userId: { S: user },
+                        message: { S: message },
+                        sender: { S: studyPageName },
+                        isRead: { N: "0" },
+                        createdAt: { S: new Date().toISOString() },
+                    },
+                },
+            }));
 
-                // DynamoDB에 알림 저장
-                await dynamoDbClient.send(new PutItemCommand({ TableName: process.env.NOTIFICATIONS_TABLE_NAME, Item: notificationItem }));
+            const params = {
+                RequestItems: {
+                    [NOTIFICATION_TABLE]: writeRequests,
+                },
+            };
+
+            await dynamoClient.send(new BatchWriteItemCommand(params));
+            console.log("Notifications written successfully.");
+
+            // 4. SNS 에 메시지 게시 ( pub )
+            for (const user of users) {
+                const publishCommand = new PublishCommand({
+                    TopicArn: `arn:aws:sns:${process.env.AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:${process.env.SNS_TOPIC_PREFIX}`,
+                    Message: message,
+                    Sender: studyPageName,
+                    MessageAttributes: {
+                        userId: {
+                            DataType: "String",
+                            StringValue: user,        // Target UserId
+                        },
+                    }
+                });
+
+                await snsClient.send(publishCommand);
+                console.log(`Notification sent to ${user}`);
             }
 
-            // 4. SNS를 통해 알림 전송
-            const publishCommand = new PublishCommand({
-                TopicArn: `arn:aws:sns:${process.env.AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:${process.env.SNS_TOPIC_PREFIX}`,
-                Message: message,
-            });
-
-            await snsClient.send(publishCommand);
-            console.log(`Notification sent to ${users}: ${message}`);
         }
 
         return { statusCode: 200, body: JSON.stringify({ message: "Notifications processed successfully!" }) };
