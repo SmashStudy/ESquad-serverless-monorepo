@@ -14,10 +14,9 @@
   },
   "homepage": "",
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.693.0",
+    "@aws-sdk/client-dynamodb": "^3.693.0",
     "dotenv": "^16.4.5",
     "node-fetch": "^3.3.2"
-  },
-  "devDependencies": {
-    "serverless-offline": "^14.3.4"
   }
 }
