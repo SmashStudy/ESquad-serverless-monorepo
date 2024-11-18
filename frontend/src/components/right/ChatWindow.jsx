@@ -86,8 +86,9 @@ const ChatWindow = ({ teams }) => {
                             overflowX: 'auto', // 가로 스크롤만 허용
                             overflowY: 'hidden', // 세로 스크롤 숨김
                             whiteSpace: 'nowrap', // 가로로 요소가 나열되도록 설정
-                            padding: '0.5rem',
-                            borderBottom: '1px solid #ddd',
+                            padding: '12px',
+                            borderBottom: '2px solid #ddd',
+                            marginBottom: '12px',
                         }}
                     >
                         {teams.map((team, index) => (
@@ -95,6 +96,8 @@ const ChatWindow = ({ teams }) => {
                                 key={index}
                                 onClick={() => handleChatRoomSelect(team)}
                                 sx={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
                                     padding: '0.5rem 1rem',
                                     backgroundColor: currentChatRoom?.id === team.id ? '#d7bce8' : '#fff',
                                     color: currentChatRoom?.id === team.id ? '#6a1b9a' : '#424242',

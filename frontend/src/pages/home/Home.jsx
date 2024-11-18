@@ -29,8 +29,8 @@ const Home = () => {
         { "id": 21, "teamName": "문법존" },
         { "id": 28, "teamName": "몬다니" },
         { "id": 24, "teamName": "문법존2" },
-        { "id": 22, "teamName": "몬다니2" },
-        { "id": 23, "teamName": "문법존3" },
+        { "id": 22, "teamName": "몬다ㅇㅇㅇㅇㅇ니2" },
+        { "id": 23, "teamName": "문ㅈㄷㅈㄷㅈㄷㅈㄷ법존3" },
         { "id": 41, "teamName": "몬다니4" },
     ]);
     const [selectedTeam, setSelectedTeam] = useState(null);

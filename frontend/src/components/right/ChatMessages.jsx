@@ -140,16 +140,18 @@ function ChatMessages({currentChatRoom}) {
     const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
-        <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
             {/* 메시지 리스트 영역 */}
             <div style={{
                 flex: 1,
                 overflowY: 'auto',
                 borderRadius: '8px',
-                paddingBottom: '1rem',
+                paddingBottom: '0.8rem',
                 height: '400px', // 고정된 높이 설정
-                maxHeight: '900px', // 최대 높이 설정
+                maxHeight: '850px', // 최대 높이 설정
                 minHeight: '400px', // 최소 높이 설정
+                marginTop: '10px', // 위쪽 간격을 20px로 설정
+                paddingTop: '16px'
             }}>
                 <MessageList
                     messages={messages}
@@ -169,7 +171,6 @@ function ChatMessages({currentChatRoom}) {
                 backgroundColor: '#ffffff',
                 zIndex: 10,
                 paddingBottom: '0px',
-                marginTop: '0px'
             }}>
                 <ChatInput
                     message={messageInput}
