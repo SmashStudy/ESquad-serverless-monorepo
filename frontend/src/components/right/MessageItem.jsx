@@ -23,7 +23,13 @@ const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }
     };
 
     const getAvatarColor = (username) => {
-        const colors = ['#FF8A80', '#FF80AB', '#EA80FC', '#8C9EFF', '#80D8FF', '#A7FFEB', '#CCFF90', '#FFD180'];
+        const colors =
+               ['#FF80AB','#FF8A80','#EA80FC','#8C9EFF',
+                '#80D8FF','#A7FFEB', '#CCFF90','#FFD180',
+                '#e57373','#f06292','#ba68c8','#7986cb',
+                '#64b5f6','#4fc3f7','#4dd0e1','#4db6ac',
+                '#81c784','#aed581','#dce775','#fff176',
+                '#ffd54f','#ffb74d','#ff8a65','#a1887f'];
         const index = username ? username.charCodeAt(0) % colors.length : 0;
         return colors[index];
     };
