@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import ChatWindow from './ChatWindow.jsx';
 
-export default function ChatDrawer({ isSmallScreen, isMediumScreen, teams, isOpen, toggleDrawer }) {
+export default function ChatDrawer({ teams, isOpen, toggleDrawer }) {
     return (
         <div>
             {/* SwipeableDrawer 설정 */}
@@ -15,12 +15,12 @@ export default function ChatDrawer({ isSmallScreen, isMediumScreen, teams, isOpe
             >
                 <Box
                     sx={{
-                        width: isSmallScreen ? '80vw' : '400px',
-                        height: '100vh',
+                        width: '430px',
+                        height: '100%',
                         overflow: 'hidden',
                     }}
                 >
-                    <ChatWindow isSmallScreen={isSmallScreen} isMediumScreen={isMediumScreen} teams={teams} />
+                    <ChatWindow teams={teams} />
                 </Box>
             </SwipeableDrawer>
         </div>

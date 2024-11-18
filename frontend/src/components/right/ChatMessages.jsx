@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import MessageItem from "./MessageItem.jsx";
@@ -13,6 +13,7 @@ function ChatMessages({currentChatRoom}) {
     const [socket, setSocket] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessage, setEditingMessage] = useState(null);
+    const messageEndRef = useRef(null);
 
     // 유저 더미 데이터
     const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
@@ -35,6 +36,7 @@ function ChatMessages({currentChatRoom}) {
         try {
             const messages = await fetchMessageAPI(room_id);
             setMessages(messages);
+            scrollToBottom();
         } catch (error) {
             console.error("메시지 불러오기 실패: " + error.messages);
         }
@@ -56,10 +58,12 @@ function ChatMessages({currentChatRoom}) {
                 console.error("Invalid JSON received: " + event.data);
             }
         };
-
-        newSocket.onclose = () => {
-
+            newSocket.onclose = () => {
         }
+    }
+
+    const scrollToBottom = () => {
+        messageEndRef.current?.scrollIntoView({behavior: "smooth"});
     }
 
     // 메시지 전송 핸들러
@@ -79,6 +83,7 @@ function ChatMessages({currentChatRoom}) {
         };
 
         sendMessageAPI(socket, messageData);
+        scrollToBottom();
 
             if(editingMessage) {
                 setMessages((prevMessages) =>
@@ -128,12 +133,24 @@ function ChatMessages({currentChatRoom}) {
         }
     }
 
+    useEffect(() => {
+        scrollToBottom();
+    },[messages]);
+
     const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
         <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {/* 메시지 리스트 영역 */}
-            <div style={{ flex: 1, overflowY: 'auto', border: '1px solid purple', borderRadius: '8px', paddingBottom: 0, height:'600px'}}>
+            <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                borderRadius: '8px',
+                paddingBottom: '1rem',
+                height: '400px', // 고정된 높이 설정
+                maxHeight: '900px', // 최대 높이 설정
+                minHeight: '400px', // 최소 높이 설정
+            }}>
                 <MessageList
                     messages={messages}
                     onEditMessage={handleEditMessage}
@@ -141,10 +158,19 @@ function ChatMessages({currentChatRoom}) {
                     username={username}
                     userId={userId}
                 />
+                <div ref={messageEndRef}/>
             </div>
 
             {/* 메시지 입력창 영역 */}
-            <div style={{ flexShrink: 0, position: 'sticky', bottom: 0, backgroundColor: '#f3f4f6', zIndex: 10, paddingBottom: '0px', marginTop: '0px' }}>
+            <div style={{
+                flexShrink: 0,
+                position: 'sticky',
+                bottom: 0,
+                backgroundColor: '#ffffff',
+                zIndex: 10,
+                paddingBottom: '0px',
+                marginTop: '0px'
+            }}>
                 <ChatInput
                     message={messageInput}
                     onMessageChange={handleMessageInput}
