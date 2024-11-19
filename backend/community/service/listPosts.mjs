@@ -48,19 +48,19 @@ export const handler = async (event) => {
 
     // 필터 조건에 따라 인덱스와 쿼리 변경
     if (boardType === "questions" && resolvedFilter !== undefined) {
-      params.IndexName = "ResolvedIndex"; // ResolvedIndex 사용
-      params.KeyConditionExpression =
-        "boardType = :boardType AND resolved = :resolved";
+      params.FilterExpression = "resolved = :resolved";
       params.ExpressionAttributeValues[":resolved"] = { S: resolvedFilter }; // 문자열로 변환
-    }
-
-    if (boardType === "team-recruit" && recruitStatusFilter !== undefined) {
-      params.IndexName = "RecruitStatusIndex"; // RecruitStatusIndex 사용
-      params.KeyConditionExpression =
-        "boardType = :boardType AND recruitStatus = :recruitStatus";
+    } else if (
+      boardType === "team-recruit" &&
+      recruitStatusFilter !== undefined
+    ) {
+      params.FilterExpression = "recruitStatus = :recruitStatus";
       params.ExpressionAttributeValues[":recruitStatus"] = {
-        S: recruitStatusFilter, // 문자열로 변환
-      };
+        S: recruitStatusFilter,
+      }; // 문자열로 변환
+    } else {
+      // 필터가 없는 기본 설정 (BoardIndex만 사용)
+      params.FilterExpression = undefined; // 필터 없음
     }
 
     console.log("DynamoDB Query Params:", params);
