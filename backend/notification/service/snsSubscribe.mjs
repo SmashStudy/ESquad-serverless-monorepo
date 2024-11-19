@@ -3,7 +3,7 @@ import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk
 
 const dynamoDBClient = new DynamoDBClient({});
 const apiGatewayClient = new ApiGatewayManagementApiClient({
-    endpoint: process.env.API_GATEWAY_WEBSOCKET_ENDPOINT,
+    endpoint: process.env.SOCKET_API_ENDPOINT,
 });
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 

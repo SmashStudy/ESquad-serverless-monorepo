@@ -22,8 +22,8 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
 
     // 더미 스터디 리스트 데이터
     const [studys, setStudys] = useState([
-        {"id": encodeURIComponent("STUDYPAGE#101"), "teamId": teamId, "bookId": 'BOOK#301', "title": "스터디읻이디리딩딩딩", "members": 12},
-        {"id": encodeURIComponent("STUDYPAGE#105"), "teamId": teamId, "bookId": 'BOOK#305', "title": "케로케로케로디리딩딩딩", "members": 12},
+        {"id": encodeURIComponent("STUDY#101"), "teamId": teamId, "bookId": 'BOOK#301', "title": "스터디읻이디리딩딩딩", "members": 12},
+        {"id": encodeURIComponent("STUDY#105"), "teamId": teamId, "bookId": 'BOOK#305', "title": "케로케로케로디리딩딩딩", "members": 12},
     ]);
     // const [studys, setStudys] = useState([]);
     const [loading, setLoading] = useState(true); // 로딩 상태 관리

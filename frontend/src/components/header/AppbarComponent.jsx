@@ -90,50 +90,36 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const teamTabOpen = Boolean(teamAnchorEl);
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
-    const [ws, setWs] = useState(null);
     const userId = "USER#123";
+    const [socket, setSocket] = useState(null);
 
     console.log(notifications);
     useEffect(() => {
-        const wsUrl = `wss://44rocqtmsa.execute-api.us-east-1.amazonaws.com/dev`;
-        const socket = new WebSocket(wsUrl);
+        const apiUrl = "wss://u9veo11g7k.execute-api.us-east-1.amazonaws.com/dev"; // Replace with your WebSocket API Gateway endpoint
+        const ws = new WebSocket(`${apiUrl}?userId=${encodeURIComponent(userId)}`);
 
-        // Handle WebSocket events
-        socket.onopen = () => {
-            console.log("WebSocket connection established.");
-            // Optional: Send an initial message, such as authentication
-            socket.send(JSON.stringify({ action: "subscribe", userId }));
+        ws.onopen = () => {
+            console.log("WebSocket connected");
+            setSocket(ws);
         };
 
-        socket.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                console.log("WebSocket message received:", message);
-                setNotifications((prev) => [...prev, message]);
-            } catch (error) {
-                console.error("Error parsing WebSocket message:", error);
-            }
+        ws.onmessage = (event) => {
+            console.log("Message received:", event.data);
+            setNotifications((prevMessages) => [...prevMessages, event.data]);
         };
 
-        socket.onerror = (error) => {
+        ws.onclose = () => {
+            console.log("WebSocket disconnected");
+        };
+
+        ws.onerror = (error) => {
             console.error("WebSocket error:", error);
         };
 
-        socket.onclose = (event) => {
-            console.log("WebSocket connection closed:", event.reason);
-            // Optionally, reconnect after a delay
-            setTimeout(() => {
-                console.log("Reconnecting to WebSocket...");
-                setWs(null); // Trigger a reconnection
-            }, 3000);
-        };
-
-        setWs(socket);
-
         return () => {
-            socket.close();
+            ws.close();
         };
-    }, [userId]);
+    }, []);
 
     // Handle team menu open/close
     const handleTeamMenuClick = (event) => { setTeamAnchorEl(event.currentTarget); };
@@ -165,13 +151,13 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
 
     const handleMarkAsRead = async (notificationId) => {
-        try {
-            await axios.post(`${endpointURl}/notifications/mark-as-read`, { notificationId });
-            alert("Notifications marked as read!");
-        } catch (error) {
-            console.error("Error marking notifications as read:", error);
-        }
-        setNotifications((prev) => [...prev, notificationId]);
+        // try {
+        //     await axios.post(`${endpointURl}/notifications/mark-as-read`, { notificationId });
+        //     alert("Notifications marked as read!");
+        // } catch (error) {
+        //     console.error("Error marking notifications as read:", error);
+        // }
+        // setNotifications((prev) => [...prev, notificationId]);
     };
 
     return (
