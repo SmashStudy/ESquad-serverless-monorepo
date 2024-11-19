@@ -21,7 +21,7 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.(svg)$/,
+        test: /\.(svg)$/i,
         type: "asset/inline",
       },
     ],
@@ -48,16 +48,20 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       inlineSource: ".(js|css)$",
-      template: __dirname + `/app/${app}.html`,
-      filename: __dirname + `/dist/${app}.html`,
+      template: path.resolve(__dirname, `app/${app}.html`),
+      filename: path.resolve(__dirname, `dist/${app}.html`),
       inject: "head",
     }),
     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [new RegExp(`${app}`)]),
   ],
   devServer: {
     proxy: {
-      context: ["/api/stream/join", "/api/stream/attendee", "/api/stream/end", "/api/stream/logs"],
-      target: "http://127.0.0.1:8080",
+      "/api": {
+        target: "https://api.esquad.click/dev", // 백엔드 API 주소
+        secure: false, // SSL 인증서 검증 비활성화
+        changeOrigin: true, // 요청 헤더의 출처(origin)를 대상 서버와 일치시킴
+        pathRewrite: { "^/api": "/api" }, // 경로 재작성
+      },
     },
     historyApiFallback: {
       index: `/${app}.html`,
@@ -73,8 +77,8 @@ module.exports = {
       overlay: false,
     },
     hot: false,
-    host: "0.0.0.0",
-    port: 9000,
+    host: "0.0.0.0", // 모든 네트워크 인터페이스 허용
+    port: 9000, // 개발 서버 포트
     https: {
       key: fs.readFileSync(
         path.resolve(__dirname, "C:\\Program Files\\mkcert\\localhost-key.pem")
@@ -83,6 +87,6 @@ module.exports = {
         path.resolve(__dirname, "C:\\Program Files\\mkcert\\localhost.pem")
       ),
     },
-    open: true,
+    open: true, // 서버 실행 후 브라우저 열기
   },
 };
