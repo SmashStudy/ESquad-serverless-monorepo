@@ -9,8 +9,9 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [teamId, setTeamId] = useState(1); // 임시로 팀 ID 설정
   const [texts, setText] = useState([]);
+  const [boardType, setBoardType] = useState("");
+  const [filterTab, setFilterTab] = useState("전체");
 
   // URL 경로에 따라 boardType 설정
   const getBoardTypeFromPath = useCallback(() => {
@@ -21,7 +22,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
       setText(["전체", "미해결", "해결됨"]);
       return "questions";
     } else if (location.pathname.includes("general")) {
-      setText([]); // 자유게시판에서는 텍스트를 비워서 탭을 숨김
+      setText([]);
       return "general";
     } else {
       setText(["전체", "미해결", "해결됨"]);
@@ -29,30 +30,52 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
     }
   }, [location.pathname]);
 
-  const [boardType, setBoardType] = useState(getBoardTypeFromPath);
+  useEffect(() => {
+    const board = getBoardTypeFromPath();
+    setBoardType(board);
+  }, [getBoardTypeFromPath]);
 
   const fetchPosts = useCallback(async () => {
     try {
-      const response = await fetch(
-        `https://api.esquad.click/api/community/${boardType}?limit=10`
+      if (!boardType) return;
+      const url = new URL(
+        `https://api.esquad.click/api/community/${boardType}`
       );
+      url.searchParams.append("limit", 10);
+
+      // 필터 조건 추가
+      if (boardType === "questions") {
+        if (filterTab === "미해결") {
+          url.searchParams.append("resolved", "false");
+        } else if (filterTab === "해결됨") {
+          url.searchParams.append("resolved", "true");
+        }
+      } else if (boardType === "team-recruit") {
+        if (filterTab === "모집중") {
+          url.searchParams.append("recruitStatus", "false");
+        } else if (filterTab === "모집완료") {
+          url.searchParams.append("recruitStatus", "true");
+        }
+      }
+
+      const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error("Failed to fetch posts");
       }
       const data = await response.json();
-      setPosts(data.items);
+      setPosts(data.items || []);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
-  }, [boardType]);
-
-  useEffect(() => {
-    setBoardType(getBoardTypeFromPath());
-  }, [location.pathname, getBoardTypeFromPath]);
+  }, [boardType, filterTab]);
 
   useEffect(() => {
     fetchPosts();
-  }, [boardType, fetchPosts]);
+  }, [boardType, filterTab, fetchPosts]);
+
+  const handleFilterChange = (filter) => {
+    setFilterTab(filter); // 필터 상태 업데이트
+  };
 
   const handleWriteButtonClick = () => {
     setIsPostModalOpen(true);
@@ -95,45 +118,22 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           }}
         >
           {/* texts 배열이 비어 있지 않을 때만 버튼 표시 */}
-          {texts.length > 0 && (
-            <>
+          {texts.length > 0 &&
+            texts.map((text, index) => (
               <Button
+                key={index}
                 variant="text"
                 sx={{
                   fontSize: "medium",
                   fontWeight: "bold",
-                  borderBottom: boardType === "general" ? "2px solid" : "none",
+                  borderBottom: filterTab === text ? "2px solid" : "none",
                   borderColor: theme.palette.primary.main,
                 }}
-                onClick={() => setBoardType("general")}
+                onClick={() => handleFilterChange(text)}
               >
-                {texts[0]}
+                {text}
               </Button>
-              <Button
-                variant="text"
-                sx={{
-                  fontSize: "medium",
-                  borderBottom:
-                    boardType === "questions" ? "2px solid" : "none",
-                  borderColor: theme.palette.primary.main,
-                }}
-                onClick={() => setBoardType("questions")}
-              >
-                {texts[1]}
-              </Button>
-              <Button
-                variant="text"
-                sx={{
-                  fontSize: "medium",
-                  borderBottom: boardType === "resolved" ? "2px solid" : "none",
-                  borderColor: theme.palette.primary.main,
-                }}
-                onClick={() => setBoardType("resolved")}
-              >
-                {texts[2]}
-              </Button>
-            </>
-          )}
+            ))}
         </Box>
 
         <Box
@@ -329,30 +329,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           </Link>
         ))}
       </List>
-
-      {/* Pagination */}
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          my: 3,
-        }}
-      >
-        <Button variant="outlined" sx={{ mx: 1 }}>
-          이전
-        </Button>
-        {[1, 2, 3, 4, 5].map((page) => (
-          <Button key={page} variant="text" sx={{ mx: 1 }}>
-            {page}
-          </Button>
-        ))}
-        <Button variant="outlined" sx={{ mx: 1 }}>
-          다음
-        </Button>
-      </Box>
 
       {/* 글 작성 모달 */}
       <PostCreationDialog
