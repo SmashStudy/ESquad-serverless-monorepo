@@ -93,3 +93,41 @@ module.exports.getUserNickname = async (event) => {
     };
   }
 };
+
+module.exports.myEnvironments = async (event) => {
+  try {
+    // 반환할 환경 변수 목록
+    const envKeys = [
+      'VITE_COGNITO_CLIENT_ID',
+      'VITE_COGNITO_REDIRECT_URI',
+      'VITE_COGNITO_LOGOUT_URI',
+      'VITE_COGNITO_DOMAIN',
+      'VITE_COGNITO_SCOPE',
+      'VITE_COGNITO_RESPONSE_TYPE',
+    ];
+    
+    const envVariables = {};
+    envKeys.forEach((key) => {
+      if (process.env[key]) {
+        envVariables[key] = process.env[key];
+      }
+    });
+    
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "http://localhost:5173", // 요청을 허용할 오리진
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS", // 허용할 메서드
+        "Access-Control-Allow-Headers": "Content-Type, Authorization" // 허용할 헤더
+      },
+      body: JSON.stringify(envVariables),
+    };
+  } catch (error) {
+    console.error('환경 변수 반환 중 오류 발생:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
+    };
+  }
+};

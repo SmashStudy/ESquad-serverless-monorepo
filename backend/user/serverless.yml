@@ -46,10 +46,11 @@ functions:
             name: authorizer # 연결된 Authorizer 함수
   
   myEnvironments:
-    handler: service/
+    handler: service/handler.myEnvironments
     events:
       - http:
           path: /environments
+          method: get
   
 
 resources:
