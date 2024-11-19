@@ -62,16 +62,34 @@ functions:
       - http:
           path: /
           method: get
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
       - http:
           path: /{proxy+}
           method: any
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
 
   ChimeSdkJoinLambda:
     handler: service/join.handler
     events:
       - http:
-          path: /api/stream/join
+          path: /join
           method: post
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
     environment:
       USE_EVENT_BRIDGE: ${self:custom.useEventBridge}
 
@@ -79,16 +97,27 @@ functions:
     handler: service/end.handler
     events:
       - http:
-          path: /api/stream/end
+          path: /end
           method: post
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
 
   ChimeSdkAttendeeLambda:
     handler: service/attendee.handler
     events:
       - http:
-          path: /api/stream/attendee
+          path: /attendee
           method: get
-
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
   ChimeSQSQueueLambda:
     handler: service/sqs_handler.handler
     events:
@@ -107,8 +136,14 @@ functions:
     handler: service/logs.handler
     events:
       - http:
-          path: /api/stream/logs
+          path: /logs
           method: post
+          cors:
+            origin: 'https://live.dev.esquad.click'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
 
 resources:
   Resources:
@@ -198,4 +233,3 @@ outputs:
 
 plugins:
   - serverless-iam-roles-per-function
-
