@@ -24,7 +24,6 @@ const ChatWindow = ({ teams }) => {
             alert("메시지 또는 파일을 입력해주세요.");
             return;
         }
-        console.log(`Sending message: ${message} to chat room: ${currentChatRoom.teamName}`);
         setMessageInput('');
         setSelectedFile(null);
     };
