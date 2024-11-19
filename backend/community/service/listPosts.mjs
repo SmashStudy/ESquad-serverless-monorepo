@@ -26,7 +26,9 @@ export const handler = async (event) => {
       : 10;
 
     const lastEvaluatedKey = event.queryStringParameters?.lastEvaluatedKey
-      ? JSON.parse(event.queryStringParameters.lastEvaluatedKey)
+      ? JSON.parse(
+          decodeURIComponent(event.queryStringParameters.lastEvaluatedKey)
+        )
       : null;
 
     // 추가 필터 조건 (resolved 또는 recruitStatus)
@@ -42,9 +44,14 @@ export const handler = async (event) => {
         ":boardType": { S: boardType },
       },
       Limit: limit,
-      ExclusiveStartKey: lastEvaluatedKey,
+      ExclusiveStartKey: lastEvaluatedKey, // 페이지네이션 키
       ScanIndexForward: false, // 최신순 정렬
     };
+
+    console.log("DynamoDB Query Params:", params);
+
+    // DynamoDB Query 실행
+    const data = await ddbClient.send(new QueryCommand(params));
 
     // 필터 조건에 따라 인덱스와 쿼리 변경
     if (boardType === "questions" && resolvedFilter !== undefined) {
@@ -64,9 +71,6 @@ export const handler = async (event) => {
     }
 
     console.log("DynamoDB Query Params:", params);
-
-    // DynamoDB Query 실행
-    const data = await ddbClient.send(new QueryCommand(params));
 
     // 응답 데이터 가공
     const posts = data.Items.map((item) => {
