@@ -33,6 +33,8 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/ResolvedIndex"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/RecruitStatusIndex"
 
 functions:
   createPost:
@@ -80,6 +82,10 @@ resources:
             AttributeType: S
           - AttributeName: boardType
             AttributeType: S
+          - AttributeName: resolved
+            AttributeType: BOOL
+          - AttributeName: recruitStatus
+            AttributeType: BOOL
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -91,6 +97,22 @@ resources:
               - AttributeName: boardType
                 KeyType: HASH
               - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ResolvedIndex
+            KeySchema:
+              - AttributeName: boardType
+                KeyType: HASH
+              - AttributeName: resolved
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: RecruitStatusIndex
+            KeySchema:
+              - AttributeName: boardType
+                KeyType: HASH
+              - AttributeName: recruitStatus
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
