@@ -7,7 +7,7 @@ const LiveStreamWindow = ({ username, studyId }) => {
     e.stopPropagation();
 
     // URL을 정상적인 형식으로 수정
-    const popupUrl = `https://localhost:9000/?studyId=${studyId}&name=${encodeURIComponent(username)}`;
+    const popupUrl = `https://live.dev.esquad.click/?studyId=${studyId}&name=${encodeURIComponent(username)}`;
 
     // 팝업을 열고 URL 파라미터를 전달
     window.open(popupUrl, "_blank", "width=900,height=700,scrollbars=yes,resizable=yes");
