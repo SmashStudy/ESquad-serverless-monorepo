@@ -2,7 +2,6 @@ import React from 'react';
 import MessageItem from "./MessageItem.jsx";
 
 const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDownloadFile }) => {
-    // console.log("MessageList : ", messages);
     return (
         <div className="message-list">
             {messages.map((msg, index) => {

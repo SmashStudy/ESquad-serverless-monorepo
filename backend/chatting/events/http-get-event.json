@@ -1,0 +1,6 @@
+{
+    "httpMethod": "GET",
+    "queryStringParameters": {
+      "room_id": "room1"
+    }
+  }
