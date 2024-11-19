@@ -1,6 +1,15 @@
-import routes from "../constants/routes";
+// BASE_URL을 배포된 API Gateway URL로 수정
+// export const BASE_URL = 'https://api.esquad.click/dev/';
 
-export const BASE_URL = routes.HOME;
+// import routes from '../constants/routes';
+// export const BASE_URL = routes.HOME;
+
+import routes from '../constants/routes';
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+export const BASE_URL = isProduction ? 'https://api.esquad.click/dev/' : routes.HOME;
+
 
 export type MeetingFeatures = {
   Audio: { [key: string]: string };
@@ -37,10 +46,11 @@ export async function createMeetingAndAttendee(
     ns_es: String(echoReductionCapability),
   };
 
-  const res = await fetch(BASE_URL + "api/stream/join", {
-    method: "POST",
+  // API Gateway URL로 요청을 보냄
+  const res = await fetch(BASE_URL + 'api/stream/join', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
   });
@@ -64,14 +74,15 @@ export async function getAttendee(
   };
 
   const res = await fetch(
-    BASE_URL + "api/stream/attendee?" + new URLSearchParams(params),
+    BASE_URL + 'api/stream/attendee?' + new URLSearchParams(params),
     {
-      method: "GET",
+      method: 'GET',
     }
   );
 
   if (!res.ok) {
-    throw new Error("Invalid server response");
+    const errorText = await res.text();
+    throw new Error(`Server error: ${res.status} - ${errorText}`);
   }
 
   const data = await res.json();
@@ -81,24 +92,26 @@ export async function getAttendee(
   };
 }
 
+
 export async function endMeeting(title: string): Promise<void> {
   const body = {
     title: encodeURIComponent(title),
   };
 
-  const res = await fetch(BASE_URL + "api/stream/end", {
-    method: "POST",
+  const res = await fetch(BASE_URL + 'api/stream/end', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),
   });
 
   if (!res.ok) {
-    throw new Error("Server error ending meeting");
+    throw new Error('Server error ending meeting');
   }
 }
 
 export const createGetAttendeeCallback = (meetingId: string) => (
   chimeAttendeeId: string
 ): Promise<GetAttendeeResponse> => getAttendee(meetingId, chimeAttendeeId);
+
