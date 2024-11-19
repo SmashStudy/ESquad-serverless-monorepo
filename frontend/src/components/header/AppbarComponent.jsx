@@ -22,6 +22,7 @@ import {
     Divider,
     ListItemAvatar
 } from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -30,7 +31,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {Link, NavLink, useNavigate} from "react-router-dom";
 import {useUser} from "../form/UserContext.jsx";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -64,7 +64,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams }) => {
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
     // const { userInfo } = useUser();
 
@@ -320,6 +320,19 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
+                            {/* chatting sidebar*/}
+
+                            <IconButton
+                                color="inherit"
+                                onClick={toggleChatDrawer}
+                                sx={{
+                                    '&:hover': {
+                                        color: '#a33ffb',
+                                    },
+                                }}
+                            >
+                                <EmailIcon fontSize="medium" />
+                            </IconButton>
                             <Menu
                                 anchorEl={notificationsAnchorEl}
                                 open={Boolean(notificationsAnchorEl)}
@@ -396,7 +409,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                         ))
                                     )}
                                 </List>
-
                             </Menu>
                         </>
                     )}
@@ -410,7 +422,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                         <StyledInputBase placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
                     </Search>
                 )}
+
             </Toolbar>
+
         </AppBar>
     );
 };

@@ -43,7 +43,6 @@ export const editMessageAPI = async (editingMessage, newMessageContent) => {
             newMessage: newMessageContent,
             timestamp: Number(timestamp),
         });
-        console.log("메시지 수정 성공");
     }catch (error) {
         console.error("메시지 수정 실패 : ", error.message);
         throw error;
@@ -60,7 +59,6 @@ export const deleteMessageAPI = async (deleteMessage) => {
                 message: deleteMessage.message
             }
         })
-        console.log("메시지 삭제 성공");
     } catch (error) {
         console.error("메시지 삭제 실패 : " , error.response?.data || error.message);
     }
