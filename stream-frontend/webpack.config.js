@@ -1,14 +1,21 @@
 const path = require("path");
-const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const fs = require("fs");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 
 const app = "meeting";
+
+// 로컬 개발 환경에서만 HTTPS 설정
+const isLocalDevelopment = process.env.NODE_ENV === 'development';
+
+// 로컬에서만 사용하는 경로 설정
+const keyPath = isLocalDevelopment ? process.env.SSL_KEY_PATH : null;
+const certPath = isLocalDevelopment ? process.env.SSL_CERT_PATH : null;
 
 module.exports = {
   mode: "production",
   entry: ["./src/index.tsx"],
-  devtool: false,
+  devtool: "inline-source-map",
   module: {
     rules: [
       {
@@ -47,20 +54,19 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      inlineSource: ".(js|css)$",
       template: path.resolve(__dirname, `app/${app}.html`),
-      filename: path.resolve(__dirname, `dist/${app}.html`),
+      filename: `${app}.html`,
       inject: "head",
     }),
-    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [new RegExp(`${app}`)]),
+    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [new RegExp(`${app}-bundle.js$`)]),
   ],
   devServer: {
     proxy: {
       "/api": {
-        target: "https://api.esquad.click/dev", // 백엔드 API 주소
-        secure: false, // SSL 인증서 검증 비활성화
-        changeOrigin: true, // 요청 헤더의 출처(origin)를 대상 서버와 일치시킴
-        pathRewrite: { "^/api": "/api" }, // 경로 재작성
+        target: "https://api.esquad.click/dev",
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: { "^/api": "/api" },
       },
     },
     historyApiFallback: {
@@ -77,16 +83,14 @@ module.exports = {
       overlay: false,
     },
     hot: false,
-    host: "0.0.0.0", // 모든 네트워크 인터페이스 허용
-    port: 9000, // 개발 서버 포트
-    https: {
-      key: fs.readFileSync(
-        path.resolve(__dirname, "C:\\Program Files\\mkcert\\localhost-key.pem")
-      ),
-      cert: fs.readFileSync(
-        path.resolve(__dirname, "C:\\Program Files\\mkcert\\localhost.pem")
-      ),
-    },
-    open: true, // 서버 실행 후 브라우저 열기
+    host: "0.0.0.0",
+    port: 9000,
+    https: isLocalDevelopment
+      ? {
+          key: fs.existsSync(keyPath) ? fs.readFileSync(keyPath) : undefined,
+          cert: fs.existsSync(certPath) ? fs.readFileSync(certPath) : undefined,
+        }
+      : undefined,
+    open: true,
   },
 };
