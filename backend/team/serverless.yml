@@ -23,19 +23,20 @@ provider:
             - dynamodb:Query
             - dynamodb:BatchWriteItem
           Resource: 
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/TeamNameIndex
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/SK-Index
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TABLE}/index/teamID-Index
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamNameIndex
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-Index
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/teamID-Index
       managedPolicies:
         - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
         - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+
 resources:
   Resources:
     TeamTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.TABLE}
+        TableName: ${self:provider.environment.TEAM_TABLE}
         AttributeDefinitions:
           - AttributeName: PK
             AttributeType: S
@@ -75,41 +76,14 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-    UserTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.USER_TABLE}
-        AttributeDefinitions:
-          - AttributeName: PK
-            AttributeType: S
-          - AttributeName: SK
-            AttributeType: S
-          - AttributeName: teamName
-            AttributeType: S     
-          - AttributeName: itemType
-            AttributeType: S
-       
-        KeySchema:
-          - AttributeName: PK
-            KeyType: HASH
-          - AttributeName: SK
-            KeyType: RANGE
-        BillingMode: PAY_PER_REQUEST
-# custom:
-#   customDomain:
-#     domainName: api.esquad.click
-#     basePath: dev/api/teams 
-#     stage: dev
-#     createRoute53Record: true
-#     endpointType: edge
-#     certificateName: "*.esquad.click"
+
 
 functions:
   getTeams:
     handler: src/handlers/teamUserHandler.getTeams
     events:
       - http:
-          path: /api/teams
+          path: /
           method: get
           cors: true
           # authorizer:
@@ -120,14 +94,14 @@ functions:
     handler: src/handlers/teamHandler.createTeam
     events:
       - http:
-          path: /api/teams
+          path: /
           method: post
           cors: true   
   checkTeamName:
     handler: src/handlers/teamHandler.checkTeamName
     events:
       - http:
-          path: /api/teams/check-name/{teamName}
+          path: /check-name/{teamName}
           method: get
           cors: true
   
@@ -135,7 +109,7 @@ functions:
     handler: src/handlers/teamHandler.getTeamProfile
     events:
       - http:
-          path: /api/teams/{teamId}
+          path: /{teamId}
           method: get
           cors: true
   
@@ -143,14 +117,14 @@ functions:
     handler: src/handlers/teamUserHandler.checkTeamUserRole
     events:
       - http:
-          path: /api/teams/{teamId}/role
+          path: /{teamId}/role
           method: get
           cors: true
   getTeamUsersProfile:
     handler: src/handlers/teamUserHandler.getTeamUsersProfile
     events:
       - http:
-          path: /api/teams/{teamId}/user
+          path: /{teamId}/user
           method: get
           cors: true
           # authorizer:
@@ -160,21 +134,21 @@ functions:
     handler: src/handlers/teamHandler.updateTeam
     events:
       - http:
-          path: /api/teams/{teamId}/settings/info
+          path: /{teamId}/settings/info
           method: put
           cors: true
   deleteTeam:
     handler: src/handlers/teamHandler.deleteTeam
     events:
       - http:
-          path: /api/teams/{teamId}/settings
+          path: /{teamId}/settings
           method: delete
           cors: true
   updateTeamUsers:
     handler: src/handlers/teamUserHandler.updateTeamUsers
     events:
       - http:
-          path: /api/teams/{teamId}/setting/users
+          path: /{teamId}/setting/users
           method: put
           cors: true
 
