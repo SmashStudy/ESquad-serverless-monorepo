@@ -35,6 +35,23 @@ functions:
           path: update-nickname
           method: post
 
+  getUserNickname:
+    handler: service/handler.getUserNickname
+    events:
+      - http:
+          path: get-nickname
+          method: get
+          authorizer:
+            type: REQUEST
+            name: authorizer # 연결된 Authorizer 함수
+  
+  myEnvironments:
+    handler: service/
+    events:
+      - http:
+          path: /environments
+  
+
 resources:
   Resources:
     CognitoUserPool:
@@ -81,7 +98,9 @@ resources:
           - openid
           - profile
         CallbackURLs:
-          - ${env:CALLBACK_URL}
+          - ${env:CALLBACK_URLS}
+        LogoutURLs:
+          - ${env:LOGOUT_URLS}
         SupportedIdentityProviders:
           - Google
         GenerateSecret: false
@@ -112,20 +131,11 @@ resources:
       Properties:
         TableName: ${env:DYNAMODB_USER_TABLE_NAME}
         AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: nickname
+          - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: userId
+          - AttributeName: email
             KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: NicknameIndex
-            KeySchema:
-              - AttributeName: nickname
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
 
     GoogleIdentityProvider:
