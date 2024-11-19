@@ -87,7 +87,7 @@ const MeetingStatusNotifier: React.FC = () => {
   }, [meetingStatus]);
 
   useEffect(() => {
-    let id: number;
+    let id: NodeJS.Timeout | number;
     if (status === 'reconnecting') {
       id = setInterval(() => {
         dispatch({
@@ -97,7 +97,7 @@ const MeetingStatusNotifier: React.FC = () => {
       }, 10 * 1000);
     }
     return () => {
-      clearInterval(id);
+      clearInterval(id as NodeJS.Timeout);
     };
   }, [status]);
 

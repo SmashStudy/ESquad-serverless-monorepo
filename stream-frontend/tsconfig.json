@@ -12,7 +12,7 @@
     "allowJs": true,
     "checkJs": false,
     "jsx": "react",
-    "types": ["react", "jest"],
+    "types": ["react", "jest", "node"],
     "pretty": true,
     "skipLibCheck": true,
     "strict": true,
@@ -28,6 +28,6 @@
       "amazon-chime-sdk-js": ["./node_modules/amazon-chime-sdk-js"]
     }
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*", "config.js"],
   "exclude": ["node_modules", "build"]
 }
