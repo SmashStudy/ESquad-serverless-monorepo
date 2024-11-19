@@ -7,6 +7,7 @@ export const handler = async (event) => {
   try {
     const boardType = event.pathParameters.boardType;
 
+    // 유효한 boardType 검사
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
       return {
@@ -19,30 +20,55 @@ export const handler = async (event) => {
       };
     }
 
+    // QueryString Parameters
     const limit = event.queryStringParameters?.limit
-      ? parseInt(event.queryStringParameters.limit)
+      ? parseInt(event.queryStringParameters.limit, 10)
       : 10;
 
     const lastEvaluatedKey = event.queryStringParameters?.lastEvaluatedKey
       ? JSON.parse(event.queryStringParameters.lastEvaluatedKey)
       : null;
 
-    const params = {
+    // 추가 필터 조건 (resolved 또는 recruitStatus)
+    const resolvedFilter = event.queryStringParameters?.resolved;
+    const recruitStatusFilter = event.queryStringParameters?.recruitStatus;
+
+    // 기본 DynamoDB Query Parameters
+    let params = {
       TableName: TABLE_NAME,
-      IndexName: "BoardIndex",
+      IndexName: "BoardIndex", // 기본 인덱스
       KeyConditionExpression: "boardType = :boardType",
       ExpressionAttributeValues: {
         ":boardType": { S: boardType },
       },
       Limit: limit,
       ExclusiveStartKey: lastEvaluatedKey,
-      ScanIndexForward: false,
+      ScanIndexForward: false, // 최신순 정렬
     };
+
+    // 필터 조건에 따라 인덱스와 쿼리 변경
+    if (boardType === "questions" && resolvedFilter !== undefined) {
+      params.IndexName = "ResolvedIndex"; // ResolvedIndex 사용
+      params.KeyConditionExpression =
+        "boardType = :boardType AND resolved = :resolved";
+      params.ExpressionAttributeValues[":resolved"] = { S: resolvedFilter }; // 문자열로 변환
+    }
+
+    if (boardType === "team-recruit" && recruitStatusFilter !== undefined) {
+      params.IndexName = "RecruitStatusIndex"; // RecruitStatusIndex 사용
+      params.KeyConditionExpression =
+        "boardType = :boardType AND recruitStatus = :recruitStatus";
+      params.ExpressionAttributeValues[":recruitStatus"] = {
+        S: recruitStatusFilter, // 문자열로 변환
+      };
+    }
 
     console.log("DynamoDB Query Params:", params);
 
+    // DynamoDB Query 실행
     const data = await ddbClient.send(new QueryCommand(params));
 
+    // 응답 데이터 가공
     const posts = data.Items.map((item) => {
       const post = {
         postId: item.PK.S.split("#")[1],
@@ -57,11 +83,11 @@ export const handler = async (event) => {
       };
 
       if (item.boardType.S === "questions") {
-        post.resolved = item.resolved?.BOOL || false;
+        post.resolved = item.resolved?.S === "true"; // 문자열을 Boolean으로 변환
       }
 
       if (item.boardType.S === "team-recruit") {
-        post.recruitStatus = item.recruitStatus?.BOOL || false;
+        post.recruitStatus = item.recruitStatus?.S === "true"; // 문자열을 Boolean으로 변환
       }
 
       return post;
