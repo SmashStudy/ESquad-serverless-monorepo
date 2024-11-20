@@ -25,10 +25,10 @@ import {
     useMediaQuery,
     useTheme
 } from '@mui/material';
+import axios from "axios";
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import axios from "axios";
 // import useNotificationWebSocket from "../../hooks/useNotificationWebSocket.mjs";
 
 const Search = styled('div')(({ theme }) => ({
@@ -92,33 +92,82 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
 
     const userId = "USER#123";
     const [socket, setSocket] = useState(null);
+    const [timer, setTimer] = useState(null);
+    const API_GATEWAY_ID = "b4p9zd7gd7";
+    const SOCKET_API_GATEWAY_ID = "sshwo4uce4";
 
     console.log(notifications);
-    useEffect(() => {
-        const apiUrl = "wss://u9veo11g7k.execute-api.us-east-1.amazonaws.com/dev"; // Replace with your WebSocket API Gateway endpoint
-        const ws = new WebSocket(`${apiUrl}?userId=${encodeURIComponent(userId)}`);
+    const closeWebSocket = () => {
+        if (timer) {
+            clearInterval(timer);
+            setTimer(null);
+        }
+        if (socket) {
+            socket.close();
+            setSocket(null);
+        }
+    };
+
+    const connectToWebSocket = () => {
+        const address = `wss://${SOCKET_API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev?userId=${encodeURIComponent(userId)}`;
+        const ws = new WebSocket(address);
 
         ws.onopen = () => {
             console.log("WebSocket connected");
-            setSocket(ws);
+            const interval = setInterval(() => {
+            ws.send(JSON.stringify({ message: "ping" }));
+            }, 60 * 1000); // Ping every 60 seconds
+            setTimer(interval);
         };
 
-        ws.onmessage = (event) => {
-            console.log("Message received:", event.data);
-            setNotifications((prevMessages) => [...prevMessages, event.data]);
+        ws.onmessage = (message) => {
+            const obj = JSON.parse(message.data);
+            onMessageReceived(obj);
         };
 
         ws.onclose = () => {
-            console.log("WebSocket disconnected");
+            console.log("WebSocket closed");
+            closeWebSocket();
         };
 
-        ws.onerror = (error) => {
-            console.error("WebSocket error:", error);
+        ws.onerror = (event) => {
+            console.error("WebSocket error observed:", event);
+            closeWebSocket();
+    };
+
+    setSocket(ws);
+    };
+
+    // Handle incoming WebSocket messages
+    const onMessageReceived = (message) => {
+        if (message.timestamp) {
+            setNotifications((prev) => [...prev, message]);
+        }
+    };
+
+
+    // Fetch chat messages on component mount
+    useEffect(() => {
+        const fetchMessages = async () => {
+        try {
+            const result = await axios({
+            method: "GET",
+            url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/notification`,
+            params: { userId: encodeURIComponent(userId) },
+            });
+
+            console.log(result.data);
+            setNotifications(result.data);
+            connectToWebSocket();
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+        }
         };
 
-        return () => {
-            ws.close();
-        };
+        fetchMessages();
+
+        // Cleanup on component unmount
+        return () => closeWebSocket();
     }, []);
 
     // Handle team menu open/close
