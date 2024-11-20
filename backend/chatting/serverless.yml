@@ -29,6 +29,7 @@ provider:
             - execute-api:ManageConnections
           Resource:
             - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
+            - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*"
         - Effect: Allow
           Action:
             - dynamodb:PutItem
@@ -174,6 +175,19 @@ functions:
         - lib/ddbUtil.mjs
         - node_modules/**
 
+  # 팀정보 채팅 커넥트 함수
+  teamUserConnect:
+    handler: service/teamUserConnect.handler
+    events:
+      - httpApi:
+          path: /team
+          method: post
+      - stream:
+          type: dynamodb
+          arn: ${env:TEAM_TABLE_STREAM_ARN}
+          batchSize: 5
+          startingPosition: LATEST
+
 # 추가 리소스 정의
 resources:
   Resources:
@@ -216,7 +230,6 @@ resources:
                     - execute-api:ManageConnections
                   Resource:
                     - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
-
     chatappChatMessages: # 채팅 메시지 DynamoDB 테이블
       Type: AWS::DynamoDB::Table
       Properties:
