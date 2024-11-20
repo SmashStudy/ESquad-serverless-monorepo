@@ -6,7 +6,7 @@ import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } fro
 
 // import { useUser } from "../form/UserContext.jsx";
 
-const wsUrl = "wss://rkp3d3pdq7.execute-api.us-east-1.amazonaws.com/dev";
+const wsUrl = "wss://q4kl81gm35.execute-api.us-east-1.amazonaws.com/dev";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
