@@ -116,8 +116,8 @@ export const myEnvironments = async (event) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        // "Access-Control-Allow-Origin": "http://localhost:5173",
-        "Access-Control-Allow-Origin": "https://dev.esquad.click",
+        "Access-Control-Allow-Origin": "http://localhost:5173",
+        // "Access-Control-Allow-Origin": "https://dev.esquad.click",
         // "Access-Control-Allow-Origin": "https://www.esquad.click",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
