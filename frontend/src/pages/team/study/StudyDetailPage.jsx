@@ -512,7 +512,7 @@ StudyDetailPage.propTypes = {
         originalFileName: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
       })
-  ).isRequired,
+  ),
 };
 
 export default StudyDetailPage;
