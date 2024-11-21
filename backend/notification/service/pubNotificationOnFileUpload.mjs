@@ -1,6 +1,8 @@
-import { DynamoDBClient, QueryCommand, BatchGetItemCommand, BatchWriteItemCommand} from "@aws-sdk/client-dynamodb";
+import { v4 as uuidv4 } from 'uuid';
+import { DynamoDBClient, QueryCommand, BatchWriteItemCommand} from "@aws-sdk/client-dynamodb";
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
-// import { sendNotificationHandler } from "./sendNotifications.mjs";
+// import { sendNotificationHandler } from "./fetchNotifications.mjs";
 
 // const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
@@ -9,10 +11,56 @@ const TEAM_TABLE = process.env.TEAM_DYNAMODB_TABLE;
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const CONNECTIONS_TABLE_NAME = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_CONNECTION_USER_INDEX = process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
+const ENDPOINT = `https://ro2goaptcf.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
 
-const apiGatewayClient = new ApiGatewayManagementApiClient({
-    endpoint: process.env.SOCKET_API_ENDPOINT, // 환경 변수로 설정된 웹소켓 엔드포인트
-});
+const MAX_BATCH_SIZE = 25;
+
+const saveNotifications = async (users, message, studyName) => {
+    try {
+        // Chunk users to ensure batch size limit of 25 items per request
+        for (let i = 0; i < users.length; i += MAX_BATCH_SIZE) {
+            const chunk = users.slice(i, i + MAX_BATCH_SIZE);
+            const writeRequests = chunk.map((user) => ({
+                PutRequest: {
+                    Item: {
+                        id: { S: `${uuidv4()}` },
+                        userId: { S: user },
+                        message: { S: message },
+                        sender: { S: studyName },
+                        isRead: { N: "0" }, // Corrected the format to string "0"
+                        createdAt: { S: new Date().toISOString() },
+                    },
+                },
+            }));
+
+            // Prepare BatchWriteItemCommand parameters
+            const params = {
+                RequestItems: {
+                    [NOTIFICATION_TABLE]: writeRequests,
+                },
+            };
+
+            // Send BatchWriteItemCommand and handle retries for unprocessed items
+            let unprocessedItems = params.RequestItems;
+            while (Object.keys(unprocessedItems).length > 0) {
+                const command = new BatchWriteItemCommand({ RequestItems: unprocessedItems });
+                const response = await dynamoClient.send(command);
+
+                if (response.UnprocessedItems && Object.keys(response.UnprocessedItems).length > 0) {
+                    console.warn("Retrying unprocessed items:", response.UnprocessedItems);
+                    unprocessedItems = response.UnprocessedItems;
+                } else {
+                    unprocessedItems = {};
+                }
+            }
+
+            console.log("Chunk of notifications written successfully.");
+        }
+    } catch (error) {
+        console.error("Error saving notifications:", error);
+        throw new Error("Error saving notifications");
+    }
+};
 
 // 사용자 ID 목록으로 연결 ID 가져오기 (DynamoDB 조회)
 const getConnectionIdsByUserIds = async (userIds) => {
@@ -26,27 +74,21 @@ const getConnectionIdsByUserIds = async (userIds) => {
             userIds.map(async (userId) => {
                 const params = {
                     TableName: CONNECTIONS_TABLE_NAME,
-                    IndexName: 'UserIdIndex',
-                    KeyConditionExpression:'#userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
-                    ExpressionAttributeNames: {
-                        '#userId': 'userId',                        // 'userId'라는 실제 필드명을 매핑
-                    },
+                    IndexName: NOTIFICATION_CONNECTION_USER_INDEX,
+                    KeyConditionExpression:'userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
                     ExpressionAttributeValues: {                    // KeyConditionExpression에서 사용하는 값 정의
                         ':userId': { S: userId },
                     },
-                    ProjectionExpression: 'connectionId',           // 결과에서 반환할 속성을 지정 (connectionId만 반환)
+                    // ProjectionExpression: 'connectionId',           // 결과에서 반환할 속성을 지정 (connectionId만 반환)
                 };
 
                 try {
                     const command = new QueryCommand(params);
                     const result = await dynamoClient.send(command);
-                    console.log(`Notification Connection Table result: ${result.Items}`);
+                    console.log(`Notification Connection Table result: ${JSON.stringify(result.Items)}`);
 
                     if (result.Items && result.Items.length > 0) {
                         return result.Items.map((item) => item.connectionId.S); // DynamoDB 값 타입 처리
-                    } else {
-                        console.warn(`No connections found for userId: ${userId}`);
-                        return [];
                     }
                 } catch (queryError) {
                     console.error(`Error querying connection IDs for userId ${userId}:`, queryError);
@@ -63,22 +105,36 @@ const getConnectionIdsByUserIds = async (userIds) => {
     }
 };
 
+// 해당 유저에게 알림 전송
 const sendWebSocketMessage = async (connectionId, message) => {
     try {
         const params = {
             ConnectionId: connectionId,
             Data: JSON.stringify({ message }),
         };
-        const command = new PostToConnectionCommand(params);
-        await apiGatewayClient.send(command);
-        console.log(`Message sent to connection: ${connectionId}`);
+        const payload = new PostToConnectionCommand(params);
+        const apiClient = new ApiGatewayManagementApiClient({
+            endpoint: ENDPOINT
+        });
+
+        try {
+            await apiClient.send(
+                new PostToConnectionCommand({
+                    ConnectionId: connectionId,
+                    Data: JSON.stringify(payload),  // 메시지를 JSON 형식으로 전송
+                })
+            );
+            console.log(`Message sent to connectionId ${connectionId}`);
+        } catch (error) {
+            console.error("Failed to send message:", error);
+        }
     } catch (error) {
-        if (error.name === 'GoneException' || error.code === 'ForbiddenException') {
+        if (error.statusCode === 410) {
             console.error(`Connection ${connectionId} is gone, deleting from DynamoDB`);
             await dynamoClient.send(
                 new DeleteCommand({
                     TableName: CONNECTIONS_TABLE_NAME,
-                    Key: { connectionId },
+                    Key: { connectionId: { S: connectionId } },
                 })
             );
         } else {
@@ -119,42 +175,27 @@ export const handler = async (event) => {
                     });
 
                     const teamResponse = await dynamoClient.send(teamQueryCommand);
-                    console.log(`TeamTable Items: ${teamResponse.Items}`);
-
-                    if (!teamResponse.Items || teamResponse.Items.length === 0) {
-                        console.error(`No team members found for study page: ${targetId}`);
-                        continue;
-                    }
+                    console.log(`TeamTable Items: ${JSON.stringify(teamResponse.Items)}`);
 
                     // 2. 스터디페이지명과 유저정보 분리
                     const studyName = teamResponse.Items.find((item) => item.itemType.S === "Study")?.studyName.S;
-                    const users = teamResponse.Items.filter((item) => item.itemType.S === "StudyUser").map((item) => item.SK.S);
+                    const users = teamResponse.Items
+                        .filter((item) => item.itemType?.S === "StudyUser")
+                        .map((item) => item.SK?.S)
+                        .filter(Boolean);
 
+                    if (!studyName || users.length === 0) {
+                        console.warn("Study name or users not found, skipping notification.");
+                        continue;
+                    }
+
+                    console.log("111111");
                     // 3. 알림 메시지 생성
-                    const message = `${userId} 가 파일 "${fileName}" 을 "${studyName}" 스터디에 공유했습니다.`;
+                    const message = `${userId} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
+                    console.log(`message: ${message}`);
 
                     // 3. 알림 저장
-                    const writeRequests = users.map((user) => ({
-                        PutRequest: {
-                            Item: {
-                                id: { S: `NOTIFICATION#${Date.now()}` },
-                                userId: { S: user },
-                                message: { S: message },
-                                sender: { S: studyName },
-                                isRead: { N: "0" },
-                                createdAt: { S: new Date().toISOString() },
-                            },
-                        },
-                    }));
-
-                    // BatchWriteItemCommand로 요청 준비 (여러 개의 요청을 한 번에 처리)
-                    const params = {
-                        RequestItems: {
-                            [NOTIFICATION_TABLE]: writeRequests,
-                        },
-                    };
-
-                    await dynamoClient.send(new BatchWriteItemCommand(params));
+                    await saveNotifications(users, message, studyName);
                     console.log("Notifications written successfully.");
 
                     // 4. 사용자ID 로 연결ID 가져오기
@@ -166,8 +207,16 @@ export const handler = async (event) => {
                             await sendWebSocketMessage(connectionId, message);
                         }
                     }
+
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify({ message: "Notifications processed successfully!" }),
+                    };
                 } catch (error) {
-                    console.error("Error processing record: ", error);
+                    return {
+                        statusCode: 500,
+                        body: JSON.stringify({ message: "Error processing event", error: error.message }),
+                    };
                 }
             }
         }
@@ -199,8 +248,6 @@ export const handler = async (event) => {
         // }
 
         // }
-
-        return { statusCode: 200, body: JSON.stringify({ message: "Notifications processed successfully!" }) };
     } catch (error) {
         console.error("Error processing DynamoDB Stream Event:", error);
         return { statusCode: 500, body: JSON.stringify({ message: "Error processing event", error: error.message }) };

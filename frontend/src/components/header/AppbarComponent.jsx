@@ -2,6 +2,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
+import CircleIcon from '@mui/icons-material/Circle';
+import DoneIcon from '@mui/icons-material/Done';
 import {
     alpha,
     AppBar,
@@ -26,10 +28,31 @@ import {
     useTheme
 } from '@mui/material';
 import axios from "axios";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 // import useNotificationWebSocket from "../../hooks/useNotificationWebSocket.mjs";
+
+// Function to calculate time ago in "minutes ago" format
+const formatTimeAgo = (isoDate) => {
+    const now = new Date();
+    const createdAt = new Date(isoDate);
+    const diffInSeconds = Math.floor((now - createdAt) / 1000);
+
+    const minutes = Math.floor(diffInSeconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (minutes < 1) {
+        return '지금 막';
+    } else if (minutes < 60) {
+        return `${minutes} 분 전`;
+    } else if (hours < 24) {
+        return `${hours} 시간 전`;
+    } else {
+        return `${days} 일 전`;
+    }
+};
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -91,83 +114,102 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
     const userId = "USER#123";
-    const [socket, setSocket] = useState(null);
-    const [timer, setTimer] = useState(null);
-    const API_GATEWAY_ID = "9rrow3yn0a";
-    const SOCKET_API_GATEWAY_ID = "sshwo4uce4";
+    const API_GATEWAY_ID = "3vmpnm9327";
+    const SOCKET_API_GATEWAY_ID = "ro2goaptcf";
+    const socketRef = useRef(null); // 동일한 서버에 대한 다중 WebSocket 연결 방지
 
     console.log(notifications);
+
     const closeWebSocket = () => {
-        if (timer) {
-            clearInterval(timer);
-            setTimer(null);
-        }
-        if (socket) {
-            socket.close();
-            setSocket(null);
+        // WebSocket 연결이 열려 있다면 닫고 초기화
+        if (socketRef.current) {
+            console.log("Closing WebSocket connection.");
+            socketRef.current.close();
+            socketRef.current = null;
         }
     };
 
     const connectToWebSocket = () => {
+        if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
+            console.log("WebSocket is already active. Skipping new connection.");
+            return;
+        }
+
+        // WebSocket 서버 주소 정의 (사용자 ID를 쿼리 매개변수로 포함)
         const address = `wss://${SOCKET_API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev?userId=${encodeURIComponent(userId)}`;
         const ws = new WebSocket(address);
+        console.log("Creating a new WebSocket connection.");
 
+        // WebSocket이 성공적으로 연결되었을 때
         ws.onopen = () => {
-            console.log("WebSocket connected");
-            const interval = setInterval(() => {
-            ws.send(JSON.stringify({ message: "ping" }));
-            }, 60 * 1000); // Ping every 60 seconds
-            setTimer(interval);
+            console.log("WebSocket 연결 성공");
+
+            // WebSocket 서버에 알림 데이터를 요청하는 메시지를 전송
+            const fetchNotificationsMessage = JSON.stringify({
+                action: "fetchNotifications", // 요청 작업 타입 정의
+                userId: userId, // 사용자 ID 전달
+            });
+            ws.send(fetchNotificationsMessage);
         };
 
+        // WebSocket으로 메시지를 받을 때
         ws.onmessage = (message) => {
-            const obj = JSON.parse(message.data);
-            onMessageReceived(obj);
+            const obj = JSON.parse(message.data); // 메시지 데이터를 JSON으로 파싱
+            console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
+            onMessageReceived(obj); // 받은 메시지를 처리하는 함수 호출
         };
 
+        // WebSocket 연결이 닫혔을 때
         ws.onclose = () => {
-            console.log("WebSocket closed");
-            closeWebSocket();
+            console.log("WebSocket 연결 종료");
+            socketRef.current = null; // 연결 종료 처리
         };
 
+        // WebSocket 에러가 발생했을 때
         ws.onerror = (event) => {
-            console.error("WebSocket error observed:", event);
-            closeWebSocket();
+            console.error("WebSocket 에러 발생:", event);
+            socketRef.current = null; // 연결 종료 처리
+        };
+
+        socketRef.current = ws;
     };
 
-    setSocket(ws);
-    };
-
-    // Handle incoming WebSocket messages
+// WebSocket에서 받은 메시지를 처리하는 함수
     const onMessageReceived = (message) => {
+        // 메시지에 알림 데이터가 포함되어 있는 경우
+        if (message.response) {
+            setNotifications((prev) => [...prev, ...message.response]); // 알림 상태 업데이트
+        }
+        // 메시지가 개별 알림인 경우
         if (message.timestamp) {
-            setNotifications((prev) => [...prev, message]);
+            setNotifications((prev) => [...prev, message]); // 알림 상태 업데이트
         }
     };
 
-
-    // Fetch chat messages on component mount
-    useEffect(() => {
-        const fetchMessages = async () => {
+    const fetchNotifications = async () => {
         try {
+            // 초기 알림 데이터를 가져오기 위해 GET 요청
             const result = await axios({
-            method: "GET",
-            url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/notification`,
-            params: { userId: encodeURIComponent(userId) },
+                method: "GET",
+                url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/notification`,
+                params: {userId: encodeURIComponent(userId)}, // 사용자 ID를 쿼리 매개변수로 전달
             });
 
-            console.log(result.data);
-            setNotifications(result.data);
-            connectToWebSocket();
+            console.log(result.data); // 가져온 데이터 콘솔에 출력
+            setNotifications(result.data); // 알림 상태 업데이트
         } catch (error) {
-            console.error("Error fetching messages:", error);
+            console.error("메시지 가져오기 실패:", error); // 에러 로그 출력
         }
-        };
+    }
 
-        fetchMessages();
+// 컴포넌트가 마운트될 때 채팅 메시지를 가져오는 함수
+    useEffect(() => {
+        if (!socketRef.current) {
+            connectToWebSocket(); // WebSocket 연결 시작
+        }
 
-        // Cleanup on component unmount
-        return () => closeWebSocket();
+        // 컴포넌트가 언마운트될 때 WebSocket 정리
+        // return () => closeWebSocket();
     }, []);
 
     // Handle team menu open/close
@@ -418,82 +460,100 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
-                                {notifications.length > 0 && (
-                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                {notifications.length > 0 ? (
+                                    <>
+                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Button
+                                                onClick={handleNotificationsClose}
+                                                sx={{
+                                                    width: '50%',
+                                                    borderRadius: 0,
+                                                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                                                    '&:hover': {
+                                                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                                                    },
+                                                }}
+                                            >
+                                                모든 알림 확인
+                                            </Button>
+                                        </Box>
 
-                                        <Button
-                                            onClick={handleNotificationsClose}
-                                            sx={{
-                                                width: '50%',
-                                                borderRadius: 0,
-                                                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                                '&:hover': {
-                                                    backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                                                },
-                                            }}
-                                        >
-                                            모든 알림 확인
-                                        </Button>
-                                    </Box>
-                                )}
-                                <List sx={{ width: 360 }}>
-                                    {notifications.length === 0 ? (
+                                        <List sx={{ width: 360 }}>
+                                            {notifications.map((notification) => (
+                                                <ListItem
+                                                    key={notification.id}
+                                                    alignItems="flex-start"
+                                                    sx={{
+                                                        '&:hover': { cursor: 'pointer', backgroundColor: alpha(theme.palette.common.black, 0.1) },
+                                                    }}
+                                                >
+                                                    <ListItemAvatar>
+                                                        {notification.isRead === "0" ? (
+                                                            <Badge
+                                                                color="error"
+                                                                variant="dot"
+                                                                anchorOrigin={{
+                                                                    vertical: 'top',
+                                                                    horizontal: 'left',
+                                                                }}
+                                                                overlap="circular"
+                                                            >
+                                                                <Avatar src="/static/images/avatar/1.jpg" />
+                                                            </Badge>
+                                                        ) : (
+                                                            <Avatar src="/static/images/avatar/1.jpg" />
+                                                        )}
+                                                    </ListItemAvatar>
+                                                    <ListItemText
+                                                        primary={
+                                                            <Typography
+                                                                component="span"
+                                                                variant="body1"
+                                                                sx={{ color: 'text.primary', fontWeight: 'bold' }}
+                                                            >
+                                                                {notification.sender}
+                                                            </Typography>
+                                                        }
+                                                        secondary={
+                                                            <React.Fragment>
+                                                                {/* 알림 메시지 */}
+                                                                <Typography
+                                                                    component="span"
+                                                                    variant="body2"
+                                                                    sx={{ color: 'text.primary', display: 'block', marginTop: '4px' }}
+                                                                >
+                                                                    {notification.message}
+                                                                </Typography>
+                                                                {/* 생성 시간 */}
+                                                                <Typography
+                                                                    component="span"
+                                                                    variant="caption"
+                                                                    sx={{ color: 'text.secondary', display: 'block', marginTop: '4px' }}
+                                                                >
+                                                                    {formatTimeAgo(notification.createdAt)}
+                                                                </Typography>
+                                                            </React.Fragment>
+                                                        }
+                                                    />
+
+                                                    {/* 읽음 처리 버튼 - 읽지 않은 알림에만 표시 */}
+                                                    {notification.isRead === "0" && (
+                                                        <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>
+                                                            <DoneIcon sx={{ color: 'purple', fontSize: 16 }} />
+                                                        </IconButton>
+                                                    )}
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </>
+                                ) : (
+                                    // 알림이 없을 때 메시지
+                                    <List sx={{ width: 360 }}>
                                         <ListItem>
                                             <ListItemText primary="알림이 없습니다." />
                                         </ListItem>
-                                    ) : (
-                                        notifications.map((notification, index) => (
-                                            <ListItem
-                                                // key={notification.id}
-                                                key={index}
-                                                alignItems="flex-start"
-                                                sx={{
-                                                    '&:hover': { cursor: 'pointer', backgroundColor: alpha(theme.palette.common.black, 0.1) },
-                                                }}
-                                            >
-                                                <ListItemAvatar>
-                                                    {/*<Avatar alt={notification.title} src={notification.avatar} />*/}
-                                                    <Avatar src="/static/images/avatar/1.jpg"/>
-                                                </ListItemAvatar>
-                                                {/*<ListItemText*/}
-                                                {/*    primary={*/}
-                                                {/*        <>*/}
-                                                {/*            {!notification.read && (*/}
-                                                {/*                <CircleIcon sx={{ color: theme.palette.info.main, fontSize: 10, marginRight: '8px' }} />*/}
-                                                {/*            )}*/}
-                                                {/*            {notification.title}*/}
-                                                {/*        </>*/}
-                                                {/*    }*/}
-                                                {/*    secondary={*/}
-                                                {/*        <React.Fragment>*/}
-                                                {/*            <Typography*/}
-                                                {/*                component="span"*/}
-                                                {/*                variant="body2"*/}
-                                                {/*                sx={{ color: 'text.primary', display: 'inline' }}*/}
-                                                {/*            >*/}
-                                                {/*                {notification.studyPageName}*/}
-                                                {/*            </Typography>*/}
-                                                {/*            <Typography*/}
-                                                {/*                component="span"*/}
-                                                {/*                variant="body2"*/}
-                                                {/*                sx={{ color: 'text.primary', display: 'inline' }}*/}
-                                                {/*            >*/}
-                                                {/*                {notification.message}*/}
-                                                {/*            </Typography>*/}
-                                                {/*        </React.Fragment>*/}
-                                                {/*    }*/}
-                                                {/*/>*/}
-                                                {/* 읽음 처리 버튼 */}
-                                                {/*{!notification.read && (*/}
-                                                {/*    <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>*/}
-                                                {/*        <DoneIcon />*/}
-                                                {/*    </IconButton>*/}
-                                                {/*)}*/}
-                                            </ListItem>
-                                        ))
-                                    )}
-                                </List>
-
+                                    </List>
+                                )}
                             </Menu>
                         </>
                     )}

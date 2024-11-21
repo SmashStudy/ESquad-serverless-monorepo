@@ -8,32 +8,18 @@ export const handler = async (event, context) => {
    console.log(`EVENT: \n${JSON.stringify(event, null, 2)}`);
    console.log(`CONTEXT: \n${JSON.stringify(context, null, 2)}`);
 
-   if (event.httpMethod === "OPTIONS") {
-      return {
-         statusCode: 200,
-         headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS, GET",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-         },
-         body: "",
-      };
-   }
-
-
    let userId = event.queryStringParameters?.userId;
    userId = decodeURIComponent(userId);
    console.log(`userId: ${userId}`);
    if (!userId) {
       return {
         statusCode: 400,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "OPTIONS, GET",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        },
+        // headers: {
+        //   "Content-Type": "text/plain; charset=utf-8",
+        //   "Access-Control-Allow-Origin": "*",
+        //   "Access-Control-Allow-Methods": "OPTIONS, GET",
+        //   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        // },
         body: JSON.stringify({ error: "Please provide userId." }),
       };
     }
@@ -66,12 +52,12 @@ export const handler = async (event, context) => {
       return {
          isBase64Encoded: true,
          statusCode: 200,
-         headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS, GET",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-         },
+         // headers: {
+         //    "Content-Type": "text/plain; charset=utf-8",
+         //    "Access-Control-Allow-Origin": "*",
+         //    "Access-Control-Allow-Methods": "OPTIONS, GET",
+         //    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+         // },
          body: JSON.stringify(unreadMessages), // Convert the raw DynamoDB items to JSON
       };
    } catch (error) {
@@ -79,12 +65,12 @@ export const handler = async (event, context) => {
       return {
          isBase64Encoded: true,
          statusCode: 500,
-         headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "OPTIONS, GET",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-         },
+         // headers: {
+         //    "Content-Type": "text/plain; charset=utf-8",
+         //    "Access-Control-Allow-Origin": "*",
+         //    "Access-Control-Allow-Methods": "OPTIONS, GET",
+         //    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+         // },
          body: JSON.stringify("Failed to fetch notifications"),
       };
    }
