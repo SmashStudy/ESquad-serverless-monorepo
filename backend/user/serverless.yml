@@ -14,6 +14,7 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:GetItem
+            - dynamodb:Scan
           Resource:
             - arn:aws:dynamodb:${env:REGION}:430118855167:table/${env:DYNAMODB_USER_TABLE_NAME}
 
@@ -34,6 +35,7 @@ functions:
       - http:
           path: update-nickname
           method: post
+          cors: true
 
   getUserNickname:
     handler: service/handler.getUserNickname

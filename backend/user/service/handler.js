@@ -1,4 +1,4 @@
-const { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 
@@ -128,6 +128,111 @@ module.exports.myEnvironments = async (event) => {
     return {
       statusCode: 500,
       body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
+    };
+  }
+};
+
+module.exports.authorizer = async (event, context) => {
+  
+  console.log('Authorization event:', event);
+  return {
+    principalId: 'user',
+    policyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'execute-api:Invoke',
+          Effect: 'Allow',
+          Resource: event.methodArn,
+        },
+      ],
+    },
+  };
+};
+
+
+
+module.exports.updateUserNickname = async (event) => {
+  try {
+    if (!event.headers.Authorization) {
+      throw new Error('Authorization 헤더가 없습니다');
+    }
+
+    const authHeader = event.headers.Authorization;
+    const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token) {
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
+    }
+
+    const decoded = jwt.decode(token);
+
+    if (!decoded || !decoded.email) {
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
+    }
+
+    const email = String(decoded.email);
+    console.log(`email: ${email}`);
+
+    // 요청 본문 파싱
+    const body = JSON.parse(event.body);
+    if (!body || !body.nickname) {
+      throw new Error('nickname이 요청 본문에 없습니다');
+    }
+
+    const newNickname = String(body.nickname).trim();
+
+    if (newNickname.length === 0) {
+      throw new Error('nickname이 비어있습니다');
+    }
+
+    // 닉네임 길이 제한
+    if (newNickname.length < 2 || newNickname.length > 10) {
+      throw new Error('닉네임은 2자 이상, 10자 이하여야 합니다');
+    }
+
+    // 닉네임 중복 체크
+    const scanParams = {
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      FilterExpression: 'nickname = :nickname',
+      ExpressionAttributeValues: {
+        ':nickname': { S: newNickname },
+      },
+    };
+
+    const scanCommand = new ScanCommand(scanParams);
+    const scanResult = await dynamoDb.send(scanCommand);
+    if (scanResult.Count > 0) {
+      throw new Error('이미 사용 중인 닉네임입니다');
+    }
+
+    // DynamoDB 업데이트 요청
+    const params = {
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      Key: {
+        email: { S: email },
+      },
+      UpdateExpression: 'SET nickname = :nickname',
+      ExpressionAttributeValues: {
+        ':nickname': { S: newNickname },
+      },
+      ReturnValues: 'UPDATED_NEW',
+    };
+
+    const command = new UpdateItemCommand(params);
+    const result = await dynamoDb.send(command);
+
+    console.log('업데이트 결과:', result);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname }),
+    };
+  } catch (error) {
+    console.error('닉네임 업데이트 중 오류 발생:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: '닉네임 업데이트 중 오류 발생', error: error.message }),
     };
   }
 };
