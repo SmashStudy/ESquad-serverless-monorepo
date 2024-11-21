@@ -1,9 +1,8 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DoneIcon from '@mui/icons-material/Done';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
-import CircleIcon from '@mui/icons-material/Circle';
-import DoneIcon from '@mui/icons-material/Done';
 import {
     alpha,
     AppBar,
@@ -28,7 +27,7 @@ import {
     useTheme
 } from '@mui/material';
 import axios from "axios";
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 // import useNotificationWebSocket from "../../hooks/useNotificationWebSocket.mjs";
@@ -174,15 +173,21 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         socketRef.current = ws;
     };
 
-// WebSocket에서 받은 메시지를 처리하는 함수
+    // WebSocket에서 받은 메시지를 처리하는 함수
     const onMessageReceived = (message) => {
         // 메시지에 알림 데이터가 포함되어 있는 경우
-        if (message.response) {
-            setNotifications((prev) => [...prev, ...message.response]); // 알림 상태 업데이트
-        }
+        setNotifications((prev) => {
+            // Combine new and previous notifications
+            const combinedNotifications = message.response
+                ? [...message.response, ...prev]
+                : [...prev];
+    
+            // Sort by `createdAt` in descending order (most recent first)
+            return combinedNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        });
         // 메시지가 개별 알림인 경우
-        if (message.timestamp) {
-            setNotifications((prev) => [...prev, message]); // 알림 상태 업데이트
+        if (message.studyNotification) {
+            setNotifications((prev) => [message.studyNotification, ...prev]); // 알림 상태 업데이트
         }
     };
 
@@ -462,22 +467,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                             >
                                 {notifications.length > 0 ? (
                                     <>
-                                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                            <Button
-                                                onClick={handleNotificationsClose}
-                                                sx={{
-                                                    width: '50%',
-                                                    borderRadius: 0,
-                                                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                                                    '&:hover': {
-                                                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                                                    },
-                                                }}
-                                            >
-                                                모든 알림 확인
-                                            </Button>
-                                        </Box>
-
                                         <List sx={{ width: 360 }}>
                                             {notifications.map((notification) => (
                                                 <ListItem

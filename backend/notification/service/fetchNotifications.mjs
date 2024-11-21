@@ -1,12 +1,12 @@
-import { DynamoDBClient, QueryCommand} from "@aws-sdk/client-dynamodb";
-import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 
 const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const NOTIFICATION_INDEX = process.env.NOTIFICATION_INDEX;
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
-const NOTIFICATION_CONNECTION_USER_INDEX = process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
 const ENDPOINT = `https://ro2goaptcf.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
 
 // WebSocket 으로 메시지 전송
@@ -41,7 +41,7 @@ export const handler = async (event) => {
     try {
         const command = new QueryCommand({
             TableName: NOTIFICATION_TABLE,
-            IndexName: NOTIFICATION_CONNECTION_USER_INDEX,
+            IndexName: NOTIFICATION_INDEX,
             KeyConditionExpression:'#userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
             ExpressionAttributeNames: {
                 '#userId': 'userId',                        // 'userId'라는 실제 필드명을 매핑

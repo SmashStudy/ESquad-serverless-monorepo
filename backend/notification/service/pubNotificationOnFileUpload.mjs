@@ -1,7 +1,5 @@
+import { BatchWriteItemCommand, DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
-import { DynamoDBClient, QueryCommand, BatchWriteItemCommand} from "@aws-sdk/client-dynamodb";
-import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
-import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 // import { sendNotificationHandler } from "./fetchNotifications.mjs";
 
 // const snsClient = new SNSClient({ region: process.env.AWS_REGION });
@@ -62,162 +60,66 @@ const saveNotifications = async (users, message, studyName) => {
     }
 };
 
-// 사용자 ID 목록으로 연결 ID 가져오기 (DynamoDB 조회)
-const getConnectionIdsByUserIds = async (userIds) => {
-    try {
-        if (!userIds || userIds.length === 0) {
-            console.warn("No user IDs provided.");
-            return [];
-        }
-
-        const results = await Promise.all(
-            userIds.map(async (userId) => {
-                const params = {
-                    TableName: CONNECTIONS_TABLE_NAME,
-                    IndexName: NOTIFICATION_CONNECTION_USER_INDEX,
-                    KeyConditionExpression:'userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
-                    ExpressionAttributeValues: {                    // KeyConditionExpression에서 사용하는 값 정의
-                        ':userId': { S: userId },
-                    },
-                    // ProjectionExpression: 'connectionId',           // 결과에서 반환할 속성을 지정 (connectionId만 반환)
-                };
-
-                try {
-                    const command = new QueryCommand(params);
-                    const result = await dynamoClient.send(command);
-                    console.log(`Notification Connection Table result: ${JSON.stringify(result.Items)}`);
-
-                    if (result.Items && result.Items.length > 0) {
-                        return result.Items.map((item) => item.connectionId.S); // DynamoDB 값 타입 처리
-                    }
-                } catch (queryError) {
-                    console.error(`Error querying connection IDs for userId ${userId}:`, queryError);
-                    return [];
-                }
-            })
-        );
-
-        // 2차원 배열을 평탄화하여 1차원 배열 반환
-        return results.flat();
-    } catch (error) {
-        console.error("Error fetching connection IDs:", error);
-        return [];
-    }
-};
-
-// 해당 유저에게 알림 전송
-const sendWebSocketMessage = async (connectionId, message) => {
-    try {
-        const params = {
-            ConnectionId: connectionId,
-            Data: JSON.stringify({ message }),
-        };
-        const payload = new PostToConnectionCommand(params);
-        const apiClient = new ApiGatewayManagementApiClient({
-            endpoint: ENDPOINT
-        });
-
-        try {
-            await apiClient.send(
-                new PostToConnectionCommand({
-                    ConnectionId: connectionId,
-                    Data: JSON.stringify(payload),  // 메시지를 JSON 형식으로 전송
-                })
-            );
-            console.log(`Message sent to connectionId ${connectionId}`);
-        } catch (error) {
-            console.error("Failed to send message:", error);
-        }
-    } catch (error) {
-        if (error.statusCode === 410) {
-            console.error(`Connection ${connectionId} is gone, deleting from DynamoDB`);
-            await dynamoClient.send(
-                new DeleteCommand({
-                    TableName: CONNECTIONS_TABLE_NAME,
-                    Key: { connectionId: { S: connectionId } },
-                })
-            );
-        } else {
-            console.error(`Failed to send message to connection ${connectionId}:`, error);
-        }
-    }
-};
-
-
 export const handler = async (event) => {
     try {
         console.log("Received DynamoDB Stream Event:", JSON.stringify(event));
 
         for (const record of event.Records) {
-            if (!["INSERT", "REMOVE"].includes(record.eventName)) {
+            if (!["INSERT"].includes(record.eventName)) {
                 continue; // INSERT 및 REMOVE 이벤트만 처리
             }
 
-            if (record.eventName === "INSERT") {
-                const newImage = record.dynamodb.NewImage;
-                if (!newImage || newImage.targetType.S !== "STUDY_PAGE") {
-                    continue; // targetType이 STUDY_PAGE가 아니면 무시
+            const newImage = record.dynamodb.NewImage;
+            if (!newImage || newImage.targetType.S !== "STUDY_PAGE") {
+                continue; // targetType이 STUDY_PAGE가 아니면 무시
+            }
+
+            try {
+                // 삽입된 항목에서 사용자 ID를 추출
+                const userId = newImage.userId.S;
+                const targetId = newImage.targetId.S;
+                const fileName = newImage.originalFileName.S;
+
+                // 1. StudyPage 정보 가져오기 ( 유저ID 및 studyPageName)
+                const teamQueryCommand = new QueryCommand({
+                    TableName: TEAM_TABLE,
+                    KeyConditionExpression: "PK = :pk",
+                    ExpressionAttributeValues: {
+                        ":pk": { S: targetId },
+                    },
+                });
+
+                const teamResponse = await dynamoClient.send(teamQueryCommand);
+                console.log(`TeamTable Items: ${JSON.stringify(teamResponse.Items)}`);
+
+                // 2. 스터디페이지명과 유저정보 분리
+                const studyName = teamResponse.Items.find((item) => item.itemType.S === "Study")?.studyName.S;
+                const users = teamResponse.Items
+                    .filter((item) => item.itemType?.S === "StudyUser")
+                    .map((item) => item.SK?.S)
+                    .filter(Boolean);
+
+                if (!studyName || users.length === 0) {
+                    console.warn("Study name or users not found, skipping notification.");
+                    continue;
                 }
 
-                try {
-                    // 삽입된 항목에서 사용자 ID를 추출
-                    const userId = newImage.userId.S;
-                    const targetId = newImage.targetId.S;
-                    const fileName = newImage.originalFileName.S;
+                // 3. 알림 메시지 생성
+                const message = `${userId} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
+                console.log(`message: ${message}`);
 
-                    // 1. StudyPage 정보 가져오기 ( 유저ID 및 studyPageName)
-                    const teamQueryCommand = new QueryCommand({
-                        TableName: TEAM_TABLE,
-                        KeyConditionExpression: "PK = :pk",
-                        ExpressionAttributeValues: {
-                            ":pk": { S: targetId },
-                        },
-                    });
-
-                    const teamResponse = await dynamoClient.send(teamQueryCommand);
-                    console.log(`TeamTable Items: ${JSON.stringify(teamResponse.Items)}`);
-
-                    // 2. 스터디페이지명과 유저정보 분리
-                    const studyName = teamResponse.Items.find((item) => item.itemType.S === "Study")?.studyName.S;
-                    const users = teamResponse.Items
-                        .filter((item) => item.itemType?.S === "StudyUser")
-                        .map((item) => item.SK?.S)
-                        .filter(Boolean);
-
-                    if (!studyName || users.length === 0) {
-                        console.warn("Study name or users not found, skipping notification.");
-                        continue;
-                    }
-
-                    console.log("111111");
-                    // 3. 알림 메시지 생성
-                    const message = `${userId} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
-                    console.log(`message: ${message}`);
-
-                    // 3. 알림 저장
-                    await saveNotifications(users, message, studyName);
-                    console.log("Notifications written successfully.");
-
-                    // 4. 사용자ID 로 연결ID 가져오기
-                    const connectionIds = await getConnectionIdsByUserIds(users);
-
-                    // 5. 연결된 클라이언트에게 메시지 전송
-                    if (connectionIds.length > 0) {
-                        for (const connectionId of connectionIds) {
-                            await sendWebSocketMessage(connectionId, message);
-                        }
-                    }
-
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify({ message: "Notifications processed successfully!" }),
-                    };
-                } catch (error) {
-                    return {
-                        statusCode: 500,
-                        body: JSON.stringify({ message: "Error processing event", error: error.message }),
-                    };
-                }
+                // 3. 알림 저장
+                await saveNotifications(users, message, studyName);
+                console.log("Notifications written successfully.");
+                
+                return {
+                    statusCode: 200,
+                };
+            } catch (error) {
+                return {
+                    statusCode: 500,
+                    body: JSON.stringify({ message: "Error processing event", error: error.message }),
+                };
             }
         }
 

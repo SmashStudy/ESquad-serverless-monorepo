@@ -1,6 +1,6 @@
 service: service-notification
 org: persii
-app: esquad-monorepo
+# app: esquad-monorepo
 frameworkVersion: '^3.15.0'
 
 provider:
@@ -14,6 +14,7 @@ provider:
     NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
     NOTIFICATION_INDEX: ${env:NOTIFICATION_INDEX}
+    NOTIFICATION_TABLE_STREAM_LABEL: ${env:NOTIFICATION_TABLE_STREAM_LABEL}
     SNS_STORAGE_TOPIC_PREFIX: ${env:SNS_STORAGE_TOPIC_PREFIX}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     METADATA_TABLE_STREAM_LABEL: ${env:METADATA_TABLE_STREAM_LABEL}
@@ -110,6 +111,20 @@ functions:
     events:
       - websocket:
           route: fetchNotifications
+
+  notifiaction_new_insert:
+    handler: service/newNotifications.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - NotificationsTable
+              - StreamArn
+          batchSize: 5
+          startingPosition: LATEST
+          filterPatterns:
+            - { "eventName": [ "INSERT" ] }
   
   notification_onDisconnect:
     handler: service/onDisconnect.handler
@@ -240,6 +255,8 @@ resources:
             Projection:
               ProjectionType: ALL # Include all attributes in the GSI
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
 
     EsquadStorageNotificationTopic:
       Type: AWS::SNS::Topic
