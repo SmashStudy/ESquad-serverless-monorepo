@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-sdk/util-dynamodb": "^3.693.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@material-ui/core": "^4.12.4",
