@@ -1,117 +1,188 @@
-import React, { useState, useEffect } from 'react';
-import { useUser } from "../form/UserContext.jsx";
-import { fetchMessage, sendMessage, editChatMessage, deleteMessage } from "./chatApi/ChatApi.jsx";
-import { fileUpload, fileDelete } from "./chatApi/ChatFileApi.jsx";
+import React, {useState, useEffect, useRef} from 'react';
 import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
-import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
+import MessageItem from "./MessageItem.jsx";
+import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 
-const ChatMessages = ({ currentChatRoom }) => {
-    const [message, setMessage] = useState("");
+// import { useUser } from "../form/UserContext.jsx";
+
+const wsUrl = "wss://ws.api.esquad.click";
+
+function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
-    const [editMessageId, setEditMessageId] = useState(null);
-    const [editMessage, setEditMessage] = useState("");
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState("");
+    const [socket, setSocket] = useState(null);
+    const [messageInput, setMessageInput] = useState("");
+    const [editingMessage, setEditingMessage] = useState(null);
+    const messageEndRef = useRef(null);
 
-    // const { userInfo } = useUser();
-    // const userId = userInfo ? userInfo.id : "";
-    // const username = userInfo ? userInfo.username : "";
-
+    // 유저 더미 데이터
     const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
-    const userId = userInfo.id;              // 더미 유저
+    const userId = String(userInfo.id);              // 더미 유저
     const username = userInfo.username;   // 더미 유저
-    const roomId = currentChatRoom.id;
+    const room_id = String(currentChatRoom?.id);
 
-    // 메시지를 불러오는 함수
-    const loadMessages = async () => {
+    // websocket 연결 및 메시지 수신
+    useEffect(() => {
+        if(currentChatRoom && room_id) {
+            connectWebSocket(room_id);
+        }
+        return () => {
+            if(socket) { socket.close(); }
+        }
+    }, [currentChatRoom]);
 
+    // 메시지 불러오기
+    const loadMessages = async (room_id) => {
+        try {
+            const messages = await fetchMessageAPI(room_id);
+            setMessages(messages);
+            scrollToBottom();
+        } catch (error) {
+            console.error("메시지 불러오기 실패: " + error.messages);
+        }
     };
 
-    // useEffect(() => {
-    //     loadMessages();
-    //     const intervalId = setInterval(loadMessages, 3000); // 3초마다 메시지 업데이트
-    //     return () => clearInterval(intervalId);
-    // }, [roomId]);
+    // 웹소켓 연결 함수
+    const connectWebSocket = (room_id) => {
+        const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${userId}`);
+        setSocket(newSocket);
+
+        console.log("웹소켓 연결 됨");
+
+        newSocket.onopen = () => {
+            loadMessages(room_id);
+        };
+
+        newSocket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+            } catch (error) {
+                console.error("Invalid JSON received: " + event.data);
+            }
+        };
+            newSocket.onclose = () => {
+        }
+    }
+
+    const scrollToBottom = () => {
+        messageEndRef.current?.scrollIntoView({behavior: "smooth"});
+    }
 
     // 메시지 전송 핸들러
-    const handleSendMessage = async (messageText, file) => {
+    const sendMessage = async (messageContent) => {
+        const timestamp = new Date().getTime();
+        if(!room_id) {
+            alert("채팅방이 선택되지 않음");
+            return;
+        }
+        const messageData = {
+            action: "sendmessage",
+            message: messageContent,
+            room_id,
+            userId: userId,
+            timestamp
+            // username,
+        };
 
-    };
+        sendMessageAPI(socket, messageData);
+        scrollToBottom();
+
+            if(editingMessage) {
+                setMessages((prevMessages) =>
+                    prevMessages.map((message) =>
+                        message.timestamp === editingMessage.timestamp
+                            ? {... message, message: messageContent} : message
+                    )
+                );
+                setEditingMessage(null);
+            } else {
+                setMessages((prevMessages) => [...prevMessages, messageData]);
+            }
+            setMessageInput("");
+        };
 
     // 메시지 수정 핸들러
-    const handleEditMessageFunc = (id, currentMessage) => {
+    const handleEditMessage = async (timestamp, content, room_id) => {
+        setEditingMessage({timestamp, content, room_id});
+        setMessageInput(content);
+    }
 
-    };
-
-    // 메시지 수정 저장 핸들러
-    const handleSaveEditMessage = async () => {
-
-    };
+    const onSaveMessage = async () => {
+        if (!editingMessage)  return;
+        editMessageAPI(editingMessage, messageInput).then(() => {
+            setMessages((prevMessages) =>
+                prevMessages.map((message) =>
+                    message.timestamp === editingMessage.timestamp
+                    ? {...message, message: messageInput} : message
+                )
+            );
+            setEditingMessage(null);
+            setMessageInput("");
+        })
+    }
 
     // 메시지 삭제 핸들러
-    const handleDeleteMessageFunc = async (id, fileUrl) => {
+    const deleteMessage = async (deleteMessage) => {
+        try {
+            await deleteMessageAPI(deleteMessage);
+            setMessages((prevMessages) =>
+                prevMessages.filter (
+                    (message) => message.timestamp !== deleteMessage.timestamp
+                )
+            );
+        } catch (error) {
+            console.error ("메시지 삭제 중 오류 : " + error.message);
+        }
+    }
 
-    };
+    useEffect(() => {
+        scrollToBottom();
+    },[messages]);
 
-    // 파일 다운로드 핸들러
-    const handleDownloadFile = async (fileUrl) => {
-
-    };
-
-    // 파일 선택 핸들러
-    const handleFileChange = (e) => {
-
-    };
-
-    // 파일 업로드 클릭 핸들러
-    const handleUploadClick = () => {
-        document.getElementById('fileInput').click();
-    };
-
-    // 파일 제거 핸들러
-    const handleRemoveFile = () => {
-        setSelectedFile(null);
-        setMessage((prevMessage) => prevMessage.replace(/\s*\[파일: .+?\]/, ''));
-    };
+    const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
-        <div className="chat-container">
-            {console.log('현재 메시지 목록:', messages)} {/* 추가된 로그 */}
-            <MessageList
-                messages={messages}
-                userId={userId}
-                username={username}
-                onEditMessage={handleEditMessageFunc}
-                onDeleteMessage={handleDeleteMessageFunc}
-                onDownloadFile={handleDownloadFile}
-            />
-            <ChatInput
-                message={editMessageId ? editMessage : message}
-                onMessageChange={(e) => {
-                    const newMessage = e.target.value;
-                    if (editMessageId) {
-                        setEditMessage(newMessage);
-                    } else {
-                        setMessage(newMessage);
-                    }
-                }}
-                handleSend={(messageText) => handleSendMessage(messageText, selectedFile)}
-                onSaveMessage={handleSaveEditMessage}
-                editMessageId={editMessageId}
-                userId={userId}
-                handleUploadClick={handleUploadClick}
-                handleRemoveFile={handleRemoveFile}
-            />
-            <input
-                type="file"
-                id="fileInput"
-                style={{ display: 'none' }}
-                onChange={handleFileChange}
-            />
-            {previewUrl && <FilePreviewComponent file={selectedFile} />}
+        <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
+            {/* 메시지 리스트 영역 */}
+            <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                borderRadius: '8px',
+                paddingBottom: '0.8rem',
+                height: '400px', // 고정된 높이 설정
+                maxHeight: '850px', // 최대 높이 설정
+                minHeight: '400px', // 최소 높이 설정
+                marginTop: '10px', // 위쪽 간격을 20px로 설정
+                paddingTop: '16px'
+            }}>
+                <MessageList
+                    messages={messages}
+                    onEditMessage={handleEditMessage}
+                    onDeleteMessage={deleteMessage}
+                    username={username}
+                    userId={userId}
+                />
+                <div ref={messageEndRef}/>
+            </div>
+
+            {/* 메시지 입력창 영역 */}
+            <div style={{
+                flexShrink: 0,
+                position: 'sticky',
+                bottom: 0,
+                backgroundColor: '#ffffff',
+                zIndex: 10,
+                paddingBottom: '0px',
+            }}>
+                <ChatInput
+                    message={messageInput}
+                    onMessageChange={handleMessageInput}
+                    handleSend={sendMessage}
+                    editMessage={editingMessage?.timestamp}
+                    onSaveMessage={onSaveMessage}
+                />
+            </div>
         </div>
     );
-};
-
+}
 export default ChatMessages;

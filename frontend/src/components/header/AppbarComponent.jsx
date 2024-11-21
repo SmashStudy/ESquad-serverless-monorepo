@@ -22,6 +22,7 @@ import {
     Divider,
     ListItemAvatar
 } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -79,14 +80,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams }) => {
-
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
     const handleLogout = () => {
         navigate('/logout');
     };
 
-    
+
     const [userName, setUserName] = useState("Name");
 
     useEffect(() => {
@@ -345,6 +345,19 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
+                            {/* chatting sidebar*/}
+
+                            <IconButton
+                                color="inherit"
+                                onClick={toggleChatDrawer}
+                                sx={{
+                                    '&:hover': {
+                                        color: '#a33ffb',
+                                    },
+                                }}
+                            >
+                                <ChatIcon fontSize="medium" />
+                            </IconButton>
                             <Menu
                                 anchorEl={notificationsAnchorEl}
                                 open={Boolean(notificationsAnchorEl)}
@@ -421,7 +434,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                         ))
                                     )}
                                 </List>
-
                             </Menu>
                         </>
                     )}
@@ -435,7 +447,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                         <StyledInputBase placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
                     </Search>
                 )}
+
             </Toolbar>
+
         </AppBar>
     );
 };
