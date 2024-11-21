@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
+import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
 import { Link, useLocation } from "react-router-dom";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   const theme = useTheme();
@@ -12,6 +14,8 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   const [texts, setText] = useState([]);
   const [boardType, setBoardType] = useState("");
   const [filterTab, setFilterTab] = useState("전체");
+  const [tagSearch, setTagSearch] = useState(""); // 태그 검색어 상태
+  const [searchTags, setSearchTags] = useState([]); // 입력된 태그 리스트
 
   // URL 경로에 따라 boardType 설정
   const getBoardTypeFromPath = useCallback(() => {
@@ -74,7 +78,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   }, [boardType, filterTab, fetchPosts]);
 
   const handleFilterChange = (filter) => {
-    setFilterTab(filter); // 필터 상태 업데이트
+    setFilterTab(filter);
   };
 
   const handleWriteButtonClick = () => {
@@ -117,7 +121,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
             justifyContent: "flex-start",
           }}
         >
-          {/* texts 배열이 비어 있지 않을 때만 버튼 표시 */}
           {texts.length > 0 &&
             texts.map((text, index) => (
               <Button
@@ -136,37 +139,110 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
             ))}
         </Box>
 
+        {/* 검색 및 태그 검색 */}
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
-            width: "90%",
+            flexDirection: "column", // 검색과 태그 검색을 세로로 정렬
+            gap: 2, // 각 섹션 간의 간격
+            width: "80%", // 부모 요소의 전체 너비 사용
           }}
         >
-          <InputBase
-            placeholder="궁금한 질문을 검색해보세요!"
+          {/* 질문 검색 */}
+          <Box
             sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start", // 왼쪽 정렬
+              gap: 2,
               width: "100%",
-              p: 1,
-              border: "1px solid #ccc",
-              borderRadius: 1,
-            }}
-          />
-          <Button
-            variant="contained"
-            sx={{
-              fontSize: "medium",
-              backgroundColor: theme.palette.primary.main,
             }}
           >
-            검색
-          </Button>
+            <InputBase
+              placeholder="궁금한 질문을 검색해보세요!"
+              sx={{
+                flex: 1,
+                height: "50px",
+                p: 1.5,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+              startAdornment={<Box sx={{ color: "#aaa" }}>🔍</Box>}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                fontSize: "medium",
+                backgroundColor: theme.palette.primary.main,
+                color: "#fff",
+                height: "50px",
+                padding: "0 20px",
+                "&:hover": {
+                  backgroundColor: theme.palette.primary.dark,
+                },
+              }}
+            >
+              검색
+            </Button>
+          </Box>
+
+          {/* 태그 검색 */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <InputBase
+              placeholder="태그로 검색해보세요!"
+              sx={{
+                flex: 1,
+                height: "50px",
+                p: 1.5,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+              startAdornment={
+                <Box sx={{ color: "#aaa", fontSize: "1.5rem" }}>#</Box>
+              }
+            />
+            <Button
+              variant="text"
+              startIcon={
+                <RestartAltIcon
+                  sx={{ fontSize: "1.5rem", color: theme.palette.primary.main }}
+                />
+              }
+              sx={{
+                fontSize: "1rem",
+                fontWeight: "bold",
+                color: theme.palette.primary.main,
+                height: "50px",
+                padding: "0 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                },
+              }}
+            >
+              초기화
+            </Button>
+          </Box>
         </Box>
       </Box>
 
-      {/* Sort and Write Button */}
+      {/* Sort Buttons */}
       <Box
         sx={{
           display: "flex",
@@ -195,11 +271,26 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           variant="contained"
           onClick={handleWriteButtonClick}
           sx={{
-            backgroundColor: theme.palette.secondary.main,
+            backgroundColor: "#333",
             color: "#fff",
             mr: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "10px 20px",
+            fontSize: "1rem",
+            borderRadius: "8px",
+            "&:hover": {
+              backgroundColor: "#555",
+            },
           }}
         >
+          <CreateIcon
+            sx={{
+              fontSize: 20,
+              marginRight: 1,
+            }}
+          />
           글쓰기
         </Button>
       </Box>
@@ -234,7 +325,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                {/* 게시판 타입에 따른 상태 표시 */}
                 {boardType === "questions" && (
                   <Chip
                     label={post.resolved ? "해결됨" : "미해결"}
@@ -250,7 +340,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                     }}
                   />
                 )}
-
                 {boardType === "team-recruit" && (
                   <Chip
                     label={post.recruitStatus ? "모집완료" : "모집중"}
@@ -266,22 +355,16 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                     }}
                   />
                 )}
-
-                {/* 제목 */}
                 <Typography variant="body1" fontWeight="bold">
                   {post.title}
                 </Typography>
               </Box>
-
-              {/* 게시글 내용 일부 표시 */}
               <Typography
                 variant="body2"
                 sx={{ color: theme.palette.grey[700], mb: 1 }}
               >
                 {post.content.substring(0, 100)}...
               </Typography>
-
-              {/* 태그 표시 */}
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
                 {post.tags.length > 0 ? (
                   post.tags.map((tag, idx) => (
@@ -302,8 +385,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                   </Typography>
                 )}
               </Box>
-
-              {/* 작성자 및 작성일 표시 */}
               <Typography
                 variant="caption"
                 color="text.secondary"
@@ -312,8 +393,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 {post.writer?.name || "익명"} ·{" "}
                 {new Date(post.createdAt).toLocaleString()}
               </Typography>
-
-              {/* 좋아요, 조회수, 댓글 수 왼쪽 정렬 */}
               <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                 <Typography variant="caption">
                   👍 {post.likeCount || 0}
@@ -330,7 +409,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
         ))}
       </List>
 
-      {/* 글 작성 모달 */}
       <PostCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}
