@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { alpha, Box, Button, Typography, useTheme } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
 import ChatMessages from './ChatMessages.jsx';
-import ChatInput from "./ChatInput.jsx";
 
 const ChatWindow = ({ teams }) => {
     const theme = useTheme();
@@ -10,13 +9,27 @@ const ChatWindow = ({ teams }) => {
     const [messageInput, setMessageInput] = useState('');
     const [editingMessage, setEditingMessage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [teamList, setTeamList] = useState(teams || []);
+
+    const handleCreateTeamChatRoom = async (teamName) => {
+        try {
+            const newTeam = {
+                teamID: `team_${Date.now()}`,
+                teamName: teamName,
+            };
+
+            // const response = await createTeamChatRoom(newTeam.teamID, newTeam.teamName);
+            // console.log("팀 채팅방 생성 성공:", response);
+
+            setTeamList((prevList) => [...prevList, newTeam]);
+            setCurrentChatRoom(newTeam);
+        } catch (error) {
+            console.error("채팅방 생성 실패:", error.message);
+        }
+    };
 
     const handleChatRoomSelect = (room) => {
         setCurrentChatRoom(room);
-    };
-
-    const handleMessageInput = (event) => {
-        setMessageInput(event.target.value);
     };
 
     const sendMessage = (message) => {
