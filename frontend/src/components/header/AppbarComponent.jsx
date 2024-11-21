@@ -303,6 +303,37 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         }
     };
 
+    const handleReleaseSave = async (notificationId) => {
+        try {
+            const response = await axios.post(
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/release-save`,
+                {
+                    notificationId,
+                    userId,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                // Update the notification's isKeep status in the client-side state
+                setNotifications((prev) =>
+                    prev.map((notification) =>
+                        notification.id === notificationId
+                            ? { ...notification, isKeep: '0' }
+                            : notification
+                    )
+                );
+            }
+        } catch (error) {
+            console.error('Error releasing notification save:', error);
+            alert('알림 저장 해제에 실패했습니다.');
+        }
+    };
+
     const handleToggleArchived = () => {
         setShowArchived((prev) => !prev);
     };
@@ -608,12 +639,22 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                             }
                                                         />
 
-                                                        {/* Archive Button */}
-                                                        {notification.isKeep !== 1 && (
-                                                            <IconButton edge="end" onClick={() => handleMarkAsSave(notification.id)}>
-                                                                <TurnedInNotIcon sx={{ color: 'purple', fontSize: 24 }} />
-                                                            </IconButton>
-                                                        )}
+                                                        {/* Archive or Saved Icon */}
+                                                        <IconButton
+                                                            edge="end"
+                                                            onClick={() =>
+                                                                notification.isKeep !== '1'
+                                                                    ? handleMarkAsSave(notification.id)
+                                                                    : handleReleaseSave(notification.id)
+                                                            }
+                                                            sx={{ color: 'purple' }}
+                                                        >
+                                                            {notification.isKeep === '1' ? (
+                                                                <TurnedInIcon sx={{ fontSize: 24 }} />
+                                                            ) : (
+                                                                <TurnedInNotIcon sx={{ fontSize: 24 }} />
+                                                            )}
+                                                        </IconButton>
                                                     </ListItem>
                                                 ))}
                                             </>
