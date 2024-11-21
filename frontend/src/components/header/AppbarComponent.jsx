@@ -1,8 +1,9 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DoneIcon from '@mui/icons-material/Done';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
+import TurnedInIcon from '@mui/icons-material/TurnedIn';
+import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import {
     alpha,
     AppBar,
@@ -102,10 +103,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [accountAnchorEl, setAccountAnchorEl] = useState(null);
     const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
     const [notifications, setNotifications] = useState([]);
-    //     { id: 1, studyPageName: "페이지명1", message: "Brunch this weekend?", readStatus: false, avatar: "/static/images/avatar/1.jpg" },
-    //     { id: 2, studyPageName: "페이지명2", message: "Meeting Reminder", readStatus: false, avatar: "/static/images/avatar/2.jpg" },
-    // ]);
-    // const { notifications, addNotification } = useNotifications();
+    const [showArchived, setShowArchived] = useState(false); // State to toggle archived notifications visibility
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
     const isVerySmallScreen = useMediaQuery('(max-width: 30vw)');
 
@@ -113,7 +111,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
     const userId = "USER#123";
-    const API_GATEWAY_ID = "3vmpnm9327";
+    const API_GATEWAY_ID = "o1txnzqsd9";
     const SOCKET_API_GATEWAY_ID = "ro2goaptcf";
     const socketRef = useRef(null); // 동일한 서버에 대한 다중 WebSocket 연결 방지
 
@@ -196,7 +194,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             // 초기 알림 데이터를 가져오기 위해 GET 요청
             const result = await axios({
                 method: "GET",
-                url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/notification`,
+                url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification`,
                 params: {userId: encodeURIComponent(userId)}, // 사용자 ID를 쿼리 매개변수로 전달
             });
 
@@ -222,16 +220,49 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleTeamMenuClose = () => { setTeamAnchorEl(null); };
 
     // Handle notifications menu open/close
-    const handleNotificationsClick = (event) => { setNotificationsAnchorEl(event.currentTarget); };
+    const handleNotificationsClick = (event) => { 
+        setNotificationsAnchorEl(event.currentTarget); 
+        handleNarkAllAsRead();
+    };
+
+    const handleNarkAllAsRead = async () => {
+        const notificationIds = notifications
+            .filter((notification) => notification.isRead === '0') // isRead가 '0'인 알림만 필터링
+            .map((notification) => notification.id); // 필터링된 알림에서 id만 추출
+
+        if(notificationIds.length > 0) {
+            try {
+                // REST API로 읽음 처리 요청
+                const response = await axios.post(
+                    `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/mark`,
+                    {   
+                        notificationIds,
+                        userId
+                    },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+        
+                if (response.status === 200) {
+                    // 클라이언트 상태에서도 모든 알림을 읽음 처리
+                    setNotifications((prev) =>
+                        prev.map((notification) =>
+                            notification.isRead === '1'
+                                ? notification // 이미 읽은 알림은 그대로 유지
+                                : { ...notification, isRead: '1'} // 새로 읽음 처리
+                        )
+                    );
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+                alert('알림 읽음 처리에 실패했습니다.');
+            }
+        }
+    }
     const handleNotificationsClose = () => { setNotificationsAnchorEl(null); };
-
-    // Handle deleting a single notification
-    // const handleDeleteNotification = (id) => {
-    //     setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
-    // };
-
-    // Handle deleting all notifications
-    // const handleDeleteAllNotifications = () => { setNotifications([]); };
 
     // Handle account menu open/close
     const handleAccountClick = (event) => { setAccountAnchorEl(event.currentTarget); };
@@ -246,15 +277,39 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleCreateTeamButtonClick = () => { setIsTeamCreationModalOpen(true); };
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
 
-    const handleMarkAsRead = async (notificationId) => {
-        // try {
-        //     await axios.post(`${endpointURl}/notifications/mark-as-read`, { notificationId });
-        //     alert("Notifications marked as read!");
-        // } catch (error) {
-        //     console.error("Error marking notifications as read:", error);
-        // }
-        // setNotifications((prev) => [...prev, notificationId]);
+    const handleMarkAsSave = async (notificationId) => {
+        try {
+            const response = await axios.post(
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/save`,
+                {   
+                    notificationId,
+                    userId
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            setNotifications((prev) =>
+                prev.map((notification) =>
+                    notification.id === notificationId ? { ...notification, isKeep: '1' } : notification
+                )
+            );
+
+        } catch (error) {
+            console.error("Error marking notifications as read:", error);
+            alert('알림 처리에 실패했습니다.');
+        }
     };
+
+    const handleToggleArchived = () => {
+        setShowArchived((prev) => !prev);
+    };
+
+    const visibleNotifications = showArchived
+    ? notifications.filter((notification) => notification.isSave === '1') // Show only saved notifications
+    : notifications;
 
     return (
         <AppBar position="fixed" color="inherit" elevation={1} sx={{ width: `100%`, backgroundColor: '#fff' }}>
@@ -454,7 +509,10 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 <MenuItem onClick={handleAccountClose}>의견 보내기</MenuItem>
                             </Menu>
                             <IconButton color="inherit" onClick={handleNotificationsClick}>
-                                <Badge badgeContent={notifications.length} color="error">
+                                <Badge 
+                                    badgeContent={notifications.filter(notification => notification.isRead === '0').length} 
+                                    color="error"
+                                >
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
@@ -465,85 +523,110 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
-                                {notifications.length > 0 ? (
-                                    <>
-                                        <List sx={{ width: 360 }}>
-                                            {notifications.map((notification) => (
-                                                <ListItem
-                                                    key={notification.id}
-                                                    alignItems="flex-start"
-                                                    sx={{
-                                                        '&:hover': { cursor: 'pointer', backgroundColor: alpha(theme.palette.common.black, 0.1) },
-                                                    }}
-                                                >
-                                                    <ListItemAvatar>
-                                                        {notification.isRead === "0" ? (
-                                                            <Badge
-                                                                color="error"
-                                                                variant="dot"
-                                                                anchorOrigin={{
-                                                                    vertical: 'top',
-                                                                    horizontal: 'left',
-                                                                }}
-                                                                overlap="circular"
-                                                            >
-                                                                <Avatar src="/static/images/avatar/1.jpg" />
-                                                            </Badge>
-                                                        ) : (
-                                                            <Avatar src="/static/images/avatar/1.jpg" />
-                                                        )}
-                                                    </ListItemAvatar>
-                                                    <ListItemText
-                                                        primary={
-                                                            <Typography
-                                                                component="span"
-                                                                variant="body1"
-                                                                sx={{ color: 'text.primary', fontWeight: 'bold' }}
-                                                            >
-                                                                {notification.sender}
-                                                            </Typography>
-                                                        }
-                                                        secondary={
-                                                            <React.Fragment>
-                                                                {/* 알림 메시지 */}
-                                                                <Typography
-                                                                    component="span"
-                                                                    variant="body2"
-                                                                    sx={{ color: 'text.primary', display: 'block', marginTop: '4px' }}
-                                                                >
-                                                                    {notification.message}
-                                                                </Typography>
-                                                                {/* 생성 시간 */}
-                                                                <Typography
-                                                                    component="span"
-                                                                    variant="caption"
-                                                                    sx={{ color: 'text.secondary', display: 'block', marginTop: '4px' }}
-                                                                >
-                                                                    {formatTimeAgo(notification.createdAt)}
-                                                                </Typography>
-                                                            </React.Fragment>
-                                                        }
-                                                    />
-
-                                                    {/* 읽음 처리 버튼 - 읽지 않은 알림에만 표시 */}
-                                                    {notification.isRead === "0" && (
-                                                        <IconButton edge="end" onClick={() => handleMarkAsRead(notification.id)}>
-                                                            <DoneIcon sx={{ color: 'purple', fontSize: 16 }} />
-                                                        </IconButton>
-                                                    )}
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    </>
-                                ) : (
-                                    // 알림이 없을 때 메시지
-                                    <List sx={{ width: 360 }}>
+                                <Box sx={{ position: 'relative', width: 360, height: 700 }}>
+                                    <List sx={{ width: '100%', paddingBottom: 6 }}>
                                         <ListItem>
-                                            <ListItemText primary="알림이 없습니다." />
+                                            <IconButton
+                                                size="medium"
+                                                onClick={handleToggleArchived}
+                                                sx={{
+                                                    left: 300, 
+                                                    color: 'purple',     // Set color to purple
+                                                }}
+                                            >
+                                                {showArchived ? <ArrowBackIcon /> : <TurnedInIcon />}
+                                            </IconButton>
                                         </ListItem>
+
+                                        {visibleNotifications.length > 0 ? (
+                                            <>  
+                                                {visibleNotifications.map((notification) => (
+                                                    <ListItem
+                                                        key={notification.id}
+                                                        alignItems="flex-start"
+                                                        sx={{
+                                                            '&:hover': { cursor: 'pointer', backgroundColor: alpha(theme.palette.common.black, 0.1) },
+                                                        }}
+                                                    >
+                                                        <ListItemAvatar>
+                                                            {notification.isRead === "0" ? (
+                                                                <Badge
+                                                                    color="error"
+                                                                    variant="dot"
+                                                                    anchorOrigin={{
+                                                                        vertical: 'top',
+                                                                        horizontal: 'left',
+                                                                    }}
+                                                                    overlap="circular"
+                                                                >
+                                                                    <Avatar src="/static/images/avatar/1.jpg" />
+                                                                </Badge>
+                                                            ) : (
+                                                                <Avatar src="/static/images/avatar/1.jpg" />
+                                                            )}
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography
+                                                                    component="span"
+                                                                    variant="body1"
+                                                                    sx={{
+                                                                        color: notification.isRead === "0" ? 'text.primary' : 'text.secondary',
+                                                                        fontWeight: notification.isRead === "0" ? 'bold' : 'normal',
+                                                                    }}
+                                                                >
+                                                                    {notification.sender}
+                                                                </Typography>
+                                                            }
+                                                            secondary={
+                                                                <React.Fragment>
+                                                                    {/* Notification Message */}
+                                                                    <Typography
+                                                                        component="span"
+                                                                        variant="body2"
+                                                                        sx={{
+                                                                            color: notification.isRead === "0" ? 'text.primary' : 'text.secondary',
+                                                                            display: 'block',
+                                                                            marginTop: '4px',
+                                                                        }}
+                                                                    >
+                                                                        {notification.message}
+                                                                    </Typography>
+                                                                    {/* Created Time */}
+                                                                    <Typography
+                                                                        component="span"
+                                                                        variant="caption"
+                                                                        sx={{
+                                                                            color: notification.isRead === "0" ? 'text.secondary' : 'text.disabled',
+                                                                            display: 'block',
+                                                                            marginTop: '4px',
+                                                                        }}
+                                                                    >
+                                                                        {formatTimeAgo(notification.createdAt)}
+                                                                    </Typography>
+                                                                </React.Fragment>
+                                                            }
+                                                        />
+
+                                                        {/* Archive Button */}
+                                                        {notification.isKeep !== 1 && (
+                                                            <IconButton edge="end" onClick={() => handleMarkAsSave(notification.id)}>
+                                                                <TurnedInNotIcon sx={{ color: 'purple', fontSize: 24 }} />
+                                                            </IconButton>
+                                                        )}
+                                                    </ListItem>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            // No notifications
+                                            <ListItem>
+                                                <ListItemText primary="알림이 없습니다." />
+                                            </ListItem>
+                                        )}
                                     </List>
-                                )}
+                                </Box>
                             </Menu>
+
                         </>
                     )}
                 </Box>

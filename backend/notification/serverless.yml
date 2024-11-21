@@ -33,19 +33,6 @@ provider:
   # logs:
     # websocket: true # Enable WebSocket CloudWatch logging
     # restApi: true   # Enable REST API CloudWatch logging if needed
-  httpApi:
-    cors:
-      allowedOrigins:
-        - "*"
-      allowedHeaders:
-        - Content-Type
-        - Authorization
-      allowedMethods:
-        - OPTIONS
-        - GET
-        - POST
-        - PUT
-        - DELETE
   apiGateway:   # API Gateway 관련 설정
     role: serverlessApiGatewayCloudWatchRole
 #    websocketApiId: ${self:resources.ApiGatewayWebsocketApi.WebSocketApiId} # 생성된 WebSocket API의 ID (serverless에서 자동 참조)
@@ -99,20 +86,20 @@ functions:
           path: /{proxy+}
           method: OPTIONS
 
-  notification_onConnect:
+  onConnect:
     handler: service/onConnect.handler
     runtime: nodejs20.x
     events:
       - websocket:
           route: $connect   # 클라이언트가 웹소켓에 연결할 때 호출
 
-  notification_fetch:
+  fetch:
     handler: service/fetchNotifications.handler
     events:
       - websocket:
           route: fetchNotifications
 
-  notifiaction_new_insert:
+  new_notifications:
     handler: service/newNotifications.handler
     events:
       - stream:
@@ -125,6 +112,14 @@ functions:
           startingPosition: LATEST
           filterPatterns:
             - { "eventName": [ "INSERT" ] }
+
+  mark_all_as_read:
+    handler: ./service/markAllAsRead.handler
+    events:
+      - http:
+          path: notifications/mark
+          method: post
+          cors: true
   
   notification_onDisconnect:
     handler: service/onDisconnect.handler
@@ -132,14 +127,6 @@ functions:
     events:
       - websocket:
           route: $disconnect  # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
-
-  notification_get:
-    handler: service/get.handler
-    runtime: nodejs20.x
-    events:
-      - httpApi:
-          path: /notification
-          method: GET
 
   # SNS 을 구독하는 Lambda : 모든 WebSocket 클라이언트에 SNS 메시지를 브로드캐스트
   broadcastNotification:
@@ -153,14 +140,7 @@ functions:
       - sns:
           arn: arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${env:SNS_STORAGE_TOPIC_PREFIX}
 
-#  markAsRead:
-#    handler: ./service/markAllAsRead.handler
-#    runtime: nodejs20.x
-#    events:
-#      - http:
-#          path: notifications/mark-as-read
-#          method: post
-#          cors: true
+
 
   # 토픽에 메시지 전송
   pubNotificationOnFileUpload:
