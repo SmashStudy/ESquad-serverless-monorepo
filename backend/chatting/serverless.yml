@@ -176,8 +176,8 @@ functions:
         - node_modules/**
 
   # 팀정보 채팅 커넥트 함수
-  teamUserConnect:
-    handler: service/teamUserConnect.handler
+  createTeamChatRoom:
+    handler: service/createTeamChatRoom.handler
     events:
       - httpApi:
           path: /team
