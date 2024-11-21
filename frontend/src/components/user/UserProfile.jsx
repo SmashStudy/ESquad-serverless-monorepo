@@ -65,31 +65,6 @@ const UserProfile = () => {
                 }}
             >
                 <Typography variant="h6" gutterBottom>
-                    비밀번호
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    개인정보를 위해 비밀번호를 변경해 주세요.
-                </Typography>
-                <Link to="/user/password" style={{ alignSelf: 'flex-end', width: '150px' }}>
-                    <Button variant="outlined" color="primary" sx={{ width: '100%' }}>
-                        비밀번호 변경
-                    </Button>
-                </Link>
-            </Box>
-
-            <Box
-                sx={{
-                    border: '1px solid #d3d3d3',
-                    borderRadius: 2,
-                    width: '100%',
-                    maxWidth: 600,
-                    p: 4,
-                    mb: 4,
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Typography variant="h6" gutterBottom>
                     로그아웃
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
