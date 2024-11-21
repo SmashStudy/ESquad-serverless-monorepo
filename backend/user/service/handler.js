@@ -12,7 +12,6 @@ export const saveUserToDynamoDB = async (event) => {
     if (!userAttributes.email) {
       throw new Error('사용자 속성에 이메일이 없습니다');
     }
-
     const email = userAttributes.email;
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 

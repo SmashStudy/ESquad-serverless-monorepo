@@ -39,7 +39,7 @@ const AuthCallback = () => {
                 if (id_token) {
                     // JWT 토큰을 로컬 저장소에 저장
                     localStorage.setItem('jwtToken', id_token);
-                    console.log('JWT 토큰이 로컬 저장소에 저장되었습니다.');
+                    
 
                     // 메인 페이지로 이동
                     navigate('/');
