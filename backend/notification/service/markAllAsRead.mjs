@@ -1,4 +1,5 @@
-import { DynamoDBClient, UpdateCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
@@ -7,7 +8,9 @@ const NOTIFICATION_INDEX = process.env.NOTIFICATION_INDEX;
 export const handler = async (event) => {
     console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-    const { notificationIds } = JSON.parse(event.body);
+    const { notificationIds, userId } = JSON.parse(event.body);
+    console.log(`userId, notificationsIds : ${userId}, ${notificationIds}`);
+    
     if (!notificationIds || !notificationIds.length) {
         return {
             statusCode: 400,
@@ -21,11 +24,12 @@ export const handler = async (event) => {
             const updateParams = {
                 TableName: NOTIFICATION_TABLE,
                 Key: {
-                    id: { S: id },
+                    id,     // HASH Key
+                    userId, // RANGE key
                 },
                 UpdateExpression: "SET isRead = :isRead",
                 ExpressionAttributeValues: {
-                    ":isRead": { N: "1" }, // Mark as read
+                    ":isRead": 1,
                 },
             }
 
