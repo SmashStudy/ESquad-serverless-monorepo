@@ -93,7 +93,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const userId = "USER#123";
     const [socket, setSocket] = useState(null);
     const [timer, setTimer] = useState(null);
-    const API_GATEWAY_ID = "b4p9zd7gd7";
+    const API_GATEWAY_ID = "9rrow3yn0a";
     const SOCKET_API_GATEWAY_ID = "sshwo4uce4";
 
     console.log(notifications);

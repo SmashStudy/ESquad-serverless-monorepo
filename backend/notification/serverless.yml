@@ -29,9 +29,9 @@ provider:
           - ${env:AWS_REGION}
           - .amazonaws.com/
           - ${opt:stage, 'dev'}
-  logs:
-    websocket: true # Enable WebSocket CloudWatch logging
-    restApi: true   # Enable REST API CloudWatch logging if needed
+  # logs:
+    # websocket: true # Enable WebSocket CloudWatch logging
+    # restApi: true   # Enable REST API CloudWatch logging if needed
   apiGateway:   # API Gateway 관련 설정
     role: serverlessApiGatewayCloudWatchRole
 #    websocketApiId: ${self:resources.ApiGatewayWebsocketApi.WebSocketApiId} # 생성된 WebSocket API의 ID (serverless에서 자동 참조)
@@ -74,23 +74,41 @@ provider:
         - logs:PutLogEvents
       Resource:
         - arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/*
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
 
 functions:
-  websocketConnect:
-    handler: ./service/websocket.handler
+  notification_onConnect:
+    handler: ./service/onConnect.handler
     runtime: nodejs20.x
     events:
       - websocket:
           route: $connect   # 클라이언트가 웹소켓에 연결할 때 호출
-
+  
+  notification_onDisconnect:
+    handler: ./service/onDisconnect.handler
+    runtime: nodejs20.x
+    events:
       - websocket:
           route: $disconnect  # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
 
-      - websocket:
-          route: $default   # 라우팅되지 않은 메시지 처리
-#
-#      - websocket:
-#          route: sendNotification
+  notification_get:
+    handler: ./service/get.handler
+    runtime: nodejs20.x
+    events:
+      - httpApi:
+          path: /notification
+          method: GET
 
   # SNS 을 구독하는 Lambda : 모든 WebSocket 클라이언트에 SNS 메시지를 브로드캐스트
   broadcastNotification:
