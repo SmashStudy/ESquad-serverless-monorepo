@@ -22,7 +22,7 @@ import {
     Divider,
     ListItemAvatar
 } from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
+import ChatIcon from '@mui/icons-material/Chat';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -331,7 +331,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                     },
                                 }}
                             >
-                                <EmailIcon fontSize="medium" />
+                                <ChatIcon fontSize="medium" />
                             </IconButton>
                             <Menu
                                 anchorEl={notificationsAnchorEl}

@@ -6,7 +6,7 @@ import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } fro
 
 // import { useUser } from "../form/UserContext.jsx";
 
-const wsUrl = "wss://rkp3d3pdq7.execute-api.us-east-1.amazonaws.com/dev";
+const wsUrl = "wss://ws.api.esquad.click";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
@@ -46,6 +46,8 @@ function ChatMessages({currentChatRoom}) {
     const connectWebSocket = (room_id) => {
         const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${userId}`);
         setSocket(newSocket);
+
+        console.log("웹소켓 연결 됨");
 
         newSocket.onopen = () => {
             loadMessages(room_id);
