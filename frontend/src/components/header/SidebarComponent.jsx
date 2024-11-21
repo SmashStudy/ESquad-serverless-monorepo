@@ -71,7 +71,7 @@ const SidebarList = ({ items, drawerOpen, sidebarOpen, currentPath }) => (
               fontSize: sidebarOpen ? "1rem" : "7px !important",
               transition: "font-size 0.3s ease",
               fontWeight: currentPath === item.link ? "bold" : "normal",
-              color: currentPath === item.link ? "black" : "inherit",
+              color: currentPath === item.link ? "#6a1b9a" : "inherit",
             }}
           />
         </ListItem>
@@ -94,7 +94,7 @@ const SidebarComponent = ({
 
   const communityItems = [
     {
-      text: "질문 및 답변",
+      text: "질문 & 답변",
       icon: <QuizIcon />,
       link: "/community/questions",
     },
@@ -254,13 +254,13 @@ const SidebarComponent = ({
     !isSmallScreen && (
       <Box
         sx={{
-          width: sidebarOpen ? "200px" : "4rem",
+          width: sidebarOpen ? "200px" : "6.5rem",
           flexShrink: 0,
           backgroundColor: "#fff",
           transition: "width 0.3s ease",
           overflow: "hidden",
           height: "100%",
-          borderRight: `1px solid ${theme.palette.primary.main}`,
+          // borderRight: `1px solid ${theme.palette.primary.main}`,
         }}
       >
         <Box sx={{ width: "100%", height: "100vh", paddingTop: 2 }}>
