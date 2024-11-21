@@ -1,11 +1,11 @@
-const { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } = require('@aws-sdk/client-dynamodb');
-const { v4: uuidv4 } = require('uuid');
-const jwt = require('jsonwebtoken');
+import { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 
 const dynamoDb = new DynamoDBClient({ region: 'us-east-1' });
 
 // 사용자 정보를 저장하는 함수
-module.exports.saveUserToDynamoDB = async (event) => {
+export const saveUserToDynamoDB = async (event) => {
   try {
     const userAttributes = event.request.userAttributes;
 
@@ -21,7 +21,7 @@ module.exports.saveUserToDynamoDB = async (event) => {
       Item: {
         email: { S: email },
         name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
-        nickname: { S: nickname }, // 닉네임 기본 값 사용
+        nickname: { S: nickname },
         createdAt: { S: new Date().toISOString() },
       },
     };
@@ -39,7 +39,7 @@ module.exports.saveUserToDynamoDB = async (event) => {
 };
 
 // 닉네임 가져오기 함수
-module.exports.getUserNickname = async (event) => {
+export const getUserNickname = async (event) => {
   try {
     if (!event.headers.Authorization) {
       throw new Error('Authorization 헤더가 없습니다');
@@ -94,9 +94,8 @@ module.exports.getUserNickname = async (event) => {
   }
 };
 
-module.exports.myEnvironments = async (event) => {
+export const myEnvironments = async (event) => {
   try {
-    // 반환할 환경 변수 목록
     const envKeys = [
       'VITE_COGNITO_CLIENT_ID',
       'VITE_COGNITO_REDIRECT_URI',
@@ -117,9 +116,11 @@ module.exports.myEnvironments = async (event) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "http://localhost:5173", // 요청을 허용할 오리진
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS", // 허용할 메서드
-        "Access-Control-Allow-Headers": "Content-Type, Authorization" // 허용할 헤더
+        // "Access-Control-Allow-Origin": "http://localhost:5173",
+        "Access-Control-Allow-Origin": "https://dev.esquad.click",
+        // "Access-Control-Allow-Origin": "https://www.esquad.click",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
       body: JSON.stringify(envVariables),
     };
@@ -132,8 +133,7 @@ module.exports.myEnvironments = async (event) => {
   }
 };
 
-module.exports.authorizer = async (event, context) => {
-  
+export const authorizer = async (event, context) => {
   console.log('Authorization event:', event);
   return {
     principalId: 'user',
@@ -150,9 +150,7 @@ module.exports.authorizer = async (event, context) => {
   };
 };
 
-
-
-module.exports.updateUserNickname = async (event) => {
+export const updateUserNickname = async (event) => {
   try {
     if (!event.headers.Authorization) {
       throw new Error('Authorization 헤더가 없습니다');
@@ -174,7 +172,6 @@ module.exports.updateUserNickname = async (event) => {
     const email = String(decoded.email);
     console.log(`email: ${email}`);
 
-    // 요청 본문 파싱
     const body = JSON.parse(event.body);
     if (!body || !body.nickname) {
       throw new Error('nickname이 요청 본문에 없습니다');
@@ -186,12 +183,10 @@ module.exports.updateUserNickname = async (event) => {
       throw new Error('nickname이 비어있습니다');
     }
 
-    // 닉네임 길이 제한
     if (newNickname.length < 2 || newNickname.length > 10) {
       throw new Error('닉네임은 2자 이상, 10자 이하여야 합니다');
     }
 
-    // 닉네임 중복 체크
     const scanParams = {
       TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
       FilterExpression: 'nickname = :nickname',
@@ -206,7 +201,6 @@ module.exports.updateUserNickname = async (event) => {
       throw new Error('이미 사용 중인 닉네임입니다');
     }
 
-    // DynamoDB 업데이트 요청
     const params = {
       TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
       Key: {

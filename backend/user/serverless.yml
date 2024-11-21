@@ -16,7 +16,7 @@ provider:
             - dynamodb:GetItem
             - dynamodb:Scan
           Resource:
-            - arn:aws:dynamodb:${env:REGION}:430118855167:table/${env:DYNAMODB_USER_TABLE_NAME}
+            - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:DYNAMODB_USER_TABLE_NAME}
 
 functions:
   authorizer:
