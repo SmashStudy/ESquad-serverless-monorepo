@@ -34,10 +34,6 @@ export const validateTeamUserIds = (teamId, userIds) => {
         return { isValid: false, message: '유저 ID 목록이 비어 있거나 잘못된 형식입니다.' };
     }
 
-    if (userIds.length < 4 || userIds.length > 12) {
-        return { isValid: false, message: '팀 구성원은 최소 4명, 최대 12명이어야 합니다.' };
-    }
-
     const uniqueIds = new Set(userIds);
     if (uniqueIds.size !== userIds.length) {
         return { isValid: false, message: '중복된 팀원 ID가 있습니다.' };

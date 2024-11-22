@@ -75,7 +75,7 @@ function DashboardIcon() {
 }
 
 const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawerClose, selectedTab, selectedTeam }) => {
-    console.log(selectedTeam);
+    // console.log(`${JSON.stringify(selectedTeam)}`);
     const theme = useTheme();
     const communityItems = [
         { text: '질문 및 답변', icon: <QuizIcon />, link: '/community/questions' },
@@ -88,9 +88,9 @@ const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawer
     // ]
 
     const studyItems = [
-        { text: '스터디', icon: <AbcIcon />, link: `/teams/${selectedTeam?.id}/study` },
-        { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${selectedTeam?.id}/book/search` },
-        { text: '질문', icon: <QuizIcon />, link: `/teams/${selectedTeam?.id}/questions` },
+        { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
+        { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search` },
+        { text: '질문', icon: <QuizIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions` },
         // { text: 'Articles', icon: <ArticleIcon /> },
         // { text: 'For You', icon: <FolderIcon /> },
         // { text: 'Collections', icon: <SpaceDashboardIcon /> },
@@ -99,9 +99,9 @@ const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawer
     ];
 
     const manageItems = [
-        { text: '크루', icon: <PeopleIcon  />, link: '/manage/crew' },
+        { text: '크루', icon: <PeopleIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/users` },
         // { text: '대시보드', icon: <DashboardIcon /> },
-        { text: '설정', icon: <SettingsIcon  />, link: '/manage/settings' },
+        { text: '설정', icon: <SettingsIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/settings` },
     ];
 
     const dangerItems = [

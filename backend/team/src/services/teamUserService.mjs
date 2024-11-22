@@ -1,4 +1,4 @@
-import { QueryCommand, GetCommand, DeleteCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand, DeleteCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { dynamoDb, TEAM_TABLE } from '../utils/dynamoClient.mjs';
 import { validateTeamUserIds, validateRoleCheckData } from '../utils/teamUserValidator.mjs';
 
@@ -8,16 +8,15 @@ import { validateTeamUserIds, validateRoleCheckData } from '../utils/teamUserVal
 export const getTeams = async (userId) => {
     const params = {
         TableName: TEAM_TABLE,
-        IndexName: 'SK-Index',
-        KeyConditionExpression: 'SK = :sk',
-        FilterExpression: 'itemType = :itemType',
+        IndexName: 'SK-ItemType-Index',
+        KeyConditionExpression: 'SK = :sk AND itemType = :itemType',
         ExpressionAttributeValues: {
             ':sk': userId,
-            ':itemType': 'TeamSpaceUser'
+            ':itemType': 'TeamUser'
         }
     };
     const result = await dynamoDb.send(new QueryCommand(params));
-    return result.Items || [];
+    return (result.Items || []).map(item => item.PK);
 };
 
 /**
@@ -52,11 +51,11 @@ export const getTeamUsersProfile = async (teamId) => {
     // DynamoDB 쿼리 구성
     const teamUserParams = {
         TableName: TEAM_TABLE,
-        IndexName: 'ItemType-Index', // 인덱스가 있는 경우 사용
+        IndexName: 'PK-ItemType-Index', // 인덱스가 있는 경우 사용
         KeyConditionExpression: 'PK = :pk AND itemType = :itemType',
         ExpressionAttributeValues: {
             ':pk': teamId,
-            ':itemType': 'TeamSpaceUser'
+            ':itemType': 'TeamUser'
         }
     };
 
@@ -78,7 +77,7 @@ export const getTeamUsersProfile = async (teamId) => {
  * 팀에 멤버 추가 서비스
  */
 export const addTeamUsers= async (teamId, userIds) => {
-    
+    console.log(userIds);
     const validation = validateTeamUserIds(teamId, userIds);
     if (!validation.isValid) throw new Error(validation.message);
 
@@ -90,11 +89,12 @@ export const addTeamUsers= async (teamId, userIds) => {
             Item: {
                 PK: teamId,
                 SK: userId,
-                itemType: 'TeamSpaceUser',
+                itemType: 'TeamUser',
                 role: role
             },
         }));
     });
+    console.log(memberPromises);
 
     await Promise.all(memberPromises);
 };

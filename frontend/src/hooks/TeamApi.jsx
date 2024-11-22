@@ -4,7 +4,7 @@ import axios from "axios";
 export const TeamApi = () => {
     const ACCESS_TOKEN = localStorage.getItem('jwt');
     return axios.create({
-        baseURL: 'http://localhost:5173',
+        baseURL: 'https://api.esquad.click',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${ACCESS_TOKEN}`,

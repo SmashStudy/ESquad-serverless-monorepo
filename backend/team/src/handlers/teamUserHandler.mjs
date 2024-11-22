@@ -2,7 +2,6 @@
 
 import { createResponse } from '../utils/responseHelper.mjs';
 import * as TeamUserService from '../services/teamUserService.mjs';
-import * as TeamService from '../services/teamService.mjs';
 
 /**
  * 유저가 소속된 모든 팀 조회 핸들러
@@ -12,7 +11,7 @@ export const getTeams = async (event) => {
     try {
         const userId = event.requestContext?.authorizer?.claims?.sub || 'USER#123';
         const teams = await TeamUserService.getTeams(userId);
-        return createResponse(200, { message: 'Team created successfully', data: teams });
+        return createResponse(200, { message: 'User to Team List successfully', data: teams });
     } catch (error) {
         console.error('Error retrieving teams:', error);
         return createResponse(500, { error: `Error retrieving teams ${error.message}` });
@@ -30,7 +29,7 @@ export const checkTeamUserRole = async (event) => {
             return createResponse(400, { error: 'teamId와 userId는 필수입니다.' });
         }
         const isManager = await TeamUserService.checkTeamUserRole(teamId, userId);
-        return createResponse(200, { isManager });
+        return createResponse(200, { message: 'User to role successfully', data: isManager });
     } catch (error) {
         console.error('Error checking role:', error);
         return createResponse(500, { error: error.message });
@@ -44,8 +43,8 @@ export const checkTeamUserRole = async (event) => {
 export const getTeamUsersProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
-        const crewProfiles = await TeamUserService.getTeamUsersProfile(teamId);
-        return createResponse(200, crewProfiles);
+        const teamUsersProfiles = await TeamUserService.getTeamUsersProfile(teamId);
+        return createResponse(200, { message: 'Team to User successfully', data: teamUsersProfiles });
     } catch (error) {
         console.error('Error retrieving crew profile:', error);
         return createResponse(500, { error: `Error retrieving crew profile: ${error.message}` });

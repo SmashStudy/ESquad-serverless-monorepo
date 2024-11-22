@@ -22,32 +22,53 @@ import {fetchTeam} from "../../hooks/fetchTeam.jsx";
 const Home = () => {
     const theme = useTheme();
     const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(true); 
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [teams, setTeams] = useState([
-        // { "teamName": "none" },
-        { "id": 21, "teamName": "문법존" },
-        { "id": 28, "teamName": "몬다니" },
+        {teamId: 'TEAM#001', teamName: 'team001'},
+        {teamId: 'TEAM#002', teamName: 'team002'}
     ]);
-    const [selectedTeam, setSelectedTeam] = useState(null);
-    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px
+    const [selectedTeam, setSelectedTeam] = useState(null); // 
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px 반응형
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px 반응형
 
-    // const accessToken= localStorage.getItem('jwt');
-    // const user = useUser();
+    useEffect(() => {
+        // 비동기 함수 정의
+        const fetchTeams = async () => {
+            try {
+                setLoading(true); // 로딩 시작
 
-    // useEffect(() => {
-    //     if(accessToken) {
-    //         // alert(accessToken);
-    //         fetchTeam()
-    //             .then((response) => {
-    //                 console.log(response);
-    //                 response == null ? setTeams([]) : setTeams(response);
-    //             }).catch((error) => {
-    //             console.log(error);
-    //         });
-    //     }
-    // }, [accessToken]);
+                // 1. 팀 ID 리스트 가져오기
+                const responseTeamId = await axios.get('https://api.esquad.click/teams');
+                const teamIds = responseTeamId.data.data; // 팀 ID 배열
+
+                // 2. 각 팀의 프로필 데이터 가져오기
+                const teamProfilesPromises = teamIds.map(async (teamId) =>{
+                    const encodedTeamId = encodeURIComponent(teamId); 
+                    
+                    const res = await axios.get(`https://api.esquad.click/teams/${encodedTeamId}`);
+                    return res.data.data;
+                });
+                const teamProfiles = await Promise.all(teamProfilesPromises);
+                
+                setTeams(teamProfiles);
+                setTeams((prevTeams) =>
+                    [...prevTeams].sort((a, b) => a.teamName.localeCompare(b.teamName))
+                );
+            } catch (error) {
+                console.log('에러남')
+                console.error('Error fetching teams:', error);
+                return null;
+            } finally {
+                setLoading(false); // 로딩 종료
+            }
+        };
+
+        // 비동기 함수 호출
+        fetchTeams();
+    }, []); // 종속성 배열 비워둠(마운트 시 한 번 실행)
+
 
     // Toggle the sidebar or open the drawer based on screen size
     const handleSidebarToggle = () => {
@@ -68,19 +89,29 @@ const Home = () => {
     }
 
     // update selectedTeam
-    const updateSelectedTeam = (i) => {
+    const changeSelectedTeam = (i) => {
+
         const changeSelectTeam = teams[i];
-        if (selectedTeam?.id !== changeSelectTeam.id || selectedTeam == null) {
+        if (selectedTeam?.PK!== changeSelectTeam.PK || selectedTeam == null) {
             setSelectedTeam(changeSelectTeam);
             if(selectedTab !== 1) setSelectedTab(1);
         }
     };
 
-    const updateTeams = (team) => {
-        setTeams(...teams, team);
-    }
+    // UpdateSelectedTeam에 수정된 팀 정보를 전달하여 상태를 업데이트
+    const updateSelectedTeam = (updatedTeam) => {
+        setTeams((prevTeams) =>
+            prevTeams.map((team) =>
+                team.PK= updatedTeam.PK ? updatedTeam : team
+            )
+        );
+        setSelectedTeam(updatedTeam); // 현재 선택된 팀도 업데이트
+    };
 
-    // console.log(teams);
+
+    const updateTeams = (team) => {
+        setTeams((prevTeams) => [...prevTeams, team]);
+    }
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -91,7 +122,7 @@ const Home = () => {
                 handleSidebarToggle={handleSidebarToggle}
                 handleTab={handleTab}
                 selectedTab={selectedTab}
-                updateSelectedTeam={updateSelectedTeam}
+                changeSelectedTeam={changeSelectedTeam}
                 updateTeams={updateTeams}
                 teams={teams}
             />
@@ -140,7 +171,7 @@ const Home = () => {
                         }}
                     >
 
-                        <Outlet />
+                        <Outlet context={{ selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab }}/>
                     </Box>
 
                     {/* Right Section - Chat Area */}

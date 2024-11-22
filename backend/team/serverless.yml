@@ -22,11 +22,14 @@ provider:
             - dynamodb:Scan
             - dynamodb:Query
             - dynamodb:BatchWriteItem
+            - dynamodb:DeleteItem
           Resource: 
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamNameIndex
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-Index
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/teamID-Index
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamName-Index # teamName 중복 찾기
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/StudyName-Index # studyName 중복 찾기
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-ItemType-Index # USER로 teamID, studyID 찾을 때 
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/PK-ItemType-Index # teamID, studyID로 USER 찾을 때
+
       managedPolicies:
         - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
         - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
@@ -42,11 +45,10 @@ resources:
             AttributeType: S
           - AttributeName: SK
             AttributeType: S
-          - AttributeName: teamName
-            AttributeType: S     
           - AttributeName: itemType
             AttributeType: S
-       
+          - AttributeName: teamName
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -54,28 +56,33 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         GlobalSecondaryIndexes:
-          - IndexName: SK-Index
+          - IndexName: SK-ItemType-Index
             KeySchema:
               - AttributeName: SK
                 KeyType: HASH
+              - AttributeName: itemType
+                KeyType: RANGE
             Projection:
               ProjectionType: INCLUDE
               NonKeyAttributes:
                 - teamID
-          - IndexName: TeamName-Index
-            KeySchema:
-              - AttributeName: teamName
-                KeyType: HASH
-            Projection:
-              ProjectionType: KEYS_ONLY
-          - IndexName: ItemType-Index
+                - PK
+          - IndexName: PK-ItemType-Index
             KeySchema:
               - AttributeName: PK
                 KeyType: HASH
               - AttributeName: itemType
                 KeyType: RANGE
             Projection:
-              ProjectionType: ALL
+              ProjectionType: INCLUDE
+              NonKeyAttributes:
+                - SK
+          - IndexName: TeamName-Index
+            KeySchema:
+              - AttributeName: teamName
+                KeyType: HASH
+            Projection:
+              ProjectionType: KEYS_ONLY
 
 
 functions:
@@ -89,7 +96,6 @@ functions:
           # authorizer:
             # type: request
             # identitySource: method.request.header.Authorization
-
   createTeam:
     handler: src/handlers/teamHandler.createTeam
     events:

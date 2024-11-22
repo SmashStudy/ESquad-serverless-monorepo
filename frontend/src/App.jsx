@@ -15,6 +15,10 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
+import ManageUserPage from './pages/team/ManageUserPage.jsx';
+import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
+
+
 
 const theme = createTheme({
     palette: {
@@ -97,6 +101,8 @@ function App() {
 
                             {/* team */}
                             <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
+                                <Route path="manage/users" element={<ManageUserPage />} />
+                                <Route path="manage/settings" element={<ManageTeamPage />} />
                                 <Route path="study" element={<StudyListPage />} />
                                 <Route path="study/:studyId" element={<StudyDetailPage />} />
                                 <Route path="book/search" element={<BookListPage />} />

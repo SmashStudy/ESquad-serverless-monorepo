@@ -41,7 +41,7 @@ export const getTeamProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const teamProfile = await TeamService.getTeamProfile(teamId);
-        return createResponse(200, { message: 'Team created successfully', data: teamProfile});
+        return createResponse(200, { message: 'Team search successfully', data: teamProfile});
     } catch (error) {
         console.error('Error retrieving team profile:', error);
         return createResponse(500, { error: `Error retrieving team profile ${error.message}` });
@@ -71,8 +71,8 @@ export const updateTeam = async (event) => {
 export const deleteTeam = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
-        await TeamService.deleteTeamService(teamId);
-        return createResponse(200, { message: 'Team created successfully', data: teamId });
+        await TeamService.deleteTeam(teamId);
+        return createResponse(200, { message: 'Team deleted successfully', data: teamId });
     } catch (error) {
         console.error('Error deleting team:', error);
         return createResponse(500, { error: `Error deleting team ${error.message}` });

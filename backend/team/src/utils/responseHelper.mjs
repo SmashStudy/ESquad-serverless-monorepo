@@ -2,7 +2,7 @@
 
 export const createResponse = (statusCode, body) => ({
     statusCode,
-    body: JSON.stringify(body),
+    body: typeof body === 'object' ? JSON.stringify(body) : body,
     headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',

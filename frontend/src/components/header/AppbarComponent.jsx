@@ -63,9 +63,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: '100%',
     },
 }));
+{/* AppBar/AppbarComponent */}
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSelectedTeam, updateTeams, teams }) => {
 
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams }) => {
     const navigate = useNavigate();
+    
     // const { userInfo } = useUser();
 
     const handleLogout = () => {
@@ -73,7 +75,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         alert("로그아웃 되었습니다. 다음에 또 만나요!")
         navigate('/login');
     };
-
+    // console.log(`로그${JSON.stringify(teams[0])}`);
     const theme = useTheme();
     const [showSearchBar, setShowSearchBar] = useState(null);
     const [teamAnchorEl, setTeamAnchorEl] = useState(null);
@@ -108,11 +110,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     // Handle account menu open/close
     const handleAccountClick = (event) => { setAccountAnchorEl(event.currentTarget); };
     const handleAccountClose = () => { setAccountAnchorEl(null); };
-
-    // 사용자의 팀탭에서 팀 선택
-    const handleSelectedTeam = (i) => {
-        updateSelectedTeam(i);
-    };
 
     // Handle create team dialog open/close
     const handleCreateTeamButtonClick = () => { setIsTeamCreationModalOpen(true); };
@@ -211,6 +208,8 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                     <TeamCreationDialog
                                         open={isTeamCreationModalOpen}
                                         onClose={handleCloseCreateTeamModal}
+                                        updateTeams={updateTeams}
+                                        teams={teams}
                                     />
 
                                     {teams == null ? (
@@ -220,16 +219,12 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                     ) : (
                                         <>
                                             {teams.map((team, index) => (
-                                                <Link to={`/teams/${team.id}`} className={`menu-team${index}`} key={index}>
-                                                    <ListItem
-                                                        button
-                                                        onClick={() => updateSelectedTeam(index)}
-                                                        sx={{ '&:hover': { cursor: 'pointer', fontSize: '1.4rem' } }}
-                                                    >
+                                                <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                                                    <ListItem button onClick={() => changeSelectedTeam(index)}>
                                                         <ListItemIcon>
-                                                            <Avatar alt="Team Avatar" src='/src/assets/user-avatar.png' />
+                                                            <Avatar alt={team.teamName} src="/path/to/avatar.png" />
                                                         </ListItemIcon>
-                                                        <ListItemText primary={team?.teamName} />
+                                                        <ListItemText primary={team.teamName} />
                                                     </ListItem>
                                                 </Link>
                                             ))}

@@ -10,7 +10,7 @@ import * as TeamUserService from '../services/teamUserService.mjs';
 export const checkTeamName = async (teamName) => {
     const params = {
         TableName: TEAM_TABLE,
-        IndexName: 'teamName-Index',
+        IndexName: 'TeamName-Index',
         KeyConditionExpression: 'teamName = :teamName',
         ExpressionAttributeValues: { ':teamName': teamName },
     };
@@ -39,14 +39,21 @@ export const createTeam = async ({ teamName, description, userIds }) => {
         Item: {
             PK: teamId,
             SK: teamId,
-            itemType: 'TeamSpace',
+            itemType: 'Team',
             teamName,
             description,
+            creatAt: new Date().toISOString(),
+            updateAt: new Date().toISOString(),
         },
     };
     await dynamoDb.send(new PutCommand(teamParams));
 
-    TeamUserService.addTeamUsers(teamId, userIds);
+    if (userIds.length < 4 || userIds.length > 12) {
+        return { isValid: false, message: '팀 구성원은 최소 4명, 최대 12명이어야 합니다.' };
+    }
+
+    await TeamUserService.addTeamUsers(teamId, userIds);
+    
     return { teamId, teamName };
 };
 

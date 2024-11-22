@@ -7,7 +7,7 @@ function CrewManagement({ teamCrew, newCrew, handleNewCrewChange, searchCrew, se
         <Box sx={{ pt: 2 }}>
             <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>크루 초대하기</Typography>
             <Typography sx={{ mt: 2, mb: 5, fontSize: 'large' }}>동행할 크루를 초대하여 함께 성장해요!</Typography>
-            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>( 크루는 본인을 제외하여 3명 이상, 11명 이하로 꾸려주세요 )</Typography>
+            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>( 크루는 본인을 제외하여 4명 이상, 12명 이하로 꾸려주세요 )</Typography>
 
             <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
                 <TextField
