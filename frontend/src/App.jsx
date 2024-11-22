@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import JoinPage from "./pages/user/JoinPage.jsx";
-import LoginPage from "./pages/user/LoginPage.jsx";
 import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -15,6 +13,12 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
+import GoogleLogin from './components/google/GoolgeLogin.jsx';
+import AuthCallback from './components/google/AuthCallback.jsx';
+import GoogleLogout from './components/google/GoogleLogout.jsx';
+import UserProfile from './components/user/UserProfile.jsx';
+
+
 
 const theme = createTheme({
     palette: {
@@ -72,13 +76,10 @@ function App() {
             {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
-                        {/* Redirect logged-in users away from the login page */}
-                        <Route path="/login" element={
-                            // <RedirectIfLoggedIn>
-                                <LoginPage setIsLoggedIn={setIsLoggedIn} />
-                            // </RedirectIfLoggedIn>
-                        } />
-                        <Route path="/join" element={<JoinPage />} />
+                        <Route path="/google" element={<GoogleLogin />} />
+                        <Route path="/auth/callback" element={<AuthCallback />} />
+                        <Route path="/logout" element={<GoogleLogout />} />
+                        <Route path='/user/profile' element={<UserProfile />} />
 
 
                         {/* Protect routes that require authentication */}
