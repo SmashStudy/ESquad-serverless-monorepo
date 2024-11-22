@@ -7,9 +7,9 @@ const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 export const handler = async (event) => {
     console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-    const { userId } = JSON.parse(event.body);
-    console.log(`userId: ${userId}`);
-    
+    let { userId } = event.queryStringParameters;
+    userId = decodeURIComponent(userId);
+
     if (!userId) {
         return {
             statusCode: 400,
@@ -23,49 +23,27 @@ export const handler = async (event) => {
         const queryCommand = new QueryCommand({
             TableName: NOTIFICATION_TABLE,
             KeyConditionExpression:'#userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
+            FilterExpression: "isSave = :isSave",
             ExpressionAttributeNames: {
                 '#userId': 'userId',                        // 'userId'라는 실제 필드명을 매핑
             },
             ExpressionAttributeValues: {                    // KeyConditionExpression에서 사용하는 값 정의
                 ':userId': { S: userId },
+                ":isSave": { N: '1' },
             },
             ScanIndexForward: false,
         });
         const queryResponse = await client.send(queryCommand);
-        const notifications = queryResponse.Items;
-
-        // 2. 읽지 않은 모든 알림을 읽음 처리
-        const updatePromises = notifications.map((notification) => {
-            if (notification.isRead.N === "0") {
-                const updateParams = new UpdateItemCommand({
-                    TableName: NOTIFICATION_TABLE,
-                    Key: {
-                        userId: {S: userId},
-                        createdAt: {S: notification.createdAt.S},
-                    },
-                    UpdateExpression: "SET isRead = :isRead",
-                    ExpressionAttributeValues: {
-                        ":isRead": 1,
-                    },
-                });
-                return dynamoDbClient.send(updateParams);
-            }
-        });
-
-        // 모든 업데이트 요청 병렬 실행
-        await Promise.all(updatePromises.filter(Boolean));
 
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, POST', 
+                'Access-Control-Allow-Methods': 'OPTIONS, GET',
                 'Access-Control-Allow-Headers': 'Content-Type', 
             },
-            body: JSON.stringify({
-                message: "Notifications marked as read.",
-            }),
+            body: JSON.stringify(queryResponse.Items),
         };
     } catch (error) {
         console.error("Error marking notifications as read:", error);
@@ -74,7 +52,7 @@ export const handler = async (event) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, POST', 
+                'Access-Control-Allow-Methods': 'OPTIONS, GET',
                 'Access-Control-Allow-Headers': 'Content-Type', 
             },
             body: JSON.stringify({ error: "Failed to mark notifications as read." }),

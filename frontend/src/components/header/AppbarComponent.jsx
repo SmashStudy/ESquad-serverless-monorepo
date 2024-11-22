@@ -114,9 +114,14 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
     const userId = "USER#123";
-    const API_GATEWAY_ID = "o1txnzqsd9";
-    const SOCKET_API_GATEWAY_ID = "ro2goaptcf";
+    const API_GATEWAY_ID = "xg9jcodwdb";
+    const SOCKET_API_GATEWAY_ID = "yzm1bdqqw8";
+    const notificationMenuRef = useRef(null);
     const socketRef = useRef(null); // 동일한 서버에 대한 다중 WebSocket 연결 방지
+    const [loading, setLoading] = useState(true);
+    const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null);
+    const [unReadCount, setUnReadCount] = useState(0);
+    const [isFetching, setIsFetching] = useState(false);
 
     console.log(notifications);
 
@@ -144,9 +149,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         ws.onopen = () => {
             console.log("WebSocket 연결 성공");
 
-            // WebSocket 서버에 알림 데이터를 요청하는 메시지를 전송
+            // WebSocket 서버에 미확인 알림 개수 요청하는 메시지를 전송
             const fetchNotificationsMessage = JSON.stringify({
-                action: "fetchNotifications", // 요청 작업 타입 정의
+                action: "countUnReadNotifications", // 요청 작업 타입 정의
                 userId: userId, // 사용자 ID 전달
             });
             ws.send(fetchNotificationsMessage);
@@ -176,39 +181,46 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
 
     // WebSocket에서 받은 메시지를 처리하는 함수
     const onMessageReceived = (message) => {
-        // 메시지에 알림 데이터가 포함되어 있는 경우
-        setNotifications((prev) => {
-            // Combine new and previous notifications
-            const combinedNotifications = message.response
-                ? [...message.response, ...prev]
-                : [...prev];
+        if(message.unReadCount) {
+            setUnReadCount(message.unReadCount);
+        }
 
-            // Sort by `createdAt` in descending order (most recent first)
-            return combinedNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        });
-        // 메시지가 개별 알림인 경우
+        // if (message.fetchResponse) {
+        //     // response 객체에서 items와 lastEvaluatedKey를 추출하고, lastEvaluatedKey는 newLastEvaluatedKey라는 이름으로 사용
+        //     const { items, lastEvaluatedKey: newLastEvaluatedKey } = message.fetchResponse;
+        //     setNotifications((prev) => ([...prev, ...items]));  // 기존 알림 목록(prev)에 새로운 items를 추가하여 상태를 업데이트
+        //     setLastEvaluatedKey(newLastEvaluatedKey);   // 새로운 lastEvaluatedKey 값을 상태에 저장
+        // }
+
         if (message.studyNotification) {
-            setNotifications((prev) => [message.studyNotification, ...prev]); // 알림 상태 업데이트
+            // studyNotification을 기존 알림 목록의 맨 앞에 추가하여 상태를 업데이트
+            setUnReadCount((prevCount) => prevCount + 1);
+            setNotifications((prev) => ([message.studyNotification, ...prev]));
         }
     };
 
-    const fetchNotifications = async () => {
-        try {
-            // 초기 알림 데이터를 가져오기 위해 GET 요청
-            const result = await axios({
-                method: "GET",
-                url: `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification`,
-                params: {userId: encodeURIComponent(userId)}, // 사용자 ID를 쿼리 매개변수로 전달
-            });
+    const handleScroll = () => {
+        if (notificationMenuRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = notificationMenuRef.current;
 
-            console.log(result.data); // 가져온 데이터 콘솔에 출력
-            setNotifications(result.data); // 알림 상태 업데이트
-        } catch (error) {
-            console.error("메시지 가져오기 실패:", error); // 에러 로그 출력
+            // Trigger load more when scrolled within 100 pixels of the bottom
+            if (scrollHeight - scrollTop - clientHeight <= 100 && !isFetching && lastEvaluatedKey) {
+                console.log('Scrolled to bottom, fetching notifications...');
+                fetchNotification();
+            }
         }
-    }
+    };
 
-// 컴포넌트가 마운트될 때 채팅 메시지를 가져오는 함수
+    // Debounce the scroll handler
+    const debounce = (func, delay) => {
+        let timeout;
+        return (...args) => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    };
+
+    // 컴포넌트가 마운트될 때 채팅 메시지를 가져오는 함수
     useEffect(() => {
         if (!socketRef.current) {
             connectToWebSocket(); // WebSocket 연결 시작
@@ -225,7 +237,57 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     // Handle notifications menu open/close
     const handleNotificationsClick = (event) => {
         setNotificationsAnchorEl(event.currentTarget);
+        fetchNotification();
     };
+
+    const fetchNotification = async () => {
+        if (isFetching) return; // Prevent duplicate fetches
+
+        setIsFetching(true); // Set fetching to true
+        try {
+            const response = await axios.post(
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/all`,
+                {
+                    userId: userId,
+                    ...(lastEvaluatedKey && { lastEvaluatedKey: lastEvaluatedKey }),
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            console.log(`Fetched notifications: ${JSON.stringify(response.data)}`);
+
+            // Update notifications state
+            setNotifications((prev) => {
+                return prev ? [...prev, ...response.data.items] : response.data.items;
+            });
+
+            // Update lastEvaluatedKey
+            setLastEvaluatedKey(response.data.lastEvaluatedKey);
+
+        } catch (err) {
+            console.error('Error fetching notifications:', err);
+        } finally {
+            setIsFetching(false); // Reset fetching flag
+        }
+    };
+
+    useEffect(() => {
+        if (notificationsAnchorEl) {
+            const notificationMenuElement = notificationMenuRef.current;
+
+            if (notificationMenuElement) {
+                const debouncedScrollHandler = debounce(handleScroll, 300); // Adjust debounce time as needed
+                notificationMenuElement.addEventListener("scroll", debouncedScrollHandler);
+
+                return () => {
+                    notificationMenuElement.removeEventListener("scroll", debouncedScrollHandler);
+                };
+            }
+        }
+    }, [notificationsAnchorEl, lastEvaluatedKey, isFetching]);
 
     const handleNarkAllAsRead = async () => {
         const notificationIds = notifications
@@ -279,13 +341,12 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleCreateTeamButtonClick = () => { setIsTeamCreationModalOpen(true); };
     const handleCloseCreateTeamModal = () => { setIsTeamCreationModalOpen(false); };
 
-    const handleMarkAsSave = async (notificationId) => {
+    const handleMarkAsSave = async (notification) => {
         try {
             const response = await axios.post(
                 `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/save`,
                 {
-                    notificationId,
-                    userId
+                    notification,
                 },
                 {
                     headers: {
@@ -295,7 +356,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             );
             setNotifications((prev) =>
                 prev.map((notification) =>
-                    notification.id === notificationId ? { ...notification, isSave: '1' } : notification
+                    notification.id === notification.id
+                        ? { ...notification, isSave: '1' }
+                        : notification
                 )
             );
 
@@ -305,13 +368,12 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         }
     };
 
-    const handleReleaseSave = async (notificationId) => {
+    const handleReleaseSave = async (notification) => {
         try {
             const response = await axios.post(
                 `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/release-save`,
                 {
-                    notificationId,
-                    userId,
+                    notification,
                 },
                 {
                     headers: {
@@ -324,7 +386,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                 // Update the notification's isSave status in the client-side state
                 setNotifications((prev) =>
                     prev.map((notification) =>
-                        notification.id === notificationId
+                        notification.id === notification.id
                             ? { ...notification, isSave: '0' }
                             : notification
                     )
@@ -338,6 +400,24 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
 
     const handleToggleArchived = () => {
         setShowArchived((prev) => !prev);
+        fetchSavedNotifications();
+    };
+
+    const fetchSavedNotifications = async () => {
+        try {
+            // Make the GET request to the Lambda endpoint
+            const response = await fetch(
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/filter-saved?userId=${encodeURIComponent(userId)}`
+            );
+            if (!response.ok) {
+                throw new Error(`Error fetching saved notifications: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            setNotifications(data);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const visibleNotifications = showArchived
@@ -543,7 +623,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                             </Menu>
                             <IconButton color="inherit" onClick={handleNotificationsClick}>
                                 <Badge
-                                    badgeContent={notifications.filter(notification => notification.isRead === '0').length}
+                                    badgeContent={unReadCount}
                                     color="error"
                                 >
                                     <NotificationsIcon />
@@ -569,9 +649,10 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                             >
-                                <Box sx={{ position: 'relative', width: 360, height: 700 }}>
+                                <Box
+                                    ref={notificationMenuRef}
+                                    sx={{ position: 'relative', width: 360, height: 500, overflowY: 'auto' }}>
                                     <List sx={{ width: '100%', paddingBottom: 6 }}>
-                                        <ListItem>
 
                                             <Tooltip title="보관함" placement="top">
                                                 <IconButton
@@ -599,7 +680,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                     <DoneAllIcon /> {/* 모두 읽음 아이콘 */}
                                                 </IconButton>
                                             </Tooltip>
-                                        </ListItem>
 
                                         {visibleNotifications.length > 0 ? (
                                             <>
@@ -676,8 +756,8 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                             edge="end"
                                                             onClick={() =>
                                                                 notification.isSave !== '1'
-                                                                    ? handleMarkAsSave(notification.id)
-                                                                    : handleReleaseSave(notification.id)
+                                                                    ? handleMarkAsSave(notification)
+                                                                    : handleReleaseSave(notification)
                                                             }
                                                             sx={{ color: 'purple' }}
                                                         >

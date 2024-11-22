@@ -3,15 +3,14 @@ import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
-const NOTIFICATION_INDEX = process.env.NOTIFICATION_INDEX;
 
 export const handler = async (event) => {
     console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-    const { notificationId, userId } = JSON.parse(event.body);
-    console.log(`userId, notificationsId : ${userId}, ${notificationId}`);
-    
-    if (!notificationId || !userId) {
+    const { notification } = JSON.parse(event.body);
+    console.log(`notifications : ${notification}`);
+
+    if (!notification) {
         return {
             statusCode: 400,
             body: JSON.stringify({ error: "Must have Parameters" }),
@@ -23,15 +22,15 @@ export const handler = async (event) => {
         const updateParam = {
             TableName: NOTIFICATION_TABLE,
             Key: {
-                id: notificationId,     // HASH Key
-                userId, // RANGE key
+                userId: { S: notification.userId },
+                createdAt: { S: notification.createdAt },
             },
             UpdateExpression: "SET isSave = :isSave, isRead = :newRead",
             // UpdateExpression:
             // - "SET isSave = :isSave": isSave 필드를 1로 설정합니다.
             // - "isRead = :newRead": 조건에 따라 isRead 값을 1로 설정합니다.
 
-            ConditionExpression: "isRead = :isReadZero",
+            ConditionExpression: "isRead = :isReadZero AND id = :notificationId",
             // ConditionExpression:
             // - "isRead = :isReadZero": isRead 값이 0인 경우에만 업데이트가 실행됩니다.
             // - "attribute_not_exists(isRead)": isRead 속성이 존재하지 않을 경우에도 업데이트가 실행됩니다.
@@ -40,6 +39,7 @@ export const handler = async (event) => {
                 ":isSave": 1,         // isSave를 1로 설정하기 위한 값입니다.
                 ":isReadZero": 0,     // 조건에서 isRead 값이 0인지 확인하기 위한 값입니다.
                 ":newRead": 1,        // 조건이 만족되었을 때 isRead를 1로 설정하기 위한 값입니다.
+                ":notificationId": { S: notification.id },
             },
             ReturnValues: "ALL_NEW",  // 업데이트 후의 새로운 아이템을 반환하도록 설정
         }

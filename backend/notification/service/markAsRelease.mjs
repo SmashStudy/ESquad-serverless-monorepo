@@ -8,10 +8,10 @@ const NOTIFICATION_INDEX = process.env.NOTIFICATION_INDEX;
 export const handler = async (event) => {
     console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-    const { notificationId, userId } = JSON.parse(event.body);
-    console.log(`userId, notificationsId : ${userId}, ${notificationId}`);
+    const { notification } = JSON.parse(event.body);
+    console.log(`notifications : ${notification}`);
     
-    if (!notificationId || !userId) {
+    if (!notification) {
         return {
             statusCode: 400,
             body: JSON.stringify({ error: "Must have Parameters" }),
@@ -23,12 +23,14 @@ export const handler = async (event) => {
         const updateParam = {
             TableName: NOTIFICATION_TABLE,
             Key: {
-                id: notificationId,     // HASH Key
-                userId, // RANGE key
+                userId: { S: notification.userId },
+                createdAt: { S: notification.createdAt },
             },
             UpdateExpression: "SET isSave = :isSave",
+            ConditionExpression: "id = :notificationId",    // Add condition to check if id matches the provided notificationId
             ExpressionAttributeValues: {
                 ":isSave": 0,
+                ":notificationId": { S: notification.id },
             },
             ReturnValues: "ALL_NEW",  // 업데이트 후의 새로운 아이템을 반환하도록 설정
         }

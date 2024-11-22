@@ -93,11 +93,19 @@ functions:
       - websocket:
           route: $connect   # 클라이언트가 웹소켓에 연결할 때 호출
 
-  fetch:
-    handler: service/fetchNotifications.handler
+  get_count:
+    handler: service/count.handler
     events:
       - websocket:
-          route: fetchNotifications
+          route: countUnReadNotifications
+
+  fetch_all:
+    handler: service/fetch.handler
+    events:
+      - http:
+          path: notification/all
+          method: post
+          cors: true
 
   new_notifications:
     handler: service/newNotifications.handler
@@ -130,12 +138,20 @@ functions:
           cors: true
 
   mark_as_release:
-      handler: ./service/markAsRelease.handler
-      events:
-        - http:
-            path: notification/release-save
-            method: post
-            cors: true
+    handler: ./service/markAsRelease.handler
+    events:
+      - http:
+          path: notification/release-save
+          method: post
+          cors: true
+
+  filter_saved_notifications:
+    handler: ./service/filterSaved.handler
+    events:
+      - http:
+          path: notification/filter-saved
+          method: get
+          cors: true
   
   notification_onDisconnect:
     handler: service/onDisconnect.handler
@@ -230,26 +246,26 @@ resources:
       Properties:
         TableName: ${env:NOTIFICATION_TABLE}
         AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
           - AttributeName: userId
             AttributeType: S
-          - AttributeName: isRead
-            AttributeType: N
-        KeySchema:
+          - AttributeName: createdAt
+            AttributeType: S
           - AttributeName: id
-            KeyType: HASH
+            AttributeType: S
+        KeySchema:                # userId와 createdAt 속성으로 테이블을 설정 -> 각 사용자의 알림을 시간순으로 저장
           - AttributeName: userId
-            KeyType: RANGE
-        GlobalSecondaryIndexes:
-          - IndexName: UserIdIndex
+            KeyType: HASH         # 파티션 키: userId로 설정하여 특정 사용자의 알림을 조회
+          - AttributeName: createdAt
+            KeyType: RANGE        # 정렬 키: createdAt 로 설정하여 알림을 시간순으로 정렬
+        GlobalSecondaryIndexes:   # 인덱스: id와 createdAt 을 기준으로 필터링된 검색 가능
+          - IndexName: ${env:NOTIFICATION_INDEX}
             KeySchema:
-              - AttributeName: userId
-                KeyType: HASH # Partition Key for GSI
-              - AttributeName: isRead
+              - AttributeName: id
+                KeyType: HASH
+              - AttributeName: createdAt
                 KeyType: RANGE
             Projection:
-              ProjectionType: ALL # Include all attributes in the GSI
+              ProjectionType: ALL   # 모든 속성을 포함하여 인덱스에서 조회하는 설정
         BillingMode: PAY_PER_REQUEST
         StreamSpecification:
           StreamViewType: NEW_IMAGE

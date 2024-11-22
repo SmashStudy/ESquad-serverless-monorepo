@@ -1,6 +1,6 @@
 import { BatchWriteItemCommand, DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from 'uuid';
-// import { sendNotificationHandler } from "./fetchNotifications.mjs";
+// import { sendNotificationHandler } from "./fetch.mjs";
 
 // const snsClient = new SNSClient({ region: process.env.AWS_REGION });
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
@@ -9,7 +9,7 @@ const TEAM_TABLE = process.env.TEAM_DYNAMODB_TABLE;
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const CONNECTIONS_TABLE_NAME = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_CONNECTION_USER_INDEX = process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-const ENDPOINT = `https://ro2goaptcf.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
+const ENDPOINT = `https://yzm1bdqqw8.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
 
 const MAX_BATCH_SIZE = 25;
 

@@ -4,7 +4,7 @@ import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX = process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-const ENDPOINT = `https://ro2goaptcf.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
+const ENDPOINT = `https://yzm1bdqqw8.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
 
 // 사용자ID 로 연결ID 조회
 const getConnectionIds = async (userId) => {
