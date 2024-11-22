@@ -274,12 +274,22 @@ export const getUserByEmail = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+      },
       body: JSON.stringify(user),
     };
   } catch (error) {
     console.error('이메일로 사용자 정보 가져오기 중 오류 발생:', error.message, '\nStack:', error.stack);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+      },
       body: JSON.stringify({ message: '이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message }),
     };
   }
