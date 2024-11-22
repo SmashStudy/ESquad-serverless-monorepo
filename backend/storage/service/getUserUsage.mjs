@@ -1,6 +1,8 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
@@ -16,7 +18,7 @@ export const handler = async (event) => {
 
   const params = {
     TableName: TABLE_NAME,
-    IndexName: 'UserUsageIndex', // 인덱스 생성 후 사용
+    IndexName: 'UserUsageIndex',
     KeyConditionExpression: 'userId = :userId',
     ExpressionAttributeValues: {
       ':userId': userId,
@@ -24,7 +26,7 @@ export const handler = async (event) => {
   };
 
   try {
-    const data = await dynamoDb.query(params).promise();
+    const data = await dynamoDb.send(new QueryCommand(params));
     return {
       statusCode: 200,
       headers: {

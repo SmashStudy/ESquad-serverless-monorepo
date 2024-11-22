@@ -1,6 +1,8 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
@@ -22,7 +24,7 @@ export const handler = async (event) => {
       Key: { id: `files/${storedFileName}` },
     };
 
-    await dynamoDb.delete(deleteParams).promise();
+    await dynamoDb.send(new DeleteCommand(deleteParams));
 
     return {
       statusCode: 200,
