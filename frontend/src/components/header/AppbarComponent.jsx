@@ -54,14 +54,17 @@ function decodeJWT(token) {
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: "20px",
   backgroundColor: alpha(theme.palette.common.white, 0.15),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
+  "&:focus-within": {
+    border: `2px solid #A020F0`,
+  },
   marginLeft: theme.spacing(3),
   marginRight: theme.spacing(3),
-  border: `1px solid ${theme.palette.secondary.main}`, // Gold border for the search bar
+  border: `2px solid #D8BFD8`,
 }));
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
