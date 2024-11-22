@@ -17,7 +17,7 @@ export const saveUserToDynamoDB = async (event) => {
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Item: {
         email: { S: email },
         name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
@@ -62,7 +62,7 @@ export const getUserNickname = async (event) => {
     console.log(`email: ${email}`);
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Key: {
         email: { S: email },
       },
@@ -192,7 +192,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const scanParams = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       FilterExpression: 'nickname = :nickname',
       ExpressionAttributeValues: {
         ':nickname': { S: newNickname },
@@ -206,7 +206,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Key: {
         email: { S: email },
       },
@@ -231,6 +231,56 @@ export const updateUserNickname = async (event) => {
     return {
       statusCode: 500,
       body: JSON.stringify({ message: '닉네임 업데이트 중 오류 발생', error: error.message }),
+    };
+  }
+};
+
+// 이메일로 유저 정보를 가져오는 함수
+export const getUserByEmail = async (event) => {
+  try {
+    console.log('Received event:', event); // 디버깅용 로그 추가
+
+    // 이벤트에서 이메일 추출
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    const email = body?.email;
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      throw new Error('유효한 이메일이 제공되지 않았습니다');
+    }
+
+    const params = {
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
+      Key: {
+        email: { S: email },
+      },
+    };
+
+    const command = new GetItemCommand(params);
+    const result = await dynamoDb.send(command);
+
+    if (!result.Item) {
+      throw new Error('사용자를 찾을 수 없습니다');
+    }
+
+    // DynamoDB의 결과를 JavaScript 객체로 변환
+    const user = {
+      email: result.Item.email.S,
+      name: result.Item.name?.S || null,
+      nickname: result.Item.nickname?.S || null,
+      createdAt: result.Item.createdAt?.S || null,
+    };
+
+    console.log('사용자 정보 가져오기 성공:', user);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(user),
+    };
+  } catch (error) {
+    console.error('이메일로 사용자 정보 가져오기 중 오류 발생:', error.message, '\nStack:', error.stack);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: '이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message }),
     };
   }
 };
