@@ -58,9 +58,6 @@ export const handler = async (event) => {
       params.ExpressionAttributeValues[":recruitStatus"] = {
         S: recruitStatusFilter,
       }; // 문자열로 변환
-    } else {
-      // 필터가 없는 기본 설정 (BoardIndex만 사용)
-      params.FilterExpression = undefined; // 필터 없음
     }
 
     console.log("DynamoDB Query Params:", params);

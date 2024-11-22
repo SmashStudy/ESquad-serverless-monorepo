@@ -33,6 +33,12 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
 
 functions:
   createPost:
@@ -41,24 +47,28 @@ functions:
       - httpApi:
           path: /{boardType}/new
           method: POST
+
   getPost:
     handler: service/getPost.handler
     events:
       - httpApi:
           path: /{boardType}/{postId}
           method: GET
+
   listPosts:
     handler: service/listPosts.handler
     events:
       - httpApi:
           path: /{boardType}
           method: GET
+
   updatePost:
     handler: service/updatePost.handler
     events:
       - httpApi:
           path: /{boardType}/{postId}
           method: PUT
+
   deletePost:
     handler: service/deletePost.handler
     events:
@@ -80,10 +90,11 @@ resources:
             AttributeType: S
           - AttributeName: boardType
             AttributeType: S
-
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
         GlobalSecondaryIndexes:
           - IndexName: BoardIndex
             KeySchema:
