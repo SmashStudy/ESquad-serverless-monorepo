@@ -96,7 +96,7 @@ const PostListPage = ({ isSmallScreen }) => {
 
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
-    window.location.href = "http://localhost:5173/community/questions";
+    fetchPosts();
   };
 
   return (
