@@ -4,6 +4,8 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
 
 export const handler = async (event) => {
+  console.log(`event: ${JSON.stringify(event, null, 2)}`);
+
   try {
     const boardType = event.pathParameters.boardType;
 
@@ -32,6 +34,9 @@ export const handler = async (event) => {
     // 추가 필터 조건 (resolved 또는 recruitStatus)
     const resolvedFilter = event.queryStringParameters?.resolved;
     const recruitStatusFilter = event.queryStringParameters?.recruitStatus;
+    console.log(
+      `limit, lastEvaluatedKey, resolvedFilter, recruitStatusFilter: ${limit}, ${lastEvaluatedKey}, ${resolvedFilter}, ${recruitStatusFilter}`
+    );
 
     // 기본 DynamoDB Query Parameters
     let params = {
