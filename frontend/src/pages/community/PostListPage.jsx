@@ -6,6 +6,7 @@ import PostCreationDialog from "../../components/content/community/PostCreationD
 import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
+import SearchIcon from "@mui/icons-material/Search";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -39,7 +40,7 @@ const PostListPage = ({ isSmallScreen }) => {
     setLastEvaluatedKey(null);
   }, [location.pathname]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (reset = false) => {
     if (!boardType) return;
 
     try {
@@ -47,7 +48,7 @@ const PostListPage = ({ isSmallScreen }) => {
         limit: 10,
       };
 
-      if (lastEvaluatedKey) {
+      if (!reset && lastEvaluatedKey) {
         params.lastEvaluatedKey = JSON.stringify(lastEvaluatedKey);
       }
 
@@ -96,7 +97,7 @@ const PostListPage = ({ isSmallScreen }) => {
 
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
-    fetchPosts();
+    fetchPosts(true);
   };
 
   return (
@@ -139,15 +140,23 @@ const PostListPage = ({ isSmallScreen }) => {
             }}
           >
             <InputBase
-              placeholder="궁금한 질문을 검색해보세요!"
+              placeholder=" 궁금한 질문을 검색해보세요!"
               sx={{
                 flex: 1,
                 height: "50px",
                 p: 1.5,
                 border: "1px solid #ccc",
                 borderRadius: 1,
+                transition: "border 0.3s ease",
+                "&:focus-within": {
+                  border: "2px solid #A020F0",
+                },
               }}
-              startAdornment={<Box sx={{ color: "#aaa" }}>🔍</Box>}
+              startAdornment={
+                <Box sx={{ color: "#000", fontSize: "1.5rem" }}>
+                  <SearchIcon />
+                </Box>
+              }
             />
             <Button
               variant="contained"
@@ -173,16 +182,20 @@ const PostListPage = ({ isSmallScreen }) => {
             }}
           >
             <InputBase
-              placeholder="태그로 검색해보세요!"
+              placeholder="   태그로 검색해보세요!"
               sx={{
                 flex: 1,
                 height: "50px",
                 p: 1.5,
                 border: "1px solid #ccc",
                 borderRadius: 1,
+                transition: "border 0.3s ease",
+                "&:focus-within": {
+                  border: "2px solid #A020F0",
+                },
               }}
               startAdornment={
-                <Box sx={{ color: "#aaa", fontSize: "1.5rem" }}>#</Box>
+                <Box sx={{ color: "#000", fontSize: "1.5rem" }}>#</Box>
               }
             />
             <Button
@@ -199,7 +212,7 @@ const PostListPage = ({ isSmallScreen }) => {
                 height: "50px",
                 padding: "0 20px",
                 "&:hover": {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  backgroundColor: "rgba(160, 32, 240, 0.1)",
                 },
               }}
             >
