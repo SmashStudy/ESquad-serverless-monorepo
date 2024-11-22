@@ -1,21 +1,21 @@
-service: meeting
+service: streaming-service  # 서비스 이름 정의
 
 provider:
-  name: aws
-  runtime: nodejs20.x
-  region: us-east-1
-  stage: ${opt:stage, 'dev'}
+  name: aws  # AWS 클라우드 제공자 설정
+  runtime: nodejs20.x  # Node.js 런타임 버전
+  region: ${opt:region, 'us-east-1'}  # AWS 리전 설정
+  stage: ${opt:stage, 'dev'}  # 배포 스테이지 설정
   environment:
     MEETINGS_TABLE_NAME:
-      Ref: Meetings
+      Ref: Meetings  # Meetings DynamoDB 테이블 참조
     ATTENDEES_TABLE_NAME:
-      Ref: Attendees
+      Ref: Attendees  # Attendees DynamoDB 테이블 참조
     SQS_QUEUE_ARN:
       Fn::GetAtt:
         - MeetingNotificationsQueue
-        - Arn
+        - Arn  # SQS 큐의 ARN 가져오기
     BROWSER_LOG_GROUP_NAME:
-      Ref: ChimeBrowserLogs
+      Ref: ChimeBrowserLogs  # CloudWatch 로그 그룹 참조
 
   iam:
     role:
@@ -24,7 +24,7 @@ provider:
           Action:
             - "chime:CreateMeeting"
             - "chime:CreateAttendee"
-          Resource: "arn:aws:chime:*:*:meeting/*"
+          Resource: "arn:aws:chime:*:*:meeting/*"  # Chime 미팅 및 참석자 생성 권한
         - Effect: "Allow"
           Action:
             - "dynamodb:PutItem"
@@ -33,17 +33,17 @@ provider:
           Resource:
             - Fn::GetAtt:
                 - Meetings
-                - Arn
+                - Arn  # Meetings 테이블 접근 권한
             - Fn::GetAtt:
                 - Attendees
-                - Arn
+                - Arn  # Attendees 테이블 접근 권한
         - Effect: "Allow"
           Action:
             - "kms:Decrypt"
-          Resource: "*"
+          Resource: "*"  # KMS 복호화 권한
 
 custom:
-  useEventBridge: ${opt:useEventBridge, 'false'}
+  useEventBridge: ${opt:useEventBridge, 'true'}  # EventBridge 사용 여부 설정
 
   chimeEventBridgeEvents:
     true:
@@ -52,18 +52,18 @@ custom:
             source:
               - aws.chime
             detail-type:
-              - 'Chime Meeting State Change'
+              - 'Chime Meeting State Change'  # Chime 미팅 상태 변경 이벤트
     false: []
 
 functions:
   ChimeSdkIndexLambda:
-    handler: service/index.handler
+    handler: service/index.handler  # 메인 인덱스 핸들러
     events:
       - http:
           path: /
           method: get
           cors:
-            origin: 'https://live.dev.esquad.click'
+            origin: 'https://live.dev.esquad.click'  # CORS 허용 도메인
             headers:
               - Content-Type
               - Authorization
@@ -79,7 +79,7 @@ functions:
             allowCredentials: true
 
   ChimeSdkJoinLambda:
-    handler: service/join.handler
+    handler: service/joinMeetingHandler.handler  # 미팅 참가 핸들러
     events:
       - http:
           path: /join
@@ -91,10 +91,10 @@ functions:
               - Authorization
             allowCredentials: true
     environment:
-      USE_EVENT_BRIDGE: ${self:custom.useEventBridge}
+      USE_EVENT_BRIDGE: ${self:custom.useEventBridge}  # EventBridge 사용 여부
 
   ChimeSdkEndLambda:
-    handler: service/end.handler
+    handler: service/endMeetingHandler.handler  # 미팅 종료 핸들러
     events:
       - http:
           path: /end
@@ -107,7 +107,7 @@ functions:
             allowCredentials: true
 
   ChimeSdkAttendeeLambda:
-    handler: service/attendee.handler
+    handler: service/attendeeMeetingHandler.handler  # 참석자 정보 핸들러
     events:
       - http:
           path: /attendee
@@ -118,22 +118,23 @@ functions:
               - Content-Type
               - Authorization
             allowCredentials: true
+
   ChimeSQSQueueLambda:
-    handler: service/sqs_handler.handler
+    handler: service/sqsHandler.handler  # SQS 메시지 처리 핸들러
     events:
       - sqs:
           arn:
             Fn::GetAtt:
               - MeetingNotificationsQueue
-              - Arn
+              - Arn  # SQS 큐의 ARN
           batchSize: 10
 
   ChimeEventBridgeLambda:
-    handler: service/event_bridge_handler.handler
-    events: ${self:custom.chimeEventBridgeEvents.${self:custom.useEventBridge}}
+    handler: service/eventHandler.handler  # EventBridge 이벤트 핸들러
+    events: ${self:custom.chimeEventBridgeEvents.${self:custom.useEventBridge}}  # 조건부 이벤트 바인딩
 
   ChimeSdkBrowserLogsLambda:
-    handler: service/logs.handler
+    handler: service/logHandler.handler  # 브라우저 로그 핸들러
     events:
       - http:
           path: /logs
@@ -150,7 +151,7 @@ resources:
     Meetings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'MeetingsTable'
+        TableName: 'MeetingsTable'  # 미팅 테이블
         AttributeDefinitions:
           - AttributeName: 'Title'
             AttributeType: 'S'
@@ -158,46 +159,46 @@ resources:
             AttributeType: 'S'
         KeySchema:
           - AttributeName: 'Title'
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
+            KeyType: HASH  # 기본 키 설정
+        BillingMode: PAY_PER_REQUEST  # 온디맨드 과금 방식
         GlobalSecondaryIndexes:
           - IndexName: 'Passcode'
             KeySchema:
               - AttributeName: 'Passcode'
-                KeyType: HASH
+                KeyType: HASH  # 보조 인덱스 설정
             Projection:
               ProjectionType: ALL
         TimeToLiveSpecification:
-          AttributeName: 'TTL'
+          AttributeName: 'TTL'  # TTL 설정
           Enabled: true
 
     Attendees:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'AttendeesTable'
+        TableName: 'AttendeesTable'  # 참석자 테이블
         AttributeDefinitions:
           - AttributeName: 'AttendeeId'
             AttributeType: 'S'
         KeySchema:
           - AttributeName: 'AttendeeId'
-            KeyType: HASH
+            KeyType: HASH  # 기본 키 설정
         BillingMode: PAY_PER_REQUEST
 
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: 'MeetingNotificationsQueue'
-        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS
+        QueueName: 'MeetingNotificationsQueue'  # 미팅 알림용 SQS 큐
+        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS  # KMS 키 사용
 
     ChimeBrowserLogs:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: 'ChimeBrowserLogs'
+        LogGroupName: 'ChimeBrowserLogs'  # 브라우저 로그 그룹
 
     ChimeKMSKey:
       Type: AWS::KMS::Key
       Properties:
-        Description: Custom KMS Key with Chime access
+        Description: Chime 액세스용 커스텀 KMS 키
         KeyPolicy:
           Version: '2012-10-17'
           Statement:
@@ -208,28 +209,28 @@ resources:
               Action:
                 - kms:GenerateDataKey
                 - kms:Decrypt
-              Resource: '*'
+              Resource: '*'  # Chime 서비스에 키 사용 허용
             - Sid: Enable IAM User Permissions
               Effect: Allow
               Principal:
                 AWS:
                   Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
               Action: kms:*
-              Resource: '*'
+              Resource: '*'  # 루트 사용자에 전체 권한 부여
 
     ChimeKMSAlias:
       Type: AWS::KMS::Alias
       Properties:
         AliasName:
-          Fn::Sub: 'alias/ChimeKMS-${AWS::StackName}'
+          Fn::Sub: 'alias/ChimeKMS-${AWS::StackName}'  # KMS 키 별칭 생성
         TargetKeyId:
-          Ref: ChimeKMSKey
+          Ref: ChimeKMSKey  # KMS 키 참조
 
 outputs:
   ApiURL:
-    Description: 'API endpoint URL for ${self:provider.stage} environment'
+    Description: '${self:provider.stage} 환경의 API 엔드포인트 URL'
     Value:
-      Fn::Sub: 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${self:provider.stage}/'
+      Fn::Sub: 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${self:provider.stage}/'  # API Gateway URL
 
 plugins:
-  - serverless-iam-roles-per-function
+  - serverless-iam-roles-per-function  # 함수별 IAM 역할 플러그인
