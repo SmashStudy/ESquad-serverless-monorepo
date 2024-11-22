@@ -12,6 +12,7 @@ export const saveUserToDynamoDB = async (event) => {
     if (!userAttributes.email) {
       throw new Error('사용자 속성에 이메일이 없습니다');
     }
+
     const email = userAttributes.email;
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 
@@ -115,9 +116,7 @@ export const myEnvironments = async (event) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        // "Access-Control-Allow-Origin": "http://localhost:5173",
-        "Access-Control-Allow-Origin": "https://dev.esquad.click",
-        // "Access-Control-Allow-Origin": "https://www.esquad.click",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
@@ -127,6 +126,12 @@ export const myEnvironments = async (event) => {
     console.error('환경 변수 반환 중 오류 발생:', error);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
       body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
     };
   }
