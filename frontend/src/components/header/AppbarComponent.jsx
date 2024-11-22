@@ -87,16 +87,23 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     };
 
 
-    const [userName, setUserName] = useState("Name");
+    const [userName, setUserName] = useState("로딩 중...");
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     useEffect(() => {
-        const token = localStorage.getItem("jwtToken");
-        if (token) {
-            const decodedToken = decodeJWT(token);
-            if (decodedToken) {
-                setUserName(decodedToken.name || "Name");
+        const fetchToken = async () => {
+            await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
+            const token = localStorage.getItem("jwtToken");
+            if (token) {
+                const decodedToken = decodeJWT(token);
+                if (decodedToken) {
+                    setUserName(decodedToken.name || "Name");
+                }
             }
-        }
+        };
+    
+        fetchToken();
     }, []);
 
     const theme = useTheme();
