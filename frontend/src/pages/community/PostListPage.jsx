@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
 import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import axios from "axios";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -38,44 +39,37 @@ const PostListPage = ({ isSmallScreen }) => {
     setLastEvaluatedKey(null);
   }, [location.pathname]);
 
-  // 게시글을 불러오는 함수 (페이지네이션 포함)
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = async () => {
     if (!boardType) return;
 
     try {
-      const url = new URL(
-        `https://api.esquad.click/api/community/${boardType}`
-      );
-      url.searchParams.append("limit", 10);
+      const params = {
+        limit: 10,
+      };
 
       if (lastEvaluatedKey) {
-        url.searchParams.append(
-          "lastEvaluatedKey",
-          JSON.stringify(lastEvaluatedKey)
-        );
+        params.lastEvaluatedKey = JSON.stringify(lastEvaluatedKey);
       }
 
       if (boardType === "questions") {
-        if (filterTab === "미해결")
-          url.searchParams.append("resolved", "false");
-        if (filterTab === "해결됨") url.searchParams.append("resolved", "true");
+        if (filterTab === "미해결") params.resolved = "false";
+        if (filterTab === "해결됨") params.resolved = "true";
       } else if (boardType === "team-recruit") {
-        if (filterTab === "모집중")
-          url.searchParams.append("recruitStatus", "false");
-        if (filterTab === "모집완료")
-          url.searchParams.append("recruitStatus", "true");
+        if (filterTab === "모집중") params.recruitStatus = "false";
+        if (filterTab === "모집완료") params.recruitStatus = "true";
       }
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error("Failed to fetch posts");
+      const response = await axios.get(
+        `https://api.esquad.click/api/community/${boardType}`,
+        { params }
+      );
 
-      const data = await response.json();
-      setPosts(data.items || []);
-      setLastEvaluatedKey(data.lastEvaluatedKey || null);
+      setPosts(response.data.items || []);
+      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
-  }, [boardType, filterTab, lastEvaluatedKey]);
+  };
 
   useEffect(() => {
     fetchPosts();
