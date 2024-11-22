@@ -17,7 +17,7 @@ export const saveUserToDynamoDB = async (event) => {
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Item: {
         email: { S: email },
         name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
@@ -62,7 +62,7 @@ export const getUserNickname = async (event) => {
     console.log(`email: ${email}`);
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Key: {
         email: { S: email },
       },
@@ -192,7 +192,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const scanParams = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       FilterExpression: 'nickname = :nickname',
       ExpressionAttributeValues: {
         ':nickname': { S: newNickname },
@@ -206,7 +206,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Key: {
         email: { S: email },
       },
