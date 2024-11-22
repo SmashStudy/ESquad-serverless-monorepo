@@ -76,6 +76,7 @@ const PostListPage = ({ isSmallScreen }) => {
   }, [boardType, filterTab, curPage]);
 
   const handleFilterChange = (filter) => {
+    if (filterTab === filter) return;
     setFilterTab(filter);
     setCurPage(1);
     setPosts([]);
