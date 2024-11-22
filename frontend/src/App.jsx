@@ -19,6 +19,7 @@ import GoogleLogin from './components/google/GoolgeLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
+import UserSearch from './components/user/UserSearch.jsx';
 
 
 
@@ -78,17 +79,11 @@ function App() {
             {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
-                        {/* Redirect logged-in users away from the login page */}
-                        <Route path="/login" element={
-                            // <RedirectIfLoggedIn>
-                                <LoginPage setIsLoggedIn={setIsLoggedIn} />
-                            // </RedirectIfLoggedIn>
-                        } />
                         <Route path="/google" element={<GoogleLogin />} />
-                        <Route path="/join" element={<JoinPage />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
                         <Route path='/user/profile' element={<UserProfile />} />
+                        <Route path='/user/search' element={<UserSearch />} />
 
 
                         {/* Protect routes that require authentication */}
