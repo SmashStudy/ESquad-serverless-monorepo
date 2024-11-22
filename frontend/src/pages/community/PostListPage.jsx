@@ -6,55 +6,48 @@ import PostCreationDialog from "../../components/content/community/PostCreationD
 import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
-const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
+const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [curpage, setCurpage] = useState(1); // 현재 페이지
-  const [perpage] = useState(10); // 페이지당 데이터 갯수 변경
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null); // lastEvaluatedKey
-  const [texts, setText] = useState([]);
+  const [curPage, setCurPage] = useState(1);
+  const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null);
   const [boardType, setBoardType] = useState("");
   const [filterTab, setFilterTab] = useState("전체");
-  const [loading, setLoading] = useState(false); // 로딩 상태 추가
+  const [texts, setTexts] = useState([]);
 
   // URL 경로에 따라 boardType 설정
-  const getBoardTypeFromPath = useCallback(() => {
-    if (location.pathname.includes("team-recruit")) {
-      setText(["전체", "모집중", "모집완료"]);
-      return "team-recruit";
-    } else if (location.pathname.includes("questions")) {
-      setText(["전체", "미해결", "해결됨"]);
-      return "questions";
-    } else if (location.pathname.includes("general")) {
-      setText([]);
-      return "general";
-    } else {
-      setText(["전체", "미해결", "해결됨"]);
-      return "questions";
-    }
-  }, [location.pathname]);
-
   useEffect(() => {
-    const board = getBoardTypeFromPath();
+    const board = location.pathname.includes("team-recruit")
+      ? "team-recruit"
+      : location.pathname.includes("questions")
+      ? "questions"
+      : "general";
+
     setBoardType(board);
-    setCurpage(1); // 탭 변경 시 첫 페이지로 리셋
-    setPosts([]); // 기존 게시글 초기화
-    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
-  }, [getBoardTypeFromPath]);
+    setTexts(
+      board === "team-recruit"
+        ? ["전체", "모집중", "모집완료"]
+        : board === "questions"
+        ? ["전체", "미해결", "해결됨"]
+        : []
+    );
+    setCurPage(1);
+    setPosts([]);
+    setLastEvaluatedKey(null);
+  }, [location.pathname]);
 
   // 게시글을 불러오는 함수 (페이지네이션 포함)
   const fetchPosts = useCallback(async () => {
-    try {
-      if (!boardType) return;
+    if (!boardType) return;
 
+    try {
       const url = new URL(
         `https://api.esquad.click/api/community/${boardType}`
       );
-      url.searchParams.append("limit", perpage);
+      url.searchParams.append("limit", 10);
 
-      // 페이지네이션 처리: 현재 페이지에 맞게 시작점 설정
       if (lastEvaluatedKey) {
         url.searchParams.append(
           "lastEvaluatedKey",
@@ -62,141 +55,90 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
         );
       }
 
-      // 필터 조건 추가
       if (boardType === "questions") {
-        if (filterTab === "미해결") {
+        if (filterTab === "미해결")
           url.searchParams.append("resolved", "false");
-        } else if (filterTab === "해결됨") {
-          url.searchParams.append("resolved", "true");
-        }
+        if (filterTab === "해결됨") url.searchParams.append("resolved", "true");
       } else if (boardType === "team-recruit") {
-        if (filterTab === "모집중") {
+        if (filterTab === "모집중")
           url.searchParams.append("recruitStatus", "false");
-        } else if (filterTab === "모집완료") {
+        if (filterTab === "모집완료")
           url.searchParams.append("recruitStatus", "true");
-        }
       }
 
       const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error("Failed to fetch posts");
-      }
-      const data = await response.json();
-      console.log(`lastEvaluatedKey: ${JSON.stringify(data.lastEvaluatedKey)}`);
+      if (!response.ok) throw new Error("Failed to fetch posts");
 
-      // `posts` 상태 업데이트 시 기존 게시글을 대체
+      const data = await response.json();
       setPosts(data.items || []);
-      setLastEvaluatedKey(data.lastEvaluatedKey || null); // lastEvaluatedKey 업데이트
+      setLastEvaluatedKey(data.lastEvaluatedKey || null);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
-  }, [boardType, filterTab, perpage, lastEvaluatedKey]);
-
-  // 필터 변경 시
-  const handleFilterChange = (filter) => {
-    setFilterTab(filter);
-    setCurpage(1); // 필터 변경 시 첫 페이지로 리셋
-    setPosts([]); // 기존 게시글 초기화
-    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
-  };
-
-  // 페이지 이동: 이전 페이지
-  const handlePreviousPage = () => {
-    if (curpage > 1) {
-      setCurpage((prevPage) => prevPage - 1);
-      setLastEvaluatedKey(null); // 페이지 이전 시 lastEvaluatedKey 초기화
-    }
-  };
-
-  // 페이지 이동: 다음 페이지
-  const handleNextPage = () => {
-    if (lastEvaluatedKey) {
-      setCurpage((prevPage) => prevPage + 1); // 페이지를 증가시킨 후 데이터 요청
-    }
-  };
-
-  // 게시글 작성 모달 열기
-  const handleWriteButtonClick = () => {
-    setIsPostModalOpen(true);
-  };
-
-  // 게시글 작성 모달 닫기
-  const handleClosePostModal = () => {
-    setIsPostModalOpen(false);
-    setCurpage(1); // 새로 추가된 게시글을 보기 위해 첫 페이지로 이동
-    setPosts([]); // 기존 게시글 초기화 후 재조회
-    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
-    fetchPosts(); // 새로운 게시글 불러오기
-  };
+  }, [boardType, filterTab, lastEvaluatedKey]);
 
   useEffect(() => {
     fetchPosts();
-  }, [boardType, filterTab, curpage]); // boardType, filterTab, curpage가 변경될 때만 실행
+  }, [boardType, filterTab, curPage]);
+
+  const handleFilterChange = (filter) => {
+    setFilterTab(filter);
+    setCurPage(1);
+    setPosts([]);
+    setLastEvaluatedKey(null);
+  };
+
+  const handlePageChange = (direction) => {
+    if (direction === "prev" && curPage > 1) {
+      setCurPage((prevPage) => prevPage - 1);
+      setLastEvaluatedKey(null);
+    } else if (direction === "next" && lastEvaluatedKey) {
+      setCurPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handleWriteButtonClick = () => setIsPostModalOpen(true);
+
+  const handleClosePostModal = () => {
+    setIsPostModalOpen(false);
+    window.location.href = "http://localhost:5173/community/questions";
+  };
 
   return (
-    <Box
-      sx={{
-        mb: 2,
-        height: "100%",
-        width: "100%",
-        overflowX: "auto",
-        overflowY: "auto",
-      }}
-    >
+    <Box sx={{ mb: 2, height: "100%", width: "100%", overflow: "auto" }}>
       {/* Filters and Search */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          mb: 3,
-          gap: 2,
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "flex-start",
-          }}
-        >
-          {texts.length > 0 &&
-            texts.map((text, index) => (
-              <Button
-                key={text}
-                variant="text"
-                sx={{
-                  fontSize: "medium",
-                  fontWeight: "bold",
-                  borderBottom: filterTab === text ? "2px solid" : "none",
-                  borderColor: theme.palette.primary.main,
-                }}
-                onClick={() => handleFilterChange(text)}
-              >
-                {text}
-              </Button>
-            ))}
+      <Box sx={{ display: "flex", flexDirection: "column", mb: 3, gap: 2 }}>
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          {texts.map((text) => (
+            <Button
+              key={text}
+              variant="text"
+              sx={{
+                fontSize: "medium",
+                fontWeight: "bold",
+                borderBottom: filterTab === text ? "2px solid" : "none",
+                borderColor: theme.palette.primary.main,
+              }}
+              onClick={() => handleFilterChange(text)}
+            >
+              {text}
+            </Button>
+          ))}
         </Box>
 
         {/* 검색 및 태그 검색 */}
         <Box
           sx={{
             display: "flex",
-            flexDirection: "column", // 검색과 태그 검색을 세로로 정렬
-            gap: 2, // 각 섹션 간의 간격
-            width: "80%", // 부모 요소의 전체 너비 사용
+            flexDirection: "column",
+            gap: 2,
+            width: "80%",
           }}
         >
-          {/* 질문 검색 */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-start", // 왼쪽 정렬
               gap: 2,
               width: "100%",
             }}
@@ -209,9 +151,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 p: 1.5,
                 border: "1px solid #ccc",
                 borderRadius: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
               }}
               startAdornment={<Box sx={{ color: "#aaa" }}>🔍</Box>}
             />
@@ -223,21 +162,17 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 color: "#fff",
                 height: "50px",
                 padding: "0 20px",
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.dark,
-                },
+                "&:hover": { backgroundColor: theme.palette.primary.dark },
               }}
             >
               검색
             </Button>
           </Box>
 
-          {/* 태그 검색 */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-start",
               gap: 2,
               width: "100%",
             }}
@@ -250,9 +185,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 p: 1.5,
                 border: "1px solid #ccc",
                 borderRadius: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
               }}
               startAdornment={
                 <Box sx={{ color: "#aaa", fontSize: "1.5rem" }}>#</Box>
@@ -271,9 +203,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 color: theme.palette.primary.main,
                 height: "50px",
                 padding: "0 20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 "&:hover": {
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
@@ -297,18 +226,17 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
         }}
       >
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <Button variant="text" sx={{ color: theme.palette.text.secondary }}>
-            최신순
-          </Button>
-          <Button variant="text" sx={{ color: theme.palette.text.secondary }}>
-            정확도순
-          </Button>
-          <Button variant="text" sx={{ color: theme.palette.text.secondary }}>
-            답변많은순
-          </Button>
-          <Button variant="text" sx={{ color: theme.palette.text.secondary }}>
-            좋아요순
-          </Button>
+          {["최신순", "정확도순", "답변많은순", "좋아요순"].map(
+            (sortOption) => (
+              <Button
+                key={sortOption}
+                variant="text"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                {sortOption}
+              </Button>
+            )
+          )}
         </Box>
         <Button
           variant="contained"
@@ -323,28 +251,15 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
             padding: "10px 20px",
             fontSize: "1rem",
             borderRadius: "8px",
-            "&:hover": {
-              backgroundColor: "#555",
-            },
+            "&:hover": { backgroundColor: "#555" },
           }}
         >
-          <CreateIcon
-            sx={{
-              fontSize: 20,
-              marginRight: 1,
-            }}
-          />
-          글쓰기
+          <CreateIcon sx={{ fontSize: 20, marginRight: 1 }} /> 글쓰기
         </Button>
       </Box>
 
       {/* Posts List */}
-      <List
-        sx={{
-          width: "100%",
-          pr: 2,
-        }}
-      >
+      <List sx={{ width: "100%", pr: 2 }}>
         {posts.map((post) => (
           <Link
             to={`/community/${boardType}/questions/${post.postId}`}
@@ -352,7 +267,6 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <Box
-              key={post.postId}
               sx={{
                 mb: 2,
                 borderBottom: "1px solid #ddd",
@@ -451,16 +365,20 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           </Link>
         ))}
       </List>
+
       {/* Pagination */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Button
-          onClick={handlePreviousPage}
-          disabled={curpage === 1}
+          onClick={() => handlePageChange("prev")}
+          disabled={curPage === 1}
           sx={{ marginRight: 2 }}
         >
           이전
         </Button>
-        <Button onClick={handleNextPage} disabled={!lastEvaluatedKey}>
+        <Button
+          onClick={() => handlePageChange("next")}
+          disabled={!lastEvaluatedKey}
+        >
           다음
         </Button>
       </Box>
