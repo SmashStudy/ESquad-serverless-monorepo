@@ -56,12 +56,6 @@ const GoogleLogin = () => {
                     구글로 로그인
                 </Button>
             </Box>
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant='body1' fontWeight='bold'>아직 계정을 안만들었다구요?</Typography>
-                <Link to="/join">
-                    <Button color='primary' variant='text' sx={{ fontWeight: 'bold', ml: 1 }}>가입하러 가기</Button>
-                </Link>
-            </Box>
         </Box>
     );
 };

@@ -17,7 +17,7 @@ export const saveUserToDynamoDB = async (event) => {
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Item: {
         email: { S: email },
         name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
@@ -62,7 +62,7 @@ export const getUserNickname = async (event) => {
     console.log(`email: ${email}`);
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Key: {
         email: { S: email },
       },
@@ -116,9 +116,7 @@ export const myEnvironments = async (event) => {
       statusCode: 200,
       headers: {
         "Content-Type": "application/json",
-        // "Access-Control-Allow-Origin": "http://localhost:5173",
-        "Access-Control-Allow-Origin": "https://dev.esquad.click",
-        // "Access-Control-Allow-Origin": "https://www.esquad.click",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
@@ -128,6 +126,12 @@ export const myEnvironments = async (event) => {
     console.error('환경 변수 반환 중 오류 발생:', error);
     return {
       statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
       body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
     };
   }
@@ -188,7 +192,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const scanParams = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       FilterExpression: 'nickname = :nickname',
       ExpressionAttributeValues: {
         ':nickname': { S: newNickname },
@@ -202,7 +206,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
       Key: {
         email: { S: email },
       },
