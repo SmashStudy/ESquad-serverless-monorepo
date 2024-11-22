@@ -4,120 +4,122 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
 
 export const handler = async (event) => {
-  console.log(`event: ${JSON.stringify(event, null, 2)}`);
-
   try {
-    const boardType = event.pathParameters.boardType;
-
-    // 유효한 boardType 검사
+    const { boardType } = event.pathParameters;
     const validBoardTypes = ["general", "questions", "team-recruit"];
+
     if (!validBoardTypes.includes(boardType)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-        body: JSON.stringify({ message: "Invalid boardType" }),
-      };
+      return generateResponse(400, { message: "Invalid boardType" });
     }
 
-    // QueryString Parameters
-    const limit = event.queryStringParameters?.limit
-      ? parseInt(event.queryStringParameters.limit, 10)
-      : 10;
+    const {
+      limit = 10,
+      lastEvaluatedKey,
+      resolved,
+      recruitStatus,
+    } = parseQueryStringParameters(event.queryStringParameters);
 
-    const lastEvaluatedKey = event.queryStringParameters?.lastEvaluatedKey
-      ? JSON.parse(event.queryStringParameters.lastEvaluatedKey)
-      : null;
-
-    // 추가 필터 조건 (resolved 또는 recruitStatus)
-    const resolvedFilter = event.queryStringParameters?.resolved;
-    const recruitStatusFilter = event.queryStringParameters?.recruitStatus;
-    console.log(
-      `limit, lastEvaluatedKey, resolvedFilter, recruitStatusFilter: ${limit}, ${lastEvaluatedKey}, ${resolvedFilter}, ${recruitStatusFilter}`
+    let params = createQueryParams(
+      boardType,
+      limit,
+      lastEvaluatedKey,
+      resolved,
+      recruitStatus
     );
 
-    // 기본 DynamoDB Query Parameters
-    let params = {
-      TableName: TABLE_NAME,
-      IndexName: "BoardIndex",
-      KeyConditionExpression: "boardType = :boardType",
-      ExpressionAttributeValues: {
-        ":boardType": { S: boardType },
-      },
-      Limit: limit,
-      ExclusiveStartKey: lastEvaluatedKey,
-      ScanIndexForward: false,
-    };
-
-    // 필터 조건에 따라 인덱스와 쿼리 변경
-    if (boardType === "questions" && resolvedFilter !== undefined) {
-      params.FilterExpression = "resolved = :resolved";
-      params.ExpressionAttributeValues[":resolved"] = { S: resolvedFilter }; // 문자열로 변환
-    } else if (
-      boardType === "team-recruit" &&
-      recruitStatusFilter !== undefined
-    ) {
-      params.FilterExpression = "recruitStatus = :recruitStatus";
-      params.ExpressionAttributeValues[":recruitStatus"] = {
-        S: recruitStatusFilter,
-      }; // 문자열로 변환
-    }
-
-    console.log("DynamoDB Query Params:", params);
-
-    // DynamoDB Query 실행
     const data = await ddbClient.send(new QueryCommand(params));
+    const posts = formatPosts(data.Items);
 
-    // 응답 데이터 가공
-    const posts = data.Items.map((item) => {
-      const post = {
-        postId: item.PK.S.split("#")[1],
-        boardType: item.boardType.S,
-        title: item.title.S,
-        content: item.content.S,
-        createdAt: item.createdAt.S,
-        updatedAt: item.updatedAt.S,
-        viewCount: parseInt(item.viewCount.N, 10),
-        likeCount: parseInt(item.likeCount.N, 10),
-        tags: item.tags?.SS || [],
-      };
-
-      if (item.boardType.S === "questions") {
-        post.resolved = item.resolved?.S === "true"; // 문자열을 Boolean으로 변환
-      }
-
-      if (item.boardType.S === "team-recruit") {
-        post.recruitStatus = item.recruitStatus?.S === "true"; // 문자열을 Boolean으로 변환
-      }
-
-      return post;
+    return generateResponse(200, {
+      items: posts,
+      lastEvaluatedKey: data.LastEvaluatedKey,
     });
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        items: posts,
-        lastEvaluatedKey: data.LastEvaluatedKey,
-      }),
-    };
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
+    return generateResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+const generateResponse = (statusCode, body) => ({
+  statusCode,
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+  body: JSON.stringify(body),
+});
+
+const parseQueryStringParameters = (queryStringParameters = {}) => ({
+  limit: queryStringParameters.limit
+    ? parseInt(queryStringParameters.limit, 10)
+    : 10,
+  lastEvaluatedKey: queryStringParameters.lastEvaluatedKey
+    ? JSON.parse(queryStringParameters.lastEvaluatedKey)
+    : null,
+  resolved: queryStringParameters.resolved,
+  recruitStatus: queryStringParameters.recruitStatus,
+});
+
+const createQueryParams = (
+  boardType,
+  limit,
+  lastEvaluatedKey,
+  resolvedFilter,
+  recruitStatusFilter
+) => {
+  let params = {
+    TableName: TABLE_NAME,
+    IndexName: "BoardIndex",
+    KeyConditionExpression: "boardType = :boardType",
+    ExpressionAttributeValues: {
+      ":boardType": { S: boardType },
+    },
+    Limit: limit,
+    ExclusiveStartKey: lastEvaluatedKey,
+    ScanIndexForward: false,
+  };
+
+  if (boardType === "questions" && resolvedFilter !== undefined) {
+    params.FilterExpression = "resolved = :resolved";
+    params.ExpressionAttributeValues[":resolved"] = { S: resolvedFilter };
+  } else if (
+    boardType === "team-recruit" &&
+    recruitStatusFilter !== undefined
+  ) {
+    params.FilterExpression = "recruitStatus = :recruitStatus";
+    params.ExpressionAttributeValues[":recruitStatus"] = {
+      S: recruitStatusFilter,
     };
   }
+
+  return params;
+};
+
+const formatPosts = (items) => {
+  return items.map((item) => {
+    const post = {
+      postId: item.PK.S.split("#")[1],
+      boardType: item.boardType.S,
+      title: item.title.S,
+      content: item.content.S,
+      createdAt: item.createdAt.S,
+      updatedAt: item.updatedAt.S,
+      viewCount: parseInt(item.viewCount.N, 10),
+      likeCount: parseInt(item.likeCount.N, 10),
+      tags: item.tags?.SS || [],
+    };
+
+    if (item.boardType.S === "questions") {
+      post.resolved = item.resolved?.S === "true";
+    }
+
+    if (item.boardType.S === "team-recruit") {
+      post.recruitStatus = item.recruitStatus?.S === "true";
+    }
+
+    return post;
+  });
 };
