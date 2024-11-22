@@ -11,11 +11,13 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [curpage, setCurpage] = useState(1); // 현재 페이지
+  const [perpage] = useState(10); // 페이지당 데이터 갯수 변경
+  const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null); // lastEvaluatedKey
   const [texts, setText] = useState([]);
   const [boardType, setBoardType] = useState("");
   const [filterTab, setFilterTab] = useState("전체");
-  const [tagSearch, setTagSearch] = useState(""); // 태그 검색어 상태
-  const [searchTags, setSearchTags] = useState([]); // 입력된 태그 리스트
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
   // URL 경로에 따라 boardType 설정
   const getBoardTypeFromPath = useCallback(() => {
@@ -37,15 +39,28 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
   useEffect(() => {
     const board = getBoardTypeFromPath();
     setBoardType(board);
+    setCurpage(1); // 탭 변경 시 첫 페이지로 리셋
+    setPosts([]); // 기존 게시글 초기화
+    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
   }, [getBoardTypeFromPath]);
 
+  // 게시글을 불러오는 함수 (페이지네이션 포함)
   const fetchPosts = useCallback(async () => {
     try {
       if (!boardType) return;
+
       const url = new URL(
         `https://api.esquad.click/api/community/${boardType}`
       );
-      url.searchParams.append("limit", 10);
+      url.searchParams.append("limit", perpage);
+
+      // 페이지네이션 처리: 현재 페이지에 맞게 시작점 설정
+      if (lastEvaluatedKey) {
+        url.searchParams.append(
+          "lastEvaluatedKey",
+          JSON.stringify(lastEvaluatedKey)
+        );
+      }
 
       // 필터 조건 추가
       if (boardType === "questions") {
@@ -67,28 +82,56 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
         throw new Error("Failed to fetch posts");
       }
       const data = await response.json();
+      console.log(`lastEvaluatedKey: ${JSON.stringify(data.lastEvaluatedKey)}`);
+
+      // `posts` 상태 업데이트 시 기존 게시글을 대체
       setPosts(data.items || []);
+      setLastEvaluatedKey(data.lastEvaluatedKey || null); // lastEvaluatedKey 업데이트
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
-  }, [boardType, filterTab]);
+  }, [boardType, filterTab, perpage, lastEvaluatedKey]);
 
-  useEffect(() => {
-    fetchPosts();
-  }, [boardType, filterTab, fetchPosts]);
-
+  // 필터 변경 시
   const handleFilterChange = (filter) => {
     setFilterTab(filter);
+    setCurpage(1); // 필터 변경 시 첫 페이지로 리셋
+    setPosts([]); // 기존 게시글 초기화
+    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
   };
 
+  // 페이지 이동: 이전 페이지
+  const handlePreviousPage = () => {
+    if (curpage > 1) {
+      setCurpage((prevPage) => prevPage - 1);
+      setLastEvaluatedKey(null); // 페이지 이전 시 lastEvaluatedKey 초기화
+    }
+  };
+
+  // 페이지 이동: 다음 페이지
+  const handleNextPage = () => {
+    if (lastEvaluatedKey) {
+      setCurpage((prevPage) => prevPage + 1); // 페이지를 증가시킨 후 데이터 요청
+    }
+  };
+
+  // 게시글 작성 모달 열기
   const handleWriteButtonClick = () => {
     setIsPostModalOpen(true);
   };
 
+  // 게시글 작성 모달 닫기
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
-    fetchPosts();
+    setCurpage(1); // 새로 추가된 게시글을 보기 위해 첫 페이지로 이동
+    setPosts([]); // 기존 게시글 초기화 후 재조회
+    setLastEvaluatedKey(null); // lastEvaluatedKey 초기화
+    fetchPosts(); // 새로운 게시글 불러오기
   };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [boardType, filterTab, curpage]); // boardType, filterTab, curpage가 변경될 때만 실행
 
   return (
     <Box
@@ -124,7 +167,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           {texts.length > 0 &&
             texts.map((text, index) => (
               <Button
-                key={index}
+                key={text}
                 variant="text"
                 sx={{
                   fontSize: "medium",
@@ -369,7 +412,7 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
                 {post.tags.length > 0 ? (
                   post.tags.map((tag, idx) => (
                     <Chip
-                      key={idx}
+                      key={`${post.postId}-${idx}`}
                       label={tag}
                       variant="outlined"
                       sx={{
@@ -408,6 +451,19 @@ const PostListPage = ({ isSmallScreen, isMediumScreen }) => {
           </Link>
         ))}
       </List>
+      {/* Pagination */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button
+          onClick={handlePreviousPage}
+          disabled={curpage === 1}
+          sx={{ marginRight: 2 }}
+        >
+          이전
+        </Button>
+        <Button onClick={handleNextPage} disabled={!lastEvaluatedKey}>
+          다음
+        </Button>
+      </Box>
 
       <PostCreationDialog
         open={isPostModalOpen}
