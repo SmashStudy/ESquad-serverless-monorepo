@@ -66,12 +66,13 @@ export const handler = async (event) => {
             }
 
             const sendNotification = {
-               id: newImage.id?.S,
-               userId: newImage.userId?.S,
-               createdAt: newImage.createdAt?.S,
-               isRead: newImage.isRead?.N,
-               message: newImage.message?.S,
-               sender: newImage.sender?.S,
+                id: newImage.id?.S,
+                userId: newImage.userId?.S,
+                createdAt: newImage.createdAt?.S,
+                isRead: newImage.isRead?.N,
+                isSave: newImage.isSave?.N,
+                message: newImage.message?.S,
+                sender: newImage.sender?.S,
             };
             console.log(`New notification for userId ${sendNotification.userId}: ${sendNotification.message}`);
 

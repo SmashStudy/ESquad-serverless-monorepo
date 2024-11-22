@@ -36,7 +36,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     message: '',
     severity: 'success',
   });
-  const lambdaUrl = 'https://api.esquad.click/dev/files';
+  const lambdaUrl = 'https://api.esquad.click/test/files';
   const [currentPage, setCurrentPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -46,7 +46,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       const lastEvaluatedKey = lastEvaluatedKeys[currentPage - 1];
       const response = await axios.get(`${lambdaUrl}/metadata`, {
         params: {
-          targetId: studyId,
+          targetId: encodeURIComponent(studyId),
           targetType: 'STUDY_PAGE',
           limit: 5,
           lastEvaluatedKey: lastEvaluatedKey || undefined,
@@ -142,9 +142,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           {
             fileKey: `files/${uniqueFileName}`,
             metadata: {
-              targetId: studyId,
+              targetId: encodeURIComponent(studyId),
               targetType: 'STUDY_PAGE',
-              userId: '말똥말똥성게',
+              userId: encodeURIComponent('USER#123'),
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,

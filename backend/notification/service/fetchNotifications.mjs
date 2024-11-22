@@ -59,6 +59,7 @@ export const handler = async (event) => {
             sender: data.sender.S,
             message: data.message.S,
             isRead: data.isRead.N,
+            isSave: data.isSave.N,
             createdAt: data.createdAt.S,
         }));
         console.log(`Read notifications: ${JSON.stringify(response)}`);

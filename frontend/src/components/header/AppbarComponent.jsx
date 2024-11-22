@@ -2,6 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
+import DoneAllIcon from '@mui/icons-material/Done';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import {
@@ -10,7 +11,7 @@ import {
     Avatar,
     Badge,
     Box,
-    Button,
+    Button, Divider,
     IconButton,
     InputBase,
     List,
@@ -21,17 +22,13 @@ import {
     Menu,
     MenuItem,
     styled,
-    Toolbar,
+    Toolbar, Tooltip,
     Typography,
     useMediaQuery,
     useTheme
 } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
-import SearchIcon from '@mui/icons-material/Search';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import DeleteIcon from "@mui/icons-material/Delete";
-import {Link, NavLink, useNavigate} from "react-router-dom";
 import {useUser} from "../form/UserContext.jsx";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from 'react';
@@ -228,7 +225,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     // Handle notifications menu open/close
     const handleNotificationsClick = (event) => {
         setNotificationsAnchorEl(event.currentTarget);
-        handleNarkAllAsRead();
     };
 
     const handleNarkAllAsRead = async () => {
@@ -240,7 +236,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             try {
                 // REST API로 읽음 처리 요청
                 const response = await axios.post(
-                    `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/mark`,
+                    `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/mark`,
                     {
                         notificationIds,
                         userId
@@ -286,7 +282,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleMarkAsSave = async (notificationId) => {
         try {
             const response = await axios.post(
-                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/save`,
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/save`,
                 {
                     notificationId,
                     userId
@@ -299,7 +295,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             );
             setNotifications((prev) =>
                 prev.map((notification) =>
-                    notification.id === notificationId ? { ...notification, isKeep: '1' } : notification
+                    notification.id === notificationId ? { ...notification, isSave: '1' } : notification
                 )
             );
 
@@ -312,7 +308,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleReleaseSave = async (notificationId) => {
         try {
             const response = await axios.post(
-                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/release-save`,
+                `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/release-save`,
                 {
                     notificationId,
                     userId,
@@ -325,11 +321,11 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             );
 
             if (response.status === 200) {
-                // Update the notification's isKeep status in the client-side state
+                // Update the notification's isSave status in the client-side state
                 setNotifications((prev) =>
                     prev.map((notification) =>
                         notification.id === notificationId
-                            ? { ...notification, isKeep: '0' }
+                            ? { ...notification, isSave: '0' }
                             : notification
                     )
                 );
@@ -576,16 +572,33 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 <Box sx={{ position: 'relative', width: 360, height: 700 }}>
                                     <List sx={{ width: '100%', paddingBottom: 6 }}>
                                         <ListItem>
-                                            <IconButton
-                                                size="medium"
-                                                onClick={handleToggleArchived}
-                                                sx={{
-                                                    left: 300,
-                                                    color: 'purple',     // Set color to purple
-                                                }}
-                                            >
-                                                {showArchived ? <ArrowBackIcon /> : <TurnedInIcon />}
-                                            </IconButton>
+
+                                            <Tooltip title="보관함" placement="top">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={handleToggleArchived}
+                                                    sx={{
+                                                        // position: 'absolute',
+                                                        left: 250,
+                                                        color: 'purple',     // Set color to purple
+                                                    }}
+                                                >
+                                                    {showArchived ? <ArrowBackIcon /> : <TurnedInIcon />}
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title="전체 읽음처리" placement="top">
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={handleNarkAllAsRead}
+                                                    sx={{
+                                                        // position: 'absolute',
+                                                        left: 170, // 오른쪽 여백 설정
+                                                        color: 'purple', // Set color to purple
+                                                    }}
+                                                >
+                                                    <DoneAllIcon /> {/* 모두 읽음 아이콘 */}
+                                                </IconButton>
+                                            </Tooltip>
                                         </ListItem>
 
                                         {visibleNotifications.length > 0 ? (
@@ -662,13 +675,13 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                         <IconButton
                                                             edge="end"
                                                             onClick={() =>
-                                                                notification.isKeep !== '1'
+                                                                notification.isSave !== '1'
                                                                     ? handleMarkAsSave(notification.id)
                                                                     : handleReleaseSave(notification.id)
                                                             }
                                                             sx={{ color: 'purple' }}
                                                         >
-                                                            {notification.isKeep === '1' ? (
+                                                            {notification.isSave === '1' ? (
                                                                 <TurnedInIcon sx={{ fontSize: 24 }} />
                                                             ) : (
                                                                 <TurnedInNotIcon sx={{ fontSize: 24 }} />

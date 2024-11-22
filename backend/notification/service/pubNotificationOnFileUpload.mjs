@@ -26,6 +26,7 @@ const saveNotifications = async (users, message, studyName) => {
                         message: { S: message },
                         sender: { S: studyName },
                         isRead: { N: "0" }, // Corrected the format to string "0"
+                        isSave: { N: '0'},
                         createdAt: { S: new Date().toISOString() },
                     },
                 },

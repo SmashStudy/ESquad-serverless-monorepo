@@ -117,9 +117,25 @@ functions:
     handler: ./service/markAllAsRead.handler
     events:
       - http:
-          path: notifications/mark
+          path: notification/mark
           method: post
           cors: true
+
+  mark_as_save:
+    handler: ./service/markAsSave.handler
+    events:
+      - http:
+          path: notification/save
+          method: post
+          cors: true
+
+  mark_as_release:
+      handler: ./service/markAsRelease.handler
+      events:
+        - http:
+            path: notification/release-save
+            method: post
+            cors: true
   
   notification_onDisconnect:
     handler: service/onDisconnect.handler

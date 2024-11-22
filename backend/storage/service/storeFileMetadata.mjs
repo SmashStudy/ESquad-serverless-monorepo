@@ -10,12 +10,23 @@ export const handler = async (event) => {
   try {
     const body = JSON.parse(event.body);
     const { fileKey, metadata } = body;
+    const userId = decodeURIComponent(metadata.userId);
+    const targetId = decodeURIComponent(metadata.targetId);
+    console.log(`userId, targetId: ${userId}, ${targetId}`);
 
     const params = {
       TableName: TABLE_NAME,
       Item: {
         id: fileKey,
-        ...metadata,
+        userId: userId,
+        targetId: targetId,
+        targetType: metadata.targetType,
+        fileSize: metadata.fileSize,
+        extension: metadata.extension,
+        contentType: metadata.contentType,
+        originalFileName: metadata.originalFileName,
+        storedFileName: metadata.storedFileName,
+        createdAt: metadata.createdAt
       },
     };
 
