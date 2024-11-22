@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     alpha,
     useTheme,
@@ -29,8 +29,24 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Link, NavLink, useNavigate} from "react-router-dom";
-import {useUser} from "../form/UserContext.jsx";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
+
+function decodeJWT(token) {
+    try {
+        const base64Payload = token.split('.')[1];
+        const base64 = base64Payload.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
+        return payload;
+    } catch (error) {
+        console.error("Failed to decode JWT token", error);
+        return null;
+    }
+}
+
+
+
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -66,13 +82,22 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
-    // const { userInfo } = useUser();
-
     const handleLogout = () => {
-        localStorage.removeItem('jwt');
-        alert("로그아웃 되었습니다. 다음에 또 만나요!")
-        navigate('/login');
+        navigate('/logout');
     };
+
+
+    const [userName, setUserName] = useState("Name");
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwtToken");
+        if (token) {
+            const decodedToken = decodeJWT(token);
+            if (decodedToken) {
+                setUserName(decodedToken.name || "Name");
+            }
+        }
+    }, []);
 
     const theme = useTheme();
     const [showSearchBar, setShowSearchBar] = useState(null);
@@ -286,7 +311,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 >
                                     <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
                                     {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                                    <Typography variant="body1">esquadback</Typography>
+                                    <Typography variant="body1">{userName}</Typography>
                                 </IconButton>
                             </Box>
                             <Menu
