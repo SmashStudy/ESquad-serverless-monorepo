@@ -4,7 +4,6 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: nodejs20.x
-  stage: dev
   region: ${env:REGION}
   iam:
     role:
@@ -53,6 +52,7 @@ functions:
       - http:
           path: /environments
           method: get
+          cors: true
   
 
 resources:
