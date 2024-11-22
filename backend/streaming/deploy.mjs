@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 // 파라미터
 let app = 'meeting';
 let region = 'us-east-1';
-let stage = ''; // 변수 이름을 'stage'로 변경
+let stage = 'dev';
 let useEventBridge = false;
 let disablePrintingLogs = false;
 
@@ -95,19 +95,10 @@ function spawnOrFail(command, args, options = {}, printOutput = true) {
   return stdout;
 }
 
-function appHtml(appName) {
-  return path.join(__dirname, '..', '..', 'stream-frontend', 'dist', `${appName}.html`);
-}
-
-
-// function appHtml(appName) {
-//   return `../dist/${appName}.html`;
-// }
-
 function ensureApp(appName = app) {
   console.log(`${appName} 애플리케이션 빌드 중`);
   spawnOrFail('npm', ['run', 'build'], { cwd: path.join(__dirname, '..') });
-  fs.copySync(appHtml(appName), './src/index.html');
+  fs.copySync(`../../stream-frontend/dist/${appName}.html`, './src/index.html');
 }
 
 function ensureTools() {
@@ -122,33 +113,33 @@ ensureApp();
 
 console.log(`사용 지역: ${region}, 로그 출력 비활성화: ${disablePrintingLogs}`);
 
-spawnOrFail('npm', ['install'], { cwd: path.join(__dirname, 'src') });
-
-// Serverless 배포를 위한 환경 변수 설정
+// AWS 환경 변수 설정
 process.env.AWS_REGION = region;
+process.env.STAGE = stage;
 process.env.USE_EVENT_BRIDGE = useEventBridge ? 'true' : 'false';
 
-console.log('서버리스 애플리케이션 배포 중');
+// `serverless deploy` 실행 전에 필요한 설정 수행
+spawnOrFail('npm', ['install'], { cwd: path.join(__dirname, 'src') });
 
-let deployArgs = ['deploy', '--region', region];
+// 서버리스 애플리케이션 배포
+console.log('서버리스 애플리케이션 배포 중');
+let deployArgs = ['deploy'];
 if (stage) {
   deployArgs.push('--stage', stage);
-}
-if (useEventBridge) {
-  deployArgs.push('--useEventBridge', 'true');
 }
 if (!disablePrintingLogs) {
   deployArgs.push('--verbose');
 }
 
-spawnOrFail('serverless', deployArgs, {}, !disablePrintingLogs);
+// 여기에서 환경 변수를 명시적으로 전달
+spawnOrFail('serverless', deployArgs, { env: process.env }, !disablePrintingLogs);
 
 if (!disablePrintingLogs) {
-  console.log('Amazon Chime SDK Meeting 데모 URL: ');
+  console.log('Amazon Chime SDK Meeting URL: ');
 }
 
 // Serverless 출력에서 API 엔드포인트 가져오기
-const infoOutput = spawnOrFail('serverless', ['info'], {}, false);
+const infoOutput = spawnOrFail('serverless', ['info'], { env: process.env }, false);
 const apiEndpointMatch = infoOutput.match(/endpoints:\n((?:\s+.*\n)+)/);
 if (apiEndpointMatch) {
   console.log('엔드포인트 목록:');
