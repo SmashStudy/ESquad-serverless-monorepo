@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import JoinPage from "./pages/user/JoinPage.jsx";
-import LoginPage from "./pages/user/LoginPage.jsx";
 import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -19,7 +17,6 @@ import GoogleLogin from './components/google/GoolgeLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
-import UserSearch from './components/user/UserSearch.jsx';
 
 
 
@@ -83,7 +80,6 @@ function App() {
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
                         <Route path='/user/profile' element={<UserProfile />} />
-                        <Route path='/user/search' element={<UserSearch />} />
 
 
                         {/* Protect routes that require authentication */}
