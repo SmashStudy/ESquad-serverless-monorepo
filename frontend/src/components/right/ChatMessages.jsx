@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import MessageItem from "./MessageItem.jsx";
@@ -6,13 +6,14 @@ import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } fro
 
 // import { useUser } from "../form/UserContext.jsx";
 
-const wsUrl = "wss://rkp3d3pdq7.execute-api.us-east-1.amazonaws.com/dev";
+const wsUrl = "wss://ws.api.esquad.click";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
     const [socket, setSocket] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessage, setEditingMessage] = useState(null);
+    const messageEndRef = useRef(null);
 
     // 유저 더미 데이터
     const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
@@ -22,7 +23,6 @@ function ChatMessages({currentChatRoom}) {
 
     // websocket 연결 및 메시지 수신
     useEffect(() => {
-        console.log("currentChatRoom: " , currentChatRoom);
         if(currentChatRoom && room_id) {
             connectWebSocket(room_id);
         }
@@ -36,6 +36,7 @@ function ChatMessages({currentChatRoom}) {
         try {
             const messages = await fetchMessageAPI(room_id);
             setMessages(messages);
+            scrollToBottom();
         } catch (error) {
             console.error("메시지 불러오기 실패: " + error.messages);
         }
@@ -46,8 +47,9 @@ function ChatMessages({currentChatRoom}) {
         const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${userId}`);
         setSocket(newSocket);
 
+        console.log("웹소켓 연결 됨");
+
         newSocket.onopen = () => {
-            console.log("webSocket 연결됨");
             loadMessages(room_id);
         };
 
@@ -58,10 +60,12 @@ function ChatMessages({currentChatRoom}) {
                 console.error("Invalid JSON received: " + event.data);
             }
         };
-
-        newSocket.onclose = () => {
-            console.log("webSocket 연결 끊김");
+            newSocket.onclose = () => {
         }
+    }
+
+    const scrollToBottom = () => {
+        messageEndRef.current?.scrollIntoView({behavior: "smooth"});
     }
 
     // 메시지 전송 핸들러
@@ -81,6 +85,7 @@ function ChatMessages({currentChatRoom}) {
         };
 
         sendMessageAPI(socket, messageData);
+        scrollToBottom();
 
             if(editingMessage) {
                 setMessages((prevMessages) =>
@@ -130,24 +135,53 @@ function ChatMessages({currentChatRoom}) {
         }
     }
 
+    useEffect(() => {
+        scrollToBottom();
+    },[messages]);
+
     const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
-        <div className="chat-messages">
-            <MessageList
-                messages={messages}
-                onEditMessage = {handleEditMessage}
-                onDeleteMessage = {deleteMessage}
-                username={username}
-                userId={userId}
-            />
-            <ChatInput
-                message={messageInput}
-                onMessageChange={handleMessageInput}
-                handleSend={sendMessage}
-                editMessage = {editingMessage?.timestamp}
-                onSaveMessage={onSaveMessage}
-            />
+        <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column', height: '100%'}}>
+            {/* 메시지 리스트 영역 */}
+            <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                borderRadius: '8px',
+                paddingBottom: '0.8rem',
+                height: '400px', // 고정된 높이 설정
+                maxHeight: '850px', // 최대 높이 설정
+                minHeight: '400px', // 최소 높이 설정
+                marginTop: '10px', // 위쪽 간격을 20px로 설정
+                paddingTop: '16px'
+            }}>
+                <MessageList
+                    messages={messages}
+                    onEditMessage={handleEditMessage}
+                    onDeleteMessage={deleteMessage}
+                    username={username}
+                    userId={userId}
+                />
+                <div ref={messageEndRef}/>
+            </div>
+
+            {/* 메시지 입력창 영역 */}
+            <div style={{
+                flexShrink: 0,
+                position: 'sticky',
+                bottom: 0,
+                backgroundColor: '#ffffff',
+                zIndex: 10,
+                paddingBottom: '0px',
+            }}>
+                <ChatInput
+                    message={messageInput}
+                    onMessageChange={handleMessageInput}
+                    handleSend={sendMessage}
+                    editMessage={editingMessage?.timestamp}
+                    onSaveMessage={onSaveMessage}
+                />
+            </div>
         </div>
     );
 }

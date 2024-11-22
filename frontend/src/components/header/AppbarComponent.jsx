@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     alpha,
     useTheme,
@@ -22,14 +22,30 @@ import {
     Divider,
     ListItemAvatar
 } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import DeleteIcon from "@mui/icons-material/Delete";
 import {Link, NavLink, useNavigate} from "react-router-dom";
-import {useUser} from "../form/UserContext.jsx";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
+
+function decodeJWT(token) {
+    try {
+        const base64Payload = token.split('.')[1];
+        const base64 = base64Payload.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
+        return payload;
+    } catch (error) {
+        console.error("Failed to decode JWT token", error);
+        return null;
+    }
+}
+
+
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -64,18 +80,32 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 {/* AppBar/AppbarComponent */}
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSelectedTeam, updateTeams, teams }) => {
-
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
-    
-    // const { userInfo } = useUser();
-
     const handleLogout = () => {
-        localStorage.removeItem('jwt');
-        alert("로그아웃 되었습니다. 다음에 또 만나요!")
-        navigate('/login');
+        navigate('/logout');
     };
-    // console.log(`로그${JSON.stringify(teams[0])}`);
+
+
+    const [userName, setUserName] = useState("로딩 중...");
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
+            const token = localStorage.getItem("jwtToken");
+            if (token) {
+                const decodedToken = decodeJWT(token);
+                if (decodedToken) {
+                    setUserName(decodedToken.name || "Name");
+                }
+            }
+        };
+    
+        fetchToken();
+    }, []);
+
     const theme = useTheme();
     const [showSearchBar, setShowSearchBar] = useState(null);
     const [teamAnchorEl, setTeamAnchorEl] = useState(null);
@@ -281,7 +311,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSe
                                 >
                                     <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
                                     {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                                    <Typography variant="body1">esquadback</Typography>
+                                    <Typography variant="body1">{userName}</Typography>
                                 </IconButton>
                             </Box>
                             <Menu
@@ -314,6 +344,19 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSe
                                 <Badge badgeContent={notifications.length} color="error">
                                     <NotificationsIcon />
                                 </Badge>
+                            </IconButton>
+                            {/* chatting sidebar*/}
+
+                            <IconButton
+                                color="inherit"
+                                onClick={toggleChatDrawer}
+                                sx={{
+                                    '&:hover': {
+                                        color: '#a33ffb',
+                                    },
+                                }}
+                            >
+                                <ChatIcon fontSize="medium" />
                             </IconButton>
                             <Menu
                                 anchorEl={notificationsAnchorEl}
@@ -391,7 +434,6 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSe
                                         ))
                                     )}
                                 </List>
-
                             </Menu>
                         </>
                     )}
@@ -405,7 +447,9 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSe
                         <StyledInputBase placeholder="검색" inputProps={{ 'aria-label': 'search' }} />
                     </Search>
                 )}
+
             </Toolbar>
+
         </AppBar>
     );
 };

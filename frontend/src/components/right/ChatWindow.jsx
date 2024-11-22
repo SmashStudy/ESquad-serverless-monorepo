@@ -1,30 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import {alpha, Box, Button, Typography, useTheme} from '@mui/material';
-import ChatMessages from './ChatMessages.jsx'; // ChatMessages 컴포넌트 임포트
+import React, { useState } from 'react';
+import { Box, Button, Typography, useTheme } from '@mui/material';
+import ChatMessages from './ChatMessages.jsx';
 
-const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
+const ChatWindow = ({ teams }) => {
     const theme = useTheme();
-    const [currentChatRoom, setCurrentChatRoom] = useState(teams[0] || null); // 초기값을 null로 설정
 
-    // Chat Room Selection Handler
+    const [currentChatRoom, setCurrentChatRoom] = useState(teams[0] || null);
+    const [messageInput, setMessageInput] = useState('');
+    const [editingMessage, setEditingMessage] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [teamList, setTeamList] = useState(teams || []);
+
+    const handleCreateTeamChatRoom = async (teamName) => {
+        try {
+            const newTeam = {
+                teamID: `team_${Date.now()}`,
+                teamName: teamName,
+            };
+
+            // const response = await createTeamChatRoom(newTeam.teamID, newTeam.teamName);
+            // console.log("팀 채팅방 생성 성공:", response);
+
+            setTeamList((prevList) => [...prevList, newTeam]);
+            setCurrentChatRoom(newTeam);
+        } catch (error) {
+            console.error("채팅방 생성 실패:", error.message);
+        }
+    };
+
     const handleChatRoomSelect = (room) => {
         setCurrentChatRoom(room);
+    };
+
+    const sendMessage = (message) => {
+        if (message.trim() === '' && !selectedFile) {
+            alert("메시지 또는 파일을 입력해주세요.");
+            return;
+        }
+        setMessageInput('');
+        setSelectedFile(null);
+    };
+
+    const onSaveMessage = () => {
+        if (editingMessage) {
+            console.log(`Saving edited message: ${editingMessage.timestamp}`);
+            setEditingMessage(null);
+            setMessageInput('');
+        }
+    };
+
+    const handleEditMessage = (message) => {
+        setEditingMessage(message);
+        setMessageInput(message.message);
+    };
+
+    const handleUploadClick = () => {
+        console.log("파일 업로드 클릭");
+    };
+
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        console.log("파일 제거");
+    };
+
+    const deleteMessage = (message) => {
+        console.log(`Deleting message: ${message.timestamp}`);
     };
 
     return (
         <Box
             sx={{
-                flex: isMediumScreen ? 4 : 3,
-                gap: 1,
-                p: 2,
-                height: isMediumScreen ? '40%' : '100%',
-                overflowX: 'auto',
+                border: '1px solid #ddd',
+                padding: '20px',
                 display: 'flex',
-                transition: 'width 0.3s ease',
                 flexDirection: 'column',
+                height: '97vh',
+                backgroundColor: '#f7f7f7',
             }}
         >
-            {/* 팀이 없는 경우 메시지 표시 */}
             {teams.length === 0 ? (
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography variant="h6" color={theme.palette.text.secondary}>
@@ -33,126 +86,69 @@ const ChatWindow = ({ isSmallScreen, isMediumScreen, teams }) => {
                 </Box>
             ) : (
                 <>
-                    {/* Chat Rooms - Top Row for Larger Viewports */}
-                    {!isMediumScreen && (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: 1,
-                                overflowX: 'auto',
-                                borderBottom: `1px solid ${theme.palette.divider}`,
-                                pb: 1,
-                            }}
-                        >
-                            {teams.map((team, index) => (
-                                <Button
-                                    key={index}
-                                    onClick={() => handleChatRoomSelect(team)}
-                                    className="chat-room-button"
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        p: 1,
-                                        backgroundColor: currentChatRoom?.id === team.id ? alpha(theme.palette.primary.main, 0.1) : '#fff',
-                                        borderRadius: 1,
-                                        '&:hover': {
-                                            backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                                        },
-                                        border: '1px solid',
-                                        borderColor: currentChatRoom?.id === team.id ? '#D1C4E9' : theme.palette.primary.light,
-                                        minWidth: isSmallScreen ? '80px' : '120px',
-                                        fontSize: isSmallScreen ? '0.75rem' : '1rem',
-                                        mb: 1,
-                                    }}
-                                >
-                                    {team.teamName}
-                                </Button>
-                            ))}
-                        </Box>
-                    )}
-
-                    {/* Chat Rooms and Chat Messages - Split Columns for Smaller Viewports */}
-                    {isMediumScreen && (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: 1,
-                                height: '100%',
-                                overflowX: 'auto',
-                                pb: 2,
-                            }}
-                        >
-                            {/* Chat Rooms - Left Column */}
-                            <Box
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            gap: 2,
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            width: '100%',
+                            height: '60px', // 고정된 높이 설정
+                            overflowX: 'auto', // 가로 스크롤만 허용
+                            overflowY: 'hidden', // 세로 스크롤 숨김
+                            whiteSpace: 'nowrap', // 가로로 요소가 나열되도록 설정
+                            padding: '12px',
+                            borderBottom: '2px solid #ddd',
+                            marginBottom: '12px',
+                        }}
+                    >
+                        {teams.map((team, index) => (
+                            <Button
+                                key={index}
+                                onClick={() => handleChatRoomSelect(team)}
                                 sx={{
-                                    flex: 2,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 1,
-                                    overflowY: 'auto',
-                                    borderRight: `1px solid ${theme.palette.divider}`,
-                                    pr: 2,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    padding: '0.5rem 1rem',
+                                    backgroundColor: currentChatRoom?.id === team.id ? '#d7bce8' : '#fff',
+                                    color: currentChatRoom?.id === team.id ? '#6a1b9a' : '#424242',
+                                    borderRadius: '12px',
                                 }}
                             >
-                                {teams.map((team, index) => (
-                                    <Button
-                                        key={index}
-                                        onClick={() => handleChatRoomSelect(team)}
-                                        className="chat-room-button"
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            p: 1,
-                                            backgroundColor: currentChatRoom?.id === team.id ? theme.palette.primary.main : '#fff',
-                                            borderRadius: 1,
-                                            border: '1px solid',
-                                            borderColor: currentChatRoom?.id === team.id ? '#D1C4E9' : theme.palette.primary.main,
-                                            minWidth: isSmallScreen ? '80px' : '120px',
-                                            fontSize: isSmallScreen ? '0.75rem' : '1rem',
-                                            mb: 1,
-                                        }}
-                                    >
-                                        {team.teamName}
-                                    </Button>
-                                ))}
-                            </Box>
+                                {team.teamName}
+                            </Button>
+                        ))}
+                    </Box>
 
-                            {/* Chat Messages - Right Column */}
-                            <Box
-                                sx={{
-                                    flex: 8,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    transition: 'width 0.3s ease',
-                                    overflowY: 'hidden',
-                                }}
-                            >
-                                {currentChatRoom && <ChatMessages currentChatRoom={currentChatRoom} />} {/* ChatMessages 컴포넌트 호출 */}
-                            </Box>
-                        </Box>
-                    )}
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            overflowY: 'auto',
+                            padding: '1rem',
+                            backgroundColor: '#ffffff',
+                            borderRadius: 3,
+                        }}
+                    >
+                        <ChatMessages
+                            currentChatRoom={currentChatRoom}
+                            onEditMessage={handleEditMessage}
+                            onDeleteMessage={deleteMessage}
+                            sendMessage={sendMessage}
+                            onSaveMessage={onSaveMessage}
+                        />
+                    </Box>
 
-                    {/* Chat Messages - Home Column for Larger Viewports */}
-                    {!isMediumScreen && (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 1,
-                                mt: 2,
-                                flexGrow: 1,
-                                borderRadius: 3,
-                                overflowY: 'auto',
-                            }}
-                        >
-                            <Typography variant="body1" sx={{ color: theme.palette.primary.main, mb: 2 }}>Entered: {currentChatRoom.teamName}</Typography>
-                            <ChatMessages currentChatRoom={currentChatRoom} /> {/* ChatMessages 컴포넌트 호출 */}
-                        </Box>
-                    )}
+                    <Box
+                        sx={{
+                            position: 'sticky',
+                            bottom: 0,
+                            width: '100%',
+                            padding: '0',
+                            backgroundColor: '#f3f4f6',
+                        }}
+                    >
+                    </Box>
                 </>
             )}
         </Box>

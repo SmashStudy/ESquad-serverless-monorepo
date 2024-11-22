@@ -13,7 +13,7 @@ import { useTheme, useMediaQuery, styled, alpha } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
 import PostListPage from "../community/PostListPage.jsx";
-import ChatWindow from "../../components/right/ChatWindow.jsx";
+import ChatDrawer from "../../components/right/ChatDrawer.jsx";
 import StudyPage from "../team/study/StudyPage.jsx";
 import {useUser} from "../../components/form/UserContext.jsx";
 import axios from "axios";
@@ -68,6 +68,13 @@ const Home = () => {
         // 비동기 함수 호출
         fetchTeams();
     }, []); // 종속성 배열 비워둠(마운트 시 한 번 실행)
+    
+    const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
+    const toggleChatDrawer = () => {
+        setChatDrawerOpen((prevState) => !prevState);
+    };
+    // const accessToken= localStorage.getItem('jwt');
+    // const user = useUser();
 
 
     // Toggle the sidebar or open the drawer based on screen size
@@ -125,6 +132,16 @@ const Home = () => {
                 changeSelectedTeam={changeSelectedTeam}
                 updateTeams={updateTeams}
                 teams={teams}
+                toggleChatDrawer={toggleChatDrawer} // 이 부분 추가
+            />
+
+            <ChatDrawer
+                isSmallScreen={isSmallScreen}
+                isMediumScreen={isMediumScreen}
+                teams={teams}
+                selectedTeam={selectedTeam}
+                isOpen={chatDrawerOpen} // 상태 전달
+                toggleDrawer={toggleChatDrawer} // 핸들러 전달
             />
 
             {/* Home Content Area with Sidebar */}
@@ -175,7 +192,7 @@ const Home = () => {
                     </Box>
 
                     {/* Right Section - Chat Area */}
-                    <ChatWindow
+                    <ChatDrawer
                         isSmallScreen={isSmallScreen}
                         isMediumScreen={isMediumScreen}
                         teams={teams}

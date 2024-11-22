@@ -15,10 +15,12 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
+import GoogleLogin from './components/google/GoolgeLogin.jsx';
+import AuthCallback from './components/google/AuthCallback.jsx';
+import GoogleLogout from './components/google/GoogleLogout.jsx';
+import UserProfile from './components/user/UserProfile.jsx';
 import ManageUserPage from './pages/team/ManageUserPage.jsx';
 import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
-
-
 
 const theme = createTheme({
     palette: {
@@ -82,7 +84,11 @@ function App() {
                                 <LoginPage setIsLoggedIn={setIsLoggedIn} />
                             // </RedirectIfLoggedIn>
                         } />
+                        <Route path="/google" element={<GoogleLogin />} />
                         <Route path="/join" element={<JoinPage />} />
+                        <Route path="/auth/callback" element={<AuthCallback />} />
+                        <Route path="/logout" element={<GoogleLogout />} />
+                        <Route path='/user/profile' element={<UserProfile />} />
 
 
                         {/* Protect routes that require authentication */}
