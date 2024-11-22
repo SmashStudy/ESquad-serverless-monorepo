@@ -1,10 +1,11 @@
-service: service-storage
-frameworkVersion: '^3.15.0'
+service: storage-service
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: ${env:REGION}
+  tags:
+    User: bs-dev-user-3
   environment:
     S3_BUCKET: ${env:S3_BUCKET}
     METADATA_TABLE: ${env:METADATA_TABLE}
@@ -20,6 +21,7 @@ provider:
       Resource:
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndexByDate
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/UserUsageIndex
 
 functions:
@@ -28,7 +30,7 @@ functions:
     handler: service/generatePresignedUrl.handler
     events:
       - http:
-          path: files/presigned-url
+          path: /presigned-url
           method: post
           cors: true
 
@@ -36,7 +38,7 @@ functions:
     handler: service/fetchFileMetadata.handler
     events:
       - http:
-          path: files/metadata
+          path: /metadata
           method: get
           cors: true
 
@@ -44,7 +46,7 @@ functions:
     handler: service/deleteFile.handler
     events:
       - http:
-          path: files/{storedFileName}
+          path: /{storedFileName}
           method: delete
           cors: true
 
@@ -52,7 +54,7 @@ functions:
     handler: service/storeFileMetadata.handler
     events:
       - http:
-          path: files/store-metadata
+          path: /store-metadata
           method: post
           cors: true
 
@@ -60,7 +62,7 @@ functions:
     handler: service/getUserUsage.handler
     events:
       - http:
-          path: files/get-user-usage
+          path: /get-user-usage
           method: get
           cors: true
 
@@ -77,6 +79,8 @@ resources:
             AttributeType: S
           - AttributeName: targetType
             AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
           - AttributeName: userId
             AttributeType: S
         KeySchema:
@@ -91,6 +95,14 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+          - IndexName: FetchFileIndexByDate
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
           - IndexName: UserUsageIndex
             KeySchema:
               - AttributeName: userId
@@ -100,6 +112,7 @@ resources:
         BillingMode: PAY_PER_REQUEST
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
+
 
     S3Bucket:
       Type: AWS::S3::Bucket
@@ -135,13 +148,12 @@ resources:
                 - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
                 - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
+
 useDotenv: true
-#plugins:
-#  - serverless-dotenv-plugin
-#  - serverless-s3-remover
-#
-#custom:
-#  s3Remover:
-#    prompt: true
-#    buckets:
-#      - ${env:S3_BUCKET}
+
+plugins:
+  - serverless-dotenv-plugin
+
+package:
+  exclude:
+    - test/**

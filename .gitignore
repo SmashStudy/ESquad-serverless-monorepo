@@ -1,7 +1,8 @@
 # 환경 설정 파일
 .env
-.env.local
-.env.*.local
+.env.*
+
+*.http
 
 # IDE 및 에디터 설정 파일
 .idea/

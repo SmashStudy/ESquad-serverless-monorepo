@@ -36,7 +36,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     message: '',
     severity: 'success',
   });
-  const lambdaUrl = 'https://api.esquad.click/test/files';
+  const lambdaUrl = 'https://api.esquad.click/dev/files';
   const [currentPage, setCurrentPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -144,7 +144,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             metadata: {
               targetId: studyId,
               targetType: 'STUDY_PAGE',
-              userId: 'USER#123',
+              userId: '말똥말똥성게',
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,

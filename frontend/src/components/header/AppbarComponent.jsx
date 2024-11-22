@@ -11,7 +11,6 @@ import {
     Badge,
     Box,
     Button,
-    Divider,
     IconButton,
     InputBase,
     List,
@@ -27,6 +26,13 @@ import {
     useMediaQuery,
     useTheme
 } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
+import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import DeleteIcon from "@mui/icons-material/Delete";
+import {Link, NavLink, useNavigate} from "react-router-dom";
+import {useUser} from "../form/UserContext.jsx";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -87,7 +93,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams }) => {
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
     // const { userInfo } = useUser();
 
@@ -179,7 +185,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
             const combinedNotifications = message.response
                 ? [...message.response, ...prev]
                 : [...prev];
-    
+
             // Sort by `createdAt` in descending order (most recent first)
             return combinedNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         });
@@ -220,8 +226,8 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
     const handleTeamMenuClose = () => { setTeamAnchorEl(null); };
 
     // Handle notifications menu open/close
-    const handleNotificationsClick = (event) => { 
-        setNotificationsAnchorEl(event.currentTarget); 
+    const handleNotificationsClick = (event) => {
+        setNotificationsAnchorEl(event.currentTarget);
         handleNarkAllAsRead();
     };
 
@@ -235,7 +241,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                 // REST API로 읽음 처리 요청
                 const response = await axios.post(
                     `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/mark`,
-                    {   
+                    {
                         notificationIds,
                         userId
                     },
@@ -245,7 +251,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                         },
                     }
                 );
-        
+
                 if (response.status === 200) {
                     // 클라이언트 상태에서도 모든 알림을 읽음 처리
                     setNotifications((prev) =>
@@ -281,7 +287,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
         try {
             const response = await axios.post(
                 `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notifications/save`,
-                {   
+                {
                     notificationId,
                     userId
                 },
@@ -317,7 +323,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                     },
                 }
             );
-    
+
             if (response.status === 200) {
                 // Update the notification's isKeep status in the client-side state
                 setNotifications((prev) =>
@@ -540,12 +546,25 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                 <MenuItem onClick={handleAccountClose}>의견 보내기</MenuItem>
                             </Menu>
                             <IconButton color="inherit" onClick={handleNotificationsClick}>
-                                <Badge 
-                                    badgeContent={notifications.filter(notification => notification.isRead === '0').length} 
+                                <Badge
+                                    badgeContent={notifications.filter(notification => notification.isRead === '0').length}
                                     color="error"
                                 >
                                     <NotificationsIcon />
                                 </Badge>
+                            </IconButton>
+                            {/* chatting sidebar*/}
+
+                            <IconButton
+                                color="inherit"
+                                onClick={toggleChatDrawer}
+                                sx={{
+                                    '&:hover': {
+                                        color: '#a33ffb',
+                                    },
+                                }}
+                            >
+                                <ChatIcon fontSize="medium" />
                             </IconButton>
                             <Menu
                                 anchorEl={notificationsAnchorEl}
@@ -561,7 +580,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                                 size="medium"
                                                 onClick={handleToggleArchived}
                                                 sx={{
-                                                    left: 300, 
+                                                    left: 300,
                                                     color: 'purple',     // Set color to purple
                                                 }}
                                             >
@@ -570,7 +589,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                         </ListItem>
 
                                         {visibleNotifications.length > 0 ? (
-                                            <>  
+                                            <>
                                                 {visibleNotifications.map((notification) => (
                                                     <ListItem
                                                         key={notification.id}
@@ -663,7 +682,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                                             <ListItem>
                                                 <ListItemText primary="알림이 없습니다." />
                                             </ListItem>
-                                        )}
+                                    )}
                                     </List>
                                 </Box>
                             </Menu>
