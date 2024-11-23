@@ -74,6 +74,7 @@ const PostListPage = ({ isSmallScreen }) => {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardType, filterTab, curPage]);
 
   const handleFilterChange = (filter) => {
