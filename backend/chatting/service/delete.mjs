@@ -8,7 +8,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 // Lambda 함수 핸들러
 export const handler = async (event) => {
     try {
-        const { room_id, message, timestamp } = JSON.parse(event.body);
+        const { room_id, message, timestamp, fileKey } = JSON.parse(event.body);
 
         // 필수 필드 검증
         if (!room_id || !message || !timestamp) {

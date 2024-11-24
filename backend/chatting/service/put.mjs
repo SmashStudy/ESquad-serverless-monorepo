@@ -40,8 +40,11 @@ export const handler = async (event) => {
   const item = {
     room_id,
     timestamp: now,
-    message: message,
+    message: message || null,
     user_id,
+    fileKey: file?.fileKey || null, // 파일 메시지일 경우
+    contentType: file?.contentType || null,
+    originalFileName: file?.originalFileName || null,
   };
 
   // DynamoDB에 메시지 PUT 하기
