@@ -14,7 +14,7 @@ const PostListPage = ({ isSmallScreen }) => {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
   const [curPage, setCurPage] = useState(1);
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null);
+  const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [boardType, setBoardType] = useState("");
   const [filterTab, setFilterTab] = useState("전체");
   const [texts, setTexts] = useState([]);
@@ -37,7 +37,7 @@ const PostListPage = ({ isSmallScreen }) => {
     );
     setCurPage(1);
     setPosts([]);
-    setLastEvaluatedKey(null);
+    setLastEvaluatedKeys([]);
   }, [location.pathname]);
 
   const fetchPosts = async (reset = false) => {
@@ -48,8 +48,10 @@ const PostListPage = ({ isSmallScreen }) => {
         limit: 5,
       };
 
-      if (!reset && lastEvaluatedKey) {
-        params.lastEvaluatedKey = JSON.stringify(lastEvaluatedKey);
+      if (!reset && lastEvaluatedKeys[curPage - 1]) {
+        params.lastEvaluatedKey = JSON.stringify(
+          lastEvaluatedKeys[curPage - 1]
+        );
       }
 
       if (boardType === "questions") {
@@ -66,7 +68,9 @@ const PostListPage = ({ isSmallScreen }) => {
       );
 
       setPosts(response.data.items || []);
-      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
+      const newLastEvaluatedKeys = [...lastEvaluatedKeys];
+      newLastEvaluatedKeys[curPage] = response.data.lastEvaluatedKey || null;
+      setLastEvaluatedKeys(newLastEvaluatedKeys);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
@@ -82,14 +86,13 @@ const PostListPage = ({ isSmallScreen }) => {
     setFilterTab(filter);
     setCurPage(1);
     setPosts([]);
-    setLastEvaluatedKey(null);
+    setLastEvaluatedKeys([]);
   };
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && curPage > 1) {
       setCurPage((prevPage) => prevPage - 1);
-      setLastEvaluatedKey(null);
-    } else if (direction === "next" && lastEvaluatedKey) {
+    } else if (direction === "next" && lastEvaluatedKeys[curPage]) {
       setCurPage((prevPage) => prevPage + 1);
     }
   };
@@ -386,7 +389,7 @@ const PostListPage = ({ isSmallScreen }) => {
         </Button>
         <Button
           onClick={() => handlePageChange("next")}
-          disabled={!lastEvaluatedKey}
+          disabled={!lastEvaluatedKeys[curPage]}
         >
           다음
         </Button>
