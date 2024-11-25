@@ -209,7 +209,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true});
     } finally {
       setIsUploading(false);
+      setCurrentPage(1);
       fetchFiles();
+
     }
   };
 
@@ -234,6 +236,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
       console.error('Failed to delete file:', error);
     } finally {
+      setCurrentPage(1);
       fetchFiles();
     }
   };
