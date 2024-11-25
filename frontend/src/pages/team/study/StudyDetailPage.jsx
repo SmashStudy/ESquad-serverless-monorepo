@@ -149,7 +149,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,
               originalFileName: selectedFile.name,
-              storedFileName: uniqueFileName,
               createdAt: getFormattedDate(),
             },
           },
@@ -168,21 +167,21 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
   };
 
-  const handleFileDelete = async (storedFileName) => {
+  const handleFileDelete = async (fileKey) => {
     try {
       setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
 
       const presignedResponse = await axios.post(
           `${lambdaUrl}/presigned-url`,
-          {action: 'deleteObject', fileKey: `files/${storedFileName}`},
+          {action: 'deleteObject', fileKey: fileKey},
           {headers: {'Content-Type': 'application/json'}}
       );
 
       await axios.delete(presignedResponse.data.presignedUrl);
-      await axios.delete(`${lambdaUrl}/${storedFileName}`);
+      await axios.delete(`${lambdaUrl}/${encodeURIComponent(fileKey)}`);
 
       setUploadedFiles((prevFiles) =>
-          prevFiles.filter((file) => file.storedFileName !== storedFileName)
+          prevFiles.filter((file) => file.fileKey !== fileKey)
       );
       setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
     } catch (error) {
@@ -191,13 +190,13 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
   };
 
-  const handleFileDownload = async (storedFileName, originalFileName) => {
+  const handleFileDownload = async (fileKey, originalFileName) => {
     try {
       setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
 
       const presignedResponse = await axios.post(
           `${lambdaUrl}/presigned-url`,
-          {action: 'getObject', fileKey: `files/${storedFileName}`},
+          {action: 'getObject', fileKey: fileKey},
           {headers: {'Content-Type': 'application/json'}}
       );
 
@@ -212,7 +211,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = originalFileName || storedFileName;
+      link.download = originalFileName || fileKey;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
@@ -452,7 +451,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 edge="end"
                                 aria-label="download"
                                 onClick={() =>
-                                    handleFileDownload(file.storedFileName,
+                                    handleFileDownload(file.fileKey,
                                         file.originalFileName)
                                 }
                             >
@@ -462,7 +461,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 edge="end"
                                 aria-label="delete"
                                 onClick={() => handleFileDelete(
-                                    file.storedFileName)}
+                                    file.fileKey)}
                             >
                               <DeleteIcon/>
                             </IconButton>
@@ -508,7 +507,6 @@ StudyDetailPage.propTypes = {
         fileSize: PropTypes.number.isRequired,
         extension: PropTypes.string.isRequired,
         contentType: PropTypes.string.isRequired,
-        storedFileName: PropTypes.string.isRequired,
         originalFileName: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
       })

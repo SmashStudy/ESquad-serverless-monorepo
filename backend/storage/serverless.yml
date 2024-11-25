@@ -46,7 +46,7 @@ functions:
     handler: service/deleteFile.handler
     events:
       - http:
-          path: /{storedFileName}
+          path: /{fileKey}
           method: delete
           cors: true
 
@@ -73,7 +73,7 @@ resources:
       Properties:
         TableName: ${env:METADATA_TABLE}
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: fileKey
             AttributeType: S
           - AttributeName: targetId
             AttributeType: S
@@ -84,7 +84,7 @@ resources:
           - AttributeName: userId
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: fileKey
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: FetchFileIndex

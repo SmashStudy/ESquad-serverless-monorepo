@@ -8,20 +8,22 @@ const TABLE_NAME = process.env.METADATA_TABLE;
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  let { storedFileName } = event.pathParameters;
+  let { fileKey } = event.pathParameters;
 
   try {
     // 인코딩 여부에 따라 디코딩 시도
-    storedFileName = decodeURIComponent(storedFileName);
+    fileKey = decodeURIComponent(fileKey);
   } catch (error) {
     // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
-    console.log("File name did not require decoding:", storedFileName);
+    console.log("File name did not require decoding:", fileKey);
   }
+
+  console.log(fileKey);
 
   try {
     const deleteParams = {
       TableName: TABLE_NAME,
-      Key: { id: `files/${storedFileName}` },
+      Key: { fileKey: fileKey },
     };
 
     await dynamoDb.send(new DeleteCommand(deleteParams));
@@ -33,7 +35,7 @@ export const handler = async (event) => {
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
-      body: JSON.stringify({ message: `Metadata for ${storedFileName} deleted successfully` }),
+      body: JSON.stringify({ message: `Metadata for ${fileKey} deleted successfully` }),
     };
   } catch (error) {
     return {
