@@ -30,7 +30,7 @@ const MeetingDetails = () => {
             <dd>{meetingId}</dd>
           </div>
           <div>
-            <dt>호스트의 리전</dt>
+            <dt>호스트의 지역</dt>
             <dd>{hostResion}</dd> {/* 호스트 지역 한국어로 맵핑 - 가까운 리전 */}
           </div>
         </StyledList>
