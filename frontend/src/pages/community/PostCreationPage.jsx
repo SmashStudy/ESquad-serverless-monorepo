@@ -15,7 +15,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 
-const PostCreationPage = ({ onCancel, setIsDraft }) => {
+const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const userInfo = {
@@ -234,7 +234,7 @@ const PostCreationPage = ({ onCancel, setIsDraft }) => {
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
         setIsDraft(false);
-        onCancel();
+        onSubmit(); // PostCreationDialog의 onSubmit 호출
         navigate(`/community/${boardType}`);
       } else {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
