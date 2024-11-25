@@ -39,7 +39,6 @@ export const handler = async (event) => {
     ScanIndexForward: false, // 최신순 정렬
   };
 
-  console.log(`lastEvaluatedKey is ${lastEvaluatedKey}`);
   if (lastEvaluatedKey) {
     try {
       params.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
