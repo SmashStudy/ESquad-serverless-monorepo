@@ -37,18 +37,21 @@ const PostCreationPage = ({ onCancel }) => {
       : "team-recruit";
 
   const renderTabContent = () => {
-    const placeholders = {
-      질문: " - 학습 관련 질문을 남겨주세요. 상세히 작성하면 더 좋아요! \n - 서로 예의를 지키며 존중하는 게시판을 만들어주세요!",
-      자유: "자유롭게 글을 적으세요!",
-      스터디: "스터디 설명을 입력하세요!",
-    };
+    const studyTemplate = `[스터디 모집 내용 예시]
+• 스터디 주제 :
+• 스터디 목표 :
+• 예상 스터디 일정(횟수) :
+• 예상 커리큘럼 간략히 :
+• 예상 모집인원 :
+• 스터디 소개와 개설 이유 :
+• 스터디 관련 주의사항 :
+`;
 
     const handleTagChange = (event, newValue) => {
       if (newValue.length > 10) {
         alert("태그는 최대 10개까지 추가할 수 있습니다.");
         return;
       }
-
       setTags(newValue);
     };
 
@@ -142,19 +145,44 @@ const PostCreationPage = ({ onCancel }) => {
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
-          <InputBase
-            placeholder={placeholders[activeTab]}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            multiline
-            minRows={15}
-            sx={{
-              width: "100%",
-              p: 2,
-              border: "1px solid #ccc",
-              borderRadius: 1,
-            }}
-          />
+          {activeTab === "스터디" ? (
+            <TextField
+              defaultValue={studyTemplate}
+              onChange={(e) => setContent(e.target.value)}
+              multiline
+              minRows={15}
+              variant="standard"
+              InputProps={{
+                disableUnderline: true,
+              }}
+              sx={{
+                width: "100%",
+                p: 2,
+                backgroundColor: "#f9f9f9",
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                outline: "none",
+              }}
+            />
+          ) : (
+            <InputBase
+              placeholder={
+                activeTab === "질문"
+                  ? " - 학습 관련 질문을 남겨주세요. 상세히 작성하면 더 좋아요! \n - 서로 예의를 지키며 존중하는 게시판을 만들어주세요!"
+                  : "자유롭게 글을 적으세요!"
+              }
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              multiline
+              minRows={15}
+              sx={{
+                width: "100%",
+                p: 2,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+              }}
+            />
+          )}
         </Box>
       </>
     );
