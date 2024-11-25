@@ -5,14 +5,26 @@ import ChatWindow from './ChatWindow.jsx';
 // import {createTeamChatRoom} from "./chatApi/ChatApi.jsx";
 
 export default function ChatDrawer({ teams, isOpen, toggleDrawer }) {
+    const handleDrawerClose = () => {
+        if (toggleDrawer) {
+            toggleDrawer(false); // Drawer를 닫음
+        }
+    };
+
+    const handleDrawerOpen = () => {
+        if (toggleDrawer) {
+            toggleDrawer(true); // Drawer를 염
+        }
+    };
+
     return (
         <div>
             {/* SwipeableDrawer 설정 */}
             <SwipeableDrawer
                 anchor="right"
                 open={isOpen}
-                onClose={toggleDrawer}
-                onOpen={toggleDrawer}
+                onClose={handleDrawerClose}
+                onOpen={handleDrawerOpen}
             >
                 <Box
                     sx={{
