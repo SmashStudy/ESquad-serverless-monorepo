@@ -17,6 +17,8 @@ import GoogleLogin from './components/google/GoolgeLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
+import Category from './components/user/UserCategory.jsx';
+import Nickname from './components/user/UserNickname.jsx'
 
 
 
@@ -79,7 +81,7 @@ function App() {
                         <Route path="/google" element={<GoogleLogin />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
-                        <Route path='/user/profile' element={<UserProfile />} />
+                        
 
 
                         {/* Protect routes that require authentication */}
@@ -88,6 +90,10 @@ function App() {
                             <Home />
                             // </ProtectedRoute>
                         }>
+                            {/* user */}
+                            <Route path='/user/profile' element={<UserProfile />} />
+                            <Route path="/user/profile/category" element={<Category />} />    
+                            <Route path="/user/profile/nickname" element={<Nickname />} />
 
                             {/* community */}
                             <Route path="community/questions" element={<PostListPage />} />

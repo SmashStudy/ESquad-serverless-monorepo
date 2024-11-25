@@ -7,21 +7,21 @@ const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
-  const { userId } = event.queryStringParameters || {};
+  const { userEmail } = event.queryStringParameters || {};
 
-  if (!userId) {
+  if (!userEmail) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Please provide userId' }),
+      body: JSON.stringify({ error: 'Please provide userEmail' }),
     };
   }
 
   const params = {
     TableName: TABLE_NAME,
     IndexName: 'UserUsageIndex',
-    KeyConditionExpression: 'userId = :userId',
+    KeyConditionExpression: 'userEmail = :userEmail',
     ExpressionAttributeValues: {
-      ':userId': userId,
+      ':userEmail': userEmail,
     },
   };
 
