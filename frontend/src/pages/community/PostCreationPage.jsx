@@ -86,7 +86,7 @@ const PostCreationPage = ({ onCancel }) => {
             options={[]}
             value={tags}
             onChange={(event, newValue) => setTags(newValue)}
-            enderTags={(value, getTagProps) =>
+            renderTags={(value, getTagProps) =>
               value.map((option, index) => {
                 const tagProps = getTagProps({ index });
                 const { key, ...restProps } = tagProps;
