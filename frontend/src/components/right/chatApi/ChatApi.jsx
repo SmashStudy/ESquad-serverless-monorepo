@@ -15,6 +15,7 @@ export const fetchMessageAPI = async (room_id) => {
         const response = await apiClient.get(`/read`, {
             params: {room_id}
         });
+
         return response.data;
     } catch (error) {
         console.log("메시지 불러오기 실패 : ", error.message);
@@ -22,11 +23,24 @@ export const fetchMessageAPI = async (room_id) => {
     }
 };
 
-// 메시지 전송
+// 메시지 전송 - fileKey 추가
 export const sendMessageAPI = async (socket, messageData) => {
     try {
+        // WebSocket을 통해 실시간 메시지 전송
         socket.send(JSON.stringify(messageData));
-        console.log("메시지 전송 : " , messageData);
+        console.log("메시지 전송 : ", messageData);
+
+        // 파일 메시지의 경우, HTTP PUT 요청으로 파일 메타데이터 저장
+        if (messageData.fileKey) {
+            await apiClient.put("/send", {
+                room_id: messageData.room_id,
+                message: messageData.message,
+                timestamp: messageData.timestamp,
+                user_id: messageData.userId,
+                fileKey: messageData.fileKey,
+            });
+            console.log("파일 메시지 저장됨:", messageData);
+        }
     } catch (error) {
         console.error("메시지 전송 실패 : ", error.message);
         throw error;
@@ -56,7 +70,8 @@ export const deleteMessageAPI = async (deleteMessage) => {
             data: {
                 room_id: deleteMessage.room_id,
                 timestamp: Number(deleteMessage.timestamp),
-                message: deleteMessage.message
+                message: deleteMessage.message,
+                fileKey: deleteMessage.fileKey || null
             }
         })
     } catch (error) {
