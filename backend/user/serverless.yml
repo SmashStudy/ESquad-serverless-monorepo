@@ -33,7 +33,7 @@ functions:
     events:
       - http:
           path: update-nickname
-          method: post
+          method: put
           cors: true
 
   getUserNickname:
@@ -42,9 +42,14 @@ functions:
       - http:
           path: get-nickname
           method: get
-          authorizer:
-            type: REQUEST
-            name: authorizer # 연결된 Authorizer 함수
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
   
   myEnvironments:
     handler: service/handler.myEnvironments
@@ -60,6 +65,32 @@ functions:
       - http:
           path: get-user
           method: post
+          cors: true
+  
+  getUserInfoByToken:
+    handler: service/handler.getUserInfoByToken
+    events:
+      - http:
+          path: get-user-info
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
+
+  getEmailFromToken:
+    handler: service/handler.getEmailFromToken
+    events:
+      - http:
+          path: get-email
+          method: get
+          authorizer:
+            type: REQUEST
+            name: authorizer # 연결된 Authorizer 함수
           cors: true
   
 
