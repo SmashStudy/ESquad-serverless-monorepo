@@ -82,11 +82,11 @@ module.exports = {
   ],
   devServer: {
     proxy: {
-      "/api": {
+      "/stream": {
         target: "https://api.esquad.click/dev",
         secure: false,
         changeOrigin: true,
-        pathRewrite: { "^/api": "/api" },
+        pathRewrite: { "^/stream": "/stream" },
       },
     },
     historyApiFallback: {
