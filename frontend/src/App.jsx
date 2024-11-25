@@ -20,7 +20,6 @@ import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
 import Category from './components/user/UserCategory.jsx';
-import Layout from './components/user/Layout.jsx';
 import Nickname from './components/user/UserNickname.jsx'
 
 
@@ -103,7 +102,6 @@ function App() {
                             {/* user */}
                             <Route path='/user/profile' element={<UserProfile />} />
                             <Route path="/user/profile/category" element={<Category />} />    
-                            <Route path="/user/profile/layout" element={<Layout />} />
                             <Route path="/user/profile/nickname" element={<Nickname />} />
 
                             {/* community */}
