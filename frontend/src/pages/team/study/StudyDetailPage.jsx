@@ -214,29 +214,33 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
   };
 
-  const handleFileDelete = async (fileKey) => {
-    try {
-      setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
+  const handleFileDelete = async (fileKey, userEmail) => {
+    if(email === userEmail) {
+      try {
+        setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
 
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {action: 'deleteObject', fileKey: fileKey},
-          {headers: {'Content-Type': 'application/json'}}
-      );
+        const presignedResponse = await axios.post(
+            `${storageApi}/presigned-url`,
+            {action: 'deleteObject', fileKey: fileKey},
+            {headers: {'Content-Type': 'application/json'}}
+        );
 
-      await axios.delete(presignedResponse.data.presignedUrl);
-      await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
+        await axios.delete(presignedResponse.data.presignedUrl);
+        await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
 
-      setUploadedFiles((prevFiles) =>
-          prevFiles.filter((file) => file.fileKey !== fileKey)
-      );
-      setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
-    } catch (error) {
-      setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
-      console.error('Failed to delete file:', error);
-    } finally {
-      setCurrentPage(1);
-      fetchFiles();
+        setUploadedFiles((prevFiles) =>
+            prevFiles.filter((file) => file.fileKey !== fileKey)
+        );
+        setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
+      } catch (error) {
+        setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
+        console.error('Failed to delete file:', error);
+      } finally {
+        setCurrentPage(1);
+        fetchFiles();
+      }
+    }else {
+      setSnackbar({severity: 'fail', message: '업로더만 삭제할 수 있습니다.', open: true});
     }
   };
 
@@ -519,10 +523,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                             <IconButton
                                 edge="end"
                                 aria-label="delete"
-                                onClick={() => handleFileDelete(
-                                    file.fileKey)}
+                                onClick={() => handleFileDelete(file.fileKey, file.userEmail)}
+                                sx={{ display: file.userEmail === email ? 'block' : 'none' }}
                             >
-                              <DeleteIcon/>
+                              <DeleteIcon />
                             </IconButton>
                           </Box>
                         </Box>
