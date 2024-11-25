@@ -13,7 +13,7 @@ import {
   Divider,
   Button,
   Snackbar,
-  Alert,
+  Alert, CircularProgress
 } from '@mui/material';
 import {useLocation, useParams} from 'react-router-dom';
 import axios from 'axios';
@@ -43,9 +43,11 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [email, setEmail] = useState('unknown');
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchFiles = async () => {
     try {
+      setIsLoading(true);
       const lastEvaluatedKey = lastEvaluatedKeys[currentPage - 1];
       const response = await axios.get(`${storageApi}/metadata`, {
         params: {
@@ -92,6 +94,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           { severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true }
       );
       console.error('Failed to fetch files:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -205,6 +209,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true});
     } finally {
       setIsUploading(false);
+      fetchFiles();
     }
   };
 
@@ -228,6 +233,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     } catch (error) {
       setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
       console.error('Failed to delete file:', error);
+    } finally {
+      fetchFiles();
     }
   };
 
@@ -379,6 +386,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 </Box>
             )}
 
+            {isLoading ? (
+                <Typography variant="h5" sx={{ color: '#9F51E8', textAlign: 'center' }} >
+                  <CircularProgress size={"3rem"}/>
+                  {/*<LinearProgress color="success" />*/}
+                  <br/>
+                  로딩 중...
+                </Typography>
+            ) : (
+
             <List>
               {uploadedFiles && uploadedFiles.length > 0 ? (
                   uploadedFiles.map((file) => (
@@ -516,6 +532,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                   </Typography>
               )}
             </List>
+
+            ) }
+
 
             <Box display="flex" justifyContent="center" mt={2}>
               <Button
