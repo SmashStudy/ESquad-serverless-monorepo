@@ -36,7 +36,7 @@ export const handler = async (event) => {
     };
   }
 
-  if (file && (!file.fileKey || !file.contentType || !file.originalFileName)) {
+  if (file && (!file.id || !file.contentType || !file.originalFileName)) {
     console.error("File metadata missing or invalid:", file);
     return {
       statusCode: 400,
@@ -50,7 +50,7 @@ export const handler = async (event) => {
     timestamp: now,
     message: message || null,
     user_id,
-    fileKey: file?.fileKey || null, // 파일 메시지일 경우
+    id: file?.id || null, // 파일 메시지일 경우
     contentType: file?.contentType || null,
     originalFileName: file?.originalFileName || null,
   };

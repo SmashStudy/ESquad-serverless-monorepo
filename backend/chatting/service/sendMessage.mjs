@@ -9,7 +9,7 @@ export const handler = async (event) => {
     // 이벤트에서 연결 ID와 요청 컨텍스트를 추출
     const { connectionId, requestContext } = event;
     // 이벤트 본문에서 메시지, 방 ID, 사용자 ID를 추출
-    const { message, room_id, user_id } = JSON.parse(event.body);
+    const { message, room_id, user_id, file } = JSON.parse(event.body);
 
     // API Gateway Management API 클라이언트 생성
     const apiGatewayManagementApi = new AWS.ApiGatewayManagementApi({
@@ -24,7 +24,7 @@ export const handler = async (event) => {
             room_id,
             timestamp: now,
             message,
-            fileKey: file?.fileKey || null,
+            id: file?.id || null,
             contentType: file?.contentType || null,
             originalFileName : file?.originalFileName || null,
         }
@@ -32,6 +32,7 @@ export const handler = async (event) => {
             .put({
                 TableName: process.env.MESSAGE_TABLE_NAME,
                 Item: item,
+                ConditionExpression: "attribute_not_exists(id)"
             })
             .promise();
 
@@ -57,7 +58,7 @@ export const handler = async (event) => {
                             message,
                             user_id,
                             timestamp: now,
-                            fileKey: file?.fileKey || null,
+                            id: file?.id || null,
                             contentType: file?.contentType || null,
                             originalFileName: file?.originalFileName || null}),
                     })
@@ -86,6 +87,9 @@ export const handler = async (event) => {
                 message: message,
                 user_id: user_id,
                 timestamp: now,
+                id: file?.id || null,
+                contentType: file?.contentType || null,
+                originalFileName: file?.originalFileName || null,
             }),
         };
     } catch (e) {
