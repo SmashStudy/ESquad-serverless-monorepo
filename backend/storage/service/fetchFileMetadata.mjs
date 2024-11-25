@@ -1,5 +1,5 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
@@ -8,32 +8,34 @@ const TABLE_NAME = process.env.METADATA_TABLE;
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
   const {
-    targetId,
+    targetId: encodedTargetId,
     targetType,
     limit = 5,
-    lastEvaluatedKey
+    lastEvaluatedKey,
   } = event.queryStringParameters || {};
 
-  if (!targetId) {
+  if (!encodedTargetId) {
     return {
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
       statusCode: 400,
-      body: JSON.stringify({ error: 'Please provide the targetId.' }),
+      body: JSON.stringify({ error: "Please provide the targetId." }),
     };
   }
 
+  const targetId = decodeURIComponent(encodedTargetId);
+
   const params = {
     TableName: TABLE_NAME,
-    IndexName: 'FetchFileIndexByDate',
-    KeyConditionExpression: 'targetId = :targetId',
-    FilterExpression: 'targetType = :targetType',
+    IndexName: "FetchFileIndexByDate",
+    KeyConditionExpression: "targetId = :targetId",
+    FilterExpression: "targetType = :targetType",
     ExpressionAttributeValues: {
-      ':targetId': targetId,
-      ':targetType': targetType,
+      ":targetId": targetId,
+      ":targetType": targetType,
     },
     Limit: parseInt(limit, 10),
     ScanIndexForward: false, // 최신순 정렬
@@ -48,11 +50,11 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "Content-Type,Authorization",
+          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
         },
-        body: JSON.stringify({ error: 'Invalid lastEvaluatedKey format' }),
+        body: JSON.stringify({ error: "Invalid lastEvaluatedKey format" }),
       };
     }
   }
@@ -61,26 +63,30 @@ export const handler = async (event) => {
     const data = await dynamoDb.send(new QueryCommand(params));
     return {
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
       statusCode: 200,
       body: JSON.stringify({
         items: data.Items,
-        lastEvaluatedKey: data.LastEvaluatedKey ? JSON.stringify(data.LastEvaluatedKey) : null,
+        lastEvaluatedKey: data.LastEvaluatedKey
+          ? JSON.stringify(data.LastEvaluatedKey)
+          : null,
       }),
     };
   } catch (error) {
-    console.error('Error fetching metadata:', error);
+    console.error("Error fetching metadata:", error);
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,Authorization",
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
       },
-      body: JSON.stringify({ error: `Failed to fetch metadata: ${error.message}` }),
+      body: JSON.stringify({
+        error: `Failed to fetch metadata: ${error.message}`,
+      }),
     };
   }
 };
