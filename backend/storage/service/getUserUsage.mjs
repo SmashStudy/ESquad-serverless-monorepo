@@ -1,30 +1,32 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
-  const { userId } = event.queryStringParameters || {};
+  const { userEmail } = event.queryStringParameters || {};
 
-  if (!userId) {
+  if (!userEmail) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Please provide userId' }),
+      body: JSON.stringify({ error: 'Please provide userEmail' }),
     };
   }
 
   const params = {
     TableName: TABLE_NAME,
-    IndexName: 'UserUsageIndex', // 인덱스 생성 후 사용
-    KeyConditionExpression: 'userId = :userId',
+    IndexName: 'UserUsageIndex',
+    KeyConditionExpression: 'userEmail = :userEmail',
     ExpressionAttributeValues: {
-      ':userId': userId,
+      ':userEmail': userEmail,
     },
   };
 
   try {
-    const data = await dynamoDb.query(params).promise();
+    const data = await dynamoDb.send(new QueryCommand(params));
     return {
       statusCode: 200,
       headers: {

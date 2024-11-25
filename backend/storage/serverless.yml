@@ -46,7 +46,7 @@ functions:
     handler: service/deleteFile.handler
     events:
       - http:
-          path: /{storedFileName}
+          path: /{fileKey}
           method: delete
           cors: true
 
@@ -73,7 +73,7 @@ resources:
       Properties:
         TableName: ${env:METADATA_TABLE}
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: fileKey
             AttributeType: S
           - AttributeName: targetId
             AttributeType: S
@@ -81,10 +81,10 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
-          - AttributeName: userId
+          - AttributeName: userEmail
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: fileKey
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: FetchFileIndex
@@ -105,11 +105,13 @@ resources:
               ProjectionType: ALL
           - IndexName: UserUsageIndex
             KeySchema:
-              - AttributeName: userId
+              - AttributeName: userEmail
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
 
 
     S3Bucket:

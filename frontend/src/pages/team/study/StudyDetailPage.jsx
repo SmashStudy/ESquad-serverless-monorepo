@@ -13,7 +13,7 @@ import {
   Divider,
   Button,
   Snackbar,
-  Alert,
+  Alert, CircularProgress
 } from '@mui/material';
 import {useLocation, useParams} from 'react-router-dom';
 import axios from 'axios';
@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import PropTypes from "prop-types";
+import {UserByEmail} from "../../../components/user/UserByEmail.jsx";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
@@ -36,15 +37,19 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     message: '',
     severity: 'success',
   });
-  const lambdaUrl = 'https://api.esquad.click/dev/files';
+  const storageApi = 'https://api.esquad.click/dev/files';
+  const userApi = 'https://api.esquad.click/dev/users'
   const [currentPage, setCurrentPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
+  const [email, setEmail] = useState('unknown');
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchFiles = async () => {
     try {
+      setIsLoading(true);
       const lastEvaluatedKey = lastEvaluatedKeys[currentPage - 1];
-      const response = await axios.get(`${lambdaUrl}/metadata`, {
+      const response = await axios.get(`${storageApi}/metadata`, {
         params: {
           targetId: studyId,
           targetType: 'STUDY_PAGE',
@@ -53,14 +58,28 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         },
       });
 
-      setUploadedFiles(response.data.items);
+      const filesWithNicknames = await Promise.all(
+          response.data.items.map(async (file) => {
+            try {
+              const user = await UserByEmail(file.userEmail);
+
+              return {
+                ...file,
+                nickname: user.nickname || 'Unknown',
+              };
+            } catch (error) {
+              return { ...file, nickname: 'Unknown' };
+            }
+          })
+      );
+      setUploadedFiles(filesWithNicknames);
 
       setLastEvaluatedKeys((prevKeys) => {
         const newKeys = [...prevKeys];
         if (response.data.lastEvaluatedKey) {
           newKeys[currentPage] = response.data.lastEvaluatedKey;
         } else if (currentPage < totalPages) {
-          newKeys[currentPage] = null; // 다음 페이지가 없음을 명확히 설정
+          newKeys[currentPage] = null;
         }
         return newKeys;
       });
@@ -68,18 +87,27 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       if (response.data.lastEvaluatedKey) {
         setTotalPages(currentPage + 1);
       } else {
-        setTotalPages(currentPage); // 마지막 평가 키가 없으면 페이지를 더 증가시키지 않음
+        setTotalPages(currentPage);
       }
     } catch (error) {
       setSnackbar(
-          {severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true}
+          { severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true }
       );
       console.error('Failed to fetch files:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+
+  const fetchUserEmail = async () => {
+    const { email } = await getEmailFromToken();
+    setEmail(email);
+  }
   useEffect(() => {
+
     fetchFiles();
+    fetchUserEmail();
   }, [studyId, currentPage]);
 
   const handleSnackbarClose = () => {
@@ -109,6 +137,22 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
   };
 
+  const getEmailFromToken = async () => {
+    const token = localStorage.getItem("jwtToken");
+
+    try {
+      const response = await axios.get(`${userApi}/get-email`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error.response?.data || error.message);
+    }
+  };
+
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -124,7 +168,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
 
       const presignedResponse = await axios.post(
-          `${lambdaUrl}/presigned-url`,
+          `${storageApi}/presigned-url`,
           {
             action: 'putObject',
             fileKey: `files/${uniqueFileName}`,
@@ -138,18 +182,17 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       });
 
       const metadataResponse = await axios.post(
-          `${lambdaUrl}/store-metadata`,
+          `${storageApi}/store-metadata`,
           {
             fileKey: `files/${uniqueFileName}`,
             metadata: {
               targetId: studyId,
               targetType: 'STUDY_PAGE',
-              userId: '말똥말똥성게',
+              userEmail: email,
               fileSize: selectedFile.size,
               extension: selectedFile.type.split('/').pop(),
               contentType: selectedFile.type,
               originalFileName: selectedFile.name,
-              storedFileName: uniqueFileName,
               createdAt: getFormattedDate(),
             },
           },
@@ -165,39 +208,45 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true});
     } finally {
       setIsUploading(false);
+      setCurrentPage(1);
+      fetchFiles();
+
     }
   };
 
-  const handleFileDelete = async (storedFileName) => {
+  const handleFileDelete = async (fileKey) => {
     try {
       setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
 
       const presignedResponse = await axios.post(
-          `${lambdaUrl}/presigned-url`,
-          {action: 'deleteObject', fileKey: `files/${storedFileName}`},
+          `${storageApi}/presigned-url`,
+          {action: 'deleteObject', fileKey: fileKey},
           {headers: {'Content-Type': 'application/json'}}
       );
 
       await axios.delete(presignedResponse.data.presignedUrl);
-      await axios.delete(`${lambdaUrl}/${storedFileName}`);
+      await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
 
       setUploadedFiles((prevFiles) =>
-          prevFiles.filter((file) => file.storedFileName !== storedFileName)
+          prevFiles.filter((file) => file.fileKey !== fileKey)
       );
       setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
     } catch (error) {
       setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
       console.error('Failed to delete file:', error);
+    } finally {
+      setCurrentPage(1);
+      fetchFiles();
     }
   };
 
-  const handleFileDownload = async (storedFileName, originalFileName) => {
+  const handleFileDownload = async (fileKey, originalFileName) => {
     try {
       setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
 
       const presignedResponse = await axios.post(
-          `${lambdaUrl}/presigned-url`,
-          {action: 'getObject', fileKey: `files/${storedFileName}`},
+          `${storageApi}/presigned-url`,
+          {action: 'getObject', fileKey: fileKey},
           {headers: {'Content-Type': 'application/json'}}
       );
 
@@ -212,7 +261,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = originalFileName || storedFileName;
+      link.download = originalFileName || fileKey;
       document.body.appendChild(link);
       link.click();
       window.URL.revokeObjectURL(url);
@@ -231,7 +280,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
 
     if (pageNumber > currentPage && !lastEvaluatedKeys[currentPage]) {
-      // 다음 페이지로 가려는 경우 평가 키가 null이면 이동 불가
+
       return;
     }
 
@@ -339,6 +388,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 </Box>
             )}
 
+            {isLoading ? (
+                <Typography variant="h5" sx={{ color: '#9F51E8', textAlign: 'center' }} >
+                  <CircularProgress size={"3rem"}/>
+                  {/*<LinearProgress color="success" />*/}
+                  <br/>
+                  로딩 중...
+                </Typography>
+            ) : (
+
             <List>
               {uploadedFiles && uploadedFiles.length > 0 ? (
                   uploadedFiles.map((file) => (
@@ -419,7 +477,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 업로더:
                               </Typography>
                               <Typography variant="body2" color="textPrimary">
-                                {file.userId}
+                                {file.nickname}
                               </Typography>
                             </Box>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -452,7 +510,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 edge="end"
                                 aria-label="download"
                                 onClick={() =>
-                                    handleFileDownload(file.storedFileName,
+                                    handleFileDownload(file.fileKey,
                                         file.originalFileName)
                                 }
                             >
@@ -462,7 +520,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 edge="end"
                                 aria-label="delete"
                                 onClick={() => handleFileDelete(
-                                    file.storedFileName)}
+                                    file.fileKey)}
                             >
                               <DeleteIcon/>
                             </IconButton>
@@ -476,6 +534,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                   </Typography>
               )}
             </List>
+
+            ) }
+
 
             <Box display="flex" justifyContent="center" mt={2}>
               <Button
@@ -504,15 +565,14 @@ StudyDetailPage.propTypes = {
         id: PropTypes.string.isRequired,
         targetId: PropTypes.string.isRequired,
         targetType: PropTypes.string.isRequired,
-        userId: PropTypes.string.isRequired,
+        userEmail: PropTypes.string.isRequired,
         fileSize: PropTypes.number.isRequired,
         extension: PropTypes.string.isRequired,
         contentType: PropTypes.string.isRequired,
-        storedFileName: PropTypes.string.isRequired,
         originalFileName: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
       })
-  ).isRequired,
+  ),
 };
 
 export default StudyDetailPage;

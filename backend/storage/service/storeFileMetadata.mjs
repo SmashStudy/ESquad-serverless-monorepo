@@ -1,6 +1,8 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
@@ -12,12 +14,12 @@ export const handler = async (event) => {
     const params = {
       TableName: TABLE_NAME,
       Item: {
-        id: fileKey,
+        fileKey: fileKey,
         ...metadata,
       },
     };
 
-    await dynamoDb.put(params).promise();
+    await dynamoDb.send(new PutCommand(params));
 
     return {
       statusCode: 200,
@@ -26,7 +28,7 @@ export const handler = async (event) => {
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
-      body: JSON.stringify({ message: 'Metadata stored successfully', data: { id: fileKey, ...metadata } }),
+      body: JSON.stringify({ message: 'Metadata stored successfully', data: { fileKey: fileKey, ...metadata } }),
     };
   } catch (error) {
     console.error('Error storing metadata:', error);
