@@ -18,8 +18,6 @@ export const handler = async (event) => {
     console.log("File name did not require decoding:", fileKey);
   }
 
-  console.log(fileKey);
-
   try {
     const deleteParams = {
       TableName: TABLE_NAME,

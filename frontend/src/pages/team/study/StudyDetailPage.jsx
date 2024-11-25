@@ -147,7 +147,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         },
       });
 
-      console.log('Response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error:', error.response?.data || error.message);
