@@ -45,7 +45,7 @@ const PostListPage = ({ isSmallScreen }) => {
 
     try {
       const params = {
-        limit: 5,
+        limit: 10,
       };
 
       if (!reset && lastEvaluatedKeys[curPage - 1]) {
