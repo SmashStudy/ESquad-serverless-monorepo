@@ -15,7 +15,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 
-const PostCreationPage = ({ onCancel }) => {
+const PostCreationPage = ({ onCancel, setIsDraft }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const userInfo = {
@@ -45,9 +45,11 @@ const PostCreationPage = ({ onCancel }) => {
 • 예상 모집인원 :
 • 스터디 소개와 개설 이유 :
 • 스터디 관련 주의사항 :
+• 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등.) :
 `;
 
     const handleTagChange = (event, newValue) => {
+      setIsDraft(true);
       if (newValue.length > 10) {
         alert("태그는 최대 10개까지 추가할 수 있습니다.");
         return;
@@ -72,6 +74,7 @@ const PostCreationPage = ({ onCancel }) => {
 
         setTags((prevTags) => [...prevTags, newTag]);
         event.target.value = "";
+        setIsDraft(true);
       }
     };
 
@@ -95,7 +98,10 @@ const PostCreationPage = ({ onCancel }) => {
                 : "스터디 제목을 입력하세요."
             }
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setIsDraft(true);
+            }}
             sx={{
               width: "100%",
               p: 1,
@@ -148,7 +154,10 @@ const PostCreationPage = ({ onCancel }) => {
           {activeTab === "스터디" ? (
             <TextField
               defaultValue={studyTemplate}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => {
+                setContent(e.target.value);
+                setIsDraft(true);
+              }}
               multiline
               minRows={15}
               variant="standard"
@@ -172,7 +181,10 @@ const PostCreationPage = ({ onCancel }) => {
                   : "자유롭게 글을 적으세요!"
               }
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => {
+                setContent(e.target.value);
+                setIsDraft(true);
+              }}
               multiline
               minRows={15}
               sx={{
@@ -192,11 +204,13 @@ const PostCreationPage = ({ onCancel }) => {
     const uploadedFile = event.target.files[0];
     if (uploadedFile) {
       setFile(uploadedFile);
+      setIsDraft(true);
     }
   };
 
   const handleFileDelete = () => {
     setFile(null);
+    setIsDraft(true);
   };
 
   const handleSubmit = async () => {
@@ -219,6 +233,7 @@ const PostCreationPage = ({ onCancel }) => {
 
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
+        setIsDraft(false);
         onCancel();
         navigate(`/community/${boardType}`);
       } else {
