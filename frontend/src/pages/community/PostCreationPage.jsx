@@ -29,7 +29,6 @@ const PostCreationPage = ({ onCancel }) => {
   const [tags, setTags] = useState([]);
   const [file, setFile] = useState(null);
 
-  // 게시판 타입에 따른 API 경로 설정
   const boardType =
     activeTab === "질문"
       ? "questions"
@@ -37,12 +36,40 @@ const PostCreationPage = ({ onCancel }) => {
       ? "general"
       : "team-recruit";
 
-  // 탭별 입력 필드 내용 설정
   const renderTabContent = () => {
     const placeholders = {
       질문: " - 학습 관련 질문을 남겨주세요. 상세히 작성하면 더 좋아요! \n - 서로 예의를 지키며 존중하는 게시판을 만들어주세요!",
       자유: "자유롭게 글을 적으세요!",
-      스터디: "스터디 설명을 입력하세요",
+      스터디: "스터디 설명을 입력하세요!",
+    };
+
+    const handleTagChange = (event, newValue) => {
+      if (newValue.length > 10) {
+        alert("태그는 최대 10개까지 추가할 수 있습니다.");
+        return;
+      }
+
+      setTags(newValue);
+    };
+
+    const handleTagKeyDown = (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const newTag = event.target.value.trim();
+
+        if (tags.includes(newTag)) {
+          alert(`중복된 태그: "${newTag}"는 추가할 수 없습니다.`);
+          return;
+        }
+
+        if (tags.length >= 10) {
+          alert("태그는 최대 10개까지 추가할 수 있습니다.");
+          return;
+        }
+
+        setTags((prevTags) => [...prevTags, newTag]);
+        event.target.value = "";
+      }
     };
 
     return (
@@ -85,14 +112,14 @@ const PostCreationPage = ({ onCancel }) => {
             freeSolo
             options={[]}
             value={tags}
-            onChange={(event, newValue) => setTags(newValue)}
+            onChange={handleTagChange}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => {
                 const tagProps = getTagProps({ index });
                 const { key, ...restProps } = tagProps;
                 return (
                   <Chip
-                    key={key || `tag-${index}`}
+                    key={`tag-${index}`}
                     variant="outlined"
                     size="small"
                     label={option}
@@ -108,6 +135,7 @@ const PostCreationPage = ({ onCancel }) => {
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
                 sx={{ width: "100%", p: 1 }}
+                onKeyDown={handleTagKeyDown}
               />
             )}
           />
