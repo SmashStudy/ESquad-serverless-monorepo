@@ -38,6 +38,8 @@ export const sendMessageAPI = async (socket, messageData) => {
                 timestamp: messageData.timestamp,
                 user_id: messageData.userId,
                 fileKey: messageData.fileKey,
+                presignedUrl: messageData.presignedUrl, // 추가 확인
+                contentType: messageData.contentType,   // 추가 확인
             });
             console.log("파일 메시지 저장됨:", messageData);
         }
