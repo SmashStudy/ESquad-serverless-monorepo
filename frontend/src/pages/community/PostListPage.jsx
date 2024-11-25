@@ -297,30 +297,40 @@ const PostListPage = ({ isSmallScreen }) => {
                 {boardType === "questions" && (
                   <Chip
                     label={post.resolved ? "해결됨" : "미해결"}
-                    color={post.resolved ? "success" : "error"}
-                    variant="filled"
                     sx={{
                       mr: 2,
                       borderRadius: "16px",
-                      color: "#fff",
+                      fontWeight: "bold",
+                      color: post.resolved ? "#FFFFFF" : "#FFFFFF",
                       backgroundColor: post.resolved
-                        ? theme.palette.success.main
-                        : "#ff6b6b",
+                        ? theme.palette.primary.main
+                        : "#CED4DA",
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                      height: "30px",
+                      minWidth: "60px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   />
                 )}
                 {boardType === "team-recruit" && (
                   <Chip
                     label={post.recruitStatus ? "모집완료" : "모집중"}
-                    color={post.recruitStatus ? "default" : "primary"}
-                    variant="filled"
                     sx={{
                       mr: 2,
                       borderRadius: "16px",
-                      color: "#fff",
+                      fontWeight: "bold",
+                      color: post.recruitStatus ? "#fff" : "#fff",
                       backgroundColor: post.recruitStatus
-                        ? "#b0bec5"
+                        ? "#CED4DA"
                         : theme.palette.primary.main,
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                      height: "30px",
+                      minWidth: "60px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   />
                 )}
@@ -354,24 +364,39 @@ const PostListPage = ({ isSmallScreen }) => {
                   </Typography>
                 )}
               </Box>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ mb: 1 }}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mt: 1,
+                }}
               >
-                {post.writer?.name || "익명"} ·{" "}
-                {new Date(post.createdAt).toLocaleString()}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                <Typography variant="caption">
-                  👍 {post.likeCount || 0}
+                {/* 작성자와 작성일 */}
+                <Typography variant="caption" color="text.secondary">
+                  {post.writer?.name || "익명"} ·{" "}
+                  {new Date(post.createdAt).toLocaleString()}
                 </Typography>
-                <Typography variant="caption">
-                  👁 {post.viewCount || 0}
-                </Typography>
-                <Typography variant="caption">
-                  💬 {post.comments?.length || 0}
-                </Typography>
+
+                {/* 좋아요, 조회수, 댓글 */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 2,
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="caption">
+                    👍 {post.likeCount || 0}
+                  </Typography>
+                  <Typography variant="caption">
+                    👁 {post.viewCount || 0}
+                  </Typography>
+                  <Typography variant="caption">
+                    💬 {post.comments?.length || 0}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Link>
