@@ -36,6 +36,14 @@ export const handler = async (event) => {
     };
   }
 
+  if (file && (!file.fileKey || !file.contentType || !file.originalFileName)) {
+    console.error("File metadata missing or invalid:", file);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "Missing file metadata fields for file message" }),
+    };
+  }
+
   const now = moment().valueOf();
   const item = {
     room_id,
@@ -46,6 +54,10 @@ export const handler = async (event) => {
     contentType: file?.contentType || null,
     originalFileName: file?.originalFileName || null,
   };
+
+  if (file) {
+    console.log("Storing file metadata:", file);
+  }
 
   // DynamoDB에 메시지 PUT 하기
   try {
