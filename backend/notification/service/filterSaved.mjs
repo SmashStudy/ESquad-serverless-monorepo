@@ -2,7 +2,7 @@ import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
-const NOTIFICATION_CREATED_INDEX = process.env.NOTIFICATION_CREATED_INDEX;
+const NOTIFICATION_SAVE_INDEX = process.env.NOTIFICATION_SAVE_INDEX;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
@@ -20,30 +20,24 @@ export const handler = async (event) => {
     // 보관처리된 알림 모두 조회
     const queryParams = {
       TableName: NOTIFICATION_TABLE,
-      IndexName: NOTIFICATION_CREATED_INDEX,
-      KeyConditionExpression: "#userId = :userId",
-      ExpressionAttributeNames: {
-        "#userId": "userId",
-      },
+      IndexName: NOTIFICATION_SAVE_INDEX,
+      KeyConditionExpression: "userId = :userId AND isSave = :isSave",
       ExpressionAttributeValues: {
         ":userId": { S: userId },
+        ":isSave": { N: "1" },
       },
       Limit: 10, // Limit results as required
-      ScanIndexForward: false, // Sort in reverse chronological order
     };
 
-    // Add ExclusiveStartKey if this is a paginated request
     if (lastEvaluatedKey) {
-      queryCommand.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
+      queryParams.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
     }
 
     // Execute the query
     const command = new QueryCommand(queryParams);
-    const rawData = await dynamoDbClient.send(command);
-
-    // Extract the fetched items and the LastEvaluatedKey for pagination
+    const response = await dynamoDbClient.send(command);
     const fetchResponse = {
-      items: rawData.Items.map((data) => ({
+      items: response.Items.map((data) => ({
         id: data.id.S,
         userId: data.userId.S,
         sender: data.sender.S,
@@ -51,9 +45,9 @@ export const handler = async (event) => {
         isRead: data.isRead.N,
         isSave: data.isSave.N,
         createdAt: data.createdAt.S,
-      })),
-      lastEvaluatedKey: rawData.LastEvaluatedKey
-        ? JSON.stringify(rawData.LastEvaluatedKey)
+      })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), // Sort descending
+      lastEvaluatedKey: response.LastEvaluatedKey
+        ? JSON.stringify(response.LastEvaluatedKey)
         : null,
     };
 

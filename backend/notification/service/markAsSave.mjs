@@ -1,8 +1,6 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 
 export const handler = async (event) => {
@@ -32,32 +30,31 @@ export const handler = async (event) => {
     const updateParam = {
       TableName: NOTIFICATION_TABLE,
       Key: {
-        userId: userId, // userId 값 제공
-        id: id, // id 값 제공
+        userId: { S: userId }, // Partition key
+        id: { S: id }, // Sort key
       },
       UpdateExpression: "SET isSave = :isSave, isRead = :newRead",
-      // UpdateExpression:
-      // - "SET isSave = :isSave": isSave 필드를 1로 설정합니다.
-      // - "isRead = :newRead": 조건에 따라 isRead 값을 1로 설정합니다.
-
-      ConditionExpression: "isRead = :isReadZero",
-      // ConditionExpression:
-      // - "isRead = :isReadZero": isRead 값이 0인 경우에만 업데이트가 실행됩니다.
-      // - "attribute_not_exists(isRead)": isRead 속성이 존재하지 않을 경우에도 업데이트가 실행됩니다.
-
       ExpressionAttributeValues: {
-        ":isSave": { N: "1" }, // isSave를 1로 설정하기 위한 값입니다.
-        ":isReadZero": { N: "0" }, // 조건에서 isRead 값이 0인지 확인하기 위한 값입니다.
-        ":newRead": { N: "1" }, // 조건이 만족되었을 때 isRead를 1로 설정하기 위한 값입니다.
+        ":isSave": { N: "1" }, // isSave를 1로 설정
+        ":newRead": { N: "1" }, // 조건이 만족되었을 때 isRead를 1로 설정
       },
       ReturnValues: "ALL_NEW", // 업데이트 후의 새로운 아이템을 반환하도록 설정
     };
 
-    const result = await dynamoDb.send(new UpdateCommand(updateParam));
-    console.log(`Updated: ${JSON.stringify(result.Attributes)}`);
+    console.log(`updateParam: ${JSON.stringify(updateParam)}`);
+    const result = await dynamoDbClient.send(new UpdateItemCommand(updateParam));
+    const formattedResponse = {
+      id: result.Attributes.id.S,
+      userId: result.Attributes.userId.S,
+      sender: result.Attributes.sender.S,
+      message: result.Attributes.message.S,
+      isRead: result.Attributes.isRead.N,
+      isSave: result.Attributes.isSave.N,
+      createdAt: result.Attributes.createdAt.S,
+    }
+    console.log(`formattedResponse: ${JSON.stringify(formattedResponse)}`);
 
     // 객체 형식으로 반환할 수 있도록 업데이트된 아이템을 resultObject에 저장
-    const resultObject = result.Attributes;
     return {
       statusCode: 200,
       headers: {
@@ -66,7 +63,7 @@ export const handler = async (event) => {
         "Access-Control-Allow-Methods": "OPTIONS, POST",
         "Access-Control-Allow-Headers": "Content-Type",
       },
-      body: JSON.stringify(resultObject),
+      body: JSON.stringify(formattedResponse),
     };
   } catch (error) {
     console.error("Error marking notifications as read:", error);

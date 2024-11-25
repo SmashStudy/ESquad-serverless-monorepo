@@ -101,10 +101,7 @@ export const handler = async (event) => {
           KeyConditionExpression: "PK = :pk",
           ExpressionAttributeValues: {
             ":pk": { S: targetId },
-          },
-          ConditionalOperator: {
-            ":inviteState": { S: "complete" },
-          },
+          }
         });
 
         const teamResponse = await dynamoClient.send(teamQueryCommand);

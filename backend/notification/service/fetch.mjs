@@ -32,9 +32,9 @@ export const handler = async (event) => {
       queryParams.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
     }
     const command = new QueryCommand(queryParams);
-    const rawData = await dynamoDb.send(command);
+    const response = await dynamoDb.send(command);
     const fetchResponse = {
-      items: rawData.Items.map((data) => ({
+      items: response.Items.map((data) => ({
         id: data.id.S,
         userId: data.userId.S,
         sender: data.sender.S,
@@ -43,8 +43,8 @@ export const handler = async (event) => {
         isSave: data.isSave.N,
         createdAt: data.createdAt.S,
       })),
-      lastEvaluatedKey: rawData.LastEvaluatedKey
-        ? JSON.stringify(rawData.LastEvaluatedKey)
+      lastEvaluatedKey: response.LastEvaluatedKey
+        ? JSON.stringify(response.LastEvaluatedKey)
         : null, // 전달할 LastEvaluatedKey 값이 있을 경우 추가
     };
     console.log(`Read notifications: ${JSON.stringify(fetchResponse)}`);

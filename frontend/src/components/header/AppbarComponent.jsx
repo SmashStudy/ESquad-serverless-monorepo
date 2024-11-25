@@ -214,19 +214,19 @@ const AppBarComponent = ({
     }
   };
 
-  const handleScroll = () => {
+  const handleScroll = async () => {
     if (notificationMenuRef.current) {
       const { scrollTop, scrollHeight, clientHeight } =
         notificationMenuRef.current;
 
       // Trigger load more when scrolled within 100 pixels of the bottom
-      if (
-        scrollHeight - scrollTop - clientHeight <= 100 &&
-        !isFetching &&
-        lastEvaluatedKey
-      ) {
-        console.log("Scrolled to bottom, fetching notifications...");
-        fetchNotification();
+      if (scrollHeight - scrollTop - clientHeight <= 100 && !isFetching && lastEvaluatedKey) {
+        setIsFetching(true); // Set fetching state
+        try {
+          await fetchNotification(lastEvaluatedKey); // Fetch with the current pagination key
+        } finally {
+          setIsFetching(false); // Reset fetching state
+        }
       }
     }
   };
@@ -259,22 +259,36 @@ const AppBarComponent = ({
   };
 
   // Handle notifications menu open/close
-  const handleNotificationsClick = (event) => {
-    setNotificationsAnchorEl(event.currentTarget);
-    setIsFetching(true);
-    fetchNotification();
+  const handleNotificationsClick = async (event) => {
+    setNotificationsAnchorEl(event.currentTarget); // Open the notifications menu
+    setShowArchived(false); 
+    setIsFetching(true); // Start fetching notifications
+    setNotifications([]); // Clear existing notifications to ensure fresh data is shown
+    setLastEvaluatedKey(null); // Reset pagination for a fresh fetch
+
+    try {
+      await fetchNotification(); // Fetch fresh notifications directly
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setIsFetching(false); // Ensure loading state is reset
+    }
   };
 
-  const fetchNotification = async () => {
+  const fetchNotification = async (key = null) => {
     if (isFetching) return; // Prevent duplicate fetches
 
     setIsFetching(true); // Set fetching to true
     try {
+        const endpoint = showArchived
+        ? `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/filter-saved`
+        : `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/all`;
+
       const response = await axios.post(
-        `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/all`,
+        endpoint,
         {
           userId: userId,
-          ...(lastEvaluatedKey && { lastEvaluatedKey: lastEvaluatedKey }),
+          lastEvaluatedKey: key, // Include pagination key if exists
         },
         {
           headers: {
@@ -284,15 +298,11 @@ const AppBarComponent = ({
       );
       console.log(`Fetched notifications: ${JSON.stringify(response.data)}`);
 
-      setNotifications(response.data.items || []);
-
-      // Update lastEvaluatedKey
-      setLastEvaluatedKey(response.data.lastEvaluatedKey);
+      setNotifications((prev) => [...(prev || []), ...(response.data.items || [])]);
+      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
     } catch (err) {
       console.error("Error fetching notifications:", err);
-    } finally {
-      setIsFetching(false); // Reset fetching flag
-    }
+    } 
   };
 
   useEffect(() => {
@@ -347,11 +357,16 @@ const AppBarComponent = ({
                   : { ...notification, isRead: "1" } // 새로 읽음 처리
             )
           );
+
+          // Decrease the unReadCount by the number of processed notifications
+          setUnReadCount((prevCount) => Math.max(prevCount - notificationIds.length, 0));
         }
       } catch (error) {
         console.error("Error marking notifications as read:", error);
         alert("알림 읽음 처리에 실패했습니다.");
       }
+    } else {
+      alert("모든 알림이 이미 읽음처리되었습니다");
     }
   };
   const handleNotificationsClose = () => {
@@ -409,6 +424,7 @@ const AppBarComponent = ({
             : notification
         )
       );
+      setUnReadCount((prevCount) => Math.max(prevCount - 1, 0));
     } catch (error) {
       console.error("Error marking notifications as read:", error);
       alert("알림 처리에 실패했습니다.");
@@ -431,10 +447,10 @@ const AppBarComponent = ({
       });
 
       if (response.status === 200) {
-        // Update the notification's isSave status in the client-side state
+        const updatedNotification = response.data;
         setNotifications((prev) =>
           prev.map((notification) =>
-            notification.id === notification.id
+            notification.id === updatedNotification.id
               ? { ...notification, isSave: "0" }
               : notification
           )
@@ -446,18 +462,34 @@ const AppBarComponent = ({
     }
   };
 
-  const handleToggleArchived = () => {
-    setShowArchived((prev) => !prev);
-    fetchSavedNotifications();
+  const handleToggleArchived = async () => {
+    if (showArchived) {
+      // If currently in archive mode, exit and refresh notifications
+      setShowArchived(false); // Exit archive mode
+      setLastEvaluatedKey(null); // Reset pagination
+      await handleNotificationsClick(); // Fetch fresh notifications
+    } else {
+      // Enter archive mode
+      setShowArchived(true); // Enable archive mode
+      setNotifications([]); // Clear current notifications
+      setLastEvaluatedKey(null); // Reset pagination
+      setIsFetching(true); // Set loading state
+  
+      try {
+        await fetchSavedNotifications(); // Fetch archived notifications
+      } finally {
+        setIsFetching(false); // Reset loading state
+      }
+    }
   };
 
-  const fetchSavedNotifications = async () => {
+  const fetchSavedNotifications = async (key = null) => {
     try {
       const response = await axios.post(
         `https://${API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/notification/filter-saved`,
         {
           userId: userId,
-          ...(lastEvaluatedKey && { lastEvaluatedKey: lastEvaluatedKey }),
+          ...(key && { lastEvaluatedKey: key }),
         },
         {
           headers: {
@@ -473,7 +505,7 @@ const AppBarComponent = ({
       });
 
       // Update lastEvaluatedKey
-      setLastEvaluatedKey(response.data.lastEvaluatedKey);
+      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
     } catch (err) {
       console.error(err);
     }
@@ -482,6 +514,8 @@ const AppBarComponent = ({
   const visibleNotifications = showArchived
     ? notifications.filter((notification) => notification.isSave === "1") // Show only saved notifications
     : notifications;
+
+
 
   return (
     <AppBar
@@ -700,7 +734,7 @@ const AppBarComponent = ({
                 >
                   <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
                   {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                  <Typography variant="body1">esquadback</Typography>
+                  <Typography variant="body1" >esquadback</Typography>
                 </IconButton>
               </Box>
               <Menu
@@ -764,32 +798,47 @@ const AppBarComponent = ({
                     </Box>
                   ) : (
                     <List sx={{ width: "100%", paddingBottom: 6 }}>
-                      <Tooltip title="보관함" placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={handleToggleArchived}
-                          sx={{
-                            left: 250,
-                            color: "purple", // Set color to purple
-                          }}
-                        >
-                          {showArchived ? <ArrowBackIcon /> : <TurnedInIcon />}
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="전체 읽음처리" placement="top">
-                        <IconButton
-                          size="small"
-                          onClick={handleMarkAllAsRead}
-                          sx={{
-                            // position: 'absolute',
-                            left: 170, // 오른쪽 여백 설정
-                            color: "purple", // Set color to purple
-                          }}
-                        >
-                          <DoneAllIcon /> {/* 모두 읽음 아이콘 */}
-                        </IconButton>
-                      </Tooltip>
-
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: theme.spacing(1, 2), // Add spacing for alignment
+                          borderBottom: `1px solid ${alpha(theme.palette.common.black, 0.1)}`, // Optional border for separation
+                        }}
+                      >
+                        <Typography variant="h6" component="span" sx={{ fontWeight: "bold" }}>
+                          알림
+                        </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Tooltip title={showArchived ? "알림 나가기" : "보관함 보기"} placement="top">
+                            <IconButton
+                              size="small"
+                              onClick={handleToggleArchived}
+                              sx={{
+                                color: `${theme.palette.primary.main}`
+                              }}
+                            >
+                              {showArchived ? <ArrowBackIcon onClick={handleNotificationsClose}/> : <TurnedInIcon />}
+                            </IconButton>
+                          </Tooltip>
+                          { !showArchived && (
+                          <Tooltip title="전체 읽음처리" placement="top">
+                            <IconButton
+                              size="small"
+                              onClick={handleMarkAllAsRead}
+                              sx={{
+                                color: `${theme.palette.primary.main}`
+                              }}
+                            >
+                              <DoneAllIcon /> 
+                            </IconButton>
+                          </Tooltip>
+                          )}
+                        </Box>
+                      </Box>
+                      
+                      {/* 알림 목록 */}
                       {visibleNotifications.length > 0 ? (
                         <>
                           {visibleNotifications.map((notification) => (
@@ -844,7 +893,6 @@ const AppBarComponent = ({
                                 }
                                 secondary={
                                   <React.Fragment>
-                                    {/* Notification Message */}
                                     <Typography
                                       component="span"
                                       variant="body2"
@@ -859,7 +907,6 @@ const AppBarComponent = ({
                                     >
                                       {notification.message}
                                     </Typography>
-                                    {/* Created Time */}
                                     <Typography
                                       component="span"
                                       variant="caption"
@@ -879,21 +926,25 @@ const AppBarComponent = ({
                               />
 
                               {/* Archive or Saved Icon */}
-                              <IconButton
-                                edge="end"
-                                onClick={() =>
-                                  notification.isSave !== "1"
-                                    ? handleMarkAsSave(notification.id)
-                                    : handleReleaseSave(notification.id)
-                                }
-                                sx={{ color: "purple" }}
-                              >
-                                {notification.isSave === "1" ? (
-                                  <TurnedInIcon sx={{ fontSize: 24 }} />
-                                ) : (
-                                  <TurnedInNotIcon sx={{ fontSize: 24 }} />
-                                )}
-                              </IconButton>
+                              <Tooltip title="보관하기" placement="bottom">
+                                <IconButton
+                                  edge="end"
+                                  onClick={() =>
+                                    notification.isSave !== "1"
+                                      ? handleMarkAsSave(notification.id)
+                                      : handleReleaseSave(notification.id)
+                                  }
+                                  sx={{
+                                    color: `${theme.palette.primary.main}`
+                                  }}
+                                >
+                                  {notification.isSave === "1" ? (
+                                    <TurnedInIcon sx={{ fontSize: 24 }} />
+                                  ) : (
+                                    <TurnedInNotIcon sx={{ fontSize: 24 }} />
+                                  )}
+                                </IconButton>
+                              </Tooltip>
                             </ListItem>
                           ))}
                         </>

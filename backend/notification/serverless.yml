@@ -1,6 +1,6 @@
 service: service-notification
 org: persii
-app: esquad-monorepo
+# app: esquad-monorepo
 frameworkVersion: "^3.15.0"
 
 provider:
@@ -15,6 +15,7 @@ provider:
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
     NOTIFICATION_CREATED_INDEX: ${env:NOTIFICATION_CREATED_INDEX}
     NOTIFICATION_READ_INDEX: ${env:NOTIFICATION_READ_INDEX}
+    NOTIFICATION_SAVE_INDEX: ${env:NOTIFICATION_SAVE_INDEX}
     NOTIFICATION_TABLE_STREAM_LABEL: ${env:NOTIFICATION_TABLE_STREAM_LABEL}
     SNS_STORAGE_TOPIC_PREFIX: ${env:SNS_STORAGE_TOPIC_PREFIX}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
@@ -61,6 +62,7 @@ provider:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_CREATED_INDEX}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_READ_INDEX}
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_SAVE_INDEX}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
         #        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TOPIC_INDEX}
@@ -252,6 +254,8 @@ resources:
             AttributeType: S
           - AttributeName: isRead
             AttributeType: N
+          - AttributeName: isSave
+            AttributeType: N
         KeySchema: # userId와 createdAt 속성으로 테이블을 설정 -> 각 사용자의 알림을 시간순으로 저장
           - AttributeName: userId
             KeyType: HASH # 파티션 키: userId로 설정하여 특정 사용자의 알림을 조회
@@ -271,6 +275,14 @@ resources:
               - AttributeName: userId
                 KeyType: HASH
               - AttributeName: isRead
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${env:NOTIFICATION_SAVE_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: isSave
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
