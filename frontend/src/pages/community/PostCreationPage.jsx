@@ -86,16 +86,20 @@ const PostCreationPage = ({ onCancel }) => {
             options={[]}
             value={tags}
             onChange={(event, newValue) => setTags(newValue)}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={`tag-${index}`}
-                  variant="outlined"
-                  size="small"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
+            enderTags={(value, getTagProps) =>
+              value.map((option, index) => {
+                const tagProps = getTagProps({ index });
+                const { key, ...restProps } = tagProps;
+                return (
+                  <Chip
+                    key={key || `tag-${index}`}
+                    variant="outlined"
+                    size="small"
+                    label={option}
+                    {...restProps}
+                  />
+                );
+              })
             }
             renderInput={(params) => (
               <TextField
