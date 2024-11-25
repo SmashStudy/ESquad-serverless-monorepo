@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import file from "mime-types";
 
 const ddb = new AWS.DynamoDB.DocumentClient();
 
@@ -18,15 +19,19 @@ export const handler = async (event) => {
 
     try {
         // 메시지를 DynamoDB에 저장
+        const now = Date.now();
+        const item = {
+            room_id,
+            timestamp: now,
+            message,
+            fileKey: file?.fileKey || null,
+            contentType: file?.contentType || null,
+            originalFileName : file?.originalFileName || null,
+        }
         await ddb
             .put({
                 TableName: process.env.MESSAGE_TABLE_NAME,
-                Item: {
-                    room_id,
-                    timestamp: Date.now(),
-                    message,
-                    user_id,
-                },
+                Item: item,
             })
             .promise();
 
@@ -48,7 +53,13 @@ export const handler = async (event) => {
                 await apiGatewayManagementApi
                     .postToConnection({
                         ConnectionId: connection_id,
-                        Data: JSON.stringify({ message, user_id }),
+                        Data: JSON.stringify({
+                            message,
+                            user_id,
+                            timestamp: now,
+                            fileKey: file?.fileKey || null,
+                            contentType: file?.contentType || null,
+                            originalFileName: file?.originalFileName || null}),
                     })
                     .promise();
             } catch (e) {
@@ -74,6 +85,7 @@ export const handler = async (event) => {
                 status: "success",
                 message: message,
                 user_id: user_id,
+                timestamp: now,
             }),
         };
     } catch (e) {
