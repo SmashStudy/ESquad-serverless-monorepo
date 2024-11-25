@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import JoinPage from "./pages/user/JoinPage.jsx";
-import LoginPage from "./pages/user/LoginPage.jsx";
 import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -78,14 +76,7 @@ function App() {
             {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
-                        {/* Redirect logged-in users away from the login page */}
-                        <Route path="/login" element={
-                            // <RedirectIfLoggedIn>
-                                <LoginPage setIsLoggedIn={setIsLoggedIn} />
-                            // </RedirectIfLoggedIn>
-                        } />
                         <Route path="/google" element={<GoogleLogin />} />
-                        <Route path="/join" element={<JoinPage />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
                         <Route path='/user/profile' element={<UserProfile />} />
