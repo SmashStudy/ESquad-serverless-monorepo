@@ -1,19 +1,20 @@
 service: service-notification
 org: persii
-# app: esquad-monorepo
-frameworkVersion: '^3.15.0'
+app: esquad-monorepo
+frameworkVersion: "^3.15.0"
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: ${env:AWS_REGION}
-  environment:  # Lambda 함수에 전달되는 환경 변수 설정
+  environment: # Lambda 함수에 전달되는 환경 변수 설정
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
     NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
     NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
-    NOTIFICATION_INDEX: ${env:NOTIFICATION_INDEX}
+    NOTIFICATION_CREATED_INDEX: ${env:NOTIFICATION_CREATED_INDEX}
+    NOTIFICATION_READ_INDEX: ${env:NOTIFICATION_READ_INDEX}
     NOTIFICATION_TABLE_STREAM_LABEL: ${env:NOTIFICATION_TABLE_STREAM_LABEL}
     SNS_STORAGE_TOPIC_PREFIX: ${env:SNS_STORAGE_TOPIC_PREFIX}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
@@ -22,20 +23,19 @@ provider:
     SOCKET_API_GATEWAY_ID: !Ref ApiGatewayWebsocketApi
     SOCKET_API_ENDPOINT:
       Fn::Join:
-        - ''
-        -
-          - 'wss://'
+        - ""
+        - - "wss://"
           - Ref: ApiGatewayWebsocketApi
           - .execute-api.
           - ${env:AWS_REGION}
           - .amazonaws.com/
           - ${opt:stage, 'dev'}
   # logs:
-    # websocket: true # Enable WebSocket CloudWatch logging
-    # restApi: true   # Enable REST API CloudWatch logging if needed
-  apiGateway:   # API Gateway 관련 설정
+  # websocket: true # Enable WebSocket CloudWatch logging
+  # restApi: true   # Enable REST API CloudWatch logging if needed
+  apiGateway: # API Gateway 관련 설정
     role: serverlessApiGatewayCloudWatchRole
-#    websocketApiId: ${self:resources.ApiGatewayWebsocketApi.WebSocketApiId} # 생성된 WebSocket API의 ID (serverless에서 자동 참조)
+  #    websocketApiId: ${self:resources.ApiGatewayWebsocketApi.WebSocketApiId} # 생성된 WebSocket API의 ID (serverless에서 자동 참조)
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -59,10 +59,11 @@ provider:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_INDEX}
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_CREATED_INDEX}
+        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_READ_INDEX}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
-#        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TOPIC_INDEX}
+        #        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TOPIC_INDEX}
         - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${env:SNS_STORAGE_TOPIC_PREFIX}
     - Effect: Allow
       Action:
@@ -77,7 +78,6 @@ provider:
       Resource:
         - arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/*
 
-
 functions:
   preflightHandler:
     handler: service/preflight.handler
@@ -91,7 +91,7 @@ functions:
     runtime: nodejs20.x
     events:
       - websocket:
-          route: $connect   # 클라이언트가 웹소켓에 연결할 때 호출
+          route: $connect # 클라이언트가 웹소켓에 연결할 때 호출
 
   get_count:
     handler: service/count.handler
@@ -119,7 +119,7 @@ functions:
           batchSize: 5
           startingPosition: LATEST
           filterPatterns:
-            - { "eventName": [ "INSERT" ] }
+            - { "eventName": ["INSERT"] }
 
   mark_all_as_read:
     handler: ./service/markAllAsRead.handler
@@ -134,7 +134,7 @@ functions:
     events:
       - http:
           path: notification/save
-          method: post
+          method: get
           cors: true
 
   mark_as_release:
@@ -142,7 +142,7 @@ functions:
     events:
       - http:
           path: notification/release-save
-          method: post
+          method: get
           cors: true
 
   filter_saved_notifications:
@@ -150,15 +150,15 @@ functions:
     events:
       - http:
           path: notification/filter-saved
-          method: get
+          method: post
           cors: true
-  
+
   notification_onDisconnect:
     handler: service/onDisconnect.handler
     runtime: nodejs20.x
     events:
       - websocket:
-          route: $disconnect  # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
+          route: $disconnect # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
 
   # SNS 을 구독하는 Lambda : 모든 WebSocket 클라이언트에 SNS 메시지를 브로드캐스트
   broadcastNotification:
@@ -171,8 +171,6 @@ functions:
     events:
       - sns:
           arn: arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${env:SNS_STORAGE_TOPIC_PREFIX}
-
-
 
   # 토픽에 메시지 전송
   pubNotificationOnFileUpload:
@@ -188,8 +186,8 @@ functions:
       - stream:
           type: dynamodb # DynamoDB Streams 트리거
           arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/stream/${env:METADATA_TABLE_STREAM_LABEL}
-          batchSize: 5              # 스트림 배치 처리 크기
-          startingPosition: LATEST  # 최신 이벤트부터 시작
+          batchSize: 5 # 스트림 배치 처리 크기
+          startingPosition: LATEST # 최신 이벤트부터 시작
 
 #  sendNotifications:
 #    handler: ./service/sendNotifications.sendNotificationHandler
@@ -206,7 +204,7 @@ resources:
       Properties:
         Name: WebSocketApi
         ProtocolType: WEBSOCKET
-        RouteSelectionExpression: $request.body.action    # 메시지 본문의 action field 를 기반으로 들어오는 Websocket 메시지를 라우팅하는데 역할
+        RouteSelectionExpression: $request.body.action # 메시지 본문의 action field 를 기반으로 들어오는 Websocket 메시지를 라우팅하는데 역할
 
     ConnectionsTable:
       Type: AWS::DynamoDB::Table
@@ -223,19 +221,19 @@ resources:
         GlobalSecondaryIndexes:
           - IndexName: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
             KeySchema:
-              - AttributeName: userId   # 특정 사용자(userId)에 대한 모든 WebSocket 연결을 쿼리
+              - AttributeName: userId # 특정 사용자(userId)에 대한 모든 WebSocket 연결을 쿼리
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-#          - IndexName: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TOPIC_INDEX}
-#            KeySchema:
-#              - AttributeName: topic    # SNS 주제를 기반으로 연결을 효율적으로 조회
-#                KeyType: HASH
-#            Projection:
-#            ProjectionType: ALL
-#        ProvisionedThroughput:
-#          ReadCapacityUnits: 5
-#          WriteCapacityUnits: 5
+        #          - IndexName: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TOPIC_INDEX}
+        #            KeySchema:
+        #              - AttributeName: topic    # SNS 주제를 기반으로 연결을 효율적으로 조회
+        #                KeyType: HASH
+        #            Projection:
+        #            ProjectionType: ALL
+        #        ProvisionedThroughput:
+        #          ReadCapacityUnits: 5
+        #          WriteCapacityUnits: 5
         BillingMode: PAY_PER_REQUEST
         TimeToLiveSpecification:
           AttributeName: ttl
@@ -246,26 +244,36 @@ resources:
       Properties:
         TableName: ${env:NOTIFICATION_TABLE}
         AttributeDefinitions:
-          - AttributeName: userId
-            AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
           - AttributeName: id
             AttributeType: S
-        KeySchema:                # userId와 createdAt 속성으로 테이블을 설정 -> 각 사용자의 알림을 시간순으로 저장
           - AttributeName: userId
-            KeyType: HASH         # 파티션 키: userId로 설정하여 특정 사용자의 알림을 조회
+            AttributeType: S
           - AttributeName: createdAt
-            KeyType: RANGE        # 정렬 키: createdAt 로 설정하여 알림을 시간순으로 정렬
-        GlobalSecondaryIndexes:   # 인덱스: id와 createdAt 을 기준으로 필터링된 검색 가능
-          - IndexName: ${env:NOTIFICATION_INDEX}
+            AttributeType: S
+          - AttributeName: isRead
+            AttributeType: N
+        KeySchema: # userId와 createdAt 속성으로 테이블을 설정 -> 각 사용자의 알림을 시간순으로 저장
+          - AttributeName: userId
+            KeyType: HASH # 파티션 키: userId로 설정하여 특정 사용자의 알림을 조회
+          - AttributeName: id
+            KeyType: RANGE
+        GlobalSecondaryIndexes: # 인덱스: id와 createdAt 을 기준으로 필터링된 검색 가능
+          - IndexName: ${env:NOTIFICATION_CREATED_INDEX}
             KeySchema:
-              - AttributeName: id
+              - AttributeName: userId
                 KeyType: HASH
               - AttributeName: createdAt
                 KeyType: RANGE
             Projection:
-              ProjectionType: ALL   # 모든 속성을 포함하여 인덱스에서 조회하는 설정
+              ProjectionType: ALL # 모든 속성을 포함하여 인덱스에서 조회하는 설정
+          - IndexName: ${env:NOTIFICATION_READ_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: isRead
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
         StreamSpecification:
           StreamViewType: NEW_IMAGE
@@ -273,7 +281,7 @@ resources:
     EsquadStorageNotificationTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: ${env:SNS_STORAGE_TOPIC_PREFIX}   # SNS Topic 명
+        TopicName: ${env:SNS_STORAGE_TOPIC_PREFIX} # SNS Topic 명
 
     ApiGatewayCloudWatchRole:
       Type: AWS::IAM::Role
@@ -299,10 +307,10 @@ resources:
                   Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
 
   Outputs:
-#    WebSocketApiEndpoint:
-#      Description: WebSocket API Gateway Base URL
-#      Value:
-#        Fn::Sub: "wss://${ApiGatewayWebsocketApi}.execute-api.${env:AWS_REGION}.amazonaws.com/${opt:stage}"
+    #    WebSocketApiEndpoint:
+    #      Description: WebSocket API Gateway Base URL
+    #      Value:
+    #        Fn::Sub: "wss://${ApiGatewayWebsocketApi}.execute-api.${env:AWS_REGION}.amazonaws.com/${opt:stage}"
     NotificationTableName:
       Description: Name of the DynamoDB table for notifications
       Value: ${env:NOTIFICATION_TABLE}

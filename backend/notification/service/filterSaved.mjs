@@ -1,61 +1,88 @@
-import {DynamoDBClient, QueryCommand, UpdateItemCommand} from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const NOTIFICATION_CREATED_INDEX = process.env.NOTIFICATION_CREATED_INDEX;
 
 export const handler = async (event) => {
-    console.log(`event is ${JSON.stringify(event, null, 2)}`);
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-    let { userId } = event.queryStringParameters;
-    userId = decodeURIComponent(userId);
+  const { userId, lastEvaluatedKey } = JSON.parse(event.body);
 
-    if (!userId) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "No User IDs provided." }),
-        };
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: "No User IDs provided." }),
+    };
+  }
+
+  try {
+    // 보관처리된 알림 모두 조회
+    const queryParams = {
+      TableName: NOTIFICATION_TABLE,
+      IndexName: NOTIFICATION_CREATED_INDEX,
+      KeyConditionExpression: "#userId = :userId",
+      ExpressionAttributeNames: {
+        "#userId": "userId",
+      },
+      ExpressionAttributeValues: {
+        ":userId": { S: userId },
+      },
+      Limit: 10, // Limit results as required
+      ScanIndexForward: false, // Sort in reverse chronological order
+    };
+
+    // Add ExclusiveStartKey if this is a paginated request
+    if (lastEvaluatedKey) {
+      queryCommand.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
     }
 
-    try {
+    // Execute the query
+    const command = new QueryCommand(queryParams);
+    const rawData = await dynamoDbClient.send(command);
 
-        // 1. 유저의 알림 모두 조회
-        const queryCommand = new QueryCommand({
-            TableName: NOTIFICATION_TABLE,
-            KeyConditionExpression:'#userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
-            FilterExpression: "isSave = :isSave",
-            ExpressionAttributeNames: {
-                '#userId': 'userId',                        // 'userId'라는 실제 필드명을 매핑
-            },
-            ExpressionAttributeValues: {                    // KeyConditionExpression에서 사용하는 값 정의
-                ':userId': { S: userId },
-                ":isSave": { N: '1' },
-            },
-            ScanIndexForward: false,
-        });
-        const queryResponse = await client.send(queryCommand);
+    // Extract the fetched items and the LastEvaluatedKey for pagination
+    const fetchResponse = {
+      items: rawData.Items.map((data) => ({
+        id: data.id.S,
+        userId: data.userId.S,
+        sender: data.sender.S,
+        message: data.message.S,
+        isRead: data.isRead.N,
+        isSave: data.isSave.N,
+        createdAt: data.createdAt.S,
+      })),
+      lastEvaluatedKey: rawData.LastEvaluatedKey
+        ? JSON.stringify(rawData.LastEvaluatedKey)
+        : null,
+    };
 
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, GET',
-                'Access-Control-Allow-Headers': 'Content-Type', 
-            },
-            body: JSON.stringify(queryResponse.Items),
-        };
-    } catch (error) {
-        console.error("Error marking notifications as read:", error);
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, GET',
-                'Access-Control-Allow-Headers': 'Content-Type', 
-            },
-            body: JSON.stringify({ error: "Failed to mark notifications as read." }),
-        };
-    }
+    console.log(
+      `Read notifications in reverse chronological order: ${JSON.stringify(
+        fetchResponse
+      )}`
+    );
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS, POST",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify(fetchResponse),
+    };
+  } catch (error) {
+    console.error("Error marking notifications as read:", error);
+    return {
+      statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // 개발 단계: '*', 프로덕션: 특정 도메인
+        "Access-Control-Allow-Methods": "OPTIONS, GET",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify({ error: "Failed to mark notifications as read." }),
+    };
+  }
 };

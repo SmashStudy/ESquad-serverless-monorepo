@@ -1,83 +1,109 @@
-import {DynamoDBClient, QueryCommand, UpdateItemCommand} from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 
-export const handler = async (event) => {
-    console.log(`event is ${JSON.stringify(event, null, 2)}`);
-
-    const { userId } = JSON.parse(event.body);
-    console.log(`userId: ${userId}`);
-    
-    if (!userId) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "No User IDs provided." }),
-        };
-    }
-
+// Retry mechanism function with exponential backoff
+const updateItemWithRetry = async (params, maxRetries = 3, delay = 200) => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
-
-        // 1. 유저의 알림 모두 조회
-        const queryCommand = new QueryCommand({
-            TableName: NOTIFICATION_TABLE,
-            KeyConditionExpression:'#userId = :userId',     // GSI의 파티션 키(userId)와 비교하는 조건식
-            ExpressionAttributeNames: {
-                '#userId': 'userId',                        // 'userId'라는 실제 필드명을 매핑
-            },
-            ExpressionAttributeValues: {                    // KeyConditionExpression에서 사용하는 값 정의
-                ':userId': { S: userId },
-            },
-            ScanIndexForward: false,
-        });
-        const queryResponse = await client.send(queryCommand);
-        const notifications = queryResponse.Items;
-
-        // 2. 읽지 않은 모든 알림을 읽음 처리
-        const updatePromises = notifications.map((notification) => {
-            if (notification.isRead.N === "0") {
-                const updateParams = new UpdateItemCommand({
-                    TableName: NOTIFICATION_TABLE,
-                    Key: {
-                        userId: {S: userId},
-                        createdAt: {S: notification.createdAt.S},
-                    },
-                    UpdateExpression: "SET isRead = :isRead",
-                    ExpressionAttributeValues: {
-                        ":isRead": 1,
-                    },
-                });
-                return dynamoDbClient.send(updateParams);
-            }
-        });
-
-        // 모든 업데이트 요청 병렬 실행
-        await Promise.all(updatePromises.filter(Boolean));
-
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, POST', 
-                'Access-Control-Allow-Headers': 'Content-Type', 
-            },
-            body: JSON.stringify({
-                message: "Notifications marked as read.",
-            }),
-        };
+      // Attempt to send the UpdateItemCommand
+      await dynamoDbClient.send(new UpdateItemCommand(params));
+      console.log(
+        `Successfully updated item with params: ${JSON.stringify(params.Key)}`
+      );
+      return; // Success, exit function
     } catch (error) {
-        console.error("Error marking notifications as read:", error);
-        return {
-            statusCode: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*', // 개발 단계: '*', 프로덕션: 특정 도메인
-                'Access-Control-Allow-Methods': 'OPTIONS, POST', 
-                'Access-Control-Allow-Headers': 'Content-Type', 
-            },
-            body: JSON.stringify({ error: "Failed to mark notifications as read." }),
-        };
+      // If maximum retries reached, throw error
+      if (attempt === maxRetries - 1) {
+        console.error(
+          `Max retries reached for updating item with params: ${JSON.stringify(
+            params.Key
+          )}`
+        );
+        throw error;
+      }
+
+      // Log error and wait before retrying
+      console.warn(
+        `Attempt ${attempt + 1} failed for updating item: ${JSON.stringify(
+          params.Key
+        )}. Retrying...`,
+        error
+      );
+
+      // Exponential backoff delay before the next retry
+      const backoffDelay = delay * Math.pow(2, attempt); // Exponential backoff delay
+      await new Promise((res) => setTimeout(res, backoffDelay));
     }
+  }
+};
+
+export const handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
+
+  const { userId, notificationIds } = JSON.parse(event.body);
+  console.log(`userId: ${userId}, notificationIds: ${notificationIds}`);
+
+  if (!userId || !notificationIds || notificationIds.length === 0) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        error: "No User ID or Notification IDs provided.",
+      }),
+    };
+  }
+
+  try {
+    // Mark all notifications as read using retry mechanism
+    const updatePromises = notificationIds.map((notificationId) => {
+      const updateParams = {
+        TableName: NOTIFICATION_TABLE,
+        Key: {
+          userId: { S: userId },
+          id: { S: notificationId },
+        },
+        UpdateExpression: "SET isRead = :isRead",
+        ExpressionAttributeValues: {
+          ":isRead": { N: "1" },
+        },
+      };
+      // Execute update command with retry mechanism
+      return updateItemWithRetry(updateParams);
+    });
+
+    // Execute all update requests concurrently
+    try {
+      await Promise.all(updatePromises);
+      console.log("All notifications marked as read successfully");
+    } catch (error) {
+      console.error("Failed to mark some or all notifications as read:", error);
+      // Optionally: add logic to handle failed updates if needed, like logging failed IDs.
+    }
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // 개발 단계: '*', 프로덕션: 특정 도메인
+        "Access-Control-Allow-Methods": "OPTIONS, POST",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify({
+        message: "Notifications marked as read.",
+      }),
+    };
+  } catch (error) {
+    console.error("Error marking notifications as read:", error);
+    return {
+      statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // 개발 단계: '*', 프로덕션: 특정 도메인
+        "Access-Control-Allow-Methods": "OPTIONS, POST",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+      body: JSON.stringify({ error: "Failed to mark notifications as read." }),
+    };
+  }
 };
