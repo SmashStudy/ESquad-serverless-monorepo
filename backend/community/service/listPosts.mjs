@@ -19,13 +19,45 @@ export const handler = async (event) => {
       recruitStatus,
     } = parseQueryStringParameters(event.queryStringParameters);
 
-    let params = createQueryParams(
-      boardType,
-      limit,
-      lastEvaluatedKey,
-      resolved,
-      recruitStatus
-    );
+    let params;
+
+    if (boardType === "questions" && resolved !== undefined) {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "board-resolved-create-index",
+        KeyConditionExpression: "resolved = :resolved",
+        ExpressionAttributeValues: {
+          ":resolved": { S: resolved },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    } else if (boardType === "team-recruit" && recruitStatus !== undefined) {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "board-recruited-create-index",
+        KeyConditionExpression: "recruitStatus = :recruitStatus",
+        ExpressionAttributeValues: {
+          ":recruitStatus": { S: recruitStatus },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    } else {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "BoardIndex",
+        KeyConditionExpression: "boardType = :boardType",
+        ExpressionAttributeValues: {
+          ":boardType": { S: boardType },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    }
 
     const data = await ddbClient.send(new QueryCommand(params));
     const posts = formatPosts(data.Items);
@@ -63,41 +95,7 @@ const parseQueryStringParameters = (queryStringParameters = {}) => ({
   recruitStatus: queryStringParameters.recruitStatus,
 });
 
-const createQueryParams = (
-  boardType,
-  limit,
-  lastEvaluatedKey,
-  resolvedFilter,
-  recruitStatusFilter
-) => {
-  let params = {
-    TableName: TABLE_NAME,
-    IndexName: "BoardIndex",
-    KeyConditionExpression: "boardType = :boardType",
-    ExpressionAttributeValues: {
-      ":boardType": { S: boardType },
-    },
-    Limit: limit,
-    ExclusiveStartKey: lastEvaluatedKey,
-    ScanIndexForward: false,
-  };
-
-  if (boardType === "questions" && resolvedFilter !== undefined) {
-    params.FilterExpression = "resolved = :resolved";
-    params.ExpressionAttributeValues[":resolved"] = { S: resolvedFilter };
-  } else if (
-    boardType === "team-recruit" &&
-    recruitStatusFilter !== undefined
-  ) {
-    params.FilterExpression = "recruitStatus = :recruitStatus";
-    params.ExpressionAttributeValues[":recruitStatus"] = {
-      S: recruitStatusFilter,
-    };
-  }
-
-  return params;
-};
-
+// DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷
 const formatPosts = (items) => {
   return items.map((item) => {
     const post = {

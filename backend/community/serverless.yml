@@ -90,6 +90,10 @@ resources:
             AttributeType: S
           - AttributeName: boardType
             AttributeType: S
+          - AttributeName: resolved
+            AttributeType: S
+          - AttributeName: recruitStatus
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -99,6 +103,22 @@ resources:
           - IndexName: BoardIndex
             KeySchema:
               - AttributeName: boardType
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: board-resolved-create-index
+            KeySchema:
+              - AttributeName: resolved
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: board-recruited-create-index
+            KeySchema:
+              - AttributeName: recruitStatus
                 KeyType: HASH
               - AttributeName: SK
                 KeyType: RANGE
