@@ -37,8 +37,8 @@ export const handler = async (event) => {
       content: { S: content },
       writer: {
         M: {
-          id: { S: writer.id },
           name: { S: writer.name },
+          nickname: { S: writer.nickname },
           email: { S: writer.email },
         },
       },
