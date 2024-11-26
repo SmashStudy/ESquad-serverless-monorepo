@@ -30,7 +30,7 @@ describe('putAttendee 함수 테스트', () => {
       consoleErrorSpy.mockRestore();
     });
   
-    it('참가자 정보를 성공적으로 저장해야 합니다', async () => {
+    test('참가자 정보를 성공적으로 저장해야 합니다', async () => {
       const title = '테스트 회의';
       const attendeeId = 'attendee123';
       const attendeeName = '참석자1';
@@ -54,7 +54,7 @@ describe('putAttendee 함수 테스트', () => {
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
   
-    it('DynamoDB 오류가 발생하면 예외를 던져야 합니다', async () => {
+    test('DynamoDB 오류가 발생하면 예외를 던져야 합니다', async () => {
       const title = '테스트 회의';
       const attendeeId = 'attendee123';
       const attendeeName = '참석자1';
@@ -76,7 +76,7 @@ describe('putAttendee 함수 테스트', () => {
       expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving attendee:', error);
     });
   
-    it('TTL 값이 정상적으로 설정되어야 합니다', async () => {
+    test('TTL 값이 정상적으로 설정되어야 합니다', async () => {
       const title = '테스트 회의';
       const attendeeId = 'attendee123';
       const attendeeName = '참석자1';
