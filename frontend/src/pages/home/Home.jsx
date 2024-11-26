@@ -18,6 +18,7 @@ import StudyPage from "../team/study/StudyPage.jsx";
 import {useUser} from "../../components/form/UserContext.jsx";
 import axios from "axios";
 import {fetchTeam} from "../../hooks/fetchTeam.jsx";
+import {jwtDecode} from 'jwt-decode'; 
 
 const Home = () => {
     const theme = useTheme();
@@ -25,59 +26,55 @@ const Home = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true); 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [teams, setTeams] = useState([
-        {teamId: 'TEAM#001', teamName: 'team001'},
-        {teamId: 'TEAM#002', teamName: 'team002'}
-    ]);
+    const [teams, setTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState(null); // 
-    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px 반응형
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px 반응형
-
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const token = localStorage.getItem('jwtToken');
+    
     useEffect(() => {
-        // 비동기 함수 정의
+        
         const fetchTeams = async () => {
             try {
-                setLoading(true); // 로딩 시작
-
-                // 1. 팀 ID 리스트 가져오기
-                const responseTeamId = await axios.get('https://api.esquad.click/teams');
+                setLoading(true);
+                console.log(`모게: ${jwtDecode(token).email}`);
+                console.log(`모게sd: ${JSON.stringify(jwtDecode(token))}`);
+                
+                console.log("여기서13");
+                const responseTeamId = await axios.post('https://api.esquad.click/teams/get',{
+                        userId: jwtDecode(token).email,
+                    }
+                );
                 const teamIds = responseTeamId.data.data; // 팀 ID 배열
-
-                // 2. 각 팀의 프로필 데이터 가져오기
                 const teamProfilesPromises = teamIds.map(async (teamId) =>{
                     const encodedTeamId = encodeURIComponent(teamId); 
-                    
                     const res = await axios.get(`https://api.esquad.click/teams/${encodedTeamId}`);
                     return res.data.data;
                 });
+
                 const teamProfiles = await Promise.all(teamProfilesPromises);
                 
                 setTeams(teamProfiles);
                 setTeams((prevTeams) =>
                     [...prevTeams].sort((a, b) => a.teamName.localeCompare(b.teamName))
                 );
+                console.log(`teams: ${JSON.stringify(teams)}`);
             } catch (error) {
                 console.log('에러남')
                 console.error('Error fetching teams:', error);
                 return null;
             } finally {
-                setLoading(false); // 로딩 종료
+                setLoading(false); 
             }
         };
-
-        // 비동기 함수 호출
         fetchTeams();
-    }, []); // 종속성 배열 비워둠(마운트 시 한 번 실행)
+    }, []); 
     
     const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
     const toggleChatDrawer = () => {
         setChatDrawerOpen((prevState) => !prevState);
     };
-    // const accessToken= localStorage.getItem('jwt');
-    // const user = useUser();
-
-
-    // Toggle the sidebar or open the drawer based on screen size
+    
     const handleSidebarToggle = () => {
         if (isSmallScreen) {
             setDrawerOpen(true);
@@ -86,16 +83,13 @@ const Home = () => {
         }
     };
 
-    // Close the drawer
     const handleDrawerClose = () => { setDrawerOpen(false); };
 
-    // set selectedTab
     const handleTab = (tabIndex) => {
         setSelectedTab(tabIndex);
         setSelectedTeam(null);
     }
 
-    // update selectedTeam
     const changeSelectedTeam = (i) => {
 
         const changeSelectTeam = teams[i];
@@ -105,20 +99,33 @@ const Home = () => {
         }
     };
 
-    // UpdateSelectedTeam에 수정된 팀 정보를 전달하여 상태를 업데이트
     const updateSelectedTeam = (updatedTeam) => {
         setTeams((prevTeams) =>
             prevTeams.map((team) =>
                 team.PK= updatedTeam.PK ? updatedTeam : team
             )
         );
-        setSelectedTeam(updatedTeam); // 현재 선택된 팀도 업데이트
+        setSelectedTeam(updatedTeam);
     };
 
-
-    const updateTeams = (team) => {
-        setTeams((prevTeams) => [...prevTeams, team]);
-    }
+    const updateTeams = async (team) => {
+        try {
+            console.log(`dd22d${JSON.stringify(team.teamId)}`);
+    
+            // 팀 ID를 URL 인코딩
+            const encodedTeamId = encodeURIComponent(team.teamId);
+            console.log(`dd22d22${JSON.stringify(encodedTeamId)}`);
+    
+            // 팀 정보를 비동기적으로 가져옴
+            const res = await axios.get(`https://api.esquad.click/teams/${encodedTeamId}`);
+            console.log(`ddd ${JSON.stringify(res.data)}`);
+    
+            // 기존 팀 목록에 새로운 팀 추가
+            setTeams((prevTeams) => [...prevTeams, res.data]);
+        } catch (error) {
+            console.error('Error fetching team:', error);
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -132,7 +139,7 @@ const Home = () => {
                 changeSelectedTeam={changeSelectedTeam}
                 updateTeams={updateTeams}
                 teams={teams}
-                toggleChatDrawer={toggleChatDrawer} // 이 부분 추가
+                toggleChatDrawer={toggleChatDrawer}
             />
 
             <ChatDrawer
@@ -140,11 +147,11 @@ const Home = () => {
                 isMediumScreen={isMediumScreen}
                 teams={teams}
                 selectedTeam={selectedTeam}
-                isOpen={chatDrawerOpen} // 상태 전달
-                toggleDrawer={toggleChatDrawer} // 핸들러 전달
+                isOpen={chatDrawerOpen}
+                toggleDrawer={toggleChatDrawer}
             />
 
-            {/* Home Content Area with Sidebar */}
+            {/* Home Content Area with Sidebar */}  
             <Box
                 component="main"
                 sx={{
@@ -171,9 +178,9 @@ const Home = () => {
                         display: 'flex',
                         flexDirection: isMediumScreen ? 'column' : 'row',
                         flexGrow: 1,
-                        py: 2,      // warn
-                        px: 2,      // warn
-                        gap: 1,     // Community area 와 chat area gap
+                        py: 2,      
+                        px: 2,      
+                        gap: 1,     
                         transition: 'width 0.3s ease',
                         backgroundColor: '#fff',
                     }}
@@ -188,7 +195,7 @@ const Home = () => {
                         }}
                     >
 
-                        <Outlet context={{ selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab }}/>
+                        <Outlet context={{ selectedTeam, updateSelectedTeam, changeSelectedTeam, setSelectedTeam, setSelectedTab, updateTeams }}/>
                     </Box>
 
                     {/* Right Section - Chat Area */}
@@ -197,7 +204,6 @@ const Home = () => {
                         isMediumScreen={isMediumScreen}
                         teams={teams}
                         selectedTeam={selectedTeam}
-                        // user={user}
                     />
                 </Box>
             </Box>

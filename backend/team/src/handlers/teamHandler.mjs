@@ -9,7 +9,10 @@ import * as TeamService from '../services/teamService.mjs';
  */
 export const checkTeamName = async (event) => {
     try {
-        const teamName = decodeURIComponent(event.pathParameters.teamName);
+        const teamName = decodeURIComponent(event.pathParameters?.teamName);
+        if (!teamName) {
+            return createResponse(400, { error: 'Missing or invalid team name' });
+        }
         const isAvailable = await TeamService.checkTeamName(teamName);
         return createResponse(200,  { isAvailable, message: isAvailable ? 'Team name is available' : 'Team name already exists' });
     } catch (error) {

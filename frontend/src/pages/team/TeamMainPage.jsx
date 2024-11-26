@@ -17,11 +17,31 @@ import {
 import { alpha, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 const TeamMainPage = () => {
-    const { selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab } = useOutletContext();
+    const { selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab , updateTeams} = useOutletContext();
     const { teamId } = useParams(); // URL의 teamId 받아오기
     const [teamData, setTeamData] = useState(null);
     const [loading, setLoading] = useState(true);
+    console.log(`선택된 팀 ${JSON.stringify(selectedTeam)}`);
+    console.log(`선택된 팀 ${JSON.stringify(teamId)}`);
 
+    useEffect(() => {
+        const fetchTeamData = async () => {
+            try {
+                const response = await axios.get(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}`);
+                const teamData = response.data.data;
+
+                setTeamData(teamData); // 팀 데이터를 상태에 저장
+                setSelectedTeam(teamData); // 선택된 팀 상태 업데이트
+            } catch (error) {
+                console.error('팀 데이터를 불러오는 중 오류 발생:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (teamId) fetchTeamData();
+    }, [teamId, setSelectedTeam]);
+    
     return (
             <Box
                 sx={{
@@ -34,8 +54,8 @@ const TeamMainPage = () => {
                     position: 'relative',   // Added to make Fab relative to parent Box
                 }}
             >   
-                <h1>Selected Team: {selectedTeam ? selectedTeam.description : "No team selected"}</h1>
-                <Outlet context={{selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab}}/>
+                <h1>Selected Team: {selectedTeam ? selectedTeam.teamName : "No team selected"}</h1>
+                <Outlet context={{selectedTeam, updateSelectedTeam, setSelectedTeam, setSelectedTab, updateTeams}}/>
 
             </Box>
     );

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, Stack, Chip } from '@mui/material';
 import FaceIcon from '@mui/icons-material/Face';
 
-function ConfirmationStep({ teamName, teamCrew }) {
+function ConfirmationStep({ teamName, teamUsers }) {
     return (
         <Box sx={{ pt: 2 }}>
             <Typography sx={{ mt: 2, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>마지막으로 확인해주세요</Typography>
@@ -27,12 +27,12 @@ function ConfirmationStep({ teamName, teamCrew }) {
                     }}
                     component="ul"
                 >
-                    {teamCrew.map((crew, index) => (
+                    {teamUsers.map((crew, index) => (
                         <Chip
                             key={index}
                             sx={{ fontSize: 'small', mb: 1, mr: 1 }}
                             icon={<FaceIcon />}
-                            label={crew.username}
+                            label={crew}
                             variant="outlined"
                         />
                     ))}

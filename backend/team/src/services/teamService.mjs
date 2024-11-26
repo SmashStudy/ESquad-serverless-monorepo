@@ -12,7 +12,7 @@ export const checkTeamName = async (teamName) => {
         TableName: TEAM_TABLE,
         IndexName: 'TeamName-Index',
         KeyConditionExpression: 'teamName = :teamName',
-        ExpressionAttributeValues: { ':teamName': teamName },
+        ExpressionAttributeValues: { ':teamName': teamName }
     };
     const result = await dynamoDb.send(new QueryCommand(params));
     return result.Items.length === 0;
@@ -43,13 +43,13 @@ export const createTeam = async ({ teamName, description, userIds }) => {
             teamName,
             description,
             creatAt: new Date().toISOString(),
-            updateAt: new Date().toISOString(),
-        },
+            updateAt: new Date().toISOString()
+        }
     };
     await dynamoDb.send(new PutCommand(teamParams));
 
-    if (userIds.length < 4 || userIds.length > 12) {
-        return { isValid: false, message: '팀 구성원은 최소 4명, 최대 12명이어야 합니다.' };
+    if (userIds.length > 12) {
+        return { isValid: false, message: '최대 12명이어야 합니다.' };
     }
 
     await TeamUserService.addTeamUsers(teamId, userIds);
@@ -87,7 +87,7 @@ export const updateTeam = async (teamId, { teamName, description }) => {
             ':teamName': teamName,
             ':description': description,
         },
-        ReturnValues: 'ALL_NEW',
+        ReturnValues: 'ALL_NEW'
     };
     const result = await dynamoDb.send(new UpdateCommand(params));
     return result.Attributes;
@@ -100,7 +100,7 @@ export const deleteTeam = async (teamId) => {
     const queryParams = {
         TableName: TEAM_TABLE,
         KeyConditionExpression: 'PK = :pk',
-        ExpressionAttributeValues: {':pk': teamId },
+        ExpressionAttributeValues: {':pk': teamId }
     };
 
     const queryResult = await dynamoDb.send(new QueryCommand(queryParams));

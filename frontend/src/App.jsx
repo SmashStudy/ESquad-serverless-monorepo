@@ -48,30 +48,6 @@ const theme = createTheme({
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-    // Set login state based on token in localStorage
-    // useEffect(() => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (token) {
-    //         setIsLoggedIn(true);
-    //     }
-    // }, [isLoggedIn]);
-    //
-    // const ProtectedRoute = ({ children }) => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (!token) {
-    //         return <Navigate to="/login" />;
-    //     }
-    //     return children;
-    // };
-    //
-    // const RedirectIfLoggedIn = ({ children }) => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (token) {
-    //         return <Navigate to="/" />;
-    //     }
-    //     return children;
-    // };
-
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />

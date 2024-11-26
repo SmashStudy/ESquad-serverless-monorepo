@@ -6,6 +6,7 @@ import { validateTeamUserIds, validateRoleCheckData } from '../utils/teamUserVal
  * 한 유저가 소속된 모든 팀 조회 서비스
  */
 export const getTeams = async (userId) => {
+    
     const params = {
         TableName: TEAM_TABLE,
         IndexName: 'SK-ItemType-Index',
@@ -16,15 +17,21 @@ export const getTeams = async (userId) => {
         }
     };
     const result = await dynamoDb.send(new QueryCommand(params));
-    return (result.Items || []).map(item => item.PK);
+    console.log(`re : ${JSON.stringifyresult}`);
+
+    return (result.Items).map(item => item.PK);
 };
 
 /**
  * 팀 유저 권한 확인 서비스
  */
 export const checkTeamUserRole = async (teamId, userId) => {
+    if (!teamId || !userId) {
+        return createResponse(400, { error: 'teamId와 userId는 필수입니다.' });
+    }
 
     const roleCheckValidation = validateRoleCheckData(teamId, userId);
+    console.log(roleCheckValidation);
     if (!roleCheckValidation.isValid) throw new Error(roleCheckValidation.message);
 
     const teamUserParams = {
@@ -32,13 +39,13 @@ export const checkTeamUserRole = async (teamId, userId) => {
         KeyConditionExpression: 'PK = :pk AND SK = :sk',
         ExpressionAttributeValues: {
             ':pk': teamId,
-            ':sk': userId,
-        },
+            ':sk': userId
+        }
     };
     const teamUserResult = await dynamoDb.send(new QueryCommand(teamUserParams));
     const teamUser = teamUserResult.Items?.[0];
 
-    if (!teamUser || teamUser.role !== 'Manager') {
+    if (!teamUser) {
         throw new Error('User does not have manager permissions');
     }
     return true;
@@ -73,6 +80,7 @@ export const getTeamUsersProfile = async (teamId) => {
     return teamUserItems;
 }
 
+
 /**
  * 팀에 멤버 추가 서비스
  */
@@ -90,7 +98,8 @@ export const addTeamUsers= async (teamId, userIds) => {
                 PK: teamId,
                 SK: userId,
                 itemType: 'TeamUser',
-                role: role
+                role: role,
+                inviteState: 'processing'
             },
         }));
     });

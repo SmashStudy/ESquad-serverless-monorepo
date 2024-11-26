@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button, Typography, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { Box, Button, Typography, List, ListItem, ListItemText, TextField, Card, CardContent, CardActions, Divider } from '@mui/material';
+import { jwtDecode } from 'jwt-decode';
 
 const ManageUserPage = () => {
     const { selectedTeam } = useOutletContext();
@@ -9,10 +10,10 @@ const ManageUserPage = () => {
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState('');
     const [loading, setLoading] = useState(false);
-    const [isManager, setIsManager] = useState(false); // 권한 상태
-    const [isLoadingRole, setIsLoadingRole] = useState(true); // 권한 확인 로딩 상태
+    const [isManager, setIsManager] = useState(false);
+    const [isLoadingRole, setIsLoadingRole] = useState(true);
+    const token = localStorage.getItem('jwtToken');
 
-    // 팀 유저 데이터 가져오기
     const fetchTeamUsers = async () => {
         try {
             setLoading(true);
@@ -25,15 +26,15 @@ const ManageUserPage = () => {
         }
     };
 
-    // 권한 확인 API 호출
     const checkUserRole = async () => {
         try {
-            const response = await axios.get(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/role`);
-            console.log(response.data.data);
-            setIsManager(response.data.data); // 권한 설정
+            const response = await axios.post(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/role`, {
+                userId: jwtDecode(token).email
+            });
+            setIsManager(response.data.data);
         } catch (error) {
             console.error('Error checking role:', error);
-            setIsManager(false); // 기본값 비활성화
+            setIsManager(false);
         } finally {
             setIsLoadingRole(false);
         }
@@ -42,80 +43,124 @@ const ManageUserPage = () => {
     useEffect(() => {
         if (teamId) {
             fetchTeamUsers();
-            checkUserRole(); // 권한 확인
+            checkUserRole();
         }
     }, [teamId]);
 
-    // 유저 추가
     const handleAddUser = async () => {
-        if (!newUser || users.length >= 12 || !isManager) return; // 권한 없거나 12명 이상 추가 불가
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 유효성 검사 정규식
+    
+        if (!newUser || users.length >= 12 || !isManager) return;
+    
+        // 이메일 형식 검증
+        if (!emailRegex.test(newUser)) {
+            alert('유효한 이메일 주소를 입력해 주세요.');
+            return;
+        }
+    
         try {
             await axios.put(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/setting/users`, {
                 membersToAdd: [newUser],
                 membersToDelete: [],
             });
-            setUsers([...users, { userId: newUser }]);
-            setNewUser('');
-            fetchTeamUsers();
+            setNewUser(''); // 입력 필드 초기화
+            fetchTeamUsers(); // 사용자 목록 새로고침
         } catch (error) {
             console.error('Error adding user:', error);
         }
     };
-
-    // 유저 삭제
     const handleDeleteUser = async (userId) => {
-        if (users.length <= 4 || !isManager) return; // 권한 없거나 4명 이하 삭제 불가
+        if (users.length <= 4 || !isManager) return;
         try {
             await axios.put(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/setting/users`, {
                 membersToAdd: [],
                 membersToDelete: [userId],
             });
-            setUsers(users.filter((user) => user.SK !== userId));
             fetchTeamUsers();
         } catch (error) {
             console.error('Error deleting user:', error);
         }
     };
 
-    // 권한 확인 로딩 상태 처리
     if (isLoadingRole) {
         return <Typography>Loading role information...</Typography>;
     }
 
     return (
-        <Box>
-            <Typography variant="h4">Manage Users for {selectedTeam?.teamName || teamId}</Typography>
+        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2, bgcolor: '#f9f9f9', borderRadius: 2 }}>
+            <Typography variant="h4" sx={{ mb: 2, textAlign: 'center', color: '#4a4a4a' }}>
+                Manage Users for {selectedTeam?.teamName || teamId}
+            </Typography>
 
-            {/* 유저 리스트 */}
-            <List>
-                {users.map((user) => (
-                    <ListItem key={user.SK}>
-                        <ListItemText primary={user.SK} />
-                        {/* 유저가 4명 이상이고 매니저일 때만 삭제 버튼 표시 */}
-                        {users.length > 4 && isManager && (
-                            <Button onClick={() => handleDeleteUser(user.SK)}>Delete</Button>
-                        )}
-                    </ListItem>
-                ))}
-            </List>
+            <Card variant="outlined" sx={{ mb: 2, borderRadius: 2, boxShadow: 1 }}>
+                <CardContent>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                        Team Members
+                    </Typography>
+                    <List>
+                        {users.map((user) => (
+                            <ListItem
+                                key={user.SK}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    bgcolor: '#fff',
+                                    borderRadius: 1,
+                                    mb: 1,
+                                    boxShadow: 1,
+                                }}
+                            >
+                                <Box>
+                                    <ListItemText
+                                        primary={user.SK}
+                                        secondary={`Invite State: ${user.inviteState || 'N/A'}`}
+                                    />
+                                </Box>
+                                {users.length > 4 && isManager && (
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        size="small"
+                                        onClick={() => handleDeleteUser(user.SK)}
+                                    >
+                                        Delete
+                                    </Button>
+                                )}
+                            </ListItem>
+                        ))}
+                    </List>
+                </CardContent>
+            </Card>
 
-            {/* 유저 추가 */}
-            <Box sx={{ mt: 2 }}>
-                {users.length < 12 ? (
-                    <>
-                        <TextField
-                            label="Add User"
-                            value={newUser}
-                            onChange={(e) => setNewUser(e.target.value)}
-                            disabled={!isManager || loading} // 매니저가 아니면 비활성화
-                        />
-                        <Button onClick={handleAddUser} disabled={!isManager || loading}>
-                            Add
-                        </Button>
-                    </>
-                ) : (
-                    <Typography color="error">Cannot add more than 12 users.</Typography>
-                )}
+            <Divider sx={{ mb: 2 }} />
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 2,
+                    p: 2,
+                    bgcolor: '#eaf4fc',
+                    borderRadius: 2,
+                    boxShadow: 1,
+                }}
+            >
+                <TextField
+                    label="Add User"
+                    value={newUser}
+                    onChange={(e) => setNewUser(e.target.value)}
+                    fullWidth
+                    disabled={!isManager || loading}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddUser}
+                    disabled={!isManager || loading}
+                >
+                    Add
+                </Button> 
             </Box>
         </Box>
     );

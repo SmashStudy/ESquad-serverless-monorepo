@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TeamNameInput from './stepfunction/TeamNameInput.jsx';
 import ConfirmationStep from './stepfunction/ConfirmationStep.jsx';
-import CrewManagement from './stepfunction/CrewManagement.jsx';
+import TeamUserManagement from './stepfunction/TeamUserManagement.jsx';
 import {
-    useTheme,
     Box,
     Button,
     Typography,
@@ -16,55 +15,35 @@ import {
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import CheckIcon from '@mui/icons-material/Check';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
+import {jwtDecode} from 'jwt-decode'; 
 const steps = ['스페이스명', '팀원 초대', '확인', '이동'];
 
-const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
+const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedTeam }) => {
+    const navigate = useNavigate();    
+    const token = localStorage.getItem('jwtToken');
+
     const [activeStep, setActiveStep] = useState(0);
     const [teamName, setTeamName] = useState('');
-    const [teamCrew, setTeamCrew] = useState([]);
-    const [newCrew, setNewCrew] = useState('');
+    const [teamUsers, setTeamUsers] = useState([`${jwtDecode(token).email}`,"qwer@gmail.com"]);
+    const [newTeamUser, setnewTeamUser] = useState('');
     const [searchError, setSearchError] = useState('');
     const [teamNameError, setTeamNameError] = useState('');
     const [loading, setLoading] = useState(false);
     const [teamId, setTeamId] = useState('');
-    
-
-    const navigate = useNavigate();
-    const userInfo = { id: 'USER#123', username: 'esquadback'};
-
-    const updateTeamCrew = () => {
-        setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
-    }
 
     useEffect(() => {
-        if (userInfo && teamCrew.length === 0) {
-            updateTeamCrew();
-        }
-    }, [userInfo]);
-
-    const handleBack = () => setActiveStep((prev) => prev - 1);
-
-    const handleNext = async () => {
-
-        if (activeStep === 0) {
-            const isValidTeamName = await validateTeamName();
-            if (!isValidTeamName) return;
-        }
-        if (activeStep === 1) {
-            if (teamCrew.length < 4 || teamCrew.length > 12) {
-                setSearchError('팀 구성원은 최소 4명, 최대 12명이어야 합니다.');
-                return;
+        console.log(teamUsers);
+        if (token && teamUsers.length === 0) {
+            try {
+                setTeamUsers([decodedToken.email]);
+            } catch (error) {
+                console.error('JWT 디코드 오류:', error);
             }
         }
-        if (activeStep === 2) {
-            await handleCreateTeam();
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        } 
-        else { setActiveStep((prevActiveStep) => prevActiveStep + 1); }
-    };
+    }, [token]);
+
+    const handleBack = () => setActiveStep((prev) => prev - 1);
 
     const validateTeamName = async () => {
 
@@ -75,11 +54,11 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
         
         try {
             console.log(`Validating team name: ${teamName}`);
-            const encodedTeamName = encodeURIComponent(teamName);
+            
             setLoading(true);
             setTeamNameError('');
             
-            const response = await axios.get(`https://api.esquad.click/teams/check-name/${encodedTeamName}`);
+            const response = await axios.get(`https://api.esquad.click/teams/check-name/${encodeURIComponent(teamName)}`);
             const { isAvailable, message } = response.data;
 
             if (!isAvailable) {
@@ -102,121 +81,103 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
         }        
     };
 
-    const localUserDatabase = [
-        { id: 'USER#001', username: 'Alice' },
-        { id: 'USER#002', username: 'Bob' },
-        { id: 'USER#003', username: 'Charlie' },
-        { id: 'USER#004', username: 'David' },
-        { id: 'USER#005', username: 'Eve' },
-        { id: 'USER#006', username: 'Frank' },
-        { id: 'USER#007', username: 'Grace' },
-        { id: 'USER#008', username: 'Hank' },
-        { id: 'USER#009', username: 'Ivy' },
-        { id: 'USER#010', username: 'Jack' },
-        { id: 'USER#011', username: 'Karen' },
-        { id: 'USER#012', username: 'Leo' },
-        { id: 'USER#013', username: 'Mona' },
-        { id: 'USER#014', username: 'Nina' },
-        { id: 'USER#015', username: 'Oscar' }
-    ];
-    const searchCrew = async () => {
-        if (!validateNewCrew(newCrew)) return ;
+    const searchUser = async () => {
+        if (!validatenewTeamUser(newTeamUser)) return ;
+        
         
         // 유저 닉네임으로 유무 판별
-        // try {
-        //     setLoading(true);
-        //     const response = await axios.get(`https://api.esquad.click/dev/users?username=${newCrew}`);
+        try {
             
-        //     if (response.data && response.data.username) {
-        //         addTeamCrew({ id: response.data.id, username: response.data.username });
-        //     } else {
-        //         setSearchError('존재하지 않는 사용자입니다.');
-        //     }
-        // } catch (error) {
-        //     console.error('Error searching user:', error);
-        //     setSearchError('유저 검색 중 오류가 발생했습니다.');
-        // } finally {
-        //     setLoading(false);
-        // }      
-    
-        const foundUser = localUserDatabase.find((user) => user.username.toLowerCase() === newCrew.toLowerCase());
-        
-        if (!foundUser) {
-            setSearchError('존재하지 않는 사용자입니다.');
-            return;
-        }
+            if (teamUsers.includes(newTeamUser)) {
+                setSearchError('이미 초대된 유저입니다.');
+                return;
+            }
 
-        addTeamCrew({ id: foundUser.id, username: foundUser.username });
+            setTeamUsers((prevUsers) => [...prevUsers, newTeamUser]);
+            setnewTeamUser('');
+            setSearchError('');
+            
+        } catch (error) {
+            console.error('Error searching user:', error);
+            setSearchError('유저 초대 중 오류가 발생했습니다.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const validateNewCrew = (newCrew) => {
-        if (!newCrew.trim()) {
+    const validatenewTeamUser = (newTeamUser) => {
+        if (!newTeamUser.trim()) {
             setSearchError('유저 ID를 입력해주세요');
             return false;
         }
         setSearchError('');
         return true;
     };
-
-    const addTeamCrew = (user) => {
-
-        if (teamCrew.some((crew) => crew.id === user.id)) {
-            setSearchError('이미 추가한 유저입니다.');
-            return;
-        }
-
-        setTeamCrew((prevCrew) => {
-            const existingUser = prevCrew[0];
-            return [existingUser, ...prevCrew.slice(1), user];
-        });
-
-        setNewCrew('');
-        setSearchError('');
-    };
-
-    const removeTeamMember = (member) => {
-        setTeamCrew(teamCrew.filter((tm) => tm.username !== member.username));
+    const removeTeamUser= (removeUser) => {
+        setTeamUsers(teamUsers.filter((teamUser) => teamUser.username !== removeUser.username));
     };
 
     const handleCreateTeam = async () => {
-        const teamData = {
+        const teamForm = {
             teamName: teamName,
             description: '이 팀은 React와 Serverless 프로젝트를 위한 공간입니다.',
-            userIds: teamCrew.map((crew) => crew.id)
+            userIds: teamUsers,
         };
-        console.log(teamData);
+        console.log(teamForm);
     
         try {
             setLoading(true);
-            const response = await axios.post('https://api.esquad.click/teams',teamData);
-            console.log('Team Created:', response.data.data);
+            const response = await axios.post('https://api.esquad.click/teams/create', teamForm);
+            console.log(`${JSON.stringify(response)}`);
             updateTeams(response.data.data);
             const createdTeamId = response.data.data.teamId;
             setTeamId(createdTeamId); // 상태 업데이트
-            console.log(`Team ID: ${createdTeamId}`);
+            return true; // 성공 시 true 반환
         } catch (error) {
             console.error('Error creating team:', error);
             setTeamNameError('팀 생성에 실패했습니다. 다시 시도해주세요.');
+            return false; // 실패 시 false 반환
         } finally {
             setLoading(false);
         }
     };
-
-    const handleCancel = () => {
-        onCancel();
+    
+    const handleNext = async () => {
+        if (activeStep === 0) {
+            const isValidTeamName = await validateTeamName();
+            if (!isValidTeamName) return;
+        }
+        if (activeStep === 1) {
+            if (teamUsers.length > 12) {
+                setSearchError('팀 구성원은 최대 12명입니다.');
+                return;
+            }
+        }
+        if (activeStep === 2) {
+            const isTeamCreated = await handleCreateTeam();
+            if (!isTeamCreated) return; // 팀 생성 실패 시 중단
+        }
+    
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
+    
     const handleMove = () => {
+        if (!teamId) {
+            console.error('팀 ID가 설정되지 않았습니다. 이동을 중단합니다.');
+            alert('팀 ID가 설정되지 않았습니다. 팀을 다시 생성해 주세요.');
+            return;
+        }
+    
         console.log(teamId);
         const encodedTeamId = encodeURIComponent(teamId);
         handleCancel();
         navigate(`/teams/${encodedTeamId}`);
     }
 
-    // useEffect(() => {
-    //     if (teamId) {
-    //         fetchTeamData();
-    //     }
-    // }, [teamId]);
+    const handleCancel = () => {
+        onCancel();
+    };
+
     return (
         <Box
             sx={{
@@ -260,16 +221,16 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
                             />
                         )}
                         {activeStep === 1 && (
-                            <CrewManagement
-                                teamCrew={teamCrew}
-                                newCrew={newCrew}
-                                handleNewCrewChange={(e) => setNewCrew(e.target.value)}
-                                searchCrew={searchCrew}
+                            <TeamUserManagement
+                                teamUsers={teamUsers}
+                                newTeamUser={newTeamUser}
+                                handlenewTeamUserChange={(e) => setnewTeamUser(e.target.value)}
+                                searchUser={searchUser}
                                 searchError={searchError}
-                                removeTeamMember={removeTeamMember}
+                                removeTeamUser={removeTeamUser}
                             />
                         )}
-                        {activeStep === 2 && <ConfirmationStep teamName={teamName} teamCrew={teamCrew} />}
+                        {activeStep === 2 && <ConfirmationStep teamName={teamName} teamUsers={teamUsers} />}
                     
                         {/* 페이지 */}
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

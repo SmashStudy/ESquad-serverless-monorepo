@@ -80,7 +80,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 {/* AppBar/AppbarComponent */}
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
     const navigate = useNavigate();
     const handleLogout = () => {
         navigate('/logout');

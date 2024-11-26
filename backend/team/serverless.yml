@@ -23,6 +23,7 @@ provider:
             - dynamodb:Query
             - dynamodb:BatchWriteItem
             - dynamodb:DeleteItem
+            - lambda:InvokeFunction
           Resource: 
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamName-Index # teamName 중복 찾기
@@ -33,6 +34,14 @@ provider:
       managedPolicies:
         - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
         - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+  logs:
+    restApi: # API Gateway 로그 설정
+      accessLogging: true
+      executionLogging: true
+      level: INFO
+      fullExecutionData: true # 전체 실행 데이터 로깅
+    httpApi: # HTTP API 로그 활성화 (옵션)
+      accessLogging: true
 
 resources:
   Resources:
@@ -67,6 +76,7 @@ resources:
               NonKeyAttributes:
                 - teamID
                 - PK
+                - inviteState
           - IndexName: PK-ItemType-Index
             KeySchema:
               - AttributeName: PK
@@ -77,6 +87,7 @@ resources:
               ProjectionType: INCLUDE
               NonKeyAttributes:
                 - SK
+                - inviteState
           - IndexName: TeamName-Index
             KeySchema:
               - AttributeName: teamName
@@ -90,17 +101,14 @@ functions:
     handler: src/handlers/teamUserHandler.getTeams
     events:
       - http:
-          path: /
-          method: get
+          path: /get
+          method: post
           cors: true
-          # authorizer:
-            # type: request
-            # identitySource: method.request.header.Authorization
   createTeam:
     handler: src/handlers/teamHandler.createTeam
     events:
       - http:
-          path: /
+          path: /create
           method: post
           cors: true   
   checkTeamName:
@@ -124,8 +132,9 @@ functions:
     events:
       - http:
           path: /{teamId}/role
-          method: get
+          method: post
           cors: true
+
   getTeamUsersProfile:
     handler: src/handlers/teamUserHandler.getTeamUsersProfile
     events:
@@ -133,9 +142,7 @@ functions:
           path: /{teamId}/user
           method: get
           cors: true
-          # authorizer:
-          #   type: request
-          #   identitySource: method.request.header.Authorization
+      
   updateTeam:
     handler: src/handlers/teamHandler.updateTeam
     events:
@@ -160,7 +167,7 @@ functions:
 
 plugins:
   - serverless-dotenv-plugin
-  # - serverless-domain-manager
+
 
 package:
   individually: true

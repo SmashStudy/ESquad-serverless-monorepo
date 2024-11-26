@@ -9,8 +9,12 @@ import * as TeamUserService from '../services/teamUserService.mjs';
  */
 export const getTeams = async (event) => {
     try {
-        const userId = event.requestContext?.authorizer?.claims?.sub || 'USER#123';
+        const {userId} = JSON.parse(event.body);
+        console.log(`userId:${userId}`);
+
         const teams = await TeamUserService.getTeams(userId);
+        console.log(`teams:${teams}`);
+
         return createResponse(200, { message: 'User to Team List successfully', data: teams });
     } catch (error) {
         console.error('Error retrieving teams:', error);
@@ -23,11 +27,8 @@ export const getTeams = async (event) => {
  */
 export const checkTeamUserRole = async (event) => {
     try {
-        const userId = event.requestContext?.authorizer?.claims?.sub || 'USER#123';
+        const {userId} = JSON.parse(event.body);
         const teamId = decodeURIComponent(event.pathParameters.teamId);
-        if (!teamId || !userId) {
-            return createResponse(400, { error: 'teamId와 userId는 필수입니다.' });
-        }
         const isManager = await TeamUserService.checkTeamUserRole(teamId, userId);
         return createResponse(200, { message: 'User to role successfully', data: isManager });
     } catch (error) {
@@ -43,13 +44,14 @@ export const checkTeamUserRole = async (event) => {
 export const getTeamUsersProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
-        const teamUsersProfiles = await TeamUserService.getTeamUsersProfile(teamId);
-        return createResponse(200, { message: 'Team to User successfully', data: teamUsersProfiles });
+        const teamUsersProfile = await TeamUserService.getTeamUsersProfile(teamId);
+        return createResponse(200, { message: 'Team to User successfully', data: teamUsersProfile });
     } catch (error) {
         console.error('Error retrieving crew profile:', error);
         return createResponse(500, { error: `Error retrieving crew profile: ${error.message}` });
     }
 };
+
 
 /**
  * 팀에 멤버 업데이트 서비스
