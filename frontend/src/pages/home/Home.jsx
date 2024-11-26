@@ -37,10 +37,6 @@ const Home = () => {
         const fetchTeams = async () => {
             try {
                 setLoading(true);
-                console.log(`모게: ${jwtDecode(token).email}`);
-                console.log(`모게sd: ${JSON.stringify(jwtDecode(token))}`);
-                
-                console.log("여기서13");
                 const responseTeamId = await axios.post('https://api.esquad.click/teams/get',{
                         userId: jwtDecode(token).email,
                     }
@@ -58,9 +54,7 @@ const Home = () => {
                 setTeams((prevTeams) =>
                     [...prevTeams].sort((a, b) => a.teamName.localeCompare(b.teamName))
                 );
-                console.log(`teams: ${JSON.stringify(teams)}`);
             } catch (error) {
-                console.log('에러남')
                 console.error('Error fetching teams:', error);
                 return null;
             } finally {
@@ -92,10 +86,15 @@ const Home = () => {
 
     const changeSelectedTeam = (i) => {
 
-        const changeSelectTeam = teams[i];
-        if (selectedTeam?.PK!== changeSelectTeam.PK || selectedTeam == null) {
-            setSelectedTeam(changeSelectTeam);
-            if(selectedTab !== 1) setSelectedTab(1);
+        const newSelectedTeam = teams[i];
+        if (!newSelectedTeam) {
+            console.warn('선택된 팀이 존재하지 않습니다.');
+            return;
+        }
+    
+        if (selectedTeam?.PK !== newSelectedTeam.PK || selectedTeam === null) {
+            setSelectedTeam(newSelectedTeam);
+            if (selectedTab !== 1) setSelectedTab(1);
         }
     };
 
@@ -110,18 +109,13 @@ const Home = () => {
 
     const updateTeams = async (team) => {
         try {
-            console.log(`dd22d${JSON.stringify(team.teamId)}`);
-    
-            // 팀 ID를 URL 인코딩
-            const encodedTeamId = encodeURIComponent(team.teamId);
-            console.log(`dd22d22${JSON.stringify(encodedTeamId)}`);
-    
-            // 팀 정보를 비동기적으로 가져옴
-            const res = await axios.get(`https://api.esquad.click/teams/${encodedTeamId}`);
-            console.log(`ddd ${JSON.stringify(res.data)}`);
-    
-            // 기존 팀 목록에 새로운 팀 추가
-            setTeams((prevTeams) => [...prevTeams, res.data]);
+            const res = await axios.get(`https://api.esquad.click/teams/${encodeURIComponent(team.teamId)}`);
+            setTeams((prevTeams) => {            
+                if (prevTeams.some((t) => t.PK === res.data.data.PK)) {
+                    return prevTeams; 
+                }
+                return [...prevTeams, res.data.data];
+            });
         } catch (error) {
             console.error('Error fetching team:', error);
         }
