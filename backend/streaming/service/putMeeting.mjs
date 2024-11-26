@@ -1,6 +1,6 @@
 import { putItem } from './putItem.mjs';
 const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
-const oneDayFromNow = Math.floor(Date.now() / 1000) + 60 * 60 * 24;
+const threeHoursFromNow = Math.floor(Date.now() / 1000) + 60 * 60 * 3;
 
 /**
  * 회의 정보를 DynamoDB에 저장합니다.
@@ -15,7 +15,7 @@ export const putMeeting = async (title, meetingInfo) => {
     const item = {
       Title: { S: title },
       Data: { S: JSON.stringify(meetingInfo) },
-      TTL: { N: '' + oneDayFromNow },
+      TTL: { N: '' + threeHoursFromNow },
     };
 
     // DynamoDB에 항목 저장
