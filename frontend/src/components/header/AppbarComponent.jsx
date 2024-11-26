@@ -124,25 +124,30 @@ const AppBarComponent = ({
   const handleLogout = () => {
     localStorage.removeItem("jwt");
     alert("로그아웃 되었습니다. 다음에 또 만나요!");
-    navigate("/login");
+    navigate("/google");
   };
 
   const [userName, setUserName] = useState("로딩 중...");
+  const [userPK, setUserPK] = useState(null);
+  let [token, setToken] = useState(null);
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
     const fetchToken = async () => {
       await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
+      // setToken(localStorage.getItem("jwtToken"));
       const token = localStorage.getItem("jwtToken");
       if (token) {
-        const decodedToken = decodeJWT(token);
-        if (decodedToken) {
-          setUserName(decodedToken.name || "Name");
-        }
+        alert("token: " + token);
+        setToken(token);
+        // const decodedToken = decodeJWT(token);
+        // if (decodedToken) {
+        //   setUserName(decodedToken.name || "Name");
+        //   // setUserPK(decodedToken.email);
+        // }
       }
     };
-
     fetchToken();
   }, []);
 
@@ -165,26 +170,18 @@ const AppBarComponent = ({
 
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+  const userId = "yejielll";
 
-  // WebSocket 연결이 열려 있다면 닫고 초기화
-  if (socketRef.current) {
-    console.log("Closing WebSocket connection.");
-    socketRef.current.close();
-    socketRef.current = null;
-  }
-
-  const connectToWebSocket = (retryCount = 0) => {
-    const MAX_RETRIES = 5; // Maximum number of retries
-    const BASE_DELAY = 1000; // Base delay in milliseconds
-
-    // Prevent reconnect attempts beyond MAX_RETRIES
-    if (retryCount > MAX_RETRIES) {
-      console.error(
-        "Maximum reconnection attempts reached. Stopping reconnection."
-      );
-      return;
+  const closeWebSocket = () => {
+    // WebSocket 연결이 열려 있다면 닫고 초기화
+    if (socketRef.current) {
+      console.log("Closing WebSocket connection.");
+      socketRef.current.close();
+      socketRef.current = null;
     }
+  };
 
+  const connectToWebSocket = () => {
     if (
       socketRef.current &&
       (socketRef.current.readyState === WebSocket.OPEN ||
@@ -194,57 +191,43 @@ const AppBarComponent = ({
       return;
     }
 
-    // WebSocket server address (including userId in the query parameter)
-    const address = `wss://ws.api.esquad.click?userId=${encodeURIComponent(
+    // WebSocket 서버 주소 정의 (사용자 ID를 쿼리 매개변수로 포함)
+    const address = `wss://ws.noti.api.esquad.click?userId=${encodeURIComponent(
       userId
-    )}`;
+    )}&token=${encodeURIComponent(token)}`;
     const ws = new WebSocket(address);
     console.log("Creating a new WebSocket connection.");
 
-    // When WebSocket connection is successfully established
+    // WebSocket이 성공적으로 연결되었을 때
     ws.onopen = () => {
-      console.log("WebSocket connection established.");
+      console.log("WebSocket 연결 성공");
 
-      // Send message to request unread notifications count
+      // WebSocket 서버에 미확인 알림 개수 요청하는 메시지를 전송
       const fetchNotificationsMessage = JSON.stringify({
-        action: "countUnReadNotifications", // Define action type
-        userId: userId, // Include user ID
+        action: "countUnReadNotifications", // 요청 작업 타입 정의
+        userId: userId, // 사용자 ID 전달
+        // lastEvaluatedKey: lastEvaluatedKey ? lastEvaluatedKey : null,
       });
       ws.send(fetchNotificationsMessage);
     };
 
-    // When a message is received via WebSocket
+    // WebSocket으로 메시지를 받을 때
     ws.onmessage = (message) => {
-      const obj = JSON.parse(message.data); // Parse message data as JSON
-      console.log(`Received message from WebSocket: ${JSON.stringify(obj)}`);
-      onMessageReceived(obj); // Handle received message
+      const obj = JSON.parse(message.data); // 메시지 데이터를 JSON으로 파싱
+      console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
+      onMessageReceived(obj); // 받은 메시지를 처리하는 함수 호출
     };
 
-    // When WebSocket connection is closed
-    ws.onclose = (event) => {
-      console.log(
-        "WebSocket connection closed. Attempting to reconnect...",
-        event
-      );
-
-      // Retry connection with exponential backoff
-      const delay = BASE_DELAY * Math.pow(2, retryCount);
-      console.log(`Retrying connection in ${delay}ms...`);
-      setTimeout(() => connectToWebSocket(retryCount + 1), delay);
-
-      socketRef.current = null; // Reset socket reference
+    // WebSocket 연결이 닫혔을 때
+    ws.onclose = () => {
+      console.log("WebSocket 연결 종료");
+      socketRef.current = null; // 연결 종료 처리
     };
 
-    // When a WebSocket error occurs
+    // WebSocket 에러가 발생했을 때
     ws.onerror = (event) => {
-      console.error("WebSocket error occurred:", event);
-
-      // Retry connection with exponential backoff
-      const delay = BASE_DELAY * Math.pow(2, retryCount);
-      console.log(`Retrying connection in ${delay}ms due to error...`);
-      setTimeout(() => connectToWebSocket(retryCount + 1), delay);
-
-      socketRef.current = null; // Reset socket reference
+      console.error("WebSocket 에러 발생:", event);
+      socketRef.current = null; // 연결 종료 처리
     };
 
     socketRef.current = ws;
