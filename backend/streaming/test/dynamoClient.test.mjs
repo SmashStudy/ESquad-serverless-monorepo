@@ -13,7 +13,7 @@ describe('DynamoDB 클라이언트 초기화', () => {
     jest.clearAllMocks(); // 모든 모킹 초기화
   });
 
-  it('DynamoDB 클라이언트가 정상적으로 초기화되어야 합니다', async () => {
+  test('DynamoDB 클라이언트가 정상적으로 초기화되어야 합니다', async () => {
     const { DynamoDB } = await import('@aws-sdk/client-dynamodb');
     const mockInstance = {};
     DynamoDB.mockImplementation(() => mockInstance);
@@ -26,7 +26,7 @@ describe('DynamoDB 클라이언트 초기화', () => {
     expect(ddb).toBe(mockInstance);
   });
 
-  it('DynamoDB 클라이언트 초기화 중 오류가 발생하면 콘솔에 로그를 출력하고 에러를 던져야 합니다', async () => {
+  test('DynamoDB 클라이언트 초기화 중 오류가 발생하면 콘솔에 로그를 출력하고 에러를 던져야 합니다', async () => {
     const { DynamoDB } = await import('@aws-sdk/client-dynamodb');
     const mockError = new Error('초기화 실패');
     DynamoDB.mockImplementation(() => {
