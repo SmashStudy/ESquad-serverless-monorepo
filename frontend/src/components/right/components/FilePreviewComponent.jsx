@@ -11,11 +11,10 @@ const FilePreviewComponent = ({ fileKey, contentType }) => {
                     const url = await getPresignedUrl(fileKey);
                     setPreviewUrl(url);
                 } catch (error) {
-                    console.error("Failed to fetch presigned URL for preview:", error);
+                    console.error("미리보기 presigned URL 요청 실패:", error);
                 }
             }
         };
-
         fetchPreview();
     }, [fileKey]);
 

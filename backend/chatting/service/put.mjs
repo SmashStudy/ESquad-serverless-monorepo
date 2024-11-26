@@ -36,14 +36,6 @@ export const handler = async (event) => {
     };
   }
 
-  // if (fileKey && (typeof fileKey !== 'object' || !file.fileKey || !file.contentType || !file.originalFileName)) {
-  //   console.error("File metadata missing or invalid:", file);
-  //   return {
-  //     statusCode: 400,
-  //     body: JSON.stringify({ error: "Missing file metadata fields for file message" }),
-  //   };
-  // }
-
   const now = moment().valueOf();
   const item = {
     room_id: String(room_id),
@@ -51,7 +43,7 @@ export const handler = async (event) => {
     message: message || null,
     user_id: String(user_id),
     isFile: fileKey ? true : false, // 파일 여부 플래그 추가
-    fileKey: fileKey ? fileKey?.S : null,
+    fileKey: fileKey ? fileKey : null,
     presignedUrl: fileKey ? presignedUrl : null,
     contentType: fileKey ? contentType : null,
     originalFileName: fileKey ? originalFileName : null,
