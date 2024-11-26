@@ -1,9 +1,8 @@
-// src/GoogleLogin.jsx
-import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Grid } from '@mui/material';
+import { FcGoogle } from "react-icons/fc";
 import { initializeCognitoConfig, getCognitoConfig } from './Config.js';
+import logo from '/Users/jeongmin/Esquad/ESquad-serverless-monorepo/frontend/src/assets/esquad-logo-bk.png'; // 로고 이미지 경로
 
 const GoogleLogin = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
@@ -43,20 +42,102 @@ const GoogleLogin = () => {
     };
 
     return (
-        <Box sx={{ backgroundColor: 'white', p: 5, borderRadius: 3, border: '1px solid', borderColor: 'grey.200' }}>
-            <Typography variant='h4' fontWeight='bold'>다시 만나서 반가워요</Typography>
-            <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button
-                    type="button"
-                    variant='outlined'
-                    startIcon={<FcGoogle />}
-                    sx={{ py: 1.5 }}
-                    onClick={handleGoogleLogin} // 구글 소셜 로그인 핸들러 연결
+        <Grid container sx={{ height: '100vh' }}>
+            {/* Left Section */}
+            <Grid
+                item
+                xs={12}
+                lg={6}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'grey.100',
+                    padding: 4,
+                }}
+            >
+                {/* 중앙화된 로그인 박스 */}
+                <Box
+                    sx={{
+                        width: '100%',
+                        maxWidth: 500,
+                        padding: 4,
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'grey.300',
+                        backgroundColor: 'white',
+                        boxShadow: 3,
+                        textAlign: 'center',
+                        position: 'relative',
+                    }}
                 >
-                    구글로 로그인
-                </Button>
-            </Box>
-        </Box>
+                    {/* 로고 */}
+                    <Box sx={{ textAlign: 'center', marginBottom: 3 }}>
+                        <img
+                            src={logo}
+                            alt="Esquad Logo"
+                            style={{ width: '100px', height: 'auto' }}
+                        />
+                    </Box>
+
+                    {/* 제목 */}
+                    <Typography variant="h5" fontWeight="bold" gutterBottom>
+                        Welcome to Esquad
+                    </Typography>
+
+                    {/* 구글 로그인 버튼 */}
+                    <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Button
+                            type="button"
+                            variant="outlined"
+                            startIcon={<FcGoogle />}
+                            sx={{
+                                py: 1.5,
+                                borderColor: 'grey.400',
+                                '&:hover': { backgroundColor: 'grey.100' },
+                            }}
+                            onClick={handleGoogleLogin} // 구글 소셜 로그인 핸들러 연결
+                        >
+                            구글로 로그인
+                        </Button>
+                    </Box>
+                </Box>
+            </Grid>
+
+            {/* Right Section */}
+            <Grid
+                item
+                xs={12}
+                lg={6}
+                sx={{
+                    display: { xs: 'none', lg: 'flex' },
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'grey.100',
+                    position: 'relative',
+                }}
+            >
+                <Box
+                    sx={{
+                        width: 240,
+                        height: 240,
+                        backgroundImage: 'linear-gradient(to top right, #7e57c2, #ec407a)',
+                        borderRadius: '50%',
+                        animation: 'bounce 2s infinite',
+                    }}
+                />
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: '50%',
+                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                    }}
+                />
+            </Grid>
+        </Grid>
     );
 };
 
