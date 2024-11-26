@@ -188,13 +188,12 @@ const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawer
         !isSmallScreen && (
             <Box
                 sx={{
-                    width: sidebarOpen ? '200px' : '4rem',
+                    width: sidebarOpen ? '200px' : '6.5rem',
                     flexShrink: 0,
                     backgroundColor: '#fff',
                     transition: 'width 0.3s ease',
                     overflow: 'hidden',
                     height: '100%',
-                    borderRight: `1px solid ${theme.palette.primary.main}`,
                 }}
             >
                 <Box sx={{ width: '100%', height: '100vh', paddingTop: 2 }}>{sidebarContent}</Box>
