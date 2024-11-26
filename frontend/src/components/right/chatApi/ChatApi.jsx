@@ -22,28 +22,43 @@ export const fetchMessageAPI = async (room_id) => {
     }
 };
 
-// 메시지 전송 - fileKey 추가
+// 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
-        // WebSocket을 통해 실시간 메시지 전송
+        // WebSocket 메시지 전송
         socket.send(JSON.stringify(messageData));
         console.log("메시지 전송 : ", messageData);
 
-        // 파일 메시지의 경우, HTTP PUT 요청으로 파일 메타데이터 저장
-        if (messageData.id) {
-            await apiClient.put("/send", {
-                room_id: messageData.room_id,
-                message: messageData.message,
-                timestamp: messageData.timestamp,
-                user_id: messageData.userId,
-                id: messageData.id,
-                presignedUrl: messageData.presignedUrl, // 추가 확인
-                contentType: messageData.contentType,   // 추가 확인
-            });
-            console.log("파일 메시지 저장됨:", messageData);
+        // 파일 메시지 처리
+        if (messageData.fileKey) {
+            console.log("파일 메시지 전송 준비:", messageData);
+
+            // 파일 메타데이터 확인
+            if (!messageData.presignedUrl || !messageData.contentType || !messageData.fileKey) {
+                console.error("파일 메타데이터 누락:", messageData);
+                return;
+            }
+
+            try {
+                // HTTP 요청으로 파일 메타데이터 저장
+                await apiClient.put("/send", {
+                    room_id: String(messageData.room_id),
+                    message: messageData.message,
+                    timestamp: messageData.timestamp,
+                    user_id: messageData.user_id,
+                    fileKey: messageData.fileKey,
+                    presignedUrl: messageData.presignedUrl,
+                    contentType: messageData.contentType,
+                });
+                console.log("파일 메시지 저장됨:", messageData);
+            } catch (putError) {
+                console.error("파일 메타데이터 저장 실패:", putError.message);
+                throw putError;
+            }
         }
     } catch (error) {
-        console.error("메시지 전송 실패 : ", error.message);
+        console.error("메시지 전송 실패:", error.message);
+        console.error("전체 에러 객체:", error); // 전체 에러 로그
         throw error;
     }
 };
@@ -53,7 +68,7 @@ export const editMessageAPI = async (editingMessage, newMessageContent) => {
     const {room_id, content, timestamp} = editingMessage;
     try {
         await apiClient.put("/update", {
-            room_id: room_id,
+            room_id: String(room_id),
             message: content,
             newMessage: newMessageContent,
             timestamp: Number(timestamp),
@@ -69,10 +84,10 @@ export const deleteMessageAPI = async (deleteMessage) => {
     try {
         await apiClient.delete(`/delete`, {
             data: {
-                room_id: deleteMessage.room_id,
+                room_id: String(deleteMessage.room_id),
                 timestamp: Number(deleteMessage.timestamp),
                 message: deleteMessage.message,
-                id: deleteMessage.id || null
+                fileKey: deleteMessage.fileKey || null
             }
         })
     } catch (error) {
