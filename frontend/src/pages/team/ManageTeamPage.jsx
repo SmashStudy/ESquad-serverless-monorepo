@@ -34,8 +34,20 @@ const ManageTeamPage = () => {
             setIsUpdated(false); 
         }
         checkRole();
+
     }, [selectedTeam]);
 
+       // 팀 이름 변경 시 처리
+       useEffect(() => {
+        if (selectedTeam && teamName === selectedTeam.teamName) {
+            // 사용자가 현재의 팀 이름을 입력한 경우
+            setIsTeamNameAvailable(true);
+            setIsTeamNameChecked(true);
+        } else {
+            setIsTeamNameAvailable(null);
+            setIsTeamNameChecked(false);
+        }
+    }, [teamName, selectedTeam]);
     const checkRole = async () => {
         try {
             const response = await axios.post(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/role`,{
@@ -49,8 +61,14 @@ const ManageTeamPage = () => {
     };
 
     const handleCheckTeamName = async () => {
+        
         if (!teamName) return alert('팀 이름을 입력해주세요.');
-
+        if (selectedTeam && teamName === selectedTeam.teamName) {
+            setIsTeamNameAvailable(true);
+            setIsTeamNameChecked(true);
+            alert('현재 사용 중인 팀 이름입니다.');
+            return;
+        }
         try {
             setLoading(true);
             const response = await axios.get(`https://api.esquad.click/teams/check-name/${encodeURIComponent(teamName)}`);
