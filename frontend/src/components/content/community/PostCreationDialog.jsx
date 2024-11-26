@@ -62,7 +62,18 @@ const PostCreationDialog = ({ open, onClose }) => {
   return (
     <>
       {/* 작성 모달 */}
-      <Dialog open={open} onClose={handleCancel} maxWidth="md" fullWidth>
+      <Dialog
+        open={open}
+        onClose={handleCancel}
+        maxWidth="md"
+        fullWidth
+        sx={{
+          "& .MuiPaper-root": {
+            height: "calc(100vh - 50px)",
+            maxHeight: "calc(100vh - 50px)",
+          },
+        }}
+      >
         <DialogContent>
           {/* PostCreationPage 컴포넌트로 작성 상태 전달 */}
           <PostCreationPage
