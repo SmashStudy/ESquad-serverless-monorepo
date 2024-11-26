@@ -72,11 +72,16 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     };
 
     const handleTagChange = (event, newValue, reason) => {
-      if (
+      if (reason === "clear") {
+        // Clear Button 클릭 시 태그 초기화
+        setTags([]);
+        setIsDraft(true);
+      } else if (
         reason === "removeOption" ||
         reason === "createOption" ||
         reason === "selectOption"
       ) {
+        // 중복 태그 제거 및 추가
         const uniqueTags = Array.from(new Set(newValue));
         if (uniqueTags.length > 10) {
           alert("태그는 최대 10개까지 추가할 수 있습니다.");
@@ -130,15 +135,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
             freeSolo
             options={[]} // 자동 완성 옵션 비활성화
             value={tags}
-            onChange={(event, newValue, reason) => {
-              if (reason === "clear") {
-                // Clear Button 클릭 시 태그 초기화
-                setTags([]);
-                setIsDraft(true);
-              } else {
-                handleTagChange(event, newValue, reason);
-              }
-            }}
+            onChange={(event, newValue, reason) =>
+              handleTagChange(event, newValue, reason)
+            }
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
