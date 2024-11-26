@@ -45,8 +45,6 @@ function decodeJWT(token) {
     }
 }
 
-
-
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,

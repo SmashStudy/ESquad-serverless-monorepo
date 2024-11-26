@@ -87,7 +87,12 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
         
         // 유저 닉네임으로 유무 판별
         try {
-            
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/; // Gmail 형식 검증
+            if (!emailRegex.test(newTeamUser)) {
+                setSearchError('Gmail 형식의 이메일만 초대할 수 있습니다.');
+                return;
+            }
+
             if (teamUsers.includes(newTeamUser)) {
                 setSearchError('이미 초대된 유저입니다.');
                 return;
@@ -114,7 +119,8 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
         return true;
     };
     const removeTeamUser= (removeUser) => {
-        setTeamUsers(teamUsers.filter((teamUser) => teamUser.username !== removeUser.username));
+        
+        setTeamUsers(teamUsers.filter((teamUser) => teamUser !== removeUser));
     };
 
     const handleCreateTeam = async () => {
@@ -128,10 +134,10 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
         try {
             setLoading(true);
             const response = await axios.post('https://api.esquad.click/teams/create', teamForm);
-            console.log(`${JSON.stringify(response)}`);
+           
             updateTeams(response.data.data);
-            const createdTeamId = response.data.data.teamId;
-            setTeamId(createdTeamId); // 상태 업데이트
+            setTeamId(response.data.data.teamId); // 상태 업데이트
+           
             return true; // 성공 시 true 반환
         } catch (error) {
             console.error('Error creating team:', error);
@@ -168,7 +174,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
             return;
         }
     
-        console.log(teamId);
+        console.log(`??${teamId}`);
         const encodedTeamId = encodeURIComponent(teamId);
         handleCancel();
         navigate(`/teams/${encodedTeamId}`);
@@ -185,13 +191,14 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
                 flexDirection: 'column',
                 gap: 1,
                 maxWidth: '70vw',
-                height: '80vh',
+                height: '50vh',
                 mx: 'auto',
                 my: 'auto',
                 py: 2,
             }}
         >
             <Box sx={{ width: '100%' }}>
+            {/* <Box> */}
                 <Stepper activeStep={activeStep}>
                     {steps.map((label) => (
                         <Step key={label} completed={false}>
@@ -199,20 +206,33 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
                         </Step>
                     ))}
                 </Stepper>
-                {activeStep === steps.length - 1 ?(
-                    <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Typography variant="h6"> {teamName} 팀이 생성되었습니다! </Typography>
-                        <Box sx={{ mt: 3 }}>
-                            <Button onClick={handleMove} variant="contained" color="primary">
-                                    팀 페이지로 이동
-                            </Button>
-                            <Button onClick={handleCancel} sx={{ ml: 2 }}>
-                                닫기
-                            </Button>
-                        </Box>
-                    </Box>                                         
-                ):(
-                    <Stack spacing={2} sx={{ alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+                    {activeStep === steps.length - 1 ?(
+                        <Box sx={{ textAlign: 'center', mt: 3 }}>
+                            <Typography variant="h6"> {teamName} 팀이 생성되었습니다! </Typography>
+                            <Box sx={{ mt: 3 }}>
+                                <Button onClick={handleMove} variant="contained" color="primary">
+                                        팀 페이지로 이동
+                                </Button>
+                                <Button onClick={handleCancel} sx={{ ml: 2 }}>
+                                    닫기
+                                </Button>
+                            </Box>
+                        </Box>                                         
+                    ):(
+                        <Stack spacing={2} sx={{ alignItems: 'center', justifyItems: 'center', justifyContent: 'center', maxWidth: '70vw', height: '43vh', }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start', // 위쪽 빈 공간 없애기
+                                    width: '90%',
+                                    height: '90%',
+                                    p: 1, // 패딩을 줄여서 여백을 최소화
+                                    boxSizing: 'border-box',
+                                    bgcolor: '#ffffff',
+                                }}
+                            >
                         {activeStep === 0 && (
                             <TeamNameInput
                                 teamName={teamName}
@@ -231,9 +251,19 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
                             />
                         )}
                         {activeStep === 2 && <ConfirmationStep teamName={teamName} teamUsers={teamUsers} />}
-                    
+                        </Box>
                         {/* 페이지 */}
-                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                        <Box sx={{ 
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            display: 'flex', 
+                            flexDirection: 'row',  
+                            justifyContent: 'center',  // 중앙 정렬
+                            alignItems: 'center',  
+                            mt: 'auto',
+                            pb: 3 }}>
                             <Button
                                 color="inherit"
                                 disabled={activeStep === 0}
@@ -242,12 +272,12 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
                                 sx={{ mr: 1 }}
                                 startIcon={<NavigateBeforeIcon />}
                             > 이전 </Button>
-                            <Box sx={{ flex: '1 1 auto' }} />
+                            
                             <Button
                                 onClick={handleNext}
                                 disabled={activeStep === 0 && !teamName.trim()}
                                 size="large"
-                                endIcon={activeStep === steps.length - 1 ? <CheckIcon /> : <NavigateNextIcon />}
+                                endIcon={activeStep === steps.length - 2? <CheckIcon /> : <NavigateNextIcon />}
                             > {activeStep === steps.length - 2 ? (loading ? '생성 중...' : '생성') : '다음'} </Button>
                         </Box>
                     </Stack>
