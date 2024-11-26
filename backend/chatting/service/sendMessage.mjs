@@ -1,77 +1,72 @@
-import AWS from "aws-sdk";
-import file from "mime-types";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 
-const ddb = new AWS.DynamoDB.DocumentClient();
+// DynamoDB 클라이언트 및 Document 클라이언트 생성
+const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const ddb = DynamoDBDocumentClient.from(ddbClient);
 
 export const handler = async (event) => {
-    console.log("MESSAGES_TABLE_NAME:", process.env.MESSAGES_TABLE_NAME);
-    console.log("USERLIST_TABLE_NAME:", process.env.USERLIST_TABLE_NAME);
     // 이벤트에서 연결 ID와 요청 컨텍스트를 추출
-    const { connectionId, requestContext } = event;
+    const { requestContext } = event;
     // 이벤트 본문에서 메시지, 방 ID, 사용자 ID를 추출
-    const { message, room_id, user_id, file } = JSON.parse(event.body);
+    const { message, room_id, user_id, fileKey, contentType, originalFileName } = JSON.parse(event.body);
 
     // API Gateway Management API 클라이언트 생성
-    const apiGatewayManagementApi = new AWS.ApiGatewayManagementApi({
+    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
         apiVersion: "2018-11-29",
         endpoint: `${requestContext.domainName}/${requestContext.stage}`,
     });
 
     try {
-        // 메시지를 DynamoDB에 저장
-        const now = Date.now();
-        const item = {
+        const messageItem = {
             room_id,
-            timestamp: now,
+            timestamp: Date.now(),
             message,
-            id: file?.id || null,
-            contentType: file?.contentType || null,
-            originalFileName : file?.originalFileName || null,
+            user_id,
+        };
+
+        if (fileKey) {
+            messageItem.fileKey = fileKey;
+            messageItem.contentType = contentType;
+            messageItem.originalFileName = originalFileName;
         }
-        await ddb
-            .put({
-                TableName: process.env.MESSAGE_TABLE_NAME,
-                Item: item,
-                ConditionExpression: "attribute_not_exists(id)"
-            })
-            .promise();
+        // 메시지를 DynamoDB에 저장
+        await ddb.send(new PutCommand({
+            TableName: process.env.MESSAGES_TABLE_NAME,
+            Item: messageItem,
+        }));
 
         // 같은 방에 있는 모든 연결된 클라이언트 조회
-        const connections = await ddb
-            .query({
-                TableName: process.env.USERLIST_TABLE_NAME,
-                IndexName: "room_id-user_id-index",
-                KeyConditionExpression: "room_id = :room_id",
-                ExpressionAttributeValues: {
-                    ":room_id": room_id,
-                },
-            })
-            .promise();
+        const connections = await ddb.send(new QueryCommand({
+            TableName: process.env.USERLIST_TABLE_NAME,
+            IndexName: "room_id-user_id-index",
+            KeyConditionExpression: "room_id = :room_id",
+            ExpressionAttributeValues: {
+                ":room_id": room_id,
+            },
+        }));
 
         // 모든 연결된 클라이언트에게 메시지 전송
         const postCalls = connections.Items.map(async ({ connection_id }) => {
             try {
-                await apiGatewayManagementApi
-                    .postToConnection({
-                        ConnectionId: connection_id,
-                        Data: JSON.stringify({
-                            message,
-                            user_id,
-                            timestamp: now,
-                            id: file?.id || null,
-                            contentType: file?.contentType || null,
-                            originalFileName: file?.originalFileName || null}),
-                    })
-                    .promise();
+                const dataToSend = { message, user_id };
+                if (fileKey) {
+                    dataToSend.fileKey = fileKey;
+                    dataToSend.contentType = contentType;
+                    dataToSend.originalFileName = originalFileName;
+                }
+                await apiGatewayManagementApi.send(new PostToConnectionCommand({
+                    ConnectionId: connection_id,
+                    Data: JSON.stringify(dataToSend),
+                }));
             } catch (e) {
                 if (e.statusCode === 410) {
                     // 연결이 더 이상 존재하지 않으면 DynamoDB에서 해당 연결 정보 제거
-                    await ddb
-                        .delete({
-                            TableName: process.env.USERLIST_TABLE_NAME,
-                            Key: { connection_id },
-                        })
-                        .promise();
+                    await ddb.send(new DeleteCommand({
+                        TableName: process.env.USERLIST_TABLE_NAME,
+                        Key: { connection_id },
+                    }));
                 }
             }
         });
@@ -82,18 +77,10 @@ export const handler = async (event) => {
         // 성공 응답 반환
         return {
             statusCode: 200,
-            body: JSON.stringify({
-                status: "success",
-                message: message,
-                user_id: user_id,
-                timestamp: now,
-                id: file?.id || null,
-                contentType: file?.contentType || null,
-                originalFileName: file?.originalFileName || null,
-            }),
+            body: JSON.stringify({ status: 'success', message: 'Message sent.' })
         };
     } catch (e) {
         // 오류 발생 시 500 상태 코드와 오류 스택 반환
-        return { statusCode: 500, body: e.stack };
+        return { statusCode: 500, body: JSON.stringify({ error: e.stack }) };
     }
 };

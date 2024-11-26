@@ -15,7 +15,7 @@ async function putItem(tableName, item) {
 
   try {
     await docClient.send(new PutCommand(params));
-    console.log("Put succeeded");
+    console.log("Put succeeded", item);
   } catch (err) {
     console.error("Unable to add item. Error:", JSON.stringify(err, null, 2));
     throw err;
@@ -36,7 +36,7 @@ export const handler = async (event) => {
     };
   }
 
-  if (file && (!file.id || !file.contentType || !file.originalFileName)) {
+  if (file && (!file.fileKey || !file.contentType || !file.originalFileName)) {
     console.error("File metadata missing or invalid:", file);
     return {
       statusCode: 400,
@@ -46,13 +46,15 @@ export const handler = async (event) => {
 
   const now = moment().valueOf();
   const item = {
-    room_id,
+    room_id : String(room_id),
     timestamp: now,
     message: message || null,
     user_id,
-    id: file?.id || null, // 파일 메시지일 경우
-    contentType: file?.contentType || null,
-    originalFileName: file?.originalFileName || null,
+    ...(file && {
+      fileKey: file.fileKey,
+      contentType: file.contentType,
+      originalFileName: file.originalFileName,
+    }),
   };
 
   if (file) {
