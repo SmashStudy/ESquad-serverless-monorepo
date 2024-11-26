@@ -72,13 +72,18 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     };
 
     const handleTagChange = (event, newValue, reason) => {
-      if (reason === "createOption") {
-        // Autocomplete의 새 옵션 생성 기능 중복 방지
-        const newTag = newValue[newValue.length - 1];
-        if (!tags.includes(newTag)) {
-          setTags(newValue);
-          setIsDraft(true);
+      if (
+        reason === "removeOption" ||
+        reason === "createOption" ||
+        reason === "selectOption"
+      ) {
+        const uniqueTags = Array.from(new Set(newValue));
+        if (uniqueTags.length > 10) {
+          alert("태그는 최대 10개까지 추가할 수 있습니다.");
+          return;
         }
+        setTags(uniqueTags);
+        setIsDraft(true);
       }
     };
 
@@ -123,11 +128,17 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]}
+            options={[]} // 자동 완성 옵션 비활성화
             value={tags}
-            onChange={(event, newValue, reason) =>
-              handleTagChange(event, newValue, reason)
-            }
+            onChange={(event, newValue, reason) => {
+              if (reason === "clear") {
+                // Clear Button 클릭 시 태그 초기화
+                setTags([]);
+                setIsDraft(true);
+              } else {
+                handleTagChange(event, newValue, reason);
+              }
+            }}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
@@ -145,8 +156,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 size="small"
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
+                onKeyDown={handleTagKeyDown}
                 sx={{ width: "100%", p: 1 }}
-                onKeyDown={handleTagKeyDown} // 여기서만 Enter 이벤트 처리
               />
             )}
           />
