@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from "react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ChatIcon from "@mui/icons-material/Chat";
+import DeleteIcon from "@mui/icons-material/Delete";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   alpha,
-  useTheme,
-  styled,
   AppBar,
-  Toolbar,
-  IconButton,
+  Avatar,
+  Badge,
   Box,
   Button,
-  Menu,
-  MenuItem,
-  Avatar,
-  Typography,
-  Badge,
-  useMediaQuery,
+  Divider,
+  IconButton,
   InputBase,
   List,
   ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
   ListItemAvatar,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  styled,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import ChatIcon from "@mui/icons-material/Chat";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 
