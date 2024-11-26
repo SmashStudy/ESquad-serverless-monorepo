@@ -17,6 +17,7 @@ import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
 import Category from './components/user/UserCategory.jsx';
 import Nickname from './components/user/UserNickname.jsx'
+import Layout from './components/user/Layout.jsx';
 
 
 const theme = createTheme({
@@ -63,6 +64,7 @@ function App() {
                             <Route path='/user/profile' element={<UserProfile />} />
                             <Route path="/user/profile/category" element={<Category />} />
                             <Route path="/user/profile/nickname" element={<Nickname />} />
+                            <Route path="/user/profile/layout" element={<Layout />} />
 
                             {/* community */}
                             <Route path="community/questions" element={<PostListPage />} />
