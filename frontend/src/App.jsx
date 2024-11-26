@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -44,13 +44,26 @@ const theme = createTheme({
 });
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken'); // 로컬 스토리지에서 JWT 토큰 확인
+        if (token) {
+            setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
+        } else {
+            setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
+        }
+    }, []); // 컴포넌트가 처음 렌더링될 때만 실행
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
                 <BrowserRouter>
                     <Routes>
+
+                        {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
+                        {!isLoggedIn && <Route path="*" element={<Navigate to="/google" />} />}
+
                         <Route path="/google" element={<GoogleLogin />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />

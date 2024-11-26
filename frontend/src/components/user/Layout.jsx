@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
         throw new Error('로그인이 필요합니다.');
       }
 
-      const response = await axios.get('https://api.esquad.click/local/users/get-user-info', {
+      const response = await axios.get('https://api.esquad.click/dev/users/get-user-info', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -100,25 +100,19 @@ const Layout = ({ children }) => {
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/dashboard')}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
+              <ListItemText primary="홈" />
             </ListItem>
             <ListItem button onClick={() => navigate('/user/profile/category')}>
               <ListItemIcon>
                 <CategoryIcon />
               </ListItemIcon>
-              <ListItemText primary="Category" />
+              <ListItemText primary="S3 사용량" />
             </ListItem>
             <ListItem button onClick={() => navigate('/user/profile/nickname')}>
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
-              <ListItemText primary="Profile" />
+              <ListItemText primary="닉네임 관리" />
             </ListItem>
             <ListItem button>
               <ListItemIcon>

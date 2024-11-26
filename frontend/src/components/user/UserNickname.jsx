@@ -24,7 +24,7 @@ const NicknameEditor = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('https://api.esquad.click/local/users/get-nickname', {
+      const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
         },
@@ -57,7 +57,7 @@ const NicknameEditor = () => {
     setSuccess('');
     try {
       await axios.put(
-        'https://api.esquad.click/local/users/update-nickname',
+        'https://api.esquad.click/dev/users/update-nickname',
         { nickname: newNickname },
         {
           headers: {

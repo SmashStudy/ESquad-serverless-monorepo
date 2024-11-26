@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Lambda 함수의 API Gateway 엔드포인트 URL
-const API_URL = 'https://api.esquad.click/local/users/get-user';
+const API_URL = 'https://api.esquad.click/dev/users/get-user';
 
 export const UserByEmail = async (email) => {
   try {
