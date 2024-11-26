@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getPresignedUrl = async (fileKey ,originalFileName) => {
     try {
-        const storageApi = 'https://api.esquad.click/dev/files';
+        const storageApi = 'https://api.esquad.click/test/files';
         const response = await axios.post(
             `${storageApi}/presigned-url`,
             { action: "getObject", fileKey: fileKey },
