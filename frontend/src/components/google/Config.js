@@ -6,7 +6,7 @@ export let COGNITO_CONFIG = null;
 // Lambda에서 환경 변수를 가져오는 함수
 const fetchCognitoConfig = async () => {
   try {
-    const response = await axios.get('https://api.esquad.click/dev/users/environments'); // Lambda API Gateway URL
+    const response = await axios.get('https://api.esquad.click/local/users/environments'); // Lambda API Gateway URL
     return response.data; // Lambda에서 반환된 환경 변수 객체
   } catch (error) {
     console.error('환경 변수 가져오기 실패:', error);

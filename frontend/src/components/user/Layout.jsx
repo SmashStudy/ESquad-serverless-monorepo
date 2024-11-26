@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
         throw new Error('로그인이 필요합니다.');
       }
 
-      const response = await axios.get('https://api.esquad.click/dev/users/get-user-info', {
+      const response = await axios.get('https://api.esquad.click/local/users/get-user-info', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
