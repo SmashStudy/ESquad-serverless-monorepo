@@ -15,7 +15,19 @@ import StudyCreationDialog from "../../../components/team/StudyCreationDialog.js
 import {useNavigate, useParams} from "react-router-dom";
 import axios from 'axios';
 
+const mapBooks = (books) => books.map(book => ({
+    title: book.title.replace(/<[^>]*>/g, ''), // HTML 태그 제거
+    authors: book.author.split('|'),         // 저자 분리
+    publisher: book.publisher,
+    publishedDate: book.pubdate,
+    imgPath: book.image,
+    isbn: book.isbn,
+    description: book.description.replace(/<[^>]*>/g, ''), // HTML 태그 제거
+}));
+
 const BookListPage = ({ isSmallScreen, isMediumScreen }) => {
+
+
     const theme = useTheme();
     const params = useParams();
     const teamId = params.teamId;
@@ -60,20 +72,52 @@ const BookListPage = ({ isSmallScreen, isMediumScreen }) => {
     };
 
     useEffect(() => {
-        const fetchBooks = async () => {
+        const fetchBooks = async (query) => {
+            const clientId = process.env.REACT_APP_NAVER_CLIENT_ID; // 환경변수에서 가져오기
+            const clientSecret = process.env.REACT_APP_NAVER_CLIENT_SECRET;
+
+            if (!clientId || !clientSecret) {
+                console.error("Error: CLIENT_ID 또는 CLIENT_SECRET이 설정되지 않았습니다.");
+                return [];
+            }
+            
+            try {
+                const response = await axios.get(
+                    `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(query)}`,
+                    {
+                        headers: {
+                            'X-Naver-Client-Id': clientId,
+                            'X-Naver-Client-Secret': clientSecret,
+                        },
+                        params: {
+                            display: 30, // 결과 개수
+                            start: 1,    // 시작 페이지
+                            sort: 'sim', // 유사도 기준 정렬
+                        },
+                    }
+                );
+                return response.data.items; // 네이버 책 API 응답에서 'items'만 반환
+            } catch (error) {
+                console.error("네이버 책 API 호출 오류:", error);
+                return [];
+            }
+        };
+        const searchBooks = async () => {
             if (!query) return;
+    
             setLoading(true);
             try {
-                const response = await axios.get(`/api/book/search?query=${query}`);
-                setBooks(response.data);
+                const books = await fetchBooks(query); // API 호출
+                setBooks(books);
             } catch (error) {
-                console.error(error);
+                console.error("Error during book search:", error);
             } finally {
                 setLoading(false);
             }
         };
-        {books.map((study, index) => (console.log(study)))}
-        fetchBooks();
+        const mappedBooks = mapBooks(response.data.items); // API 응답 데이터 매핑
+            
+        searchBooks(mappedBooks);
     }, [query]);
 
     return (

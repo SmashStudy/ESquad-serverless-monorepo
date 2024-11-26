@@ -12,10 +12,20 @@ provider:
 
 functions:
   testEndpoint:
-    handler: service/handler.js
+    handler: service/bookHandler.js
     events:
       - http:
-          path: test
+          path: 
           method: get
           cors: true
 
+plugins:
+  - serverless-dotenv-plugin
+
+package:
+  individually: true
+  patterns:
+    - "!package-lock.json"
+    - "package.json" 
+    - node_modules/axios/**
+    - "!.env"
