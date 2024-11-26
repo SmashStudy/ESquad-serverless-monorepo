@@ -14,7 +14,7 @@ export const handler = async (event) => {
     const params = {
       TableName: TABLE_NAME,
       Item: {
-        id: fileKey,
+        fileKey: fileKey,
         ...metadata,
       },
     };
@@ -28,7 +28,7 @@ export const handler = async (event) => {
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
-      body: JSON.stringify({ message: 'Metadata stored successfully', data: { id: fileKey, ...metadata } }),
+      body: JSON.stringify({ message: 'Metadata stored successfully', data: { fileKey: fileKey, ...metadata } }),
     };
   } catch (error) {
     console.error('Error storing metadata:', error);

@@ -17,7 +17,7 @@ export const saveUserToDynamoDB = async (event) => {
     const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Item: {
         email: { S: email },
         name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
@@ -62,7 +62,7 @@ export const getUserNickname = async (event) => {
     console.log(`email: ${email}`);
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Key: {
         email: { S: email },
       },
@@ -83,12 +83,22 @@ export const getUserNickname = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
       body: JSON.stringify({ nickname }),
     };
   } catch (error) {
     console.error('닉네임 가져오기 중 오류 발생:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
       body: JSON.stringify({ message: '닉네임 가져오기 중 오류 발생', error: error.message }),
     };
   }
@@ -192,7 +202,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const scanParams = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       FilterExpression: 'nickname = :nickname',
       ExpressionAttributeValues: {
         ':nickname': { S: newNickname },
@@ -206,7 +216,7 @@ export const updateUserNickname = async (event) => {
     }
 
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
       Key: {
         email: { S: email },
       },
@@ -224,13 +234,201 @@ export const updateUserNickname = async (event) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
       body: JSON.stringify({ message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname }),
     };
   } catch (error) {
     console.error('닉네임 업데이트 중 오류 발생:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
       body: JSON.stringify({ message: '닉네임 업데이트 중 오류 발생', error: error.message }),
+    };
+  }
+};
+
+// 이메일로 유저 정보를 가져오는 함수
+export const getUserByEmail = async (event) => {
+  try {
+    console.log('Received event:', event); // 디버깅용 로그 추가
+
+    // 이벤트에서 이메일 추출
+    const body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+    const email = body?.email;
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      throw new Error('유효한 이메일이 제공되지 않았습니다');
+    }
+
+    const params = {
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
+      Key: {
+        email: { S: email },
+      },
+    };
+
+    const command = new GetItemCommand(params);
+    const result = await dynamoDb.send(command);
+
+    if (!result.Item) {
+      throw new Error('사용자를 찾을 수 없습니다');
+    }
+
+    // DynamoDB의 결과를 JavaScript 객체로 변환
+    const user = {
+      email: result.Item.email.S,
+      name: result.Item.name?.S || null,
+      nickname: result.Item.nickname?.S || null,
+      createdAt: result.Item.createdAt?.S || null,
+    };
+
+    console.log('사용자 정보 가져오기 성공:', user);
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify(user),
+    };
+  } catch (error) {
+    console.error('이메일로 사용자 정보 가져오기 중 오류 발생:', error.message, '\nStack:', error.stack);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify({ message: '이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message }),
+    };
+  }
+};
+
+// 토큰에서 이메일을 추출하여 유저 정보 가져오기
+export const getUserInfoByToken = async (event) => {
+  try {
+    // Authorization 헤더 확인
+    if (!event.headers.Authorization) {
+      throw new Error('Authorization 헤더가 없습니다');
+    }
+
+    const authHeader = event.headers.Authorization;
+    const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token) {
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
+    }
+
+    // 토큰 디코딩
+    const decoded = jwt.decode(token);
+
+    if (!decoded || !decoded.email) {
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
+    }
+
+    const email = String(decoded.email);
+    console.log(`토큰에서 추출한 이메일: ${email}`);
+
+    // DynamoDB에서 해당 이메일의 유저 정보 가져오기
+    const params = {
+      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-local',
+      Key: {
+        email: { S: email },
+      },
+    };
+
+    const command = new GetItemCommand(params);
+    const result = await dynamoDb.send(command);
+
+    if (!result.Item) {
+      throw new Error('해당 이메일로 사용자를 찾을 수 없습니다');
+    }
+
+    // 결과를 객체로 변환
+    const user = {
+      email: result.Item.email.S,
+      name: result.Item.name?.S || null,
+      nickname: result.Item.nickname?.S || null,
+      createdAt: result.Item.createdAt?.S || null,
+    };
+
+    console.log('해당 이메일의 사용자 정보:', user);
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify(user),
+    };
+  } catch (error) {
+    console.error('토큰에서 이메일로 사용자 정보 가져오기 중 오류 발생:', error.message, '\nStack:', error.stack);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify({ message: '토큰에서 이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message }),
+    };
+  }
+};
+
+// JWT에서 이메일 가져오기 함수
+export const getEmailFromToken = async (event) => {
+  try {
+    if (!event.headers.Authorization) {
+      throw new Error('Authorization 헤더가 없습니다');
+    }
+
+    const authHeader = event.headers.Authorization;
+    const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+
+    if (!token) {
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
+    }
+
+    const decoded = jwt.decode(token);
+
+    if (!decoded || !decoded.email) {
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
+    }
+
+    const email = String(decoded.email);
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify({ email }),
+    };
+  } catch (error) {
+    console.error('JWT에서 이메일 가져오기 중 오류 발생:', error);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      },
+      body: JSON.stringify({ message: 'JWT에서 이메일 가져오기 중 오류 발생', error: error.message }),
     };
   }
 };
