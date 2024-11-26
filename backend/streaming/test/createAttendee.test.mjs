@@ -32,7 +32,7 @@ describe('createAttendee 함수 테스트', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('성공적으로 참석자를 생성해야 합니다', async () => {
+  test('성공적으로 참석자를 생성해야 합니다', async () => {
     const title = '테스트 회의';
     const meetingId = 'meeting123';
     const attendeeName = '참석자1';
@@ -60,7 +60,7 @@ describe('createAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it('Meeting not found 오류를 처리해야 합니다', async () => {
+  test('Meeting not found 오류를 처리해야 합니다', async () => {
     const title = '테스트 회의';
     const meetingId = 'invalidMeetingId';
     const attendeeName = '참석자1';
@@ -86,7 +86,7 @@ describe('createAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating attendee:', error);
   });
 
-  it('일반적인 오류를 처리해야 합니다', async () => {
+  test('일반적인 오류를 처리해야 합니다', async () => {
     const title = '테스트 회의';
     const meetingId = 'meeting123';
     const attendeeName = '참석자1';
