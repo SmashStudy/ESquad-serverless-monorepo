@@ -8,21 +8,9 @@ import {
   Button,
   Alert,
   CircularProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
 } from '@mui/material';
-import {
-  Home as HomeIcon,
-  Dashboard as DashboardIcon,
-  Category as CategoryIcon,
-  Person as PersonIcon,
-  Settings as SettingsIcon,
-  Logout as LogoutIcon,
-} from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import Layout from './Layout'; // Layout 컴포넌트 가져오기
 
 const NicknameEditor = () => {
   const [nickname, setNickname] = useState('');
@@ -30,7 +18,6 @@ const NicknameEditor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
 
   // 닉네임 가져오기 함수
   const fetchNickname = async () => {
@@ -53,8 +40,15 @@ const NicknameEditor = () => {
 
   // 닉네임 업데이트 함수
   const updateNickname = async () => {
+    const nicknameRegex = /^[가-힣a-zA-Z0-9]+$/;
+
     if (newNickname.trim().length < 2 || newNickname.trim().length > 10) {
       setError('닉네임은 2자 이상, 10자 이하여야 합니다.');
+      return;
+    }
+
+    if (!nicknameRegex.test(newNickname)) {
+      setError('닉네임은 완성된 한글, 영어, 숫자만 사용할 수 있습니다. 특수문자 및 자음/모음은 사용할 수 없습니다.');
       return;
     }
 
@@ -62,7 +56,7 @@ const NicknameEditor = () => {
     setError('');
     setSuccess('');
     try {
-      const response = await axios.put(
+      await axios.put(
         'https://api.esquad.click/dev/users/update-nickname',
         { nickname: newNickname },
         {
@@ -91,72 +85,8 @@ const NicknameEditor = () => {
     fetchNickname();
   }, []);
 
-  const handleLogout = () => {
-    navigate('/logout');
-    alert('로그아웃 되었습니다. 다음에 또 만나요!');
-  };
-
   return (
-    <Box sx={{ display: 'flex', height: 'calc(98vh - 55px)', backgroundColor: '#f5f5f5' }}>
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: 240,
-          backgroundColor: '#fff',
-          color: '#000',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          padding: 2,
-        }}
-      >
-        <Box>
-          <List>
-            <ListItem button onClick={() => navigate('/user/profile')}>
-              <ListItemIcon>
-                <HomeIcon sx={{ color: 'inherit' }} />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <DashboardIcon sx={{ color: 'inherit' }} />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/category')}>
-              <ListItemIcon>
-                <CategoryIcon sx={{ color: 'inherit' }} />
-              </ListItemIcon>
-              <ListItemText primary="Category" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/nickname')}>
-              <ListItemIcon>
-                <PersonIcon sx={{ color: 'inherit' }} />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <SettingsIcon sx={{ color: 'inherit' }} />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItem>
-          </List>
-        </Box>
-
-        {/* Logout Button */}
-        <List>
-          <ListItem button onClick={handleLogout}>
-            <ListItemIcon>
-              <LogoutIcon sx={{ color: 'inherit' }} />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItem>
-        </List>
-      </Box>
-
-      {/* Main Content */}
+    <Layout>
       <Box sx={{ flexGrow: 1, padding: 3 }}>
         <Card>
           <CardContent>
@@ -204,7 +134,7 @@ const NicknameEditor = () => {
           </CardContent>
         </Card>
       </Box>
-    </Box>
+    </Layout>
   );
 };
 
