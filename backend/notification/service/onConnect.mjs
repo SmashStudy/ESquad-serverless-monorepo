@@ -1,76 +1,13 @@
-import {
-  AdminGetUserCommand,
-  CognitoIdentityProviderClient,
-} from "@aws-sdk/client-cognito-identity-provider";
-import axios from "axios";
-import jwt from "jsonwebtoken";
 import moment from "moment";
 
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 const dynamodbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const cognitoClient = new CognitoIdentityProviderClient({
-  region: process.env.AWS_REGION,
-});
 
-const USER_POOL_ID = process.env.USER_POOL_ID;
-const COGNITO_ISSUER = `https://${process.env.COGNITO_IDP}.${process.env.AWS_REGION}.amazonaws.com/${USER_POOL_ID}`;
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_CONNECTION_USER_INDEX =
   process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-
-let jwksCache = null; // JWKS 키 캐시
-
-// Cognito의 JWKS 키를 가져오는 함수
-const getJwks = async () => {
-  if (jwksCache) return jwksCache; // 캐시된 키가 있으면 반환
-
-  const jwksUrl = `${COGNITO_ISSUER}/.well-known/jwks.json`;
-  const { data } = await axios.get(jwksUrl);
-  jwksCache = data.keys; // 키 캐싱
-  return jwksCache;
-};
-
-// JWT 토큰을 검증
-const verifyJwt = async (token) => {
-  const jwks = await getJwks(); // JWKS 키 가져오기
-  const decodedHeader = jwt.decode(token, { complete: true });
-  console.log(`decodedHeader: ${JSON.stringify(decodedHeader)}`);
-
-  if (!decodedHeader || !decodedHeader.header.kid) {
-    throw new Error("Invalid JWT header");
-  }
-
-  const key = jwks.find((k) => k.kid === decodedHeader.header.kid);
-  if (!key) {
-    throw new Error("Matching JWKS key not found");
-  }
-
-  const publicKey = `-----BEGIN PUBLIC KEY-----\n${key.x5c[0]}\n-----END PUBLIC KEY-----`;
-  return jwt.verify(token, publicKey, { issuer: COGNITO_ISSUER }); // 토큰 검증
-};
-
-// Cognito에서 사용자 정보를 가져오는 함수
-const getUserInfo = async (email) => {
-  const command = new AdminGetUserCommand({
-    UserPoolId: USER_POOL_ID,
-    email: email,
-  });
-
-  const response = await cognitoClient.send(command);
-  console.log(`response: ${JSON.stringify(response)}`);
-
-  const attributes = response.UserAttributes.reduce((acc, attr) => {
-    acc[attr.Name] = attr.Value;
-    return acc;
-  }, {});
-
-  return {
-    username: response.Username,
-    attributes,
-  };
-};
 
 // 클라이언트 연결 요청 처리
 export const handler = async (event) => {
@@ -82,27 +19,7 @@ export const handler = async (event) => {
   if (!userId)
     throw new Error("userId query parameter is required for $connect");
 
-  const token = event.queryStringParameters?.token;
-
-  if (!token) {
-    console.error("JWT token is missing");
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ error: "JWT token is required" }),
-    };
-  }
-
   try {
-    // JWT 토큰 검증
-    const decoded = await verifyJwt(token);
-    console.log("JWT token verified successfully:", decoded);
-
-    const userId = decoded.sub; // Unique identifier for the user
-    console.log(`Fetching user information for userId: ${userId}`);
-
-    // Retrieve user information from Cognito
-    const userInfo = await getUserInfo(userId);
-    console.log("User information retrieved successfully:", userInfo);
 
     // Check if the user already has a connection
     const queryParams = {

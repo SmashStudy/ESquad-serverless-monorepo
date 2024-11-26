@@ -1,6 +1,6 @@
 service: notification-service
 org: persii
-app: esquad-monorepo
+#app: esquad-monorepo
 frameworkVersion: "^3.15.0"
 
 provider:
@@ -9,8 +9,6 @@ provider:
   region: ${env:AWS_REGION}
   environment:
     STAGE: ${opt:stage, 'dev'}
-    USER_POOL_ID: ${env:USER_POOL_ID}
-    COGNITO_IDP: ${env:COGNITO_IDP}
     WEBSOCKET_ENDPOINT: ws.noti.api.esquad.click/${opt:stage, 'dev'}
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}

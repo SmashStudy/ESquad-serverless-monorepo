@@ -50,7 +50,7 @@ export const handler = async (event) => {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        error: "No User ID or Notification IDs provided.",
+        error: "No User ID or NotificationItem IDs provided.",
       }),
     };
   }
