@@ -1,68 +1,40 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getPresignedUrl } from "../chatApi/ChatUtils.jsx";
 
-const FilePreviewComponent = ({ fileKey, contentType}) => {
-    const [presignedUrl, setPresignedUrl] = useState(null);
-    const [error, setError] = useState(null);
-
-    const getPresignedUrl = async (fileKey, storedFileName ) => {
-        try {
-            const lambdaUrl = "https://api.esquad.click/dev/files";
-            const response = await axios.post(
-                `${lambdaUrl}/presigned-url`,
-            { action: "getObject", fileKey },
-            { headers: { "Content-Type": "application/json" } }
-        );
-            return response.data.presignedUrl;
-        } catch (error) {
-            console.error("Presigned URL 요청 실패:", error.message);
-            throw new Error("Presigned URL 생성 실패");
-        }
-    };
+const FilePreviewComponent = ({ fileKey, contentType }) => {
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     useEffect(() => {
-        const fetchPresignedUrl = async () => {
-            if (!fileKey) {
-                setError("파일 키가 없습니다.");
-                return;
-            }
-            try {
-                const url = await getPresignedUrl(fileKey);
-                setPresignedUrl(url);
-            } catch (err) {
-                setError("Presigned URL 가져오기 실패");
+        const fetchPreview = async () => {
+            if (fileKey) {
+                try {
+                    const url = await getPresignedUrl(fileKey);
+                    setPreviewUrl(url);
+                } catch (error) {
+                    console.error("Failed to fetch presigned URL for preview:", error);
+                }
             }
         };
 
-        fetchPresignedUrl();
-    }, [fileKey]); // fileKey가 변경될 때마다 호출
+        fetchPreview();
+    }, [fileKey]);
 
-    if (!presignedUrl) {
-        return <p>미리보기를 로드 중입니다...</p>;
+    // 파일 미리보기가 이미지인 경우
+    if (contentType?.startsWith("image/")) {
+        return (
+            <img
+                src={previewUrl}
+                alt="미리보기"
+                style={{
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    objectFit: "cover",
+                    borderRadius: "4px",
+                }}
+            />
+        );
     }
-
-    const isImageFile = (contentType?.startsWith("image/"));
-
-    return (
-        <div>
-            {isImageFile ? (
-                <img
-                    src={presignedUrl}
-                    alt="미리보기"
-                    onError={(e) => console.error("이미지 로드 실패:", e)}
-                    style={{
-                        maxWidth: "200px",
-                        maxHeight: "200px",
-                        objectFit: "cover",
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
-                    }}
-                />
-            ) : (
-                <p>미리보기가 지원되지 않는 파일 형식입니다.</p>
-            )}
-        </div>
-    );
+    return <p>미리보기를 지원하지 않는 파일 형식입니다.</p>;
 };
 
 export default FilePreviewComponent;
