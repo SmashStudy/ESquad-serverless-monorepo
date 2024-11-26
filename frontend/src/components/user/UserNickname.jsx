@@ -62,7 +62,7 @@ const NicknameEditor = () => {
     setSuccess("");
     try {
       await axios.put(
-        "https://api.esquad.click/dev/users/update-nickname",
+        "https://api.esquad.click/local/users/update-nickname",
         { nickname: newNickname },
         {
           headers: {

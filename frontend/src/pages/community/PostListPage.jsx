@@ -379,7 +379,7 @@ const PostListPage = ({ isSmallScreen }) => {
               >
                 {/* 작성자와 작성일 */}
                 <Typography variant="caption" color="text.secondary">
-                  {post.writer?.name || "익명"} ·{" "}
+                  {post.writer?.nickname || "익명"} ·{" "}
                   {new Date(post.createdAt).toLocaleString()}
                 </Typography>
 
