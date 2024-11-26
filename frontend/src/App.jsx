@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import StudyPage from "./pages/team/study/StudyPage.jsx";
-import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import './index.css';
 import PostListPage from "./pages/community/PostListPage.jsx";
@@ -19,7 +17,6 @@ import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
 import Category from './components/user/UserCategory.jsx';
 import Nickname from './components/user/UserNickname.jsx'
-
 
 
 const theme = createTheme({
@@ -48,51 +45,23 @@ const theme = createTheme({
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-    // Set login state based on token in localStorage
-    // useEffect(() => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (token) {
-    //         setIsLoggedIn(true);
-    //     }
-    // }, [isLoggedIn]);
-    //
-    // const ProtectedRoute = ({ children }) => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (!token) {
-    //         return <Navigate to="/login" />;
-    //     }
-    //     return children;
-    // };
-    //
-    // const RedirectIfLoggedIn = ({ children }) => {
-    //     const token = localStorage.getItem('jwt');
-    //     if (token) {
-    //         return <Navigate to="/" />;
-    //     }
-    //     return children;
-    // };
-
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
                         <Route path="/google" element={<GoogleLogin />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
-                        
 
 
-                        {/* Protect routes that require authentication */}
+
                         <Route path="/" element={
-                            // <ProtectedRoute>
                             <Home />
-                            // </ProtectedRoute>
                         }>
                             {/* user */}
                             <Route path='/user/profile' element={<UserProfile />} />
-                            <Route path="/user/profile/category" element={<Category />} />    
+                            <Route path="/user/profile/category" element={<Category />} />
                             <Route path="/user/profile/nickname" element={<Nickname />} />
 
                             {/* community */}
@@ -114,13 +83,11 @@ function App() {
                             </Route>
                         </Route>
 
-                        {/* Redirect unknown routes to home if authenticated, else to login */}
                         <Route path="*" element={
                             isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
                         } />
                     </Routes>
                 </BrowserRouter>
-            {/*</UserProvider>*/}
         </ThemeProvider>
     );
 }

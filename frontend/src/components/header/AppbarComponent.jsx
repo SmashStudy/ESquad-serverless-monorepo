@@ -102,7 +102,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                 }
             }
         };
-    
+
         fetchToken();
     }, []);
 
@@ -176,14 +176,14 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, updateSe
                         </IconButton>
                     )}
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <NavLink to="/community/questions" activeClassName='nav-logo'>
+                        <NavLink to="/community/questions" activeclassname='nav-logo'>
                             <img src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
                                  alt="Logo" style={{height: '40px', marginRight: '16px'}}/>
                         </NavLink>
                     </Box>
                     {!showSearchBar && !isVerySmallScreen && (
                         <Box sx={{display: 'flex', gap: 1 }}>
-                            <NavLink to="/community/questions" activeClassName='nav-community'>
+                            <NavLink to="/community/questions" activeclassname='nav-community'>
                                 <Button
                                     variant="text"
                                     size="large"

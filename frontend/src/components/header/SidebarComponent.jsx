@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-    alpha,
-    Avatar,
-    Box, Divider,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Typography
+  alpha,
+  Avatar,
+  Box, Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography
 } from '@mui/material';
 import { useTheme } from '@mui/material';
 import QuizIcon from '@mui/icons-material/Quiz';
@@ -26,8 +26,7 @@ const SidebarList = ({ items, drawerOpen, sidebarOpen }) => (
     <List>
         {items.map((item, index) => (
             <Link to={item.link} key={index} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <ListItem
-                    button
+                <ListItemButton
                     sx={{
                         display: 'flex',
                         flexDirection: drawerOpen ? 'row' : sidebarOpen ? 'row' : 'column',
@@ -60,7 +59,7 @@ const SidebarList = ({ items, drawerOpen, sidebarOpen }) => (
                             transition: 'font-size 0.3s ease',
                         }}
                     />
-                </ListItem>
+                </ListItemButton>
             </Link>
         ))}
     </List>
@@ -75,7 +74,6 @@ function DashboardIcon() {
 }
 
 const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawerClose, selectedTab, selectedTeam }) => {
-    console.log(selectedTeam);
     const theme = useTheme();
     const communityItems = [
         { text: '질문 및 답변', icon: <QuizIcon />, link: '/community/questions' },
