@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from "react-router-dom";
 import {
-    IconButton,
-    Typography,
     Box,
     CssBaseline,
-    InputBase,
-    Button,
-    Avatar,
 } from '@mui/material';
-import { useTheme, useMediaQuery, styled, alpha } from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
-import PostListPage from "../community/PostListPage.jsx";
 import ChatDrawer from "../../components/right/ChatDrawer.jsx";
-import StudyPage from "../team/study/StudyPage.jsx";
-import {useUser} from "../../components/form/UserContext.jsx";
-import axios from "axios";
-import {fetchTeam} from "../../hooks/fetchTeam.jsx";
 
 const Home = () => {
     const theme = useTheme();
@@ -41,21 +31,6 @@ const Home = () => {
     const toggleChatDrawer = () => {
         setChatDrawerOpen((prevState) => !prevState);
     };
-    // const accessToken= localStorage.getItem('jwt');
-    // const user = useUser();
-
-    // useEffect(() => {
-    //     if(accessToken) {
-    //         // alert(accessToken);
-    //         fetchTeam()
-    //             .then((response) => {
-    //                 console.log(response);
-    //                 response == null ? setTeams([]) : setTeams(response);
-    //             }).catch((error) => {
-    //             console.log(error);
-    //         });
-    //     }
-    // }, [accessToken]);
 
     // Toggle the sidebar or open the drawer based on screen size
     const handleSidebarToggle = () => {
@@ -167,6 +142,7 @@ const Home = () => {
                         isMediumScreen={isMediumScreen}
                         teams={teams}
                         selectedTeam={selectedTeam}
+                        toggleDrawer={toggleChatDrawer}
                         // user={user}
                     />
                 </Box>
