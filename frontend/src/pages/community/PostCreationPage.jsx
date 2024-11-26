@@ -149,15 +149,18 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={`tag-${index}`}
-                  variant="outlined"
-                  size="small"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
+              value.map((option, index) => {
+                const { key, ...restProps } = getTagProps({ index }); 
+                return (
+                  <Chip
+                    key={`tag-${index}`} // 명시적으로 key 설정
+                    variant="outlined"
+                    size="small"
+                    label={option}
+                    {...restProps} // 나머지 props 전달
+                  />
+                );
+              })
             }
             renderInput={(params) => (
               <TextField
