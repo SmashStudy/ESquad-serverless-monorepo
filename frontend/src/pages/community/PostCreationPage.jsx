@@ -36,6 +36,16 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       ? "general"
       : "team-recruit";
 
+  // 탭 변경 함수
+  const handleTabChange = (tab) => {
+    setActiveTab(tab); // 탭 변경
+    setTitle(""); // 제목 초기화
+    setContent(""); // 내용 초기화
+    setTags([]); // 태그 초기화
+    setFile(null); // 첨부 파일 초기화
+    setIsDraft(false); // 드래프트 상태 초기화
+  };
+
   const renderTabContent = () => {
     const studyTemplate = `[스터디 모집 내용 예시]
 • 스터디 주제 :
@@ -72,13 +82,23 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     };
 
     const handleTagChange = (event, newValue, reason) => {
-      if (reason === "createOption") {
-        // Autocomplete의 새 옵션 생성 기능 중복 방지
-        const newTag = newValue[newValue.length - 1];
-        if (!tags.includes(newTag)) {
-          setTags(newValue);
-          setIsDraft(true);
+      if (reason === "clear") {
+        // Clear Button 클릭 시 태그 초기화
+        setTags([]);
+        setIsDraft(true);
+      } else if (
+        reason === "removeOption" ||
+        reason === "createOption" ||
+        reason === "selectOption"
+      ) {
+        // 중복 태그 제거 및 추가
+        const uniqueTags = Array.from(new Set(newValue));
+        if (uniqueTags.length > 10) {
+          alert("태그는 최대 10개까지 추가할 수 있습니다.");
+          return;
         }
+        setTags(uniqueTags);
+        setIsDraft(true);
       }
     };
 
@@ -123,21 +143,24 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]}
+            options={[]} // 자동 완성 옵션 비활성화
             value={tags}
             onChange={(event, newValue, reason) =>
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={`tag-${index}`}
-                  variant="outlined"
-                  size="small"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
+              value.map((option, index) => {
+                const { key, ...restProps } = getTagProps({ index }); 
+                return (
+                  <Chip
+                    key={`tag-${index}`} // 명시적으로 key 설정
+                    variant="outlined"
+                    size="small"
+                    label={option}
+                    {...restProps} // 나머지 props 전달
+                  />
+                );
+              })
             }
             renderInput={(params) => (
               <TextField
@@ -145,8 +168,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 size="small"
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
+                onKeyDown={handleTagKeyDown}
                 sx={{ width: "100%", p: 1 }}
-                onKeyDown={handleTagKeyDown} // 여기서만 Enter 이벤트 처리
               />
             )}
           />
@@ -280,7 +303,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Button
             key={tab}
             variant="text"
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabChange(tab)} // 탭 변경 로직 추가
             sx={{
               fontSize: "large",
               fontWeight: activeTab === tab ? "bold" : "normal",

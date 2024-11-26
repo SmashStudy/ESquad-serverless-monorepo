@@ -23,14 +23,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { Link } from "react-router-dom";
 
-const SidebarList = ({
-  items,
-  drawerOpen,
-  sidebarOpen,
-  selectedItem,
-  setSelectedItem,
-}) => {
+const SidebarList = ({ items, drawerOpen, sidebarOpen }) => {
   const theme = useTheme();
+  const [selectedItem, setSelectedItem] = useState(null); // 각 SidebarList가 독립적으로 관리하는 선택 상태
 
   return (
     <List>
@@ -39,7 +34,7 @@ const SidebarList = ({
           to={item.link}
           key={index}
           style={{ textDecoration: "none", color: "inherit" }}
-          onClick={() => setSelectedItem(index)} // 클릭 시 선택된 아이템 상태 업데이트
+          onClick={() => setSelectedItem(index)} // 클릭 시 선택 상태 업데이트
         >
           <ListItemButton
             sx={{
