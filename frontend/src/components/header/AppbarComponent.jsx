@@ -20,7 +20,8 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  ListItemAvatar, ListItemButton,
+  ListItemAvatar,
+  ListItemButton,
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -30,7 +31,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import axios from 'axios';
+import axios from "axios";
 
 function decodeJWT(token) {
   try {
@@ -95,37 +96,39 @@ const AppBarComponent = ({
   teams,
   toggleChatDrawer,
 }) => {
-
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState('');
+  const [nickname, setNickname] = useState("");
+  const [error, setError] = useState("");
   const handleLogout = () => {
     navigate("/logout");
   };
 
   const fetchNickname = async () => {
     try {
-        const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-            },
-        });
-        setNickname(response.data.nickname);
+      const response = await axios.get(
+        "https://api.esquad.click/local/users/get-nickname",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        }
+      );
+      setNickname(response.data.nickname);
     } catch (err) {
-        console.error("닉네임 가져오기 오류:", err);
-        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+      console.error("닉네임 가져오기 오류:", err);
+      setError("닉네임을 가져오는 중 오류가 발생했습니다.");
     }
-};
+  };
 
-// 컴포넌트 로드 시 닉네임 가져오기
-useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
+  // 컴포넌트 로드 시 닉네임 가져오기
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken");
     if (!token) {
-        navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
+      navigate("/google"); // 토큰이 없으면 로그인 페이지로 이동
     } else {
-        fetchNickname();
+      fetchNickname();
     }
-}, [navigate]);
+  }, [navigate]);
 
   const [userName, setUserName] = useState("로딩 중...");
 
@@ -441,8 +444,8 @@ useEffect(() => {
                   }}
                 >
                   <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                    {nickname ? nickname.charAt(0).toUpperCase() : '유'}
-                    </Avatar>
+                    {nickname ? nickname.charAt(0).toUpperCase() : "유"}
+                  </Avatar>
                   {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
                   <Typography variant="body1">{nickname}</Typography>
                 </IconButton>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -8,31 +8,34 @@ import {
   Button,
   Alert,
   CircularProgress,
-} from '@mui/material';
-import axios from 'axios';
-import Layout from './Layout'; // Layout 컴포넌트 가져오기
+} from "@mui/material";
+import axios from "axios";
+import Layout from "./Layout"; // Layout 컴포넌트 가져오기
 
 const NicknameEditor = () => {
-  const [nickname, setNickname] = useState('');
-  const [newNickname, setNewNickname] = useState('');
+  const [nickname, setNickname] = useState("");
+  const [newNickname, setNewNickname] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // 닉네임 가져오기 함수
   const fetchNickname = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-      });
+      const response = await axios.get(
+        "https://api.esquad.click/local/users/get-nickname",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+          },
+        }
+      );
       setNickname(response.data.nickname);
       setNewNickname(response.data.nickname);
     } catch (err) {
-      setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+      setError("닉네임을 가져오는 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
@@ -43,37 +46,39 @@ const NicknameEditor = () => {
     const nicknameRegex = /^[가-힣a-zA-Z0-9]+$/;
 
     if (newNickname.trim().length < 2 || newNickname.trim().length > 10) {
-      setError('닉네임은 2자 이상, 10자 이하여야 합니다.');
+      setError("닉네임은 2자 이상, 10자 이하여야 합니다.");
       return;
     }
 
     if (!nicknameRegex.test(newNickname)) {
-      setError('닉네임은 완성된 한글, 영어, 숫자만 사용할 수 있습니다. 특수문자 및 자음/모음은 사용할 수 없습니다.');
+      setError(
+        "닉네임은 완성된 한글, 영어, 숫자만 사용할 수 있습니다. 특수문자 및 자음/모음은 사용할 수 없습니다."
+      );
       return;
     }
 
     setLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     try {
       await axios.put(
-        'https://api.esquad.click/dev/users/update-nickname',
+        "https://api.esquad.click/dev/users/update-nickname",
         { nickname: newNickname },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
           },
         }
       );
-      setSuccess('닉네임이 성공적으로 업데이트되었습니다.');
+      setSuccess("닉네임이 성공적으로 업데이트되었습니다.");
       setNickname(newNickname);
     } catch (err) {
       if (err.response?.status === 500) {
-        setError('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.');
+        setError("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.");
       } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
-        setError('닉네임 업데이트 중 오류가 발생했습니다.');
+        setError("닉네임 업데이트 중 오류가 발생했습니다.");
       }
     } finally {
       setLoading(false);
