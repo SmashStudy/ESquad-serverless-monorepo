@@ -13,7 +13,7 @@ describe('ChimeSDKMeetings 클라이언트 초기화', () => {
     jest.clearAllMocks();
   });
 
-  it('ChimeSDKMeetings 클라이언트가 정상적으로 초기화되어야 합니다', async () => {
+  test('ChimeSDKMeetings 클라이언트가 정상적으로 초기화되어야 합니다', async () => {
     const { ChimeSDKMeetings } = await import('@aws-sdk/client-chime-sdk-meetings');
     const mockInstance = {};
     ChimeSDKMeetings.mockImplementation(() => mockInstance);
@@ -24,7 +24,7 @@ describe('ChimeSDKMeetings 클라이언트 초기화', () => {
     expect(chimeSDKMeetings).toBe(mockInstance);
   });
 
-  it('ChimeSDKMeetings 클라이언트 초기화 중 오류가 발생하면 콘솔에 로그를 출력하고 에러를 던져야 합니다', async () => {
+  test('ChimeSDKMeetings 클라이언트 초기화 중 오류가 발생하면 콘솔에 로그를 출력하고 에러를 던져야 합니다', async () => {
     const { ChimeSDKMeetings } = await import('@aws-sdk/client-chime-sdk-meetings');
     const mockError = new Error('초기화 실패');
     ChimeSDKMeetings.mockImplementation(() => {
