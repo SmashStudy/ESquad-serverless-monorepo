@@ -7,7 +7,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags } = body;
+    const { title, content, writer, book, tags = [] } = body; // tags 기본값 빈 배열로해서 태그 없어도 게시글 생성됨
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -52,7 +52,7 @@ export const handler = async (event) => {
             },
           }
         : { NULL: true },
-      tags: { SS: tags || [] },
+      ...(tags.length > 0 && { tags: { SS: tags } }), // 태그가 있을 때만 추가
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },

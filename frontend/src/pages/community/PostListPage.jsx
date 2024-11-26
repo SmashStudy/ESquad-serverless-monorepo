@@ -346,10 +346,11 @@ const PostListPage = ({ isSmallScreen }) => {
                 variant="body2"
                 sx={{ color: theme.palette.grey[700], mb: 1 }}
               >
-                {post.content.substring(0, 100)}...
+                {post.content.substring(0, 100)}
               </Typography>
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                {post.tags.length > 0 ? (
+                {post.tags &&
+                  post.tags.length > 0 &&
                   post.tags.map((tag, idx) => (
                     <Chip
                       key={`${post.postId}-${idx}`}
@@ -361,12 +362,7 @@ const PostListPage = ({ isSmallScreen }) => {
                         borderColor: theme.palette.primary.main,
                       }}
                     />
-                  ))
-                ) : (
-                  <Typography variant="caption" color="text.secondary">
-                    태그 없음
-                  </Typography>
-                )}
+                  ))}
               </Box>
 
               <Box

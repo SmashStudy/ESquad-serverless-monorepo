@@ -27,7 +27,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const [activeTab, setActiveTab] = useState("질문");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState([]); // 기본값 빈 배열로 설정
   const [file, setFile] = useState(null);
 
   // 유저 정보 가져오기
@@ -179,7 +179,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]} // 자동 완성 옵션 비활성화
+            options={[]}
             value={tags}
             onChange={(event, newValue, reason) =>
               handleTagChange(event, newValue, reason)
@@ -300,7 +300,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           nickname: userInfo.nickname,
           email: userInfo.email,
         },
-        tags: tags.length > 0 ? tags : [],
+        tags: tags, // 태그가 없어도 빈 배열로 설정
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 
@@ -319,14 +319,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
-
-  if (loading) {
-    return <div>유저 정보를 불러오는 중...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   return (
     <Box
