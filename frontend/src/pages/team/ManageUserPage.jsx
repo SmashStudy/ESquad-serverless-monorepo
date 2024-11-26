@@ -48,12 +48,12 @@ const ManageUserPage = () => {
     }, [teamId]);
 
     const handleAddUser = async () => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 유효성 검사 정규식
+        const gmailRegex = /^[^\s@]+@gmail\.com$/; // 이메일 유효성 검사 정규식
     
         if (!newUser || users.length >= 12 || !isManager) return;
     
         // 이메일 형식 검증
-        if (!emailRegex.test(newUser)) {
+        if (!gmailRegex.test(newUser)) {
             alert('유효한 이메일 주소를 입력해 주세요.');
             return;
         }
