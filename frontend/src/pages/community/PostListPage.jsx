@@ -99,9 +99,13 @@ const PostListPage = ({ isSmallScreen }) => {
 
   const handleWriteButtonClick = () => setIsPostModalOpen(true);
 
+  // 게시글 등록 후 해당 게시판으로 렌더링
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
-    fetchPosts(true);
+    setCurPage(1); // 페이지를 첫 페이지로 초기화
+    setPosts([]); // 기존 게시글 데이터 초기화
+    setLastEvaluatedKeys([]); // 마지막 평가된 키 초기화
+    fetchPosts(true); // 새로 데이터 fetch
   };
 
   return (
