@@ -75,7 +75,6 @@ function DashboardIcon() {
 }
 
 const SidebarComponent = ({ isSmallScreen, drawerOpen, sidebarOpen, handleDrawerClose, selectedTab, selectedTeam }) => {
-    // console.log(`${JSON.stringify(selectedTeam)}`);
     const theme = useTheme();
     const communityItems = [
         { text: '질문 및 답변', icon: <QuizIcon />, link: '/community/questions' },

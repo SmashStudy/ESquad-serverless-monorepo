@@ -33,7 +33,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
     const [teamId, setTeamId] = useState('');
 
     useEffect(() => {
-        console.log(teamUsers);
         if (token && teamUsers.length === 0) {
             try {
                 setTeamUsers([decodedToken.email]);
@@ -53,8 +52,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
         }
         
         try {
-            console.log(`Validating team name: ${teamName}`);
-            
             setLoading(true);
             setTeamNameError('');
             
@@ -62,13 +59,11 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
             const { isAvailable, message } = response.data;
 
             if (!isAvailable) {
-                console.log(message);
                 setTeamNameError('팀 이름이 이미 존재합니다. 다시 시도해주세요.');
                 setTeamName(''); 
                 return false;
             }
 
-            console.log(message);
             setTeamNameError('');
             return true;  
         } catch (error) {
@@ -129,7 +124,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
             description: '이 팀은 React와 Serverless 프로젝트를 위한 공간입니다.',
             userIds: teamUsers,
         };
-        console.log(teamForm);
     
         try {
             setLoading(true);
@@ -174,7 +168,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams,setSelectedT
             return;
         }
     
-        console.log(`??${teamId}`);
         const encodedTeamId = encodeURIComponent(teamId);
         handleCancel();
         navigate(`/teams/${encodedTeamId}`);

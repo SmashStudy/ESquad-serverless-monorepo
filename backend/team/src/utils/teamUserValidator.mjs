@@ -34,8 +34,6 @@ export const validateTeamUserIds = (teamId, userIds) => {
         return { isValid: false, message: 'req가 잘못되었습니다.' };
     }
     userIds.forEach(userId => {
-        console.log("되고있음");
-        
         if(!validateTeamUserId(userId).isValid) 
             return { isValid: false, message: 'req가 잘못되었습니다.' };
     });

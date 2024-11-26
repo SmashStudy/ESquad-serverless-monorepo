@@ -17,7 +17,6 @@ export const getTeams = async (userId) => {
         }
     };
     const result = await dynamoDb.send(new QueryCommand(params));
-    console.log(`re : ${JSON.stringifyresult}`);
 
     return (result.Items).map(item => item.PK);
 };
@@ -31,7 +30,6 @@ export const checkTeamUserRole = async (teamId, userId) => {
     }
 
     const roleCheckValidation = validateRoleCheckData(teamId, userId);
-    console.log(roleCheckValidation);
     if (!roleCheckValidation.isValid) throw new Error(roleCheckValidation.message);
 
     const teamUserParams = {
@@ -85,25 +83,22 @@ export const getTeamUsersProfile = async (teamId) => {
  * 팀에 멤버 추가 서비스
  */
 export const addTeamUsers= async (teamId, userIds) => {
-    console.log(userIds);
     const validation = validateTeamUserIds(teamId, userIds);
     if (!validation.isValid) throw new Error(validation.message);
 
-    const memberPromises = userIds.map((userId, index) => {
-        const role = index === 0 ? 'Manager' : 'Member';
-
+    const memberPromises = userIds.map((userId) => {
         return dynamoDb.send(new PutCommand({
             TableName: TEAM_TABLE,
             Item: {
                 PK: teamId,
                 SK: userId,
                 itemType: 'TeamUser',
-                role: role,
-                inviteState: 'processing'
+                role: 'Member',
+                inviteState: 'processing',
+                createdAt: new Date().toISOString()
             },
         }));
     });
-    console.log(memberPromises);
 
     await Promise.all(memberPromises);
 };
@@ -122,7 +117,6 @@ export const deleteTeamUsers = async (teamId, userIds) => {
             }
         };
         await dynamoDb.send(new DeleteCommand(params));
-        console.log(`Deleted user ${userId} from team ${teamId}`);
     });
 
     await Promise.all(deletePromises);

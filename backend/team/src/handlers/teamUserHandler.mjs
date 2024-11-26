@@ -10,10 +10,7 @@ import * as TeamUserService from '../services/teamUserService.mjs';
 export const getTeams = async (event) => {
     try {
         const {userId} = JSON.parse(event.body);
-        console.log(`userId:${userId}`);
-
         const teams = await TeamUserService.getTeams(userId);
-        console.log(`teams:${teams}`);
 
         return createResponse(200, { message: 'User to Team List successfully', data: teams });
     } catch (error) {
