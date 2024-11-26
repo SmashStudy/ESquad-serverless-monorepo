@@ -35,47 +35,9 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-
-function decodeJWT(token) {
-  try {
-    const base64Payload = token.split(".")[1];
-    const base64 = base64Payload.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = JSON.parse(
-      decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      )
-    );
-    return payload;
-  } catch (error) {
-    console.error("Failed to decode JWT token", error);
-    return null;
-  }
-}
-
-const formatTimeAgo = (isoDate) => {
-  const now = new Date();
-  const createdAt = new Date(isoDate);
-  const diffInSeconds = Math.floor((now - createdAt) / 1000);
-
-  const minutes = Math.floor(diffInSeconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (minutes < 1) {
-    return "지금 막";
-  } else if (minutes < 60) {
-    return `${minutes} 분 전`;
-  } else if (hours < 24) {
-    return `${hours} 시간 전`;
-  } else {
-    return `${days} 일 전`;
-  }
-};
+import NotificationItem from "./NotificationItem.jsx";
+import {decodeJWT} from "../../utils/decodeJWT.js";
+import Notifications from "./Notifications.jsx";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -119,7 +81,36 @@ const AppBarComponent = ({
   teams,
   toggleChatDrawer,
 }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
+
+  const [user, setUser] = useState(null);
+  // let [token, setToken] = useState(null);
+
+  const [showSearchBar, setShowSearchBar] = useState(null);
+  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
+  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
+  const teamTabOpen = Boolean(teamAnchorEl);
+  const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
+      const token = localStorage.getItem("jwtToken");
+      if (token) {
+        const decodedToken = decodeJWT(token);
+        if (decodedToken) {
+          setUser({
+            username: decodedToken.name || "Name",
+            userId: decodedToken.email,
+          });
+        }
+      }
+    };
+    fetchToken();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
@@ -127,164 +118,7 @@ const AppBarComponent = ({
     navigate("/google");
   };
 
-  const [userName, setUserName] = useState("로딩 중...");
-  const [userPK, setUserPK] = useState(null);
-  let [token, setToken] = useState(null);
-
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
-      // setToken(localStorage.getItem("jwtToken"));
-      const token = localStorage.getItem("jwtToken");
-      if (token) {
-        alert("token: " + token);
-        setToken(token);
-        // const decodedToken = decodeJWT(token);
-        // if (decodedToken) {
-        //   setUserName(decodedToken.name || "Name");
-        //   // setUserPK(decodedToken.email);
-        // }
-      }
-    };
-    fetchToken();
-  }, []);
-
-  const theme = useTheme();
-  const [showSearchBar, setShowSearchBar] = useState(null);
-  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
-  const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
-  const [notifications, setNotifications] = useState([]);
-  const [showArchived, setShowArchived] = useState(false);
-  const notificationMenuRef = useRef(null);
-  const socketRef = useRef(null); // 동일한 서버에 대한 다중 WebSocket 연결 방지
-  const [loading, setLoading] = useState(true);
-  const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null);
-  const [unReadCount, setUnReadCount] = useState(0);
-  const [isFetching, setIsFetching] = useState(false);
-
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
-
-  const teamTabOpen = Boolean(teamAnchorEl);
-  const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
-  const userId = "yejielll";
-
-  const closeWebSocket = () => {
-    // WebSocket 연결이 열려 있다면 닫고 초기화
-    if (socketRef.current) {
-      console.log("Closing WebSocket connection.");
-      socketRef.current.close();
-      socketRef.current = null;
-    }
-  };
-
-  const connectToWebSocket = () => {
-    if (
-      socketRef.current &&
-      (socketRef.current.readyState === WebSocket.OPEN ||
-        socketRef.current.readyState === WebSocket.CONNECTING)
-    ) {
-      console.log("WebSocket is already active. Skipping new connection.");
-      return;
-    }
-
-    // WebSocket 서버 주소 정의 (사용자 ID를 쿼리 매개변수로 포함)
-    const address = `wss://ws.noti.api.esquad.click?userId=${encodeURIComponent(
-      userId
-    )}&token=${encodeURIComponent(token)}`;
-    const ws = new WebSocket(address);
-    console.log("Creating a new WebSocket connection.");
-
-    // WebSocket이 성공적으로 연결되었을 때
-    ws.onopen = () => {
-      console.log("WebSocket 연결 성공");
-
-      // WebSocket 서버에 미확인 알림 개수 요청하는 메시지를 전송
-      const fetchNotificationsMessage = JSON.stringify({
-        action: "countUnReadNotifications", // 요청 작업 타입 정의
-        userId: userId, // 사용자 ID 전달
-        // lastEvaluatedKey: lastEvaluatedKey ? lastEvaluatedKey : null,
-      });
-      ws.send(fetchNotificationsMessage);
-    };
-
-    // WebSocket으로 메시지를 받을 때
-    ws.onmessage = (message) => {
-      const obj = JSON.parse(message.data); // 메시지 데이터를 JSON으로 파싱
-      console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
-      onMessageReceived(obj); // 받은 메시지를 처리하는 함수 호출
-    };
-
-    // WebSocket 연결이 닫혔을 때
-    ws.onclose = () => {
-      console.log("WebSocket 연결 종료");
-      socketRef.current = null; // 연결 종료 처리
-    };
-
-    // WebSocket 에러가 발생했을 때
-    ws.onerror = (event) => {
-      console.error("WebSocket 에러 발생:", event);
-      socketRef.current = null; // 연결 종료 처리
-    };
-
-    socketRef.current = ws;
-  };
-
-  // WebSocket에서 받은 메시지를 처리하는 함수
-  const onMessageReceived = (message) => {
-    if (message.unReadCount) {
-      setUnReadCount(message.unReadCount);
-    }
-
-    if (message.studyNotification) {
-      // studyNotification을 기존 알림 목록의 맨 앞에 추가하여 상태를 업데이트
-      setUnReadCount((prevCount) => prevCount + 1);
-      setNotifications((prev) => [message.studyNotification, ...prev]);
-    }
-  };
-
-  const handleScroll = async () => {
-    if (notificationMenuRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } =
-        notificationMenuRef.current;
-
-      // Trigger load more when scrolled within 100 pixels of the bottom
-      if (
-        scrollHeight - scrollTop - clientHeight <= 100 &&
-        !isFetching &&
-        lastEvaluatedKey
-      ) {
-        setIsFetching(true); // Set fetching state
-        try {
-          await fetchNotification(lastEvaluatedKey); // Fetch with the current pagination key
-        } finally {
-          setIsFetching(false); // Reset fetching state
-        }
-      }
-    }
-  };
-
-  // Debounce the scroll handler
-  const debounce = (func, delay) => {
-    let timeout;
-    return (...args) => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), delay);
-    };
-  };
-
-  // 컴포넌트가 마운트될 때 채팅 메시지를 가져오는 함수
-  useEffect(() => {
-    if (!socketRef.current) {
-      connectToWebSocket(); // WebSocket 연결 시작
-    }
-
-    // 컴포넌트가 언마운트될 때 WebSocket 정리
-    // return () => closeWebSocket();
-  }, []);
 
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
@@ -292,248 +126,6 @@ const AppBarComponent = ({
   };
   const handleTeamMenuClose = () => {
     setTeamAnchorEl(null);
-  };
-
-  // Handle notifications menu open/close
-  const handleNotificationsClick = async (event) => {
-    setNotificationsAnchorEl(event.currentTarget); // Open the notifications menu
-    setShowArchived(false);
-    setIsFetching(true); // Start fetching notifications
-    setNotifications([]); // Clear existing notifications to ensure fresh data is shown
-    setLastEvaluatedKey(null); // Reset pagination for a fresh fetch
-
-    try {
-      await fetchNotification(); // Fetch fresh notifications directly
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    } finally {
-      setIsFetching(false); // Ensure loading state is reset
-    }
-  };
-
-  const fetchNotification = async (key = null) => {
-    if (isFetching) return; // Prevent duplicate fetches
-
-    setIsFetching(true); // Set fetching to true
-    try {
-      const endpoint = showArchived
-        ? `https://api.esquad.click/notification/filter-saved`
-        : `https://api.esquad.click/notification/all`;
-
-      const response = await axios.post(
-        endpoint,
-        {
-          userId: userId,
-          lastEvaluatedKey: key, // Include pagination key if exists
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(`Fetched notifications: ${JSON.stringify(response.data)}`);
-
-      setNotifications((prev) => [
-        ...(prev || []),
-        ...(response.data.items || []),
-      ]);
-      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (notificationsAnchorEl) {
-      const notificationMenuElement = notificationMenuRef.current;
-
-      if (notificationMenuElement) {
-        const debouncedScrollHandler = debounce(handleScroll, 300); // Adjust debounce time as needed
-        notificationMenuElement.addEventListener(
-          "scroll",
-          debouncedScrollHandler
-        );
-
-        return () => {
-          notificationMenuElement.removeEventListener(
-            "scroll",
-            debouncedScrollHandler
-          );
-        };
-      }
-    }
-  }, [notificationsAnchorEl, lastEvaluatedKey, isFetching]);
-
-  const handleMarkAllAsRead = async () => {
-    const notificationIds = notifications
-      .filter((notification) => notification.isRead === "0") // isRead가 '0'인 알림만 필터링
-      .map((notification) => notification.id); // 필터링된 알림에서 id만 추출
-
-    if (notificationIds.length > 0) {
-      try {
-        // REST API로 읽음 처리 요청
-        const response = await axios.post(
-          `https://api.esquad.click/notification/mark`,
-          {
-            notificationIds,
-            userId,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          // 클라이언트 상태에서도 모든 알림을 읽음 처리
-          setNotifications((prev) =>
-            prev.map(
-              (notification) =>
-                notification.isRead === "1"
-                  ? notification // 이미 읽은 알림은 그대로 유지
-                  : { ...notification, isRead: "1" } // 새로 읽음 처리
-            )
-          );
-
-          // Decrease the unReadCount by the number of processed notifications
-          setUnReadCount((prevCount) =>
-            Math.max(prevCount - notificationIds.length, 0)
-          );
-        }
-      } catch (error) {
-        console.error("Error marking notifications as read:", error);
-        alert("알림 읽음 처리에 실패했습니다.");
-      }
-    } else {
-      alert("모든 알림이 이미 읽음처리되었습니다");
-    }
-  };
-
-  const handleMarkAsSave = async (id) => {
-    try {
-      const url = `https://api.esquad.click/notification/save`;
-      const queryParams = `?userId=${encodeURIComponent(
-        userId
-      )}&id=${encodeURIComponent(id)}`;
-      const fullUrl = `${url}${queryParams}`;
-
-      // Make the GET request using axios
-      const response = await axios.get(fullUrl, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      // 서버에서 반환된 업데이트된 알림 객체를 가져옴
-      const updatedNotification = response.data;
-
-      // 기존 알림 상태 업데이트
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === updatedNotification.id
-            ? {
-                ...notification,
-                isSave: updatedNotification.isSave,
-                isRead: updatedNotification.isRead,
-              }
-            : notification
-        )
-      );
-      setUnReadCount((prevCount) => Math.max(prevCount - 1, 0));
-    } catch (error) {
-      console.error("Error marking notifications as read:", error);
-      alert("알림 처리에 실패했습니다.");
-    }
-  };
-
-  const handleReleaseSave = async (id) => {
-    try {
-      const url = `https://api.esquad.click/notification/release-save`;
-      const queryParams = `?userId=${encodeURIComponent(
-        userId
-      )}&id=${encodeURIComponent(id)}`;
-      const fullUrl = `${url}${queryParams}`;
-
-      // Make the GET request using axios
-      const response = await axios.get(fullUrl, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 200) {
-        const updatedNotification = response.data;
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === updatedNotification.id
-              ? { ...notification, isSave: "0" }
-              : notification
-          )
-        );
-      }
-    } catch (error) {
-      console.error("Error releasing notification save:", error);
-      alert("알림 저장 해제에 실패했습니다.");
-    }
-  };
-
-  const handleToggleArchived = async () => {
-    if (showArchived) {
-      // If currently in archive mode, exit and refresh notifications
-      setShowArchived(false); // Exit archive mode
-      setLastEvaluatedKey(null); // Reset pagination
-      await handleNotificationsClick(); // Fetch fresh notifications
-    } else {
-      // Enter archive mode
-      setShowArchived(true); // Enable archive mode
-      setNotifications([]); // Clear current notifications
-      setLastEvaluatedKey(null); // Reset pagination
-      setIsFetching(true); // Set loading state
-
-      try {
-        await fetchSavedNotifications(); // Fetch archived notifications
-      } finally {
-        setIsFetching(false); // Reset loading state
-      }
-    }
-  };
-
-  const fetchSavedNotifications = async (key = null) => {
-    try {
-      const response = await axios.post(
-        `https://api.esquad.click/notification/filter-saved`,
-        {
-          userId: userId,
-          ...(key && { lastEvaluatedKey: key }),
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(`Fetched notifications: ${JSON.stringify(response.data)}`);
-
-      // Update notifications state
-      setNotifications((prev) => {
-        return prev ? [...prev, ...response.data.items] : response.data.items;
-      });
-
-      // Update lastEvaluatedKey
-      setLastEvaluatedKey(response.data.lastEvaluatedKey || null);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const visibleNotifications = showArchived
-    ? notifications.filter((notification) => notification.isSave === "1") // Show only saved notifications
-    : notifications;
-
-  const handleNotificationsClose = () => {
-    setNotificationsAnchorEl(null);
   };
 
   // Handle account menu open/close
@@ -781,7 +373,7 @@ const AppBarComponent = ({
                 >
                   <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
                   {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                  <Typography variant="body1">{userName}</Typography>
+                  <Typography variant="body1">{user ? user.username : "유저 이름"}</Typography>
                 </IconButton>
               </Box>
               <Menu
@@ -811,232 +403,7 @@ const AppBarComponent = ({
                 <MenuItem onClick={handleAccountClose}>의견 보내기</MenuItem>
               </Menu>
 
-              <IconButton color="inherit" onClick={handleNotificationsClick}>
-                <Badge badgeContent={unReadCount} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-
-              <Menu
-                anchorEl={notificationsAnchorEl}
-                open={Boolean(notificationsAnchorEl)}
-                onClose={handleNotificationsClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                <Box
-                  ref={notificationMenuRef}
-                  sx={{
-                    position: "relative",
-                    width: 360,
-                    height: 500,
-                    overflowY: "auto",
-                  }}
-                >
-                  {isFetching && notifications.length === 0 ? (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "100%",
-                      }}
-                    >
-                      <CircularProgress color="primary" size="30px" />
-                    </Box>
-                  ) : (
-                    <List sx={{ width: "100%", paddingBottom: 6 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: theme.spacing(1, 2), // Add spacing for alignment
-                          borderBottom: `1px solid ${alpha(
-                            theme.palette.common.black,
-                            0.1
-                          )}`, // Optional border for separation
-                        }}
-                      >
-                        <Typography
-                          variant="h6"
-                          component="span"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          알림
-                        </Typography>
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <Tooltip
-                            title={showArchived ? "알림 나가기" : "보관함 보기"}
-                            placement="top"
-                          >
-                            <IconButton
-                              size="small"
-                              onClick={handleToggleArchived}
-                              sx={{
-                                color: `${theme.palette.primary.main}`,
-                              }}
-                            >
-                              {showArchived ? (
-                                <ArrowBackIcon
-                                  onClick={handleNotificationsClose}
-                                />
-                              ) : (
-                                <TurnedInIcon />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                          {!showArchived && (
-                            <Tooltip title="전체 읽음처리" placement="top">
-                              <IconButton
-                                size="small"
-                                onClick={handleMarkAllAsRead}
-                                sx={{
-                                  color: `${theme.palette.primary.main}`,
-                                }}
-                              >
-                                <DoneAllIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </Box>
-                      </Box>
-
-                      {/* 알림 목록 */}
-                      {visibleNotifications.length > 0 ? (
-                        <>
-                          {visibleNotifications.map((notification) => (
-                            <ListItem
-                              key={notification.id}
-                              alignItems="flex-start"
-                              sx={{
-                                "&:hover": {
-                                  cursor: "pointer",
-                                  backgroundColor: alpha(
-                                    theme.palette.common.black,
-                                    0.1
-                                  ),
-                                },
-                              }}
-                            >
-                              <ListItemAvatar>
-                                {notification.isRead === "0" ? (
-                                  <Badge
-                                    color="error"
-                                    variant="dot"
-                                    anchorOrigin={{
-                                      vertical: "top",
-                                      horizontal: "left",
-                                    }}
-                                    overlap="circular"
-                                  >
-                                    <Avatar src="/static/images/avatar/1.jpg" />
-                                  </Badge>
-                                ) : (
-                                  <Avatar src="/static/images/avatar/1.jpg" />
-                                )}
-                              </ListItemAvatar>
-                              <ListItemText
-                                primary={
-                                  <Typography
-                                    component="span"
-                                    variant="body1"
-                                    sx={{
-                                      color:
-                                        notification.isRead === "0"
-                                          ? "text.primary"
-                                          : "text.secondary",
-                                      fontWeight:
-                                        notification.isRead === "0"
-                                          ? "bold"
-                                          : "normal",
-                                    }}
-                                  >
-                                    {notification.sender}
-                                  </Typography>
-                                }
-                                secondary={
-                                  <React.Fragment>
-                                    <Typography
-                                      component="span"
-                                      variant="body2"
-                                      sx={{
-                                        color:
-                                          notification.isRead === "0"
-                                            ? "text.primary"
-                                            : "text.secondary",
-                                        display: "block",
-                                        marginTop: "4px",
-                                      }}
-                                    >
-                                      {notification.message}
-                                    </Typography>
-                                    <Typography
-                                      component="span"
-                                      variant="caption"
-                                      sx={{
-                                        color:
-                                          notification.isRead === "0"
-                                            ? "text.secondary"
-                                            : "text.disabled",
-                                        display: "block",
-                                        marginTop: "4px",
-                                      }}
-                                    >
-                                      {formatTimeAgo(notification.createdAt)}
-                                    </Typography>
-                                  </React.Fragment>
-                                }
-                              />
-
-                              {/* Archive or Saved Icon */}
-                              <Tooltip title="보관하기" placement="bottom">
-                                <IconButton
-                                  edge="end"
-                                  onClick={() =>
-                                    notification.isSave !== "1"
-                                      ? handleMarkAsSave(notification.id)
-                                      : handleReleaseSave(notification.id)
-                                  }
-                                  sx={{
-                                    color: `${theme.palette.primary.main}`,
-                                  }}
-                                >
-                                  {notification.isSave === "1" ? (
-                                    <TurnedInIcon sx={{ fontSize: 24 }} />
-                                  ) : (
-                                    <TurnedInNotIcon sx={{ fontSize: 24 }} />
-                                  )}
-                                </IconButton>
-                              </Tooltip>
-                            </ListItem>
-                          ))}
-                        </>
-                      ) : (
-                        // No notifications
-                        <ListItem>
-                          <ListItemText primary="알림이 없습니다." />
-                        </ListItem>
-                      )}
-
-                      {isFetching && notifications.length > 0 && (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            padding: theme.spacing(2),
-                          }}
-                        >
-                          <CircularProgress color="primary" size="30px" />
-                        </Box>
-                      )}
-                    </List>
-                  )}
-                </Box>
-              </Menu>
+              <Notifications userId={user ? user.userId : "유저 이름"} theme={theme} />
 
               {/* chatting sidebar*/}
 
