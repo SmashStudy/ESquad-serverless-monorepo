@@ -49,6 +49,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,
+                    originalFileName: messageData.originalFileName,
                 });
                 console.log("파일 메시지 저장됨:", messageData);
             } catch (putError) {
@@ -90,7 +91,14 @@ export const deleteMessageAPI = async (deleteMessage) => {
                 fileKey: deleteMessage.fileKey || null
             }
         })
+        console.log("텍스트 메시지 삭제 성공");
     } catch (error) {
-        console.error("메시지 삭제 실패 : " , error.response?.data || error.message);
+        if (error.response?.status === 404) {
+            // 404 오류일 경우 메시지가 이미 삭제된 상태일 가능성이 있으므로 무시
+            console.warn("메시지가 이미 삭제된 상태입니다.");
+        } else {
+            // 그 외의 오류는 로깅
+            console.error("메시지 삭제 실패:", error.message);
+        }
     }
 };
