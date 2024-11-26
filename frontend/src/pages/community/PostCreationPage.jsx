@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -18,16 +18,52 @@ import { useNavigate } from "react-router-dom";
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const userInfo = {
-    id: "testwnsgud",
-    name: "박준형",
-    email: "testwnsgud@example.com",
-  };
+
+  // 유저 정보 상태
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [activeTab, setActiveTab] = useState("질문");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [file, setFile] = useState(null);
+
+  // 유저 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+          throw new Error("로그인이 필요합니다.");
+        }
+
+        const response = await axios.get(
+          "https://api.esquad.click/local/users/get-user-info",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setUserInfo(response.data);
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "유저 정보를 불러오는 중 오류가 발생했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const boardType =
     activeTab === "질문"
@@ -150,7 +186,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
             }
             renderTags={(value, getTagProps) =>
               value.map((option, index) => {
-                const { key, ...restProps } = getTagProps({ index }); 
+                const { key, ...restProps } = getTagProps({ index });
                 return (
                   <Chip
                     key={`tag-${index}`} // 명시적으로 key 설정
@@ -239,6 +275,11 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+    if (!userInfo) {
+      alert("유저 정보가 없습니다. 로그인해주세요.");
+      return;
+    }
+
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
       return;
@@ -247,6 +288,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       alert("내용을 입력해주세요.");
       return;
     }
+
     try {
       const url = `https://api.esquad.click/api/community/${boardType}/new`;
 
@@ -254,8 +296,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         title,
         content,
         writer: {
-          id: userInfo.id,
           name: userInfo.name,
+          nickname: userInfo.nickname,
           email: userInfo.email,
         },
         tags: tags.length > 0 ? tags : [],
@@ -277,6 +319,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
+
+  if (loading) {
+    return <div>유저 정보를 불러오는 중...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <Box
