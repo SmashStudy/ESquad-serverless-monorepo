@@ -29,7 +29,7 @@ describe('getAttendee 함수 테스트', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('성공적으로 참가자 이름을 반환해야 합니다', async () => {
+  test('성공적으로 참가자 이름을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
@@ -55,7 +55,7 @@ describe('getAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it('참가자가 존재하지 않을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자가 존재하지 않을 때 "Unknown"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
 
@@ -76,7 +76,7 @@ describe('getAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it('참가자 정보에 Name 속성이 없을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자 정보에 Name 속성이 없을 때 "Unknown"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
@@ -100,7 +100,7 @@ describe('getAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it('DynamoDB 오류가 발생할 때 예외를 던져야 합니다', async () => {
+  test('DynamoDB 오류가 발생할 때 예외를 던져야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const error = new Error('DynamoDB 오류');
@@ -120,7 +120,7 @@ describe('getAttendee 함수 테스트', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching attendee:', error);
   });
 
-  it('참가자 정보에 Name 속성이 S 속성을 갖지 않을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자 정보에 Name 속성이 S 속성을 갖지 않을 때 "Unknown"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
