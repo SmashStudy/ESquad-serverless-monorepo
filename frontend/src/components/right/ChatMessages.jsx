@@ -47,7 +47,6 @@ function ChatMessages({currentChatRoom}) {
         const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${userId}`);
         setSocket(newSocket);
 
-        console.log("웹소켓 연결 됨");
 
         newSocket.onopen = () => {
             loadMessages(room_id);
