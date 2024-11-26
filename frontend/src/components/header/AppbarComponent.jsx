@@ -20,7 +20,7 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  ListItemAvatar,
+  ListItemAvatar, ListItemButton,
 } from "@mui/material";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -95,7 +95,7 @@ const AppBarComponent = ({
   teams,
   toggleChatDrawer,
 }) => {
-    
+
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [error, setError] = useState('');
@@ -322,15 +322,14 @@ useEffect(() => {
                 }}
               >
                 <List>
-                  <ListItem
-                    button
+                  <ListItemButton
                     onClick={handleCreateTeamButtonClick}
                     sx={{
                       "&:hover": { cursor: "pointer", fontSize: "1.4rem" },
                     }}
                   >
                     <ListItemText primary="새로운 팀 생성" />
-                  </ListItem>
+                  </ListItemButton>
 
                   {/* Team Creation Modal */}
                   <TeamCreationDialog
@@ -350,8 +349,7 @@ useEffect(() => {
                           className={`menu-team${index}`}
                           key={index}
                         >
-                          <ListItem
-                            button
+                          <ListItemButton
                             onClick={() => updateSelectedTeam(index)}
                             sx={{
                               "&:hover": {
@@ -367,7 +365,7 @@ useEffect(() => {
                               />
                             </ListItemIcon>
                             <ListItemText primary={team?.teamName} />
-                          </ListItem>
+                          </ListItemButton>
                         </Link>
                       ))}
                     </>

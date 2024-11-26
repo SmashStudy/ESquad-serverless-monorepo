@@ -48,19 +48,12 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
 • 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등.) :
 `;
 
-    const handleTagChange = (event, newValue) => {
-      setIsDraft(true);
-      if (newValue.length > 10) {
-        alert("태그는 최대 10개까지 추가할 수 있습니다.");
-        return;
-      }
-      setTags(newValue);
-    };
-
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
-        event.preventDefault();
+        event.preventDefault(); // 기본 엔터 동작 방지
+
         const newTag = event.target.value.trim();
+        if (!newTag) return; // 빈 값 방지
 
         if (tags.includes(newTag)) {
           alert(`중복된 태그: "${newTag}"는 추가할 수 없습니다.`);
@@ -73,7 +66,28 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         }
 
         setTags((prevTags) => [...prevTags, newTag]);
-        event.target.value = "";
+        event.target.value = ""; // 입력창 초기화
+        setIsDraft(true);
+      }
+    };
+
+    const handleTagChange = (event, newValue, reason) => {
+      if (reason === "clear") {
+        // Clear Button 클릭 시 태그 초기화
+        setTags([]);
+        setIsDraft(true);
+      } else if (
+        reason === "removeOption" ||
+        reason === "createOption" ||
+        reason === "selectOption"
+      ) {
+        // 중복 태그 제거 및 추가
+        const uniqueTags = Array.from(new Set(newValue));
+        if (uniqueTags.length > 10) {
+          alert("태그는 최대 10개까지 추가할 수 있습니다.");
+          return;
+        }
+        setTags(uniqueTags);
         setIsDraft(true);
       }
     };
@@ -119,23 +133,21 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]}
+            options={[]} // 자동 완성 옵션 비활성화
             value={tags}
-            onChange={handleTagChange}
+            onChange={(event, newValue, reason) =>
+              handleTagChange(event, newValue, reason)
+            }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const tagProps = getTagProps({ index });
-                const { key, ...restProps } = tagProps;
-                return (
-                  <Chip
-                    key={`tag-${index}`}
-                    variant="outlined"
-                    size="small"
-                    label={option}
-                    {...restProps}
-                  />
-                );
-              })
+              value.map((option, index) => (
+                <Chip
+                  key={`tag-${index}`}
+                  variant="outlined"
+                  size="small"
+                  label={option}
+                  {...getTagProps({ index })}
+                />
+              ))
             }
             renderInput={(params) => (
               <TextField
@@ -143,8 +155,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 size="small"
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
-                sx={{ width: "100%", p: 1 }}
                 onKeyDown={handleTagKeyDown}
+                sx={{ width: "100%", p: 1 }}
               />
             )}
           />
@@ -214,6 +226,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!content.trim()) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
     try {
       const url = `https://api.esquad.click/api/community/${boardType}/new`;
 
