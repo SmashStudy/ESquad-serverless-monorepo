@@ -57,8 +57,8 @@ export const handler = async (event) => {
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
-      ...(boardType === "questions" && { resolved: { BOOL: false } }),
-      ...(boardType === "team-recruit" && { recruitStatus: { BOOL: false } }),
+      ...(boardType === "questions" && { resolved: { S: "false" } }),
+      ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
     };
 
     const command = new PutItemCommand({

@@ -5,90 +5,119 @@ const TABLE_NAME = process.env.DYNAMODB_TABLE;
 
 export const handler = async (event) => {
   try {
-    const boardType = event.pathParameters.boardType;
-
+    const { boardType } = event.pathParameters;
     const validBoardTypes = ["general", "questions", "team-recruit"];
+
     if (!validBoardTypes.includes(boardType)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
+      return generateResponse(400, { message: "Invalid boardType" });
+    }
+
+    const {
+      limit = 10,
+      lastEvaluatedKey,
+      resolved,
+      recruitStatus,
+    } = parseQueryStringParameters(event.queryStringParameters);
+
+    let params;
+
+    if (boardType === "questions" && resolved !== undefined) {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "board-resolved-create-index",
+        KeyConditionExpression: "resolved = :resolved",
+        ExpressionAttributeValues: {
+          ":resolved": { S: resolved },
         },
-        body: JSON.stringify({ message: "Invalid boardType" }),
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    } else if (boardType === "team-recruit" && recruitStatus !== undefined) {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "board-recruited-create-index",
+        KeyConditionExpression: "recruitStatus = :recruitStatus",
+        ExpressionAttributeValues: {
+          ":recruitStatus": { S: recruitStatus },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    } else {
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "BoardIndex",
+        KeyConditionExpression: "boardType = :boardType",
+        ExpressionAttributeValues: {
+          ":boardType": { S: boardType },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
       };
     }
 
-    const limit = event.queryStringParameters?.limit
-      ? parseInt(event.queryStringParameters.limit)
-      : 10;
-
-    const lastEvaluatedKey = event.queryStringParameters?.lastEvaluatedKey
-      ? JSON.parse(event.queryStringParameters.lastEvaluatedKey)
-      : null;
-
-    const params = {
-      TableName: TABLE_NAME,
-      IndexName: "BoardIndex",
-      KeyConditionExpression: "boardType = :boardType",
-      ExpressionAttributeValues: {
-        ":boardType": { S: boardType },
-      },
-      Limit: limit,
-      ExclusiveStartKey: lastEvaluatedKey, // Pagination 처리를 위한 파라미터
-      ScanIndexForward: false,
-    };
-
-    console.log("DynamoDB Query Params:", params);
-
     const data = await ddbClient.send(new QueryCommand(params));
+    const posts = formatPosts(data.Items);
 
-    // 각 게시글에 대해 반환할 데이터 필드 설정
-    const posts = data.Items.map((item) => {
-      const post = {
-        postId: item.PK.S.split("#")[1],
-        boardType: item.boardType.S,
-        title: item.title.S,
-        content: item.content.S,
-        createdAt: item.createdAt.S,
-        updatedAt: item.updatedAt.S,
-        viewCount: parseInt(item.viewCount.N, 10),
-        likeCount: parseInt(item.likeCount.N, 10),
-      };
-
-      // boardType에 따라 다른 필드를 반환
-      if (item.boardType.S === "questions") {
-        post.resolved = item.resolved?.BOOL || false;
-      } else if (item.boardType.S === "team-recruit") {
-        post.recruitStatus = item.recruitStatus?.BOOL || false;
-      }
-
-      return post;
+    return generateResponse(200, {
+      items: posts,
+      lastEvaluatedKey: data.LastEvaluatedKey,
     });
-
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        items: posts,
-        lastEvaluatedKey: data.LastEvaluatedKey, // Pagination 처리를 위한 lastEvaluatedKey 반환
-      }),
-    };
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return generateResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
+};
+
+const generateResponse = (statusCode, body) => ({
+  statusCode,
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+  body: JSON.stringify(body),
+});
+
+const parseQueryStringParameters = (queryStringParameters = {}) => ({
+  limit: queryStringParameters.limit
+    ? parseInt(queryStringParameters.limit, 10)
+    : 10,
+  lastEvaluatedKey: queryStringParameters.lastEvaluatedKey
+    ? JSON.parse(queryStringParameters.lastEvaluatedKey)
+    : null,
+  resolved: queryStringParameters.resolved,
+  recruitStatus: queryStringParameters.recruitStatus,
+});
+
+// DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷
+const formatPosts = (items) => {
+  return items.map((item) => {
+    const post = {
+      postId: item.PK.S.split("#")[1],
+      boardType: item.boardType.S,
+      title: item.title.S,
+      content: item.content.S,
+      createdAt: item.createdAt.S,
+      updatedAt: item.updatedAt.S,
+      viewCount: parseInt(item.viewCount.N, 10),
+      likeCount: parseInt(item.likeCount.N, 10),
+      tags: item.tags?.SS || [],
+    };
+
+    if (item.boardType.S === "questions") {
+      post.resolved = item.resolved?.S === "true";
+    }
+
+    if (item.boardType.S === "team-recruit") {
+      post.recruitStatus = item.recruitStatus?.S === "true";
+    }
+
+    return post;
+  });
 };
