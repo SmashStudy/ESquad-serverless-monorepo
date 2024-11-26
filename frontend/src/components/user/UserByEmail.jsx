@@ -15,7 +15,6 @@ export const UserByEmail = async (email) => {
 
     // 응답 처리
     if (response.status === 200) {
-      console.log('사용자 정보:', response.data);
       return response.data;
     } else {
       throw new Error(`서버 응답 상태 코드: ${response.status}`);
