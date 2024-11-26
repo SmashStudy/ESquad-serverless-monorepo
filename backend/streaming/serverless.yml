@@ -56,28 +56,6 @@ custom:
     false: []
 
 functions:
-  ChimeSdkIndexLambda:
-    handler: service/index.handler  # 메인 인덱스 핸들러
-    events:
-      - http:
-          path: /
-          method: get
-          cors:
-            origin: 'https://live.dev.esquad.click'  # CORS 허용 도메인
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
-      - http:
-          path: /{proxy+}
-          method: any
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
-
   ChimeSdkJoinLambda:
     handler: service/joinMeetingHandler.handler  # 미팅 참가 핸들러
     events:
