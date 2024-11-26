@@ -24,14 +24,14 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   // 더미 스터디 리스트 데이터
   const [studys, setStudys] = useState([
     {
-      id: 2,
+      id: 'STUDY#101',
       teamId: teamId,
       bookId: 4,
       title: "스터디읻이디리딩딩딩",
       members: 12,
     },
     {
-      id: 5,
+      id: 'STUDY#105',
       teamId: teamId,
       bookId: 2,
       title: "케로케로케로디리딩딩딩",

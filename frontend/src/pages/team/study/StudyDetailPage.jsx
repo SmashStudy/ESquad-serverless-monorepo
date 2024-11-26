@@ -51,7 +51,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       const lastEvaluatedKey = lastEvaluatedKeys[currentPage - 1];
       const response = await axios.get(`${storageApi}/metadata`, {
         params: {
-          targetId: studyId,
+          targetId: encodeURIComponent(studyId),
           targetType: 'STUDY_PAGE',
           limit: 5,
           lastEvaluatedKey: lastEvaluatedKey || undefined,
