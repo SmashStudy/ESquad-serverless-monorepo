@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography, Grid } from '@mui/material';
 import { FcGoogle } from "react-icons/fc";
 import { initializeCognitoConfig, getCognitoConfig } from './Config.js';
-import logo from '/Users/jeongmin/Esquad/ESquad-serverless-monorepo/frontend/src/assets/esquad-logo-bk.png'; // 로고 이미지 경로
 
 const GoogleLogin = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태
@@ -74,7 +73,7 @@ const GoogleLogin = () => {
                     {/* 로고 */}
                     <Box sx={{ textAlign: 'center', marginBottom: 3 }}>
                         <img
-                            src={logo}
+                            src='https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-bk.png'
                             alt="Esquad Logo"
                             style={{ width: '100px', height: 'auto' }}
                         />
