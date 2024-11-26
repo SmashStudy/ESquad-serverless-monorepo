@@ -36,6 +36,16 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       ? "general"
       : "team-recruit";
 
+  // 탭 변경 함수
+  const handleTabChange = (tab) => {
+    setActiveTab(tab); // 탭 변경
+    setTitle(""); // 제목 초기화
+    setContent(""); // 내용 초기화
+    setTags([]); // 태그 초기화
+    setFile(null); // 첨부 파일 초기화
+    setIsDraft(false); // 드래프트 상태 초기화
+  };
+
   const renderTabContent = () => {
     const studyTemplate = `[스터디 모집 내용 예시]
 • 스터디 주제 :
@@ -290,7 +300,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Button
             key={tab}
             variant="text"
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabChange(tab)} // 탭 변경 로직 추가
             sx={{
               fontSize: "large",
               fontWeight: activeTab === tab ? "bold" : "normal",
