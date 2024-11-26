@@ -11,7 +11,7 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
-import GoogleLogin from './components/google/GoolgeLogin.jsx';
+import GoogleLogin from './components/google/GoogleLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
