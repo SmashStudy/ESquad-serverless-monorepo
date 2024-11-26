@@ -8,6 +8,8 @@ provider:
   runtime: nodejs20.x
   region: ${env:AWS_REGION}
   environment:
+    STAGE: ${opt:stage, 'dev'}
+    WEBSOCKET_ENDPOINT: ws.noti.api.esquad.click/${opt:stage, 'dev'}
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
     NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
@@ -26,16 +28,14 @@ provider:
       Action:
         - dynamodb:PutItem
         - dynamodb:BatchWriteItem
-        - dynamodb:BatchGetItem
         - dynamodb:GetItem
-        - dynamodb:Scan
         - dynamodb:UpdateItem
         - dynamodb:Query
+        - dynamodb:DeleteItem
         - dynamodb:DescribeStream
         - dynamodb:GetRecords
         - dynamodb:GetShardIterator
         - dynamodb:ListStreams
-        - dynamodb:DeleteItem
         - execute-api:Invoke
       Resource:
         - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
@@ -143,7 +143,7 @@ functions:
           route: $disconnect # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
 
   publish_notification_on_file_upload:
-    handler: service/pubNotificationOnFileUpload.handler # Lambda 핸들러 함수
+    handler: service/publishNotificationOnFileUpload.handler # Lambda 핸들러 함수
     events:
       - stream: # DynamoDB Streams 트리거
           type: dynamodb
