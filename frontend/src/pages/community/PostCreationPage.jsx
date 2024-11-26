@@ -214,6 +214,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!content.trim()) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
     try {
       const url = `https://api.esquad.click/api/community/${boardType}/new`;
 
