@@ -19,7 +19,7 @@ describe('putItem 함수 테스트', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('DynamoDB에 항목을 성공적으로 저장해야 합니다', async () => {
+  test('DynamoDB에 항목을 성공적으로 저장해야 합니다', async () => {
     const tableName = 'TestTable';
     const item = { key: { S: 'test-key' }, value: { S: 'test-value' } };
 
@@ -38,7 +38,7 @@ describe('putItem 함수 테스트', () => {
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  it('DynamoDB 오류가 발생하면 예외를 던져야 합니다', async () => {
+  test('DynamoDB 오류가 발생하면 예외를 던져야 합니다', async () => {
     const tableName = 'TestTable';
     const item = { key: { S: 'test-key' }, value: { S: 'test-value' } };
     const error = new Error('DynamoDB 오류');
