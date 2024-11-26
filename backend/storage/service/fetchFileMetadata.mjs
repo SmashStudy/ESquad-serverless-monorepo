@@ -47,7 +47,7 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
           'Access-Control-Allow-Headers': 'Content-Type,Authorization',
           'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
         },
@@ -60,7 +60,7 @@ export const handler = async (event) => {
     const data = await dynamoDb.send(new QueryCommand(params));
     return {
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
@@ -75,7 +75,7 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },

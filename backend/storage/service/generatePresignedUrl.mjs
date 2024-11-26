@@ -15,9 +15,9 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type,Authorization",
-          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+          'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
         },
         body: JSON.stringify({
           error: "Missing required parameters: action and fileKey are required.",
@@ -49,9 +49,9 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type,Authorization",
-          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+          'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
+          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
         },
         body: JSON.stringify({
           error: "Invalid action. Supported actions are getObject, putObject, deleteObject.",
@@ -62,9 +62,9 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
       body: JSON.stringify({ presignedUrl: url }),
     };
@@ -73,9 +73,9 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
       },
       body: JSON.stringify({
         error: `Failed to generate presigned URL: ${error.message}`,
