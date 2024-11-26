@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
-import JoinPage from "./pages/user/JoinPage.jsx";
-import LoginPage from "./pages/user/LoginPage.jsx";
 import StudyPage from "./pages/team/study/StudyPage.jsx";
 import { UserProvider } from '/src/components/form/UserContext.jsx';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -21,6 +19,10 @@ import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
 import ManageUserPage from './pages/team/ManageUserPage.jsx';
 import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
+import Category from './components/user/UserCategory.jsx';
+import Nickname from './components/user/UserNickname.jsx'
+
+
 
 const theme = createTheme({
     palette: {
@@ -54,17 +56,10 @@ function App() {
             {/*<UserProvider>*/}
                 <BrowserRouter>
                     <Routes>
-                        {/* Redirect logged-in users away from the login page */}
-                        <Route path="/login" element={
-                            // <RedirectIfLoggedIn>
-                                <LoginPage setIsLoggedIn={setIsLoggedIn} />
-                            // </RedirectIfLoggedIn>
-                        } />
                         <Route path="/google" element={<GoogleLogin />} />
-                        <Route path="/join" element={<JoinPage />} />
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
-                        <Route path='/user/profile' element={<UserProfile />} />
+                        
 
 
                         {/* Protect routes that require authentication */}
@@ -73,6 +68,10 @@ function App() {
                             <Home />
                             // </ProtectedRoute>
                         }>
+                            {/* user */}
+                            <Route path='/user/profile' element={<UserProfile />} />
+                            <Route path="/user/profile/category" element={<Category />} />    
+                            <Route path="/user/profile/nickname" element={<Nickname />} />
 
                             {/* community */}
                             <Route path="community/questions" element={<PostListPage />} />
