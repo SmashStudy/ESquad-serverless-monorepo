@@ -25,7 +25,6 @@ export const fetchMessageAPI = async (room_id) => {
 // 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
-        // WebSocket 메시지 전송
         socket.send(JSON.stringify(messageData));
 
         // 파일 메시지 처리
@@ -54,7 +53,7 @@ export const sendMessageAPI = async (socket, messageData) => {
             }
         }
     } catch (error) {
-        console.error("메시지 전송 실패:", error.message);
+        console.error("메시지 전송 실패 : ", error.message);
         throw error;
     }
 };
@@ -87,10 +86,6 @@ export const deleteMessageAPI = async (deleteMessage) => {
             }
         });
     } catch (error) {
-        if (error.response?.status === 404) {
-            console.warn("메시지가 이미 삭제된 상태입니다.");
-        } else {
-            console.error("메시지 삭제 실패:", error.message);
-        }
+        console.error("메시지 삭제 실패 : " , error.response?.data || error.message);
     }
 };

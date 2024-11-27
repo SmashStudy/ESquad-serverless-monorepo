@@ -159,7 +159,6 @@ function ChatMessages({currentChatRoom}) {
         setMessageInput(content);
     }
 
-    // 메시지 저장 핸들러
     const onSaveMessage = async () => {
         if (!editingMessage)  return;
         editMessageAPI(editingMessage, messageInput).then(() => {
