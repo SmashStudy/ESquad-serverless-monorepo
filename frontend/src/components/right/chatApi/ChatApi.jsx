@@ -55,7 +55,6 @@ export const sendMessageAPI = async (socket, messageData) => {
         }
     } catch (error) {
         console.error("메시지 전송 실패:", error.message);
-        console.error("전체 에러 객체:", error); // 전체 에러 로그
         throw error;
     }
 };
@@ -92,7 +91,6 @@ export const deleteMessageAPI = async (deleteMessage) => {
             console.warn("메시지가 이미 삭제된 상태입니다.");
         } else {
             console.error("메시지 삭제 실패:", error.message);
-            console.error("전체 오류 객체:", error);
         }
     }
 };
