@@ -89,8 +89,8 @@ functions:
           method: post
           cors: true
 
-  send_notifications:
-    handler: service/sendNotifications.handler
+  send_notification:
+    handler: service/sendNotification.handler
     events:
       - stream:
           type: dynamodb
