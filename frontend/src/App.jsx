@@ -15,7 +15,7 @@ import GoogleLogin from './components/google/GoogleLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
-import Category from './components/user/UserCategory.jsx';
+import Category from './components/user/UserStorageUsage.jsx';
 import Nickname from './components/user/UserNickname.jsx'
 import Layout from './components/user/Layout.jsx';
 
