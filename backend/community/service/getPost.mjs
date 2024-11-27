@@ -60,11 +60,11 @@ export const handler = async (event) => {
       likeCount: parseInt(data.Item.likeCount.N, 10),
       resolved:
         data.Item.boardType.S === "questions"
-          ? data.Item.resolved?.BOOL
+          ? data.Item.resolved?.S === "true" 
           : undefined,
       recruitStatus:
         data.Item.boardType.S === "team-recruit"
-          ? data.Item.recruitStatus?.BOOL
+          ? data.Item.recruitStatus?.S === "true" 
           : undefined,
     };
 
