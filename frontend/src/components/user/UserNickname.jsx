@@ -8,9 +8,10 @@ import {
   Button,
   Alert,
   CircularProgress,
-} from "@mui/material";
-import axios from "axios";
-import Layout from "./Layout"; // Layout 컴포넌트 가져오기
+} from '@mui/material';
+import axios from 'axios';
+import Layout from './Layout'; // Layout 컴포넌트 가져오기
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const NicknameEditor = () => {
   const [nickname, setNickname] = useState("");
@@ -24,14 +25,11 @@ const NicknameEditor = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get(
-        "https://api.esquad.click/local/users/get-nickname",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        }
-      );
+      const response = await axios.get(`${getUserApi()}/get-nickname`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      });
       setNickname(response.data.nickname);
       setNewNickname(response.data.nickname);
     } catch (err) {
@@ -62,7 +60,7 @@ const NicknameEditor = () => {
     setSuccess("");
     try {
       await axios.put(
-        "https://api.esquad.click/local/users/update-nickname",
+        `${getUserApi()}/update-nickname`,
         { nickname: newNickname },
         {
           headers: {

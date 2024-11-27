@@ -31,7 +31,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import axios from "axios";
+import axios from 'axios';
+import {getUserApi} from "../../utils/apiConfig.js";
 
 function decodeJWT(token) {
   try {
@@ -105,15 +106,12 @@ const AppBarComponent = ({
 
   const fetchNickname = async () => {
     try {
-      const response = await axios.get(
-        "https://api.esquad.click/local/users/get-nickname",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        }
-      );
-      setNickname(response.data.nickname);
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            },
+        });
+        setNickname(response.data.nickname);
     } catch (err) {
       console.error("닉네임 가져오기 오류:", err);
       setError("닉네임을 가져오는 중 오류가 발생했습니다.");

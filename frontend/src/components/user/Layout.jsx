@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Avatar,
-  Typography,
-} from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import CategoryIcon from "@mui/icons-material/Category";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CategoryIcon from '@mui/icons-material/Category';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@mui/material/styles';
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -34,14 +27,11 @@ const Layout = ({ children }) => {
         throw new Error("로그인이 필요합니다.");
       }
 
-      const response = await axios.get(
-        "https://api.esquad.click/local/users/get-user-info",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${getUserApi()}/get-user-info`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setUserInfo(response.data);
     } catch (err) {
@@ -105,8 +95,8 @@ const Layout = ({ children }) => {
           >
             {userInfo?.nickname?.charAt(0).toUpperCase()}
           </Avatar>
-          <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-            {userInfo?.nickname || "Guest"}
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            {userInfo?.nickname || 'Guest'}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             {userInfo?.email || "example@email.com"}
