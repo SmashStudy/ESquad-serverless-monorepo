@@ -290,7 +290,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     }
 
     try {
-      const url = `https://api.esquad.click/api/community/${boardType}/new`;
+      const url = `https://api.esquad.click/api/community/${boardType}`;
 
       const data = {
         title,
