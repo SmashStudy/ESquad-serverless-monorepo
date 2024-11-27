@@ -21,12 +21,15 @@ import Pagination from '../../../components/storage/Pagination.jsx';
 import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
 import {UserByEmail} from '../../../components/user/UserByEmail.jsx';
 import {useTheme} from "@mui/material";
+import usePresignedUrl from "../../../hooks/storage/RequestPresignedUrl.jsx";
+import { getStorageApi }  from "../../../utils/apiConfig.js";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
   const study = location.state.study;
   const theme = useTheme();
   const {studyId} = useParams();
+  const {requestPresignedUrl} = usePresignedUrl();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -42,7 +45,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [email, setEmail] = useState('unknown');
   const [isLoading, setIsLoading] = useState(false);
 
-  const storageApi = 'https://api.esquad.click/dev/files';
+  const storageApi = getStorageApi();
   const userApi = 'https://api.esquad.click/dev/users';
 
   const fetchFiles = async () => {
@@ -133,17 +136,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
     try {
       const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {
-            action: 'putObject',
-            fileKey: `files/${uniqueFileName}`,
-            contentType: selectedFile.type,
-          },
-          {headers: {'Content-Type': 'application/json'}}
-      );
+      const presignedResponse = await requestPresignedUrl('putObject',
+          uniqueFileName);
 
-      await axios.put(presignedResponse.data.presignedUrl, selectedFile, {
+      await axios.put(presignedResponse, selectedFile, {
         headers: {'Content-Type': selectedFile.type},
       });
 
@@ -186,12 +182,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
     try {
       setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {action: 'deleteObject', fileKey},
-          {headers: {'Content-Type': 'application/json'}}
-      );
-      await axios.delete(presignedResponse.data.presignedUrl);
+      const presignedResponse = await requestPresignedUrl('deleteObject',
+          fileKey);
+      await axios.delete(presignedResponse);
       await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
       setUploadedFiles(
           (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
@@ -207,13 +200,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const handleFileDownload = async (fileKey, originalFileName) => {
     try {
       setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {action: 'getObject', fileKey},
-          {headers: {'Content-Type': 'application/json'}}
-      );
+      const presignedResponse = await requestPresignedUrl('getObject', fileKey);
       const downloadResponse = await axios.get(
-          presignedResponse.data.presignedUrl, {
+          presignedResponse, {
             responseType: 'blob',
           });
       const blob = new Blob([downloadResponse.data], {
