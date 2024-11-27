@@ -274,11 +274,13 @@ const PostListPage = ({ isSmallScreen }) => {
         </Button>
       </Box>
 
-      {/* Posts List */}
+      {/* 게시글 목록 */}
       <List sx={{ width: "100%", pr: 2 }}>
         {posts.map((post) => (
           <Link
-            to={`/community/${boardType}/questions/${post.postId}`}
+            to={`/community/${boardType}/${
+              post.postId
+            }?createdAt=${encodeURIComponent(post.createdAt)}`}
             key={post.postId}
             style={{ textDecoration: "none", color: "inherit" }}
           >
