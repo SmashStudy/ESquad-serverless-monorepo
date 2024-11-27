@@ -1,16 +1,17 @@
 import axios from "axios";
 
-export const getPresignedUrl = async (fileKey ,originalFileName) => {
-    try {
-        const storageApi = 'https://api.esquad.click/dev/files';
-        const response = await axios.post(
-            `${storageApi}/presigned-url`,
-            { action: "getObject", fileKey: fileKey },
-            { headers: { "Content-Type": "application/json" } }
-        );
-        return response.data.presignedUrl;
-    } catch (error) {
-        console.error("Presigned URL 요청 실패:", error.message);
-        throw error;
-    }
+export const getPresignedUrl = async (fileKey, originalFileName) => {
+  try {
+    const storageApi = "https://api.esquad.click/test/files";
+    //const storageApi = "https://api.esquad.click/dev/files";  머지할때 이걸로 바꾸기
+    const response = await axios.post(
+      `${storageApi}/presigned-url`,
+      { action: "getObject", fileKey: fileKey },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data.presignedUrl;
+  } catch (error) {
+    console.error("Presigned URL 요청 실패:", error.message);
+    throw error;
+  }
 };

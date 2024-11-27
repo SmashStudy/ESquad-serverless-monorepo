@@ -8,9 +8,13 @@ import {
   Divider,
   Paper,
   Button,
+  IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CommentSection from "./CommentSection";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CommentSection from "../../components/content/community/CommentSection";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -18,11 +22,37 @@ const PostDetailsPage = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null); // 현재 유저 정보
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null); // 메뉴(anchor) 상태
+  const menuOpen = Boolean(menuAnchorEl); // 메뉴 열림 여부
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
   );
 
+  // 유저 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) throw new Error("로그인이 필요합니다.");
+
+        const response = await axios.get(
+          "https://api.esquad.click/local/users/get-user-info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setCurrentUser(response.data); // 유저 정보 설정
+      } catch (error) {
+        console.error("유저 정보를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  // 게시글 가져오기
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -34,7 +64,7 @@ const PostDetailsPage = () => {
         }
 
         const response = await axios.get(
-          `https://api.esquad.click/api/community/${boardType}/${postId}`,
+          `https://api.esquad.click/dev/community/${boardType}/${postId}`,
           {
             params: { createdAt },
           }
@@ -56,14 +86,94 @@ const PostDetailsPage = () => {
     fetchPost();
   }, [boardType, postId, createdAt, navigate]);
 
-  const handleAddComment = (content) => {
-    const newComment = {
-      id: comments.length + 1,
-      writer: "현재 사용자", // 실제 사용자 정보
-      content,
-      createdAt: new Date().toISOString(),
-    };
-    setComments((prev) => [newComment, ...prev]);
+  const handleMenuClick = (event) => {
+    setMenuAnchorEl(event.currentTarget); // 메뉴 anchor 설정
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null); // 메뉴 닫기
+  };
+
+  const handleEdit = () => {
+    navigate(`/community/${boardType}/${postId}/edit`);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      await axios.delete(
+        `https://api.esquad.click/dev/community/${boardType}/${postId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { createdAt },
+        }
+      );
+      alert("게시글이 삭제되었습니다.");
+      navigate(`/community/${boardType}`);
+    } catch (error) {
+      console.error("게시글 삭제 중 오류 발생:", error);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleAddComment = async (content) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+
+      // 댓글 데이터 생성
+      const newComment = {
+        content,
+        writer: {
+          name: currentUser.name,
+          nickname: currentUser.nickname,
+          email: currentUser.email,
+        },
+      };
+
+      // API 요청
+      const response = await axios.post(
+        `https://api.esquad.click/dev/community/${boardType}/${postId}/comments`,
+        newComment,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Content-Type 추가
+          },
+          params: { createdAt }, // Query parameters
+        }
+      );
+
+      if (response.status === 200) {
+        alert("댓글이 성공적으로 등록되었습니다.");
+
+        // 댓글 목록 업데이트
+        setComments((prevComments) => [
+          {
+            ...newComment,
+            createdAt: new Date().toISOString(),
+          },
+          ...prevComments, // 새 댓글을 상단에 추가
+        ]);
+      } else {
+        alert("댓글 등록에 실패했습니다. 서버가 응답하지 않았습니다.");
+      }
+    } catch (error) {
+      // 오류 로그 출력
+      console.error("댓글 등록 중 오류 발생:", error);
+
+      // CORS 문제 디버깅 로그 추가
+      if (error.response) {
+        console.error("응답 데이터:", error.response.data);
+        console.error("응답 상태:", error.response.status);
+        console.error("응답 헤더:", error.response.headers);
+      } else if (error.request) {
+        console.error("요청 데이터:", error.request);
+      } else {
+        console.error("오류 메시지:", error.message);
+      }
+
+      alert("댓글 등록에 실패했습니다. 서버와의 통신 중 오류가 발생했습니다.");
+    }
   };
 
   if (loading) {
@@ -109,7 +219,6 @@ const PostDetailsPage = () => {
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
       }}
     >
-      {/* 뒤로가기 버튼 */}
       <Button
         onClick={() => navigate(`/community/${boardType}`)}
         startIcon={<ArrowBackIcon />}
@@ -122,12 +231,33 @@ const PostDetailsPage = () => {
         뒤로가기
       </Button>
 
-      {/* 제목 */}
-      <Typography variant="h4" fontWeight="bold" mb={1}>
-        {post.title}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold">
+          {post.title}
+        </Typography>
+        {post.writer?.email === currentUser?.email && ( // 작성자와 현재 유저 비교
+          <div>
+            <IconButton onClick={handleMenuClick}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleEdit}>수정</MenuItem>
+              <MenuItem onClick={handleDelete}>삭제</MenuItem>
+            </Menu>
+          </div>
+        )}
+      </Box>
 
-      {/* 작성자, 작성 시간, 조회수, 좋아요 */}
       <Box
         sx={{
           display: "flex",
@@ -146,26 +276,8 @@ const PostDetailsPage = () => {
         </Typography>
       </Box>
 
-      {/* 상태 표시 */}
-      {boardType === "questions" && post.resolved && (
-        <Typography
-          sx={{
-            color: "primary.main",
-            fontWeight: "bold",
-            fontSize: "1rem",
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mb: 2,
-          }}
-        >
-          ✅ 해결된 질문
-        </Typography>
-      )}
-
       <Divider sx={{ marginBottom: 3 }} />
 
-      {/* 내용 */}
       <Paper
         elevation={2}
         sx={{
@@ -183,41 +295,13 @@ const PostDetailsPage = () => {
         </Typography>
       </Paper>
 
-      {/* 댓글 섹션 */}
       <Typography variant="h6" fontWeight="bold" mb={2}>
         댓글
       </Typography>
-      <Box sx={{ mb: 3 }}>
-        {comments.map((comment) => (
-          <Paper
-            key={comment.id}
-            elevation={1}
-            sx={{
-              padding: 2,
-              mb: 2,
-              backgroundColor: "#f5f5f5",
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="body2" fontWeight="bold" mb={1}>
-              {comment.writer}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ whiteSpace: "pre-line" }}
-              dangerouslySetInnerHTML={{ __html: comment.content }}
-            />
-            <Typography variant="caption" color="text.secondary">
-              {new Date(comment.createdAt).toLocaleString()}
-            </Typography>
-          </Paper>
-        ))}
-      </Box>
-
-      {/* 댓글 작성 */}
       <CommentSection
+        comments={comments}
         onAddComment={handleAddComment}
-        nickname={post.writer?.nickname || "익명"}
+        writer={currentUser?.nickname || "사용자"}
       />
     </Box>
   );

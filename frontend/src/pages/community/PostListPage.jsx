@@ -63,7 +63,7 @@ const PostListPage = ({ isSmallScreen }) => {
       }
 
       const response = await axios.get(
-        `https://api.esquad.click/api/community/${boardType}`,
+        `https://api.esquad.click/dev/community/${boardType}`,
         { params }
       );
 
