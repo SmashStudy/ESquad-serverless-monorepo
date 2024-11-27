@@ -129,8 +129,8 @@ const FileList = ({
                           <IconButton
                               edge="end"
                               aria-label="delete"
-                              onClick={() => onFileDelete(file.fileKey,
-                                  file.userEmail)}
+                              onClick={() => onFileDelete(file.fileKey, file.userEmail)}
+                              sx={{ display: file.userEmail === email ? 'block' : 'none' }}
                           >
                             <DeleteIcon/>
                           </IconButton>
