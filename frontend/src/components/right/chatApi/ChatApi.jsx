@@ -44,7 +44,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                 await apiClient.put("/send", {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
-                    timestamp: messageData.timestamp,
+                    timestamp: Number(messageData.timestamp),
                     user_id: messageData.user_id,
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,
@@ -83,6 +83,8 @@ export const editMessageAPI = async (editingMessage, newMessageContent) => {
 // 메시지 삭제
 export const deleteMessageAPI = async (deleteMessage) => {
     try {
+        console.log("메시지 삭제 요청 데이터:", deleteMessage); // 메시지 삭제 요청 데이터 로그
+
         await apiClient.delete(`/delete`, {
             data: {
                 room_id: String(deleteMessage.room_id),
@@ -90,15 +92,15 @@ export const deleteMessageAPI = async (deleteMessage) => {
                 message: deleteMessage.message,
                 fileKey: deleteMessage.fileKey || null
             }
-        })
+        });
+
         console.log("텍스트 메시지 삭제 성공");
     } catch (error) {
         if (error.response?.status === 404) {
-            // 404 오류일 경우 메시지가 이미 삭제된 상태일 가능성이 있으므로 무시
             console.warn("메시지가 이미 삭제된 상태입니다.");
         } else {
-            // 그 외의 오류는 로깅
             console.error("메시지 삭제 실패:", error.message);
+            console.error("전체 오류 객체:", error);
         }
     }
 };
