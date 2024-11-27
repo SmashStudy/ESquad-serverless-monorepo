@@ -22,7 +22,7 @@ import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
 import {UserByEmail} from '../../../components/user/UserByEmail.jsx';
 import {useTheme} from "@mui/material";
 import usePresignedUrl from "../../../hooks/storage/RequestPresignedUrl.jsx";
-import { getStorageApi }  from "../../../utils/apiConfig.js";
+import {getStorageApi, getUserApi} from "../../../utils/apiConfig.js";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
@@ -46,7 +46,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const storageApi = getStorageApi();
-  const userApi = 'https://api.esquad.click/dev/users';
+  const userApi = getUserApi();
 
   const fetchFiles = async () => {
     try {

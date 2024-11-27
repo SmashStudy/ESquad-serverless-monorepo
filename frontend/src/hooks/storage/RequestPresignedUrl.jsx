@@ -3,7 +3,7 @@ import axios from 'axios';
 import {getStorageApi} from "../../utils/apiConfig.js";
 
 const usePresignedUrl = () => {
-  const storageApi = "https://api.esquad.click/dev/files";
+  const storageApi = getStorageApi();
 
   const requestPresignedUrl = useCallback(
       async (action, fileOrKey) => {
