@@ -84,7 +84,7 @@ export const handler = async (event) => {
 
       try {
         // 삽입된 항목에서 사용자 ID를 추출
-        const userId = newImage.userId.S;
+        const userEmail = newImage.userEmail.S;
         const targetId = newImage.targetId.S;
         const fileName = newImage.originalFileName.S;
 
@@ -118,7 +118,7 @@ export const handler = async (event) => {
         }
 
         // 3. 알림 메시지 생성
-        const message = `${userId} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
+        const message = `${userEmail} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
         console.log(`message: ${message}`);
 
         // 3. 알림 저장
