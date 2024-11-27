@@ -75,13 +75,20 @@ functions:
       - httpApi:
           path: /{boardType}/{postId}
           method: DELETE
-          
+
   createComment:
     handler: service/createComment.handler
     events:
       - httpApi:
           path: /{boardType}/{postId}
           method: POST
+
+  getComment:
+    handler: service/getComment.handler
+    events:
+      - httpApi:
+          path: /{boardType}/{postId}
+          method: GET
 
 resources:
   Resources:
