@@ -87,8 +87,22 @@ functions:
     handler: service/getComment.handler
     events:
       - httpApi:
-          path: /{boardType}/{postId}
+          path: /{boardType}/{postId}/comments
           method: GET
+
+  updateComment:
+    handler: service/updateComment.handler
+    events:
+      - httpApi:
+          path: /{boardType}/{postId}/comments
+          method: PUT
+
+  deleteComment:
+    handler: service/deleteComment.handler
+    events:
+      - httpApi:
+          path: /{boardType}/{postId}/comments
+          method: DELETE
 
 resources:
   Resources:
