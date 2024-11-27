@@ -52,13 +52,14 @@ export const handler = async (event) => {
             },
           }
         : { NULL: true },
-      ...(tags.length > 0 && { tags: { SS: tags } }), // 태그가 있을 때만 추가
+      ...(tags.length > 0 && { tags: { SS: tags } }),
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
+      comments: { L: [] }, // 빈 리스트로 초기화
     };
 
     const command = new PutItemCommand({
