@@ -9,7 +9,8 @@ const NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE =
   process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX =
   process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-const ENDPOINT = `https://yzm1bdqqw8.execute-api.${process.env.AWS_REGION}.amazonaws.com/dev`;
+// const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+const ENDPOINT = "https://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local";
 
 // 사용자ID 로 연결ID 조회
 const getConnectionIds = async (userId) => {

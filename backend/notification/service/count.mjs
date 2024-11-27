@@ -9,7 +9,8 @@ const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
-const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+// const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+const ENDPOINT = "https://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local";
 
 // WebSocket 으로 메시지 전송
 const sendToConnection = async (connectionId, payload) => {
