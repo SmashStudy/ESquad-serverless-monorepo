@@ -45,7 +45,7 @@ functions:
     handler: service/createPost.handler
     events:
       - httpApi:
-          path: /{boardType}/new
+          path: /{boardType}
           method: POST
 
   getPost:
