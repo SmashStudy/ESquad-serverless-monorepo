@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from "react-router-dom";
 import {
-    IconButton,
-    Typography,
     Box,
     CssBaseline,
-    InputBase,
-    Button,
-    Avatar,
 } from '@mui/material';
-import { useTheme, useMediaQuery, styled, alpha } from '@mui/material';
+import { useTheme, useMediaQuery } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
-import PostListPage from "../community/PostListPage.jsx";
 import ChatDrawer from "../../components/right/ChatDrawer.jsx";
 import StudyPage from "../team/study/StudyPage.jsx";
 import {useUser} from "../../components/form/UserContext.jsx";
@@ -198,6 +192,8 @@ const Home = () => {
                         isMediumScreen={isMediumScreen}
                         teams={teams}
                         selectedTeam={selectedTeam}
+                        toggleDrawer={toggleChatDrawer}
+                        // user={user}
                     />
                 </Box>
             </Box>

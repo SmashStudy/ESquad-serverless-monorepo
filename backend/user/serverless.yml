@@ -15,7 +15,7 @@ provider:
             - dynamodb:GetItem
             - dynamodb:Scan
           Resource:
-            - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:DYNAMODB_USER_TABLE_NAME}
+            - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
 
 functions:
   authorizer:
@@ -65,7 +65,14 @@ functions:
       - http:
           path: get-user
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
   
   getUserInfoByToken:
     handler: service/handler.getUserInfoByToken
@@ -171,7 +178,7 @@ resources:
     UserTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${env:DYNAMODB_USER_TABLE_NAME}
+        TableName: ${env:USER_TABLE_NAME}
         AttributeDefinitions:
           - AttributeName: email
             AttributeType: S
