@@ -21,7 +21,7 @@ import Pagination from '../../../components/storage/Pagination.jsx';
 import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
 import {UserByEmail} from '../../../components/user/UserByEmail.jsx';
 import {useTheme} from "@mui/material";
-import usePresignedUrl from "../../../hooks/storage/RequestPresignedUrl.jsx";
+import UsePresignedUrl from "../../../hooks/storage/UsePresignedUrl.jsx";
 import {getStorageApi, getUserApi} from "../../../utils/apiConfig.js";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
@@ -29,7 +29,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const study = location.state.study;
   const theme = useTheme();
   const {studyId} = useParams();
-  const {requestPresignedUrl} = usePresignedUrl();
+  const {requestPresignedUrl} = UsePresignedUrl();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
