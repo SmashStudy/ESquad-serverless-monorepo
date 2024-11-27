@@ -26,7 +26,6 @@ export const fetchMessageAPI = async (room_id) => {
 export const sendMessageAPI = async (socket, messageData) => {
     try {
         socket.send(JSON.stringify(messageData));
-        console.log("메시지 전송 : " , messageData);
     } catch (error) {
         console.error("메시지 전송 실패 : ", error.message);
         throw error;
