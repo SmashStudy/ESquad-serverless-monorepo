@@ -320,6 +320,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     }
   };
 
+  if (loading) return <Typography>유저 정보를 불러오는 중입니다...</Typography>;
+  if (error) return <Typography color="error">{error}</Typography>;
+
   return (
     <Box
       sx={{
