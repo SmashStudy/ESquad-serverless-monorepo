@@ -27,7 +27,7 @@ export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = JSON.parse(event.body);
-  const { room_id, message, user_id, fileKey, presignedUrl, contentType, originalFileName } = body;
+  const { room_id, message, user_id, fileKey, presignedUrl, contentType, originalFileName, timestamp } = body;
 
   if (!room_id || !message || !user_id) {
     return {
@@ -36,10 +36,10 @@ export const handler = async (event) => {
     };
   }
 
-  const now = moment().valueOf();
+  // const now = moment().valueOf();
   const item = {
     room_id: String(room_id),
-    timestamp: now,
+    timestamp: timestamp,
     message: message || null,
     user_id: String(user_id),
     isFile: fileKey ? true : false, // 파일 여부 플래그 추가
