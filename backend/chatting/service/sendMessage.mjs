@@ -12,6 +12,7 @@ export const handler = async (event) => {
     // 이벤트 본문에서 메시지, 방 ID, 사용자 ID를 추출
     const { message, room_id, user_id, fileKey, contentType, originalFileName } = JSON.parse(event.body);
 
+
     // API Gateway Management API 클라이언트 생성
     const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
         apiVersion: "2018-11-29",
