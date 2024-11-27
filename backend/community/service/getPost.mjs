@@ -41,9 +41,9 @@ export const handler = async (event) => {
       title: data.Item.title.S,
       content: data.Item.content.S,
       writer: {
-        id: data.Item.writer.M.id.S,
-        name: data.Item.writer.M.name.S,
         email: data.Item.writer.M.email.S,
+        name: data.Item.writer.M.name.S,
+        nickname: data.Item.writer.M.nickname.S,
       },
       book: data.Item.book?.M
         ? {
