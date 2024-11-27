@@ -12,6 +12,7 @@ provider:
     WEBSOCKET_ENDPOINT: ws.noti.api.esquad.click/${opt:stage, 'dev'}
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
+    TEAM_TABLE_STREAM_LABEL: ${env:TEAM_TABLE_STREAM_LABEL}
     NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
     NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
@@ -85,7 +86,7 @@ functions:
     handler: service/fetch.handler
     events:
       - http:
-          path: notification/all
+          path: /all
           method: post
           cors: true
 
@@ -107,7 +108,7 @@ functions:
     handler: ./service/markAllAsRead.handler
     events:
       - http:
-          path: notification/mark
+          path: /mark
           method: post
           cors: true
 
@@ -115,7 +116,7 @@ functions:
     handler: ./service/markAsSave.handler
     events:
       - http:
-          path: notification/save
+          path: /save
           method: get
           cors: true
 
@@ -123,7 +124,7 @@ functions:
     handler: ./service/markAsRelease.handler
     events:
       - http:
-          path: notification/release-save
+          path: /release-save
           method: get
           cors: true
 
@@ -131,7 +132,7 @@ functions:
     handler: ./service/filterSaved.handler
     events:
       - http:
-          path: notification/filter-saved
+          path: /filter-saved
           method: post
           cors: true
 
@@ -143,11 +144,20 @@ functions:
           route: $disconnect # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
 
   publish_notification_on_file_upload:
-    handler: service/publishNotificationOnFileUpload.handler # Lambda 핸들러 함수
+    handler: service/publishNotificationOnFileUpload.handler
     events:
       - stream: # DynamoDB Streams 트리거
           type: dynamodb
           arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/stream/${env:METADATA_TABLE_STREAM_LABEL}
+          batchSize: 5 # 스트림 배치 처리 크기
+          startingPosition: LATEST # 최신 이벤트부터 시작
+
+  publish_notification_on_team_created:
+    handler: service/publishNotificationOnTeamCreated.handler
+    events:
+      - stream: # DynamoDB Streams 트리거
+          type: dynamodb
+          arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}/stream/${env:TEAM_TABLE_STREAM_LABEL}
           batchSize: 5 # 스트림 배치 처리 크기
           startingPosition: LATEST # 최신 이벤트부터 시작
 
@@ -233,27 +243,27 @@ resources:
         StreamSpecification:
           StreamViewType: NEW_IMAGE
 
-    ApiGatewayCloudWatchRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: serverlessApiGatewayCloudWatchRole
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: apigateway.amazonaws.com
-              Action: sts:AssumeRole
-        Policies:
-          - PolicyName: ApiGatewayCloudWatchPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
+    # ApiGatewayCloudWatchRole:
+    #   Type: AWS::IAM::Role
+    #   Properties:
+    #     RoleName: serverlessApiGatewayCloudWatchRole
+    #     AssumeRolePolicyDocument:
+    #       Version: "2012-10-17"
+    #       Statement:
+    #         - Effect: Allow
+    #           Principal:
+    #             Service: apigateway.amazonaws.com
+    #           Action: sts:AssumeRole
+    #     Policies:
+    #       - PolicyName: ApiGatewayCloudWatchPolicy
+    #         PolicyDocument:
+    #           Version: "2012-10-17"
+    #           Statement:
+    #             - Effect: Allow
+    #               Action:
+    #                 - logs:CreateLogGroup
+    #                 - logs:CreateLogStream
+    #                 - logs:PutLogEvents
+    #               Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
 
 useDotenv: true
