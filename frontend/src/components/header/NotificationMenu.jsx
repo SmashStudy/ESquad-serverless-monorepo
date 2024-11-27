@@ -1,24 +1,8 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DoneAllIcon from "@mui/icons-material/Done";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import TurnedInIcon from "@mui/icons-material/TurnedIn";
-import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
-import {
-  Avatar,
-  Badge,
-  Box,
-  CircularProgress,
-  IconButton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Menu,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { alpha } from "@mui/system";
+import { Badge, Box, CircularProgress, IconButton, Menu } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import NotificationHeader from "./NotificationHeader";
+import NotificationList from "./NotificationList";
 
 const NotificationsMenu = ({
   theme,
@@ -40,17 +24,17 @@ const NotificationsMenu = ({
 
   // 알림 메뉴를 열고 알림 데이터를 새로 가져오는 과정 처리
   const handleNotificationsClick = async (event) => {
-    setNotificationsAnchorEl(() => event.currentTarget); // Open notification menu
-    setShowArchived(() => false); // Reset showArchived state
-    setNotifications(() => []); // Clear notifications
-    setLastEvaluatedKey(() => null); // Reset pagination keys
+    setNotificationsAnchorEl(() => event.currentTarget); // 알림 메뉴 오픈
+    setShowArchived(() => false);
+    setNotifications(() => []);
+    setLastEvaluatedKey(() => null);
 
     // React's state updates are asynchronous, so functional updates ensure the most recent state is used
     try {
-      setIsFetching(() => true); // Set loading state
-      await handleFetchNotifications(); // Fetch notifications
+      setIsFetching(() => true);
+      await handleFetchNotifications();
     } finally {
-      setIsFetching(() => false); // Reset loading state
+      setIsFetching(() => false);
     }
   };
 
@@ -64,10 +48,10 @@ const NotificationsMenu = ({
     if (isFetching) return;
 
     try {
-      setIsFetching(() => true); // Set loading state
+      setIsFetching(() => true);
       await fetchSavedNotifications();
     } finally {
-      setIsFetching(() => false); // Reset loading state
+      setIsFetching(() => false);
     }
   };
 
@@ -85,7 +69,6 @@ const NotificationsMenu = ({
       // 응답 데이터를 기반으로 상태 업데이트
       setNotifications((prev) => [...(prev || []), ...(result.items || [])]);
 
-      // Update the last evaluated key for pagination
       setLastEvaluatedKey(result.lastEvaluatedKey || null);
     } catch (error) {
       alert(error);
@@ -147,12 +130,20 @@ const NotificationsMenu = ({
         user,
         notificationId,
         setNotifications,
+        showArchived,
       });
 
       setNotifications((prev) =>
-        prev.filter(
-          (notification) => notification.id !== updatedNotification.id
-        )
+        prev
+          .map((notification) =>
+            notification.id === updatedNotification.id
+              ? { ...notification, ...updatedNotification }
+              : notification
+          )
+          .filter(
+            (notification) =>
+              !(showArchived && notification.id === updatedNotification.id)
+          )
       );
     } catch (error) {
       alert(error);
@@ -253,187 +244,26 @@ const NotificationsMenu = ({
               <CircularProgress color="primary" size="30px" />
             </Box>
           ) : (
-            <List sx={{ width: "100%", paddingBottom: 6 }}>
+            <>
               {/* 알림 헤더 */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: theme.spacing(1, 2), // Add spacing for alignment
-                  borderBottom: `1px solid ${alpha(
-                    theme.palette.common.black,
-                    0.1
-                  )}`, // Optional border for separation
-                }}
-              >
-                <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                  {showArchived ? "보관된 알림" : "알림"}
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Tooltip
-                    title={showArchived ? "알림 나가기" : "보관함 보기"}
-                    placement="top"
-                  >
-                    <IconButton
-                      size="small"
-                      onClick={
-                        showArchived
-                          ? handleNotificationsClose
-                          : handleToggleArchived
-                      }
-                      sx={{
-                        color: theme.palette.primary.main,
-                      }}
-                    >
-                      {showArchived ? <ArrowBackIcon /> : <TurnedInIcon />}
-                    </IconButton>
-                  </Tooltip>
-                  {!showArchived && (
-                    <Tooltip title="전체 읽음처리" placement="top">
-                      <IconButton
-                        size="small"
-                        onClick={handleMarkAllAsRead}
-                        sx={{
-                          color: `${theme.palette.primary.main}`,
-                        }}
-                      >
-                        <DoneAllIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Box>
-              </Box>
+              <NotificationHeader
+                showArchived={showArchived}
+                handleToggleArchived={handleToggleArchived}
+                handleNotificationsClose={handleNotificationsClose}
+                handleMarkAllAsRead={handleMarkAllAsRead}
+                theme={theme}
+              />
 
               {/* 알림 목록 */}
-              {notifications.length > 0 ? (
-                <>
-                  {notifications.map((notification) => (
-                    <ListItem
-                      key={notification.id}
-                      alignItems="flex-start"
-                      sx={{
-                        "&:hover": {
-                          cursor: "pointer",
-                          backgroundColor: alpha(
-                            theme.palette.common.black,
-                            0.1
-                          ),
-                        },
-                      }}
-                    >
-                      <ListItemAvatar>
-                        {notification.isRead === "0" ? (
-                          <Badge
-                            color="error"
-                            variant="dot"
-                            anchorOrigin={{
-                              vertical: "top",
-                              horizontal: "left",
-                            }}
-                            overlap="circular"
-                          >
-                            <Avatar src="/static/images/avatar/1.jpg" />
-                          </Badge>
-                        ) : (
-                          <Avatar src="/static/images/avatar/1.jpg" />
-                        )}
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography
-                            component="span"
-                            variant="body1"
-                            sx={{
-                              color:
-                                notification.isRead === "0"
-                                  ? "text.primary"
-                                  : "text.secondary",
-                              fontWeight:
-                                notification.isRead === "0" ? "bold" : "normal",
-                            }}
-                          >
-                            {notification.sender}
-                          </Typography>
-                        }
-                        secondary={
-                          <React.Fragment>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              sx={{
-                                color:
-                                  notification.isRead === "0"
-                                    ? "text.primary"
-                                    : "text.secondary",
-                                display: "block",
-                                marginTop: "4px",
-                              }}
-                            >
-                              {notification.message}
-                            </Typography>
-                            <Typography
-                              component="span"
-                              variant="caption"
-                              sx={{
-                                color:
-                                  notification.isRead === "0"
-                                    ? "text.secondary"
-                                    : "text.disabled",
-                                display: "block",
-                                marginTop: "4px",
-                              }}
-                            >
-                              {formatTimeAgo(notification.createdAt)}
-                            </Typography>
-                          </React.Fragment>
-                        }
-                      />
-
-                      {/* Archive or Saved Icon */}
-                      <Tooltip title="보관하기" placement="bottom">
-                        <IconButton
-                          edge="end"
-                          onClick={() =>
-                            notification.isSave !== "1"
-                              ? handleMarkAsSave(notification.id)
-                              : handleReleaseSave(notification.id)
-                          }
-                          sx={{
-                            color: `${theme.palette.primary.main}`,
-                          }}
-                        >
-                          {notification.isSave === "1" ? (
-                            <TurnedInIcon sx={{ fontSize: 24 }} />
-                          ) : (
-                            <TurnedInNotIcon sx={{ fontSize: 24 }} />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                    </ListItem>
-                  ))}
-                </>
-              ) : (
-                // No notifications
-                <ListItem>
-                  <ListItemText primary="알림이 없습니다." />
-                </ListItem>
-              )}
-
-              {/* 스크롤 추가 로드 시 스피너 표시 */}
-              {isFetching && notifications.length > 0 && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: theme.spacing(2),
-                  }}
-                >
-                  <CircularProgress color="primary" size="30px" />
-                </Box>
-              )}
-            </List>
+              <NotificationList
+                notifications={notifications}
+                isFetching={isFetching}
+                handleMarkAsSave={handleMarkAsSave}
+                handleReleaseSave={handleReleaseSave}
+                formatTimeAgo={formatTimeAgo}
+                theme={theme}
+              />
+            </>
           )}
         </Box>
       </Menu>
