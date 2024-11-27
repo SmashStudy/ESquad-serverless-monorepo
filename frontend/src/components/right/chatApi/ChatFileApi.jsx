@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const storageApi = 'https://api.esquad.click/test/files';
-const userApi = 'https://api.esquad.click/dev/users'
 
 export const fetchFiles = async (room_id) => {
     try {
@@ -75,7 +74,6 @@ export const uploadFile = async ({ file, room_id, user_id}) => {
             fileSize,
             presignedUrl: presignedResponse.data.presignedUrl,
         };
-
     } catch (error) {
         console.error('파일 업로드 실패:', error.message);
         throw error;

@@ -27,12 +27,9 @@ export const sendMessageAPI = async (socket, messageData) => {
     try {
         // WebSocket 메시지 전송
         socket.send(JSON.stringify(messageData));
-        console.log("메시지 전송 : ", messageData);
 
         // 파일 메시지 처리
         if (messageData.fileKey) {
-            console.log("파일 메시지 전송 준비:", messageData);
-
             // 파일 메타데이터 확인
             if (!messageData.presignedUrl || !messageData.contentType || !messageData.fileKey) {
                 console.error("파일 메타데이터 누락:", messageData);
@@ -44,14 +41,13 @@ export const sendMessageAPI = async (socket, messageData) => {
                 await apiClient.put("/send", {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
-                    timestamp: Number(messageData.timestamp),
+                    timestamp: messageData.timestamp,
                     user_id: messageData.user_id,
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,
                     originalFileName: messageData.originalFileName,
                 });
-                console.log("파일 메시지 저장됨:", messageData);
             } catch (putError) {
                 console.error("파일 메타데이터 저장 실패:", putError.message);
                 throw putError;
@@ -83,18 +79,14 @@ export const editMessageAPI = async (editingMessage, newMessageContent) => {
 // 메시지 삭제
 export const deleteMessageAPI = async (deleteMessage) => {
     try {
-        console.log("메시지 삭제 요청 데이터:", deleteMessage); // 메시지 삭제 요청 데이터 로그
-
         await apiClient.delete(`/delete`, {
             data: {
                 room_id: String(deleteMessage.room_id),
-                timestamp: Number(deleteMessage.timestamp),
+                timestamp: deleteMessage.timestamp,
                 message: deleteMessage.message,
                 fileKey: deleteMessage.fileKey || null
             }
         });
-
-        console.log("텍스트 메시지 삭제 성공");
     } catch (error) {
         if (error.response?.status === 404) {
             console.warn("메시지가 이미 삭제된 상태입니다.");
