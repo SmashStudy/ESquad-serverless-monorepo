@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const storageApi = 'https://api.esquad.click/test/files';
+const storageApi = 'https://api.esquad.click/dev/files';
 
 export const fetchFiles = async (room_id) => {
     try {
@@ -90,7 +90,6 @@ export const deleteFile = async (fileKey) => {
 
         await axios.delete(presignedResponse.data.presignedUrl);
         await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
-        console.log('파일 삭제 성공:');
     } catch (error) {
         console.error('파일 삭제 실패:', error.message);
     }

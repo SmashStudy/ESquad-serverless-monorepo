@@ -6,9 +6,6 @@ const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDow
         <div className="message-list">
             {messages.map((msg, index) => {
                 const key = `${msg.room_id}-${msg.timestamp}-${msg.fileKey || 'text'}`;
-
-                console.log("Message Item 생성됨:", msg); // 메시지 생성 시 로그
-
                 return (
                     <MessageItem
                         key={key}
