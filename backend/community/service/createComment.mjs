@@ -52,6 +52,7 @@ export const handler = async (event) => {
       },
       createdAt: commentCreatedAt,
       updatedAt: commentCreatedAt,
+      likeCount: 0,
     };
 
     // DynamoDB 업데이트 명령
@@ -83,6 +84,7 @@ export const handler = async (event) => {
                 },
                 createdAt: { S: commentCreatedAt },
                 updatedAt: { S: commentCreatedAt },
+                likeCount: { N: "0" },
               },
             },
           ],
