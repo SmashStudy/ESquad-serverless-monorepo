@@ -85,48 +85,39 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: "100%",
   },
 }));
+const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
+    const navigate = useNavigate();
 
-const AppBarComponent = ({
-  handleSidebarToggle,
-  handleTab,
-  selectedTab,
-  updateSelectedTeam,
-  updateTeams,
-  teams,
-  toggleChatDrawer,
-}) => {
+    const [nickname, setNickname] = useState('');
+    const [error, setError] = useState(''); 
 
-  const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState('');
-  const handleLogout = () => {
-    navigate("/logout");
+    const handleLogout = () => {
+      navigate("/logout");
+    };
+  
+    const fetchNickname = async () => {
+      try {
+          const response = await axios.get('https://api.esquad.click/local/users/get-nickname', {
+              headers: {
+                  Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+              },
+          });
+          setNickname(response.data.nickname);
+      } catch (err) {
+          console.error("닉네임 가져오기 오류:", err);
+          setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+      }
   };
-
-  const fetchNickname = async () => {
-    try {
-        const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-            },
-        });
-        setNickname(response.data.nickname);
-    } catch (err) {
-        console.error("닉네임 가져오기 오류:", err);
-        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
-    }
-};
-
-// 컴포넌트 로드 시 닉네임 가져오기
-useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-        navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
-    } else {
-        fetchNickname();
-    }
-}, [navigate]);
-
+  
+  // 컴포넌트 로드 시 닉네임 가져오기
+  useEffect(() => {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+          navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
+      } else {
+          fetchNickname();
+      }
+  }, [navigate]);
   const [userName, setUserName] = useState("로딩 중...");
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -331,50 +322,44 @@ useEffect(() => {
                     <ListItemText primary="새로운 팀 생성" />
                   </ListItemButton>
 
-                  {/* Team Creation Modal */}
-                  <TeamCreationDialog
-                    open={isTeamCreationModalOpen}
-                    onClose={handleCloseCreateTeamModal}
-                  />
+                                    {/* Team Creation Modal */}
+                                    <TeamCreationDialog
+                                        open={isTeamCreationModalOpen}
+                                        onClose={handleCloseCreateTeamModal}
+                                        updateTeams={updateTeams}
+                                        teams={teams}
+                                    />
 
-                  {teams == null ? (
-                    <ListItem>
-                      <ListItemText primary="팀이 없습니다." />
-                    </ListItem>
-                  ) : (
-                    <>
-                      {teams.map((team, index) => (
-                        <Link
-                          to={`/teams/${team.id}`}
-                          className={`menu-team${index}`}
-                          key={index}
-                        >
-                          <ListItemButton
-                            onClick={() => updateSelectedTeam(index)}
-                            sx={{
-                              "&:hover": {
-                                cursor: "pointer",
-                                fontSize: "1.4rem",
-                              },
-                            }}
-                          >
-                            <ListItemIcon>
-                              <Avatar
-                                alt="Team Avatar"
-                                src="/src/assets/user-avatar.png"
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={team?.teamName} />
-                          </ListItemButton>
-                        </Link>
-                      ))}
-                    </>
-                  )}
-                </List>
-              </Menu>
-            </Box>
-          )}
-        </Box>
+                                    {teams == null ? (
+                                        <ListItem>
+                                            <ListItemText primary="팀이 없습니다." />
+                                        </ListItem>
+                                    ) : (
+                                        <>
+                                            {teams.map((team, index) => (
+                                                <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                                                    <ListItemButton 
+                                                      onClick={() => changeSelectedTeam(index)} 
+                                                      sx={{
+                                                        "&:hover": {
+                                                          cursor: "pointer",
+                                                          fontSize: "1.4rem",
+                                                        },
+                                                      }}>
+                                                        <ListItemIcon>
+                                                            <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={team?.teamName} />
+                                                    </ListItemButton>
+                                                </Link>
+                                            ))}
+                                        </>
+                                    )}
+                                </List>
+                            </Menu>
+                        </Box>
+                    )}
+                </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", flex: 4 }}>
           {/* 3:4:3 Ratio */}

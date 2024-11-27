@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 import {
     Box,
@@ -8,31 +8,60 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
 import ChatDrawer from "../../components/right/ChatDrawer.jsx";
+import StudyPage from "../team/study/StudyPage.jsx";
+import {useUser} from "../../components/form/UserContext.jsx";
+import axios from "axios";
+import {fetchTeam} from "../../hooks/fetchTeam.jsx";
+import {jwtDecode} from 'jwt-decode'; 
 
 const Home = () => {
     const theme = useTheme();
     const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(true); 
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [teams, setTeams] = useState([
-        // { "teamName": "none" },
-        { "id": 21, "teamName": "문법존" },
-        { "id": 28, "teamName": "몬다니" },
-        { "id": 24, "teamName": "문법존2" },
-        { "id": 22, "teamName": "몬다ㅇㅇㅇㅇㅇ니2" },
-        { "id": 23, "teamName": "문ㅈㄷㅈㄷㅈㄷㅈㄷ법존3" },
-        { "id": 41, "teamName": "몬다니4" },
-    ]);
-    const [selectedTeam, setSelectedTeam] = useState(null);
-    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px
+    const [loading, setLoading] = useState(false);
+    const [teams, setTeams] = useState([]);
+    const [selectedTeam, setSelectedTeam] = useState(null); // 
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const token = localStorage.getItem('jwtToken');
+    
+    useEffect(() => {
+        const fetchTeams = async () => {
+            try {
+                setLoading(true);
+                const responseTeamId = await axios.post('https://api.esquad.click/teams/get',{
+                        userId: jwtDecode(token).email,
+                    }
+                );
+                const teamIds = responseTeamId.data.data; // 팀 ID 배열
+                const teamProfilesPromises = teamIds.map(async (teamId) =>{
+                    const encodedTeamId = encodeURIComponent(teamId); 
+                    const res = await axios.get(`https://api.esquad.click/teams/${encodedTeamId}`);
+                    return res.data.data;
+                });
 
+                const teamProfiles = await Promise.all(teamProfilesPromises);
+                
+                setTeams(teamProfiles);
+                setTeams((prevTeams) =>
+                    [...prevTeams].sort((a, b) => a.teamName.localeCompare(b.teamName))
+                );
+            } catch (error) {
+                console.error('Error fetching teams:', error);
+                return null;
+            } finally {
+                setLoading(false); 
+            }
+        };
+        fetchTeams();
+    }, []); 
+    
     const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
     const toggleChatDrawer = () => {
         setChatDrawerOpen((prevState) => !prevState);
     };
-
-    // Toggle the sidebar or open the drawer based on screen size
+    
     const handleSidebarToggle = () => {
         if (isSmallScreen) {
             setDrawerOpen(true);
@@ -41,29 +70,49 @@ const Home = () => {
         }
     };
 
-    // Close the drawer
     const handleDrawerClose = () => { setDrawerOpen(false); };
 
-    // set selectedTab
     const handleTab = (tabIndex) => {
         setSelectedTab(tabIndex);
         setSelectedTeam(null);
     }
 
-    // update selectedTeam
-    const updateSelectedTeam = (i) => {
-        const changeSelectTeam = teams[i];
-        if (selectedTeam?.id !== changeSelectTeam.id || selectedTeam == null) {
-            setSelectedTeam(changeSelectTeam);
-            if(selectedTab !== 1) setSelectedTab(1);
+    const changeSelectedTeam = (i) => {
+
+        const newSelectedTeam = teams[i];
+        if (!newSelectedTeam) {
+            console.warn('선택된 팀이 존재하지 않습니다.');
+            return;
+        }
+    
+        if (selectedTeam?.PK !== newSelectedTeam.PK || selectedTeam === null) {
+            setSelectedTeam(newSelectedTeam);
+            if (selectedTab !== 1) setSelectedTab(1);
         }
     };
 
-    const updateTeams = (team) => {
-        setTeams(...teams, team);
-    }
+    const updateSelectedTeam = (updatedTeam) => {
+        setTeams((prevTeams) =>
+            prevTeams.map((team) =>
+                team.PK= updatedTeam.PK ? updatedTeam : team
+            )
+        );
+        setSelectedTeam(updatedTeam);
+    };
 
-    // console.log(teams);
+    const updateTeams = async (team) => {
+        try {
+            const res = await axios.get(`https://api.esquad.click/teams/${encodeURIComponent(team.teamId)}`);
+            setTeams((prevTeams) => {            
+                if (prevTeams.some((t) => t.PK === res.data.data.PK)) {
+                    return prevTeams; 
+                }
+                return [...prevTeams, res.data.data];
+            });
+        } catch (error) {
+            console.error('Error fetching team:', error);
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -74,10 +123,10 @@ const Home = () => {
                 handleSidebarToggle={handleSidebarToggle}
                 handleTab={handleTab}
                 selectedTab={selectedTab}
-                updateSelectedTeam={updateSelectedTeam}
+                changeSelectedTeam={changeSelectedTeam}
                 updateTeams={updateTeams}
                 teams={teams}
-                toggleChatDrawer={toggleChatDrawer} // 이 부분 추가
+                toggleChatDrawer={toggleChatDrawer}
             />
 
             <ChatDrawer
@@ -85,11 +134,11 @@ const Home = () => {
                 isMediumScreen={isMediumScreen}
                 teams={teams}
                 selectedTeam={selectedTeam}
-                isOpen={chatDrawerOpen} // 상태 전달
-                toggleDrawer={toggleChatDrawer} // 핸들러 전달
+                isOpen={chatDrawerOpen}
+                toggleDrawer={toggleChatDrawer}
             />
 
-            {/* Home Content Area with Sidebar */}
+            {/* Home Content Area with Sidebar */}  
             <Box
                 component="main"
                 sx={{
@@ -116,9 +165,9 @@ const Home = () => {
                         display: 'flex',
                         flexDirection: isMediumScreen ? 'column' : 'row',
                         flexGrow: 1,
-                        py: 2,      // warn
-                        px: 2,      // warn
-                        gap: 1,     // Community area 와 chat area gap
+                        py: 2,      
+                        px: 2,      
+                        gap: 1,     
                         transition: 'width 0.3s ease',
                         backgroundColor: '#fff',
                     }}
@@ -133,7 +182,7 @@ const Home = () => {
                         }}
                     >
 
-                        <Outlet />
+                        <Outlet context={{ selectedTeam, updateSelectedTeam, changeSelectedTeam, setSelectedTeam, setSelectedTab, updateTeams }}/>
                     </Box>
 
                     {/* Right Section - Chat Area */}

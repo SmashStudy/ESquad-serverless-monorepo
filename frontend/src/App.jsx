@@ -15,6 +15,8 @@ import GoogleLogin from './components/google/GoogleLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
+import ManageUserPage from './pages/team/ManageUserPage.jsx';
+import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
 import Category from './components/user/UserCategory.jsx';
 import Nickname from './components/user/UserNickname.jsx'
 import Layout from './components/user/Layout.jsx';
@@ -88,6 +90,8 @@ function App() {
 
                             {/* team */}
                             <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
+                                <Route path="manage/users" element={<ManageUserPage />} />
+                                <Route path="manage/settings" element={<ManageTeamPage />} />
                                 <Route path="study" element={<StudyListPage />} />
                                 <Route path="study/:studyId" element={<StudyDetailPage />} />
                                 <Route path="book/search" element={<BookListPage />} />
