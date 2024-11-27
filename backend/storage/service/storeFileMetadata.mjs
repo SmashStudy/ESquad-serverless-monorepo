@@ -9,7 +9,15 @@ export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
   try {
     const body = JSON.parse(event.body);
-    const { fileKey, metadata } = body;
+    let { fileKey, metadata } = body;
+
+    try {
+      // 인코딩 여부에 따라 디코딩 시도
+      fileKey = decodeURIComponent(fileKey);
+    } catch (error) {
+      // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
+      console.log("File name did not require decoding:", fileKey);
+    }
 
     const params = {
       TableName: TABLE_NAME,
