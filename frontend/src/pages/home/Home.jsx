@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 import {
     Box,
@@ -27,7 +27,6 @@ const Home = () => {
     const token = localStorage.getItem('jwtToken');
     
     useEffect(() => {
-        
         const fetchTeams = async () => {
             try {
                 setLoading(true);

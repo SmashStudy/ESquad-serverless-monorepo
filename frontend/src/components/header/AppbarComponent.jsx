@@ -97,7 +97,7 @@ const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSe
   
     const fetchNickname = async () => {
       try {
-          const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
+          const response = await axios.get('https://api.esquad.click/local/users/get-nickname', {
               headers: {
                   Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
               },
