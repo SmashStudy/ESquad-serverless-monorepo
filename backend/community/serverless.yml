@@ -86,11 +86,19 @@ functions:
           method: GET
           cors: true
 
+  getComment:
+    handler: service/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: GET
+          cors: true
+
   updateComment:
     handler: service/updateComment.handler
     events:
       - http:
-          path: /{boardType}/{postId}/comments
+          path: /{boardType}/{postId}/comments/{commentId}
           method: PUT
           cors: true
 
@@ -98,7 +106,7 @@ functions:
     handler: service/deleteComment.handler
     events:
       - http:
-          path: /{boardType}/{postId}/comments
+          path: /{boardType}/{postId}/comments/{commentId}
           method: DELETE
           cors: true
 
