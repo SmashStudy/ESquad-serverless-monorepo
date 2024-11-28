@@ -16,14 +16,13 @@
     "@mui/material": "^6.1.5",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
-    "jsonwebtoken": "^9.0.2",
+    "install": "^0.13.0",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
     "react-router-dom": "^6.26.1",
-    "recharts": "^2.13.3",
-    "ws": "^8.18.0"
+    "recharts": "^2.13.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

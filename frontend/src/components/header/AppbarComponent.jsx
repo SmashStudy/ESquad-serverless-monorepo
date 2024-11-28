@@ -1,3 +1,4 @@
+import axios from 'axios';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,7 +25,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   fetchAll,
@@ -37,6 +38,7 @@ import useNotiWebSocket from "../../hooks/useNotiWebSocket.js";
 import formatTimeAgo from "../../utils/formatTimeAgo.js";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import NotificationsMenu from "./NotificationMenu.jsx";
+import {getUserApi} from "../../utils/apiConfig.js";
 
 function decodeJWT(token) {
   try {
@@ -102,6 +104,41 @@ const AppBarComponent = ({
   toggleChatDrawer,
 }) => {
   const navigate = useNavigate();
+  const [nickname, setNickname] = useState('');
+  const [error, setError] = useState('');
+
+  const fetchNickname = async () => {
+    try {
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            },
+        });
+        setNickname(response.data.nickname);
+    } catch (err) {
+        console.error("닉네임 가져오기 오류:", err);
+        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+    }
+};
+
+  const [userName, setUserName] = useState("로딩 중...");
+
+// 컴포넌트 로드 시 닉네임 가져오기
+  useEffect(() => {
+    const fetchToken = async () => {
+      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
+      const token = localStorage.getItem("jwtToken");
+      if (token) {
+        const decodedToken = decodeJWT(token);
+        if (decodedToken) {
+          setUserName(decodedToken.name || "Name");
+        }
+      }
+    };
+
+    fetchToken();
+  }, []);
+
   const theme = useTheme();
   const [showSearchBar, setShowSearchBar] = useState(null);
   const [teamAnchorEl, setTeamAnchorEl] = useState(null);
@@ -119,45 +156,6 @@ const AppBarComponent = ({
 
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
-  const [error, setError] = useState("");
-
-  // const fetchNickname = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://api.esquad.click/local/users/get-nickname",
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-  //         },
-  //       }
-  //     );
-  //     setUser({
-  //       nickname: response.data.nickname,
-  //       ...user,
-  //     });
-  //   } catch (err) {
-  //     console.error("닉네임 가져오기 오류:", err);
-  //     setError("닉네임을 가져오는 중 오류가 발생했습니다.");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const fetchToken = async () => {
-  //     await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
-  //     const token = localStorage.getItem("jwtToken");
-  //     if (token) {
-  //       const decodedToken = decodeJWT(token);
-  //       if (decodedToken) {
-  //         setUser({
-  //           username: decodedToken.name || "Name",
-  //           userId: decodedToken.email,
-  //           nickname: decodedToken.nickname,
-  //         });
-  //       }
-  //     }
-  //   };
-  //   fetchToken();
-  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
