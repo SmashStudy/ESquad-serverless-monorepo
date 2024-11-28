@@ -11,8 +11,6 @@ export const handler = async (event) => {
 
     if (!validBoardTypes.includes(boardType)) {
       return createResponse(400, { message: "Invalid boardType" });
-      // 기존 코드:
-      // return generateResponse(400, { message: "Invalid boardType" });
     }
 
     const {
@@ -69,34 +67,14 @@ export const handler = async (event) => {
       items: posts,
       lastEvaluatedKey: data.LastEvaluatedKey,
     });
-    // 기존 코드:
-    // return generateResponse(200, {
-    //   items: posts,
-    //   lastEvaluatedKey: data.LastEvaluatedKey,
-    // });
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return generateResponse(500, {
-    //   message: "Internal server error",
-    //   error: error.message,
-    // });
   }
 };
-
-// 기존 generateResponse 함수는 더 이상 사용하지 않으므로 삭제했습니다.
-// const generateResponse = (statusCode, body) => ({
-//   statusCode,
-//   headers: {
-//     "Content-Type": "application/json",
-//     "Access-Control-Allow-Origin": "*",
-//   },
-//   body: JSON.stringify(body),
-// });
 
 const parseQueryStringParameters = (queryStringParameters = {}) => ({
   limit: queryStringParameters.limit
@@ -109,7 +87,6 @@ const parseQueryStringParameters = (queryStringParameters = {}) => ({
   recruitStatus: queryStringParameters.recruitStatus,
 });
 
-// DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷
 const formatPosts = (items) => {
   return items.map((item) => {
     const post = {

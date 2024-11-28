@@ -76,24 +76,11 @@ export const handler = async (event) => {
     };
 
     return createResponse(200, post);
-    // 기존 코드:
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify(post),
-    // };
   } catch (error) {
     console.error("Error fetching post:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    // };
   }
 };

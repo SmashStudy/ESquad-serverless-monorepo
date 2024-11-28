@@ -13,20 +13,11 @@ export const handler = async (event) => {
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
-
       return createResponse(400, { message: "Invalid boardType" });
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Invalid boardType" }),
-      // };
     }
 
     if (!title || !content || !writer) {
       return createResponse(400, { message: "Missing required fields" });
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Missing required fields" }),
-      // };
     }
 
     const postId = uuidv4();
@@ -78,27 +69,11 @@ export const handler = async (event) => {
       boardType: boardType,
       createdAt: createdAt,
     });
-    // return {
-    //   statusCode: 201,
-    //   body: JSON.stringify({
-    //     message: "Post created successfully",
-    //     postId: postId,
-    //     boardType: boardType,
-    //     createdAt: createdAt,
-    //   }),
-    // };
   } catch (error) {
     console.error("Error creating post:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    // };
   }
 };

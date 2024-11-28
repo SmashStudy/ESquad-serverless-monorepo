@@ -12,13 +12,6 @@ export const handler = async (event) => {
       return createResponse(400, {
         message: "Missing required parameters: postId or createdAt",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({
-      //     message: "Missing required parameters: postId or createdAt",
-      //   }),
-      // };
     }
 
     const params = {
@@ -37,34 +30,11 @@ export const handler = async (event) => {
       message: "Post deleted successfully",
       postId: postId,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({
-    //     message: "Post deleted successfully",
-    //     postId: postId,
-    //   }),
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "*",
-    //   },
-    // };
   } catch (error) {
     console.error("Error deleting post:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origin": "*",
-    //   },
-    // };
   }
 };

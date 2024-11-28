@@ -8,18 +8,6 @@ provider:
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
-  # httpApi:
-  #   cors:
-  #     allowedOrigins:
-  #       - ${env:ALLOWED_ORIGIN}
-  #     allowedHeaders:
-  #       - Content-Type
-  #       - Authorization
-  #     allowedMethods:
-  #       - GET
-  #       - POST
-  #       - PUT
-  #       - DELETE
   iam:
     role:
       statements:
