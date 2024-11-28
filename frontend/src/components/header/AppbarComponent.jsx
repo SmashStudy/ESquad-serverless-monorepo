@@ -31,6 +31,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import axios from 'axios';
+import {getUserApi} from "../../utils/apiConfig.js";
 
 function decodeJWT(token) {
   try {
@@ -105,7 +106,7 @@ const AppBarComponent = ({
 
   const fetchNickname = async () => {
     try {
-        const response = await axios.get('https://api.esquad.click/dev/users/get-nickname', {
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
             },
