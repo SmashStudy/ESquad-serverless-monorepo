@@ -83,7 +83,7 @@ const SignUp = () => {
 
       // 인증 완료 후 로그인 페이지로 이동
       setTimeout(() => {
-        navigate("/signin");
+        navigate("/login");
       }, 2000);
     } catch (error) {
       setError(error.message || "인증 중 문제가 발생했습니다.");
@@ -222,7 +222,7 @@ const SignUp = () => {
           {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
           <Typography sx={{ mt: 2 }}>
             이미 계정이 있으신가요?{" "}
-            <Button variant="text" onClick={() => navigate("/signin")}>
+            <Button variant="text" onClick={() => navigate("/login")}>
               로그인
             </Button>
           </Typography>
