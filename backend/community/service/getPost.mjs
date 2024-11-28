@@ -12,13 +12,6 @@ export const handler = async (event) => {
       return createResponse(400, {
         message: "Missing required parameters: postId or createdAt",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({
-      //     message: "Missing required parameters: postId or createdAt",
-      //   }),
-      // };
     }
 
     const params = {
@@ -35,11 +28,6 @@ export const handler = async (event) => {
 
     if (!data.Item) {
       return createResponse(404, { message: "Post not found" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 404,
-      //   body: JSON.stringify({ message: "Post not found" }),
-      // };
     }
 
     const post = {
