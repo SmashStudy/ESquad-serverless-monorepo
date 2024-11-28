@@ -245,7 +245,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       return;
     }
     try {
-      const url = `${getCommunityApi()}/${boardType}/new`;
+      const url = `${getCommunityApi()}/${boardType}`;
 
       const data = {
         title,
