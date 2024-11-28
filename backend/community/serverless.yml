@@ -10,7 +10,7 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - "*"
+        - ${env:ALLOWED_ORIGIN}
       allowedHeaders:
         - Content-Type
         - Authorization

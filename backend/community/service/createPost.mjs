@@ -1,5 +1,6 @@
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
@@ -12,17 +13,20 @@ export const handler = async (event) => {
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Invalid boardType" }),
-      };
+
+      return createResponse(400, { message: "Invalid boardType" });
+      // return {
+      //   statusCode: 400,
+      //   body: JSON.stringify({ message: "Invalid boardType" }),
+      // };
     }
 
     if (!title || !content || !writer) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Missing required fields" }),
-      };
+      return createResponse(400, { message: "Missing required fields" });
+      // return {
+      //   statusCode: 400,
+      //   body: JSON.stringify({ message: "Missing required fields" }),
+      // };
     }
 
     const postId = uuidv4();
@@ -68,23 +72,33 @@ export const handler = async (event) => {
 
     await ddbClient.send(command);
 
-    return {
-      statusCode: 201,
-      body: JSON.stringify({
-        message: "Post created successfully",
-        postId: postId,
-        boardType: boardType,
-        createdAt: createdAt,
-      }),
-    };
+    return createResponse(201, {
+      message: "Post created successfully",
+      postId: postId,
+      boardType: boardType,
+      createdAt: createdAt,
+    });
+    // return {
+    //   statusCode: 201,
+    //   body: JSON.stringify({
+    //     message: "Post created successfully",
+    //     postId: postId,
+    //     boardType: boardType,
+    //     createdAt: createdAt,
+    //   }),
+    // };
   } catch (error) {
     console.error("Error creating post:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
+    // return {
+    //   statusCode: 500,
+    //   body: JSON.stringify({
+    //     message: "Internal server error",
+    //     error: error.message,
+    //   }),
+    // };
   }
 };

@@ -1,4 +1,5 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
@@ -9,7 +10,9 @@ export const handler = async (event) => {
     const validBoardTypes = ["general", "questions", "team-recruit"];
 
     if (!validBoardTypes.includes(boardType)) {
-      return generateResponse(400, { message: "Invalid boardType" });
+      return createResponse(400, { message: "Invalid boardType" });
+      // 기존 코드:
+      // return generateResponse(400, { message: "Invalid boardType" });
     }
 
     const {
@@ -62,27 +65,38 @@ export const handler = async (event) => {
     const data = await ddbClient.send(new QueryCommand(params));
     const posts = formatPosts(data.Items);
 
-    return generateResponse(200, {
+    return createResponse(200, {
       items: posts,
       lastEvaluatedKey: data.LastEvaluatedKey,
     });
+    // 기존 코드:
+    // return generateResponse(200, {
+    //   items: posts,
+    //   lastEvaluatedKey: data.LastEvaluatedKey,
+    // });
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
-    return generateResponse(500, {
+    return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
+    // 기존 코드:
+    // return generateResponse(500, {
+    //   message: "Internal server error",
+    //   error: error.message,
+    // });
   }
 };
 
-const generateResponse = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  },
-  body: JSON.stringify(body),
-});
+// 기존 generateResponse 함수는 더 이상 사용하지 않으므로 삭제했습니다.
+// const generateResponse = (statusCode, body) => ({
+//   statusCode,
+//   headers: {
+//     "Content-Type": "application/json",
+//     "Access-Control-Allow-Origin": "*",
+//   },
+//   body: JSON.stringify(body),
+// });
 
 const parseQueryStringParameters = (queryStringParameters = {}) => ({
   limit: queryStringParameters.limit
