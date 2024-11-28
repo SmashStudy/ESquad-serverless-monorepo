@@ -117,7 +117,7 @@ functions:
     events:
       - http:
           path: /save
-          method: get
+          method: put
           cors: true
 
   mark_as_release:
@@ -125,7 +125,7 @@ functions:
     events:
       - http:
           path: /release-save
-          method: get
+          method: put
           cors: true
 
   filter_saved_notifications:

@@ -19,7 +19,7 @@ export const fetchAll = async ({ lastEvaluatedKey = null, user }) => {
 
     return response.data;
   } catch (error) {
-    throw "처리에 실패했습니다.";
+    alert("처리에 실패했습니다.");
   }
 };
 
@@ -40,7 +40,7 @@ export const fetchAllSaved = async ({ user, key }) => {
     console.log(`Saved notifications: ${JSON.stringify(response.data)}`);
     return response.data;
   } catch (err) {
-    throw "처리에 실패했습니다.";
+    alert("처리에 실패했습니다.");
   }
 };
 
@@ -87,44 +87,40 @@ export const markAllAsRead = async ({
 
 export const markAsSave = async ({ user, notificationId }) => {
   try {
-    const url = `${API_GATEWAY_URL}/save`;
-    const queryParams = `?userId=${encodeURIComponent(
-      user.email
-    )}&id=${encodeURIComponent(notificationId)}`;
-    const fullUrl = `${url}${queryParams}`;
-
-    const response = await axios.get(fullUrl, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.put(
+        `${API_GATEWAY_URL}/save`,
+        { userId: user.email, notificationId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+    );
 
     if (response.status === 200) {
       return response.data;
     }
   } catch (error) {
-    throw "알림 처리에 실패했습니다.";
+    alert("보관 처리에 실패했습니다.");
   }
 };
 
 export const releaseSaved = async ({ user, notificationId }) => {
   try {
-    const url = `${API_GATEWAY_URL}/release-save`;
-    const queryParams = `?userId=${encodeURIComponent(
-      user.email
-    )}&id=${encodeURIComponent(notificationId)}`;
-    const fullUrl = `${url}${queryParams}`;
-
-    const response = await axios.get(fullUrl, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.put(
+        `${API_GATEWAY_URL}/release-save`,
+        { userId: user.email, notificationId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+    );
 
     if (response.status === 200) {
       return response.data;
     }
   } catch (error) {
-    throw "알림 저장 해제에 실패했습니다.";
+    alert("알림 저장 해제에 실패했습니다.");
   }
 };

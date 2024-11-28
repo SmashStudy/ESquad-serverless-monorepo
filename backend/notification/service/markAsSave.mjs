@@ -6,10 +6,8 @@ const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  let { userId, id } = event.queryStringParameters || {};
+  let { userId, id } = JSON.parse(event.body);
   console.log(`userId: ${userId}, id: ${id}`);
-  userId = decodeURIComponent(userId);
-  id = decodeURIComponent(id);
 
   if (!userId || !id) {
     return {
@@ -61,7 +59,7 @@ export const handler = async (event) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
+        "Access-Control-Allow-Methods": "OPTIONS, PUT",
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify(formattedResponse),
@@ -73,7 +71,7 @@ export const handler = async (event) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
+        "Access-Control-Allow-Methods": "OPTIONS, PUT",
         "Access-Control-Allow-Headers": "Content-Type",
       },
       body: JSON.stringify({ error: "Failed to mark notifications as read." }),
