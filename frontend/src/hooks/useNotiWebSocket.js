@@ -13,7 +13,7 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
   //   user.email
   // )}`;
   const address = `wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local?userId=${encodeURIComponent(
-    user.email
+    user?.email
   )}`;
   const socketRef = useRef(null);
 
@@ -34,7 +34,7 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
       console.log("WebSocket 연결 성공");
       const fetchNotificationsMessage = JSON.stringify({
         action: "countUnReadNotifications",
-        userId: user.email,
+        userId: user?.email,
       });
       ws.send(fetchNotificationsMessage);
     };

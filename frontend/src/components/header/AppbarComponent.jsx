@@ -1,4 +1,6 @@
 import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,8 +27,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
   fetchAll,
   fetchAllSaved,
@@ -35,31 +35,11 @@ import {
   releaseSaved,
 } from "../../hooks/notificationAPI.js";
 import useNotiWebSocket from "../../hooks/useNotiWebSocket.js";
-import formatTimeAgo from "../../utils/formatTimeAgo.js";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import NotificationsMenu from "./NotificationMenu.jsx";
 import {getUserApi} from "../../utils/apiConfig.js";
-
-function decodeJWT(token) {
-  try {
-    const base64Payload = token.split(".")[1];
-    const base64 = base64Payload.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = JSON.parse(
-      decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      )
-    );
-    return payload;
-  } catch (error) {
-    console.error("Failed to decode JWT token", error);
-    return null;
-  }
-}
+import {decodeJWT} from "../../utils/decodeJWT.js";
+import formatTimeAgo from "../../utils/formatTimeAgo.js";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -103,9 +83,21 @@ const AppBarComponent = ({
   teams,
   toggleChatDrawer,
 }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
+  const [user, setUser] = useState(null);
   const [error, setError] = useState('');
+  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
+  const [showSearchBar, setShowSearchBar] = useState(null);
+  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [unReadCount, setUnReadCount] = useState(0);
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
+
+  const teamTabOpen = Boolean(teamAnchorEl);
+  const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
   const fetchNickname = async () => {
     try {
@@ -114,16 +106,17 @@ const AppBarComponent = ({
                 Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
             },
         });
-        setNickname(response.data.nickname);
+        setUser({
+          nickname: response.data.nickname,
+          ...user,
+        });
     } catch (err) {
         console.error("닉네임 가져오기 오류:", err);
         setError('닉네임을 가져오는 중 오류가 발생했습니다.');
     }
-};
+  };
 
-  const [userName, setUserName] = useState("로딩 중...");
-
-// 컴포넌트 로드 시 닉네임 가져오기
+  // 컴포넌트 로드 시 닉네임 가져오기
   useEffect(() => {
     const fetchToken = async () => {
       await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
@@ -131,7 +124,11 @@ const AppBarComponent = ({
       if (token) {
         const decodedToken = decodeJWT(token);
         if (decodedToken) {
-          setUserName(decodedToken.name || "Name");
+          setUser({
+            username: decodedToken.name || "Name",
+            email: decodedToken.email,
+            nickname: decodedToken.nickname,
+          });
         }
       }
     };
@@ -139,23 +136,7 @@ const AppBarComponent = ({
     fetchToken();
   }, []);
 
-  const theme = useTheme();
-  const [showSearchBar, setShowSearchBar] = useState(null);
-  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
-  const [notifications, setNotifications] = useState([]);
-  const [unReadCount, setUnReadCount] = useState(0);
-  const [user, setUser] = useState({
-    name: "없슴",
-    email: "yesie0108@gmail.com",
-    nickname: "yejiii",
-  });
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
-
-  const teamTabOpen = Boolean(teamAnchorEl);
-  const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
@@ -433,7 +414,6 @@ const AppBarComponent = ({
                   <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
                     {user?.nickname}
                   </Avatar>
-                  {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
                   <Typography variant="body1">{user?.nickname}</Typography>
                 </IconButton>
               </Box>
