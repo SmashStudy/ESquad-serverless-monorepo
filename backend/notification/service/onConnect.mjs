@@ -2,6 +2,7 @@ import moment from "moment";
 
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamodbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -65,18 +66,13 @@ export const handler = async (event) => {
     };
 
     await dynamodbClient.send(new PutCommand(putParams));
-    return {
-      isBase64Encoded: true,
-      statusCode: 200,
-    };
+    return createResponse(200, {
+      message: "Notification Connection success.",
+    });
   } catch (error) {
     console.error("Error while connecting WebSocket event:", error);
-    return {
-      isBase64Encoded: true,
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "Internal error occurred while connecting socket",
-      }),
-    };
+    return createResponse(500, {
+      error: "Internal error occurred while connecting socket",
+    });
   }
 };

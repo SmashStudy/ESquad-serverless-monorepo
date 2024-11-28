@@ -2,15 +2,16 @@ import {
   ApiGatewayManagementApiClient,
   PostToConnectionCommand,
 } from "@aws-sdk/client-apigatewaymanagementapi";
+import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE =
   process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 const NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX =
   process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-// const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
-const ENDPOINT = "https://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local";
+const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 
 // 사용자ID 로 연결ID 조회
 const getConnectionIds = async (userId) => {
@@ -52,12 +53,14 @@ const sendToConnection = async (connectionId, studyNotification) => {
   } catch (error) {
     if (error.statusCode === 410) {
       console.error(`Connection ${connectionId} is gone.`);
-      // Optionally: Delete stale connection from DynamoDB
     } else {
       console.error(
         `Failed to send message to connection ${connectionId}:`,
         error
       );
+      return createResponse(500, {
+        error: "Failed to send message to user",
+      });
     }
   }
 };
@@ -105,12 +108,13 @@ export const handler = async (event) => {
       );
     }
 
-    return { statusCode: 200, body: "Notifications sent successfully." };
+    return createResponse(200, {
+      message: "Notifications sent successfully.",
+    });
   } catch (error) {
     console.error("Error processing DynamoDB Stream event:", error);
-    return {
-      statusCode: 500,
-      body: "Error processing notifications.",
-    };
+    return createResponse(500, {
+      error: "Error while processing DynamoDB Stream event",
+    });
   }
 };

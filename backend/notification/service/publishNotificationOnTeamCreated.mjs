@@ -4,6 +4,7 @@ import {
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -115,33 +116,24 @@ export const handler = async (event) => {
 
         // 3. 알림 메시지 생성
         const message = `${userId} 가 ${user} 님을 ${teamName} 팀에 초대했습니다.`;
-        console.log(`message: ${message}`);
 
         // 3. 알림 저장
         await saveNotifications(users, message, teamId);
         console.log("Notifications written successfully.");
 
-        return {
-          statusCode: 200,
-        };
+        return createResponse(200, {
+          message: "Notification Saved!",
+        });
       } catch (error) {
-        return {
-          statusCode: 500,
-          body: JSON.stringify({
-            message: "Error processing event",
-            error: error.message,
-          }),
-        };
+        return createResponse(500, {
+          error: "Error while publishing notification on team created: " + error,
+        });
       }
     }
   } catch (error) {
     console.error("Error processing DynamoDB Stream Event:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Error processing event",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      error: "Error processing DynamoDB Stream Event: " + error,
+    });
   }
 };

@@ -1,4 +1,5 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -47,27 +48,12 @@ export const handler = async (event) => {
         : null,
     };
     console.log(`Read notifications: ${JSON.stringify(fetchResponse)}`);
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify(fetchResponse),
-    };
+    return createResponse(200,
+        {body: fetchResponse});
   } catch (error) {
     console.error("Error while reading notifications :", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify({ error: "Failed to read notifications." }),
-    };
+    return createResponse(500, {
+      error: `Failed to read notifications. : ${error.message}`,
+    });
   }
 };

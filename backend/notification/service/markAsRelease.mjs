@@ -1,4 +1,5 @@
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
@@ -11,16 +12,9 @@ export const handler = async (event) => {
 
   // Check if the required parameters are provided
   if (!userId || !id) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        error: "userId and id must be provided as query parameters.",
-      }),
-    };
+    return createResponse(400, {
+      error: "Required parameter is invalid.",
+    });
   }
 
   try {
@@ -52,27 +46,11 @@ export const handler = async (event) => {
     };
     console.log(`formattedResponse: ${JSON.stringify(formattedResponse)}`);
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, PUT",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify(formattedResponse),
-    };
+    return createResponse(200, {body: formattedResponse});
   } catch (error) {
-    console.error("Error marking notifications as read:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, PUT",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify({ error: "Failed to mark notifications as read." }),
-    };
+    console.error("Error release marking notifications:", error);
+    return createResponse(500, {
+      error: "Failed to release mark notifications.",
+    });
   }
 };

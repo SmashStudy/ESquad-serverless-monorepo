@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
 
@@ -19,27 +20,13 @@ export const handler = async (event) => {
       })
     );
 
-    return {
-      isBase64Encoded: true,
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Access-Control-Expose-Headers": "*",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: "Disconnected",
-    };
+    return createResponse(200, {
+      message: "Diconnected!",
+    });
   } catch (error) {
     console.error("Error while disconnecting WebSocket event:", error);
-    return {
-      isBase64Encoded: true,
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Access-Control-Expose-Headers": "*",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({ error: "Failed to disconnect" }),
-    };
+    return createResponse(500, {
+      error: "Failed for disconnecting..",
+    });
   }
 };

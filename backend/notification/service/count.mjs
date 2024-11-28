@@ -4,13 +4,13 @@ import {
 } from "@aws-sdk/client-apigatewaymanagementapi";
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import {createResponse} from '../util/responseHelper.mjs'
 
 const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
-// const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
-const ENDPOINT = "https://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local";
+const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 
 // WebSocket 으로 메시지 전송
 const sendToConnection = async (connectionId, payload) => {
@@ -63,9 +63,8 @@ export const handler = async (event) => {
     const unReadCount = countResult.Count;
     console.log(`Read notifications: ${JSON.stringify(unReadCount)}`);
     await sendToConnection(connectionId, { unReadCount });
-    return {
-      statusCode: 200,
-    };
+    return createResponse(200,
+        {message: `Success for count notifications!`});
   } catch (error) {
     if (error.name === "GoneException") {
       // 클라이언트가 연결을 끊었을 경우 해당 연결을 DynamoDB에서 삭제
@@ -78,13 +77,15 @@ export const handler = async (event) => {
           Key: { connectionId },
         })
       );
-      return { statusCode: 400 };
+      return createResponse(400,
+          {error: `Connection missed. Deleted from Server`});
     } else {
       console.error(
         `Failed to send message to connection ${connectionId}:`,
         error
       );
-      return { statusCode: 500 };
+      return createResponse(500,
+          {error: `Failed to send message to client`});
     }
   }
 };
