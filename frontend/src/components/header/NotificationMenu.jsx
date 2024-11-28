@@ -69,9 +69,9 @@ const NotificationsMenu = ({
 
 
       // 응답 데이터를 기반으로 상태 업데이트
-      setNotifications((prev) => [...(prev || []), ...(result.body.items || [])]);
+      setNotifications((prev) => [...(prev || []), ...(result.items || [])]);
 
-      setLastEvaluatedKey(result.body.lastEvaluatedKey || null);
+      setLastEvaluatedKey(result.lastEvaluatedKey || null);
     } catch (error) {
       alert(error);
     }
@@ -84,12 +84,11 @@ const NotificationsMenu = ({
         key,
       });
 
-      console.log(JSON.stringify(result));
       setNotifications((prev) => {
-        return prev ? [...prev, ...result.body.items] : result.body.items;
+        return prev ? [...prev, ...result.items] : result.items;
       });
 
-      setLastEvaluatedKey(result.body.lastEvaluatedKey || null);
+      setLastEvaluatedKey(result.lastEvaluatedKey || null);
     } catch (error) {
       alert(error);
     }

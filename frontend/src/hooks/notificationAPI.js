@@ -18,7 +18,7 @@ export const fetchAll = async ({ lastEvaluatedKey = null, user }) => {
       }
     );
 
-    return response.data;
+    return response.data.body;
   } catch (error) {
     alert("처리에 실패했습니다.");
   }
@@ -38,7 +38,7 @@ export const fetchAllSaved = async ({ user, key }) => {
         },
       }
     );
-    return response.data;
+    return response.data.body;
   } catch (err) {
     alert("처리에 실패했습니다.");
   }
