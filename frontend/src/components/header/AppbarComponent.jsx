@@ -31,6 +31,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import axios from 'axios';
+import {getUserApi} from "../../utils/apiConfig.js";
 
 function decodeJWT(token) {
   try {
@@ -85,39 +86,49 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: "100%",
   },
 }));
-const AppBarComponent = ({ handleSidebarToggle, handleTab, selectedTab, changeSelectedTeam, updateTeams, teams, toggleChatDrawer }) => {
-    const navigate = useNavigate();
 
-    const [nickname, setNickname] = useState('');
-    const [error, setError] = useState(''); 
+const AppBarComponent = ({
+  handleSidebarToggle,
+  handleTab,
+  selectedTab,
+  updateSelectedTeam,
+  changeSelectedTeam,
+  updateTeams,
+  teams,
+  toggleChatDrawer,
+}) => {
 
-    const handleLogout = () => {
-      navigate("/logout");
-    };
-  
-    const fetchNickname = async () => {
-      try {
-          const response = await axios.get('https://api.esquad.click/local/users/get-nickname', {
-              headers: {
-                  Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-              },
-          });
-          setNickname(response.data.nickname);
-      } catch (err) {
-          console.error("닉네임 가져오기 오류:", err);
-          setError('닉네임을 가져오는 중 오류가 발생했습니다.');
-      }
+  const navigate = useNavigate();
+  const [nickname, setNickname] = useState('');
+  const [error, setError] = useState('');
+  const handleLogout = () => {
+    navigate("/logout");
   };
-  
-  // 컴포넌트 로드 시 닉네임 가져오기
-  useEffect(() => {
-      const token = localStorage.getItem('jwtToken');
-      if (!token) {
-          navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
-      } else {
-          fetchNickname();
-      }
-  }, [navigate]);
+
+  const fetchNickname = async () => {
+    try {
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            },
+        });
+        setNickname(response.data.nickname);
+    } catch (err) {
+        console.error("닉네임 가져오기 오류:", err);
+        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+    }
+};
+
+// 컴포넌트 로드 시 닉네임 가져오기
+useEffect(() => {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
+    } else {
+        fetchNickname();
+    }
+}, [navigate]);
+
   const [userName, setUserName] = useState("로딩 중...");
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

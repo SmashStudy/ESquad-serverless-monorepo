@@ -10,6 +10,7 @@ provider:
     S3_BUCKET: ${env:S3_BUCKET}
     METADATA_TABLE: ${env:METADATA_TABLE}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
 
   iamRoleStatements:
     - Effect: Allow

@@ -1,14 +1,15 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, DeleteCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, DeleteCommand} from '@aws-sdk/lib-dynamodb';
+import {createResponse} from '../util/responseHelper.mjs'
 
-const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  let { fileKey } = event.pathParameters;
+  let {fileKey} = event.pathParameters;
 
   try {
     // 인코딩 여부에 따라 디코딩 시도
@@ -21,29 +22,15 @@ export const handler = async (event) => {
   try {
     const deleteParams = {
       TableName: TABLE_NAME,
-      Key: { fileKey: fileKey },
+      Key: {fileKey: fileKey},
     };
 
     await dynamoDb.send(new DeleteCommand(deleteParams));
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-      },
-      body: JSON.stringify({ message: `Metadata for ${fileKey} deleted successfully` }),
-    };
+    return createResponse(200,
+        {message: `Metadata for ${fileKey} deleted successfully`});
   } catch (error) {
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-      },
-      body: JSON.stringify({ error: `Failed to delete metadata: ${error.message}` }),
-    };
+    return createResponse(500,
+        {error: `Failed to delete metadata: ${error.message}`});
   }
 };

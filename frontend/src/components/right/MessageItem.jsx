@@ -9,6 +9,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { pink } from '@mui/material/colors';
 import { useMediaQuery, useTheme } from '@mui/material';
+import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
+import {deleteFile, downloadFile} from "./chatApi/ChatFileApi.jsx";
+import { getPresignedUrl} from "./chatApi/ChatUtils.jsx";
 
 const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }) => {
     const timestamp = new Date(message.timestamp).toLocaleTimeString();
