@@ -38,7 +38,6 @@ export const fetchAllSaved = async ({ user, key }) => {
         },
       }
     );
-    console.log(`Saved notifications: ${JSON.stringify(response.data)}`);
     return response.data;
   } catch (err) {
     alert("처리에 실패했습니다.");
@@ -99,7 +98,7 @@ export const markAsSave = async ({ user, notificationId }) => {
     );
 
     if (response.status === 200) {
-      return response.data;
+      return response.data.body;
     }
   } catch (error) {
     alert("보관 처리에 실패했습니다.");
@@ -119,7 +118,7 @@ export const releaseSaved = async ({ user, notificationId }) => {
     );
 
     if (response.status === 200) {
-      return response.data;
+      return response.data.body;
     }
   } catch (error) {
     alert("알림 저장 해제에 실패했습니다.");

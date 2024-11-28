@@ -67,7 +67,7 @@ const NotificationsMenu = ({
         user,
       });
 
-      console.log(JSON.stringify(result));
+
       // 응답 데이터를 기반으로 상태 업데이트
       setNotifications((prev) => [...(prev || []), ...(result.body.items || [])]);
 
@@ -109,7 +109,6 @@ const NotificationsMenu = ({
       });
 
       // 기존 알림 상태 업데이트
-      console.log(updatedNotification);
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === updatedNotification.id

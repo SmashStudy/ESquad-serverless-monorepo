@@ -17,7 +17,6 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
 
   const connectToWebSocket = () => {
     if(!user?.email) {
-      console.error("WebSocket connection failed: User email is undefined.");
       return;
     }
 
@@ -26,7 +25,6 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
       (socketRef.current.readyState === WebSocket.OPEN ||
         socketRef.current.readyState === WebSocket.CONNECTING)
     ) {
-      console.log("WebSocket is already active. Skipping new connection.");
       return;
     }
 
@@ -34,10 +32,8 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
         user?.email
     )}`;
     const ws = new WebSocket(address);
-    console.log("Creating a new WebSocket connection.");
 
     ws.onopen = () => {
-      console.log("WebSocket 연결 성공");
       const fetchNotificationsMessage = JSON.stringify({
         action: "countUnReadNotifications",
         userId: user?.email,
@@ -47,17 +43,14 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
 
     ws.onmessage = (message) => {
       const obj = JSON.parse(message.data);
-      console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
       onMessageReceived(obj);
     };
 
     ws.onclose = () => {
-      console.log("WebSocket 연결 종료");
       socketRef.current = null;
     };
 
     ws.onerror = (event) => {
-      console.error("WebSocket 에러 발생:", event);
       socketRef.current = null;
     };
 
@@ -65,16 +58,13 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
   };
 
   useEffect(() => {
-    // Only connect when user is available
     if (user?.email) {
       connectToWebSocket();
     }
 
     return () => {
-      // Cleanup on component unmount
       if (socketRef.current) {
         socketRef.current.close();
-        console.log("WebSocket 연결 해제");
       }
     };
   }, [user]);
