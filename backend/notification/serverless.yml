@@ -1,3 +1,8 @@
+plugins:
+  - serverless-export-env
+
+useDotenv: true
+
 service: notification-service
 org: persii
 #app: esquad-monorepo
@@ -9,7 +14,8 @@ provider:
   region: ${env:AWS_REGION}
   environment:
     STAGE: ${opt:stage, 'dev'}
-    WEBSOCKET_ENDPOINT: ws.noti.api.esquad.click/${opt:stage, 'dev'}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    WEBSOCKET_ENDPOINT: ${env:WEBSOCKET_ENDPOINT}
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
     TEAM_TABLE_STREAM_LABEL: ${env:TEAM_TABLE_STREAM_LABEL}
@@ -65,9 +71,10 @@ functions:
   preflightHandler:
     handler: service/preflight.handler
     events:
-      - httpApi:
+      - http:
           path: /{proxy+}
           method: OPTIONS
+          cors: true
 
   onConnect:
     handler: service/onConnect.handler
@@ -243,27 +250,36 @@ resources:
         StreamSpecification:
           StreamViewType: NEW_IMAGE
 
-    # ApiGatewayCloudWatchRole:
-    #   Type: AWS::IAM::Role
-    #   Properties:
-    #     RoleName: serverlessApiGatewayCloudWatchRole
-    #     AssumeRolePolicyDocument:
-    #       Version: "2012-10-17"
-    #       Statement:
-    #         - Effect: Allow
-    #           Principal:
-    #             Service: apigateway.amazonaws.com
-    #           Action: sts:AssumeRole
-    #     Policies:
-    #       - PolicyName: ApiGatewayCloudWatchPolicy
-    #         PolicyDocument:
-    #           Version: "2012-10-17"
-    #           Statement:
-    #             - Effect: Allow
-    #               Action:
-    #                 - logs:CreateLogGroup
-    #                 - logs:CreateLogStream
-    #                 - logs:PutLogEvents
-    #               Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
+    ApiGatewayCloudWatchRole:
+     Type: AWS::IAM::Role
+     Properties:
+       RoleName: serverlessApiGatewayCloudWatchRole
+       AssumeRolePolicyDocument:
+         Version: "2012-10-17"
+         Statement:
+           - Effect: Allow
+             Principal:
+               Service: apigateway.amazonaws.com
+             Action: sts:AssumeRole
+       Policies:
+         - PolicyName: ApiGatewayCloudWatchPolicy
+           PolicyDocument:
+             Version: "2012-10-17"
+             Statement:
+               - Effect: Allow
+                 Action:
+                   - logs:CreateLogGroup
+                   - logs:CreateLogStream
+                   - logs:PutLogEvents
+                 Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
 
-useDotenv: true
+#  Outputs:
+#    WebSocketEndpoint:
+#      Description: 알림 Websocket API Endpoint
+#      Value:
+#        Fn::Sub: "https://${ApiGatewayWebsocketApi}.execute-api.${AWS::REGION}.amazonaws.com/${opt:stage, 'local'}"
+
+
+
+
+
