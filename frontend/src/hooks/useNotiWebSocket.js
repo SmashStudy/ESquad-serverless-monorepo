@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import {getNotificationWebsocketApi} from "../utils/apiConfig.js";
 
 /**
  * Custom hook for managing a WebSocket connection.
@@ -7,6 +8,8 @@ import { useEffect, useRef } from "react";
  * @param {Function} setUnReadCount - Function to update unread count state.
  * @param {Function} setNotifications - Function to update notifications state.
  */
+
+const NOTIFICATION_WEBSOCKET_API = getNotificationWebsocketApi();
 
 const useNotiWebSocket = ({ user, onMessageReceived }) => {
 
@@ -27,10 +30,7 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
       return;
     }
 
-    // const address = `wss://ws.noti.api.esquad.click?userId=${encodeURIComponent(
-    //   user.email
-    // )}`;
-    const address = `wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local?userId=${encodeURIComponent(
+    const address = `${NOTIFICATION_WEBSOCKET_API}?userId=${encodeURIComponent(
         user?.email
     )}`;
     const ws = new WebSocket(address);

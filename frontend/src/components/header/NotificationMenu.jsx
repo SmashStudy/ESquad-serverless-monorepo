@@ -67,10 +67,11 @@ const NotificationsMenu = ({
         user,
       });
 
+      console.log(JSON.stringify(result));
       // 응답 데이터를 기반으로 상태 업데이트
-      setNotifications((prev) => [...(prev || []), ...(result.items || [])]);
+      setNotifications((prev) => [...(prev || []), ...(result.body.items || [])]);
 
-      setLastEvaluatedKey(result.lastEvaluatedKey || null);
+      setLastEvaluatedKey(result.body.lastEvaluatedKey || null);
     } catch (error) {
       alert(error);
     }
@@ -85,10 +86,10 @@ const NotificationsMenu = ({
 
       console.log(JSON.stringify(result));
       setNotifications((prev) => {
-        return prev ? [...prev, ...result.items] : result.items;
+        return prev ? [...prev, ...result.body.items] : result.body.items;
       });
 
-      setLastEvaluatedKey(result.lastEvaluatedKey || null);
+      setLastEvaluatedKey(result.body.lastEvaluatedKey || null);
     } catch (error) {
       alert(error);
     }
@@ -108,6 +109,7 @@ const NotificationsMenu = ({
       });
 
       // 기존 알림 상태 업데이트
+      console.log(updatedNotification);
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === updatedNotification.id
