@@ -7,6 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
+import { getCommunityApi } from "../../utils/apiConfig"; // API URL을 가져오기 위한 import
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -62,10 +63,9 @@ const PostListPage = ({ isSmallScreen }) => {
         if (filterTab === "모집완료") params.recruitStatus = "true";
       }
 
-      const response = await axios.get(
-        `https://api.esquad.click/api/community/${boardType}`,
-        { params }
-      );
+      const response = await axios.get(`${getCommunityApi()}/${boardType}`, {
+        params,
+      });
 
       setPosts(response.data.items || []);
       const newLastEvaluatedKeys = [...lastEvaluatedKeys];
