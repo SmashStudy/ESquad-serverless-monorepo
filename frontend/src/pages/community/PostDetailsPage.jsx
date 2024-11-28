@@ -8,13 +8,13 @@ import {
   Divider,
   Paper,
   Button,
+  TextField,
   IconButton,
   Menu,
   MenuItem,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CommentSection from "../../components/content/community/CommentSection";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -22,9 +22,10 @@ const PostDetailsPage = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null); // 현재 유저 정보
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null); // 메뉴(anchor) 상태
-  const menuOpen = Boolean(menuAnchorEl); // 메뉴 열림 여부
+  const [currentUser, setCurrentUser] = useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [commentContent, setCommentContent] = useState(""); // 댓글 내용
+  const menuOpen = Boolean(menuAnchorEl);
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
@@ -43,7 +44,7 @@ const PostDetailsPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setCurrentUser(response.data); // 유저 정보 설정
+        setCurrentUser(response.data);
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
@@ -71,7 +72,7 @@ const PostDetailsPage = () => {
         );
         if (response.data) {
           setPost(response.data);
-          setComments(response.data.comments || []); // 댓글 데이터 추가
+          setComments(response.data.comments || []);
         } else {
           setPost(null);
         }
@@ -87,11 +88,11 @@ const PostDetailsPage = () => {
   }, [boardType, postId, createdAt, navigate]);
 
   const handleMenuClick = (event) => {
-    setMenuAnchorEl(event.currentTarget); // 메뉴 anchor 설정
+    setMenuAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setMenuAnchorEl(null); // 메뉴 닫기
+    setMenuAnchorEl(null);
   };
 
   const handleEdit = () => {
@@ -116,13 +117,17 @@ const PostDetailsPage = () => {
     }
   };
 
-  const handleAddComment = async (content) => {
+  const handleAddComment = async () => {
+    if (!commentContent.trim()) {
+      alert("댓글 내용을 입력해주세요.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("jwtToken");
 
-      // 댓글 데이터 생성
       const newComment = {
-        content,
+        content: commentContent,
         writer: {
           name: currentUser.name,
           nickname: currentUser.nickname,
@@ -130,48 +135,33 @@ const PostDetailsPage = () => {
         },
       };
 
-      // API 요청
       const response = await axios.post(
-        `https://api.esquad.click/dev/community/${boardType}/${postId}/comments`,
+        `https://api.esquad.click/dev/community/${boardType}/${postId}`,
         newComment,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Content-Type 추가
+            "Content-Type": "application/json",
           },
-          params: { createdAt }, // Query parameters
+          params: { createdAt },
         }
       );
 
       if (response.status === 200) {
         alert("댓글이 성공적으로 등록되었습니다.");
-
-        // 댓글 목록 업데이트
         setComments((prevComments) => [
           {
             ...newComment,
             createdAt: new Date().toISOString(),
           },
-          ...prevComments, // 새 댓글을 상단에 추가
+          ...prevComments,
         ]);
+        setCommentContent(""); // 댓글 입력 초기화
       } else {
         alert("댓글 등록에 실패했습니다. 서버가 응답하지 않았습니다.");
       }
     } catch (error) {
-      // 오류 로그 출력
       console.error("댓글 등록 중 오류 발생:", error);
-
-      // CORS 문제 디버깅 로그 추가
-      if (error.response) {
-        console.error("응답 데이터:", error.response.data);
-        console.error("응답 상태:", error.response.status);
-        console.error("응답 헤더:", error.response.headers);
-      } else if (error.request) {
-        console.error("요청 데이터:", error.request);
-      } else {
-        console.error("오류 메시지:", error.message);
-      }
-
       alert("댓글 등록에 실패했습니다. 서버와의 통신 중 오류가 발생했습니다.");
     }
   };
@@ -241,7 +231,7 @@ const PostDetailsPage = () => {
         <Typography variant="h4" fontWeight="bold">
           {post.title}
         </Typography>
-        {post.writer?.email === currentUser?.email && ( // 작성자와 현재 유저 비교
+        {post.writer?.email === currentUser?.email && (
           <div>
             <IconButton onClick={handleMenuClick}>
               <MoreVertIcon />
@@ -298,11 +288,47 @@ const PostDetailsPage = () => {
       <Typography variant="h6" fontWeight="bold" mb={2}>
         댓글
       </Typography>
-      <CommentSection
-        comments={comments}
-        onAddComment={handleAddComment}
-        writer={currentUser?.nickname || "사용자"}
-      />
+
+      <Box sx={{ mb: 2 }}>
+        {comments.map((comment, index) => (
+          <Paper
+            key={index}
+            elevation={1}
+            sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+              {comment.writer?.nickname || "익명"}
+            </Typography>
+            <Typography variant="body2">{comment.content}</Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", display: "block", mt: 1 }}
+            >
+              {new Date(comment.createdAt).toLocaleString()}
+            </Typography>
+          </Paper>
+        ))}
+      </Box>
+
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <TextField
+          value={commentContent}
+          onChange={(e) => setCommentContent(e.target.value)}
+          placeholder="댓글을 입력하세요."
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={2}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddComment}
+          disabled={!commentContent.trim()}
+        >
+          댓글 등록
+        </Button>
+      </Box>
     </Box>
   );
 };
