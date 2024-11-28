@@ -14,6 +14,7 @@ import { Autocomplete } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import { getCommunityApi } from "../../utils/apiConfig";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
@@ -36,14 +37,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       ? "general"
       : "team-recruit";
 
-  // 탭 변경 함수
   const handleTabChange = (tab) => {
-    setActiveTab(tab); // 탭 변경
-    setTitle(""); // 제목 초기화
-    setContent(""); // 내용 초기화
-    setTags([]); // 태그 초기화
-    setFile(null); // 첨부 파일 초기화
-    setIsDraft(false); // 드래프트 상태 초기화
+    setActiveTab(tab);
+    setTitle("");
+    setContent("");
+    setTags([]);
+    setFile(null);
+    setIsDraft(false);
   };
 
   const renderTabContent = () => {
@@ -60,10 +60,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
 
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
-        event.preventDefault(); // 기본 엔터 동작 방지
-
+        event.preventDefault();
         const newTag = event.target.value.trim();
-        if (!newTag) return; // 빈 값 방지
+        if (!newTag) return;
 
         if (tags.includes(newTag)) {
           alert(`중복된 태그: "${newTag}"는 추가할 수 없습니다.`);
@@ -76,14 +75,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         }
 
         setTags((prevTags) => [...prevTags, newTag]);
-        event.target.value = ""; // 입력창 초기화
+        event.target.value = "";
         setIsDraft(true);
       }
     };
 
     const handleTagChange = (event, newValue, reason) => {
       if (reason === "clear") {
-        // Clear Button 클릭 시 태그 초기화
         setTags([]);
         setIsDraft(true);
       } else if (
@@ -91,7 +89,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         reason === "createOption" ||
         reason === "selectOption"
       ) {
-        // 중복 태그 제거 및 추가
         const uniqueTags = Array.from(new Set(newValue));
         if (uniqueTags.length > 10) {
           alert("태그는 최대 10개까지 추가할 수 있습니다.");
@@ -143,21 +140,21 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]} // 자동 완성 옵션 비활성화
+            options={[]}
             value={tags}
             onChange={(event, newValue, reason) =>
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
               value.map((option, index) => {
-                const { key, ...restProps } = getTagProps({ index }); 
+                const { key, ...restProps } = getTagProps({ index });
                 return (
                   <Chip
-                    key={`tag-${index}`} // 명시적으로 key 설정
+                    key={`tag-${index}`}
                     variant="outlined"
                     size="small"
                     label={option}
-                    {...restProps} // 나머지 props 전달
+                    {...restProps}
                   />
                 );
               })
@@ -248,7 +245,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       return;
     }
     try {
-      const url = `https://api.esquad.click/api/community/${boardType}/new`;
+      const url = `${getCommunityApi()}/${boardType}/new`;
 
       const data = {
         title,
@@ -267,7 +264,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
         setIsDraft(false);
-        onSubmit(); // PostCreationDialog의 onSubmit 호출
+        onSubmit();
         navigate(`/community/${boardType}`);
       } else {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
@@ -303,7 +300,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Button
             key={tab}
             variant="text"
-            onClick={() => handleTabChange(tab)} // 탭 변경 로직 추가
+            onClick={() => handleTabChange(tab)}
             sx={{
               fontSize: "large",
               fontWeight: activeTab === tab ? "bold" : "normal",

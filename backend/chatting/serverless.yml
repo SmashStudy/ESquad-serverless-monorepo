@@ -29,7 +29,6 @@ provider:
             - execute-api:ManageConnections
           Resource:
             - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
-            - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*"
         - Effect: Allow
           Action:
             - dynamodb:PutItem
@@ -43,20 +42,6 @@ provider:
             - !GetAtt chatappChatUserlist.Arn
             - !Sub "${chatappChatMessages.Arn}/index/*"
             - !Sub "${chatappChatUserlist.Arn}/index/room_id-user_id-index"
-  httpApi:
-    cors:
-      allowedOrigins:
-        - '*'
-      allowedHeaders:
-        - authorization
-        - content-type
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - OPTIONS
-      allowCredentials: false # CORS 활성화
   websocket: {} # WebSocket API 설정
   tags: # 리소스에 태그 추가
     Service: ${self:service}
@@ -72,8 +57,8 @@ provider:
     region: ${self:provider.region}
     app: ${self:app}
     socket_api_gateway_id: !Ref WebsocketApi # WebSocket API ID 추가
-    MESSAGES_TABLE_NAME: ${self:service}-${self:provider.stage}-chat-messages
-    USERLIST_TABLE_NAME: ${self:service}-${self:provider.stage}-chat-userlist
+    MESSAGES_TABLE_NAME: esquad-chat-messages-${self:provider.stage}
+    USERLIST_TABLE_NAME: esquad-chat-userlist-${self:provider.stage}
 #  deploymentBucket: # 배포에 사용할 S3 버킷 설정
 #    name: ${self:service}-deploy-${self:provider.stage}
 #    serverSideEncryption: AES256
@@ -95,9 +80,10 @@ functions:
   get: # GET 요청 처리 함수
     handler: service/get.handler
     events:
-      - httpApi:
+      - http:
           path: /read
           method: get
+          cors: true
     package:
       patterns:
         - service/get.mjs
@@ -105,9 +91,10 @@ functions:
   update: # PUT 요청 처리 함수
     handler: service/update.handler
     events:
-      - httpApi:
+      - http:
           path: /update
           method: put
+          cors: true
     package:
       patterns:
         - service/update.mjs
@@ -115,9 +102,10 @@ functions:
   put: # PUT 요청 처리 함수
     handler: service/put.handler
     events:
-      - httpApi:
+      - http:
           path: /send
           method: put
+          cors: true
     package:
       patterns:
         - service/put.mjs
@@ -126,9 +114,10 @@ functions:
   delete: # DELETE 요청 처리 함수
     handler: service/delete.handler
     events:
-      - httpApi:
+      - http:
           path: /delete
           method: delete
+          cors: true
     package:
       patterns:
         - service/delete.mjs
@@ -179,7 +168,8 @@ functions:
   createTeamChatRoom:
     handler: service/createTeamChatRoom.handler
     events:
-      - httpApi:
+      - http:
+          cors: true
           path: /team
           method: post
       - stream:
@@ -233,7 +223,7 @@ resources:
     chatappChatMessages: # 채팅 메시지 DynamoDB 테이블
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-${self:provider.stage}-chat-messages
+        TableName: esquad-chat-messages-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: room_id
             AttributeType: S
@@ -251,7 +241,7 @@ resources:
     chatappChatUserlist: # 채팅 사용자 목록 DynamoDB 테이블
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-${self:provider.stage}-chat-userlist
+        TableName: esquad-chat-userlist-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: connection_id
             AttributeType: S
