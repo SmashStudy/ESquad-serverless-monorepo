@@ -5,45 +5,48 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  IconButton,
   Divider,
-  Button,
-  Snackbar,
-  Alert, CircularProgress
+  CircularProgress
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useLocation, useParams} from 'react-router-dom';
 import axios from 'axios';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import PropTypes from "prop-types";
-import {UserByEmail} from "../../../components/user/UserByEmail.jsx";
+import FileUploader from '../../../components/storage/FileUploader.jsx';
+import FileList from '../../../components/storage/FileList.jsx';
+import {
+  getFormattedDate,
+  formatFileSize
+} from '../../../utils/fileFormatUtils.js';
+import Pagination from '../../../components/storage/Pagination.jsx';
+import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
+import {UserByEmail} from '../../../components/user/UserByEmail.jsx';
+import {useTheme} from "@mui/material";
+import usePresignedUrl from "../../../hooks/storage/RequestPresignedUrl.jsx";
+import {getStorageApi, getUserApi} from "../../../utils/apiConfig.js";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
   const study = location.state.study;
+  const theme = useTheme();
   const {studyId} = useParams();
+  const {requestPresignedUrl} = usePresignedUrl();
+
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success',
   });
-  const storageApi = 'https://api.esquad.click/dev/files';
-  const userApi = 'https://api.esquad.click/dev/users'
   const [currentPage, setCurrentPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [email, setEmail] = useState('unknown');
   const [isLoading, setIsLoading] = useState(false);
+
+  const storageApi = getStorageApi();
+  const userApi = getUserApi();
 
   const fetchFiles = async () => {
     try {
@@ -62,13 +65,12 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           response.data.items.map(async (file) => {
             try {
               const user = await UserByEmail(file.userEmail);
-
               return {
                 ...file,
                 nickname: user.nickname || 'Unknown',
               };
             } catch (error) {
-              return { ...file, nickname: 'Unknown' };
+              return {...file, nickname: 'Unknown'};
             }
           })
       );
@@ -91,66 +93,34 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       }
     } catch (error) {
       setSnackbar(
-          { severity: 'fail', message: '파일 정보를 가져오는데 실패했습니다.', open: true }
-      );
+          {severity: 'error', message: '파일 정보를 가져오는데 실패했습니다.', open: true});
       console.error('Failed to fetch files:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-
   const fetchUserEmail = async () => {
-    const { email } = await getEmailFromToken();
-    setEmail(email);
-  }
-  useEffect(() => {
-
-    fetchFiles();
-    fetchUserEmail();
-  }, [studyId, currentPage]);
-
-  const handleSnackbarClose = () => {
-    setSnackbar({...snackbar, open: false});
-  };
-
-  const getFormattedDate = () => {
-    const now = new Date();
-    const koreanTime = new Date(now.setHours(now.getHours()));
-    const year = koreanTime.getFullYear();
-    const month = String(koreanTime.getMonth() + 1).padStart(2, '0');
-    const day = String(koreanTime.getDate()).padStart(2, '0');
-    const hours = String(koreanTime.getHours()).padStart(2, '0');
-    const minutes = String(koreanTime.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  };
-
-  const formatFileSize = (sizeInBytes) => {
-    if (sizeInBytes < 1024) {
-      return `${sizeInBytes} B`;
-    } else if (sizeInBytes < 1024 * 1024) {
-      return `${(sizeInBytes / 1024).toFixed(2)} KB`;
-    } else if (sizeInBytes < 1024 * 1024 * 1024) {
-      return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
-    } else {
-      return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-    }
-  };
-
-  const getEmailFromToken = async () => {
-    const token = localStorage.getItem("jwtToken");
-
+    const token = localStorage.getItem('jwtToken');
     try {
       const response = await axios.get(`${userApi}/get-email`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      return response.data;
+      setEmail(response.data.email);
     } catch (error) {
-      console.error('Error:', error.response?.data || error.message);
+      console.error('Error fetching email:', error);
     }
+  };
+
+  useEffect(() => {
+    fetchFiles();
+    fetchUserEmail();
+  }, [studyId, currentPage]);
+
+  const handleSnackbarClose = () => {
+    setSnackbar({...snackbar, open: false});
   };
 
   const handleFileChange = (event) => {
@@ -166,18 +136,10 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
 
     try {
       const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
+      const presignedResponse = await requestPresignedUrl('putObject',
+          uniqueFileName);
 
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {
-            action: 'putObject',
-            fileKey: `files/${uniqueFileName}`,
-            contentType: selectedFile.type,
-          },
-          {headers: {'Content-Type': 'application/json'}}
-      );
-
-      await axios.put(presignedResponse.data.presignedUrl, selectedFile, {
+      await axios.put(presignedResponse, selectedFile, {
         headers: {'Content-Type': selectedFile.type},
       });
 
@@ -203,58 +165,46 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       setUploadedFiles((prevFiles) => [newFileData, ...prevFiles]);
       setSelectedFile(null);
       setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true});
-    } catch (error) {
-      console.error('Failed to upload file:', error);
-      setSnackbar({severity: 'fail', message: '파일 업로드 실패', open: true});
-    } finally {
-      setIsUploading(false);
       setCurrentPage(1);
       fetchFiles();
-
+    } catch (error) {
+      console.error('Failed to upload file:', error);
+      setSnackbar({severity: 'error', message: '파일 업로드 실패', open: true});
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleFileDelete = async (fileKey) => {
+  const handleFileDelete = async (fileKey, userEmail) => {
+    if (email !== userEmail) {
+      setSnackbar({severity: 'error', message: '업로더만 삭제할 수 있습니다.', open: true});
+      return;
+    }
     try {
       setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
-
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {action: 'deleteObject', fileKey: fileKey},
-          {headers: {'Content-Type': 'application/json'}}
-      );
-
-      await axios.delete(presignedResponse.data.presignedUrl);
+      const presignedResponse = await requestPresignedUrl('deleteObject',
+          fileKey);
+      await axios.delete(presignedResponse);
       await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
-
-      setUploadedFiles((prevFiles) =>
-          prevFiles.filter((file) => file.fileKey !== fileKey)
-      );
+      setUploadedFiles(
+          (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
       setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
-    } catch (error) {
-      setSnackbar({severity: 'fail', message: '파일 삭제 실패', open: true});
-      console.error('Failed to delete file:', error);
-    } finally {
       setCurrentPage(1);
       fetchFiles();
+    } catch (error) {
+      setSnackbar({severity: 'error', message: '파일 삭제 실패', open: true});
+      console.error('Failed to delete file:', error);
     }
   };
 
   const handleFileDownload = async (fileKey, originalFileName) => {
     try {
       setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
-
-      const presignedResponse = await axios.post(
-          `${storageApi}/presigned-url`,
-          {action: 'getObject', fileKey: fileKey},
-          {headers: {'Content-Type': 'application/json'}}
-      );
-
+      const presignedResponse = await requestPresignedUrl('getObject', fileKey);
       const downloadResponse = await axios.get(
-          presignedResponse.data.presignedUrl, {
+          presignedResponse, {
             responseType: 'blob',
           });
-
       const blob = new Blob([downloadResponse.data], {
         type: downloadResponse.headers['content-type'],
       });
@@ -266,10 +216,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
       link.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
-
       setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'});
     } catch (error) {
-      setSnackbar({severity: 'fail', message: '파일 다운로드 실패', open: true});
+      setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});
       console.error('Failed to download file:', error);
     }
   };
@@ -280,7 +229,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
     }
 
     if (pageNumber > currentPage && !lastEvaluatedKeys[currentPage]) {
-
       return;
     }
 
@@ -288,17 +236,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   };
 
   return (
-      <Box
-          sx={{
-            border: '1px solid',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            mb: 3,
-            p: 2,
-            gap: 2,
-          }}
-      >
+      <Box sx={{
+        border: '1px solid',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        mb: 3,
+        p: 2,
+        gap: 2
+      }}>
         <Box sx={{width: '100%', height: '20vh', overflowY: 'auto'}}>
           <Box
               component="img"
@@ -311,22 +257,12 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           />
         </Box>
         <Divider sx={{borderBottom: '1px solid #ddd'}}/>
-        <Snackbar
+        <SnackbarAlert
             open={snackbar.open}
-            autoHideDuration={3000}
+            message={snackbar.message}
+            severity={snackbar.severity}
             onClose={handleSnackbarClose}
-            anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-        >
-          <Alert
-              variant="filled"
-              onClose={handleSnackbarClose}
-              severity={snackbar.severity}
-              sx={{width: '100%'}}
-          >
-            {snackbar.message}
-          </Alert>
-        </Snackbar>
-
+        />
         <Box sx={{my: 4}}>
           <Typography variant="h5" fontWeight="bold" gutterBottom>
             {study.title}
@@ -335,244 +271,44 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             {study.members}
           </Typography>
         </Box>
-
         <Accordion>
-          <AccordionSummary
-              expandIcon={<ExpandMoreIcon/>}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-          >
+          <AccordionSummary expandIcon={<ExpandMoreIcon/>}
+                            aria-controls="panel1a-content" id="panel1a-header">
             <Typography>공유파일 리스트</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{mb: 2, display: 'flex', gap: 2, alignItems: 'center'}}>
-              <Button
-                  variant="contained"
-                  component="label"
-                  color="primary"
-                  startIcon={<UploadFileIcon/>}
-              >
-                파일 추가
-                <input type="file" hidden onChange={handleFileChange}/>
-              </Button>
-            </Box>
-
-            {selectedFile && (
-                <Box
-                    sx={{
-                      mb: 2,
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: 2,
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                    }}
-                >
-                  <Typography variant="body2" color="textSecondary">
-                    선택한 파일:
-                  </Typography>
-                  <ListItem>
-                    <ListItemIcon>
-                      <AttachFileIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary={selectedFile.name}/>
-                  </ListItem>
-                  <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={handleFileUpload}
-                      disabled={isUploading}
-                  >
-                    {isUploading ? '업로드 중...' : '등록'}
-                  </Button>
-                </Box>
-            )}
-
+            <FileUploader
+                selectedFile={selectedFile}
+                onFileChange={handleFileChange}
+                onFileUpload={handleFileUpload}
+                isUploading={isUploading}
+            />
             {isLoading ? (
-                <Typography variant="h5" sx={{ color: '#9F51E8', textAlign: 'center' }} >
+                <Typography variant="h5" sx={{
+                  color: `${theme.palette.primary.main}`,
+                  textAlign: 'center'
+                }}>
                   <CircularProgress size={"3rem"}/>
                   {/*<LinearProgress color="success" />*/}
                   <br/>
                   로딩 중...
                 </Typography>
             ) : (
-
-            <List>
-              {uploadedFiles && uploadedFiles.length > 0 ? (
-                  uploadedFiles.map((file) => (
-                      <ListItem
-                          key={file.id}
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'flex-start',
-                            width: '100%',
-                            flexWrap: 'wrap',
-                            padding: 2,
-                            borderBottom: '1px solid #ddd',
-                          }}
-                      >
-                        <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              width: '100%',
-                            }}
-                        >
-                          <Box sx={{display: 'flex', alignItems: 'center'}}>
-                            <ListItemIcon>
-                              <AttachFileIcon/>
-                            </ListItemIcon>
-                            <Typography
-                                variant="body1"
-                                color="textPrimary"
-                                sx={{
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  maxWidth: '600px',
-                                }}
-                            >
-                              {file.originalFileName}
-                            </Typography>
-                          </Box>
-                        </Box>
-
-                        <Box
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              width: '100%',
-                              mt: 1,
-                            }}
-                        >
-                          <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                flexWrap: 'wrap',
-                                gap: 2,
-                              }}
-                          >
-                            <Box sx={{display: 'flex', alignItems: 'center'}}>
-                              <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                  sx={{mr: 1}}
-                              >
-                                파일 유형:
-                              </Typography>
-                              <Typography variant="body2" color="textPrimary">
-                                {file.extension}
-                              </Typography>
-                            </Box>
-                            <Box sx={{display: 'flex', alignItems: 'center'}}>
-                              <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                  sx={{mr: 1}}
-                              >
-                                업로더:
-                              </Typography>
-                              <Typography variant="body2" color="textPrimary">
-                                {file.nickname}
-                              </Typography>
-                            </Box>
-                            <Box sx={{display: 'flex', alignItems: 'center'}}>
-                              <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                  sx={{mr: 1}}
-                              >
-                                게시일:
-                              </Typography>
-                              <Typography variant="body2" color="textPrimary">
-                                {file.createdAt}
-                              </Typography>
-                            </Box>
-                            <Box sx={{display: 'flex', alignItems: 'center'}}>
-                              <Typography
-                                  variant="body2"
-                                  color="textSecondary"
-                                  sx={{mr: 1}}
-                              >
-                                파일 크기:
-                              </Typography>
-                              <Typography variant="body2" color="textPrimary">
-                                {formatFileSize(file.fileSize)}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Box sx={{display: 'flex', gap: 1}}>
-                            <IconButton
-                                edge="end"
-                                aria-label="download"
-                                onClick={() =>
-                                    handleFileDownload(file.fileKey,
-                                        file.originalFileName)
-                                }
-                            >
-                              <DownloadIcon/>
-                            </IconButton>
-                            <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={() => handleFileDelete(
-                                    file.fileKey)}
-                            >
-                              <DeleteIcon/>
-                            </IconButton>
-                          </Box>
-                        </Box>
-                      </ListItem>
-                  ))
-              ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    첨부파일이 없습니다.
-                  </Typography>
-              )}
-            </List>
-
-            ) }
-
-
-            <Box display="flex" justifyContent="center" mt={2}>
-              <Button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-              >
-                이전
-              </Button>
-
-              <Button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!lastEvaluatedKeys[currentPage]}
-              >
-                다음
-              </Button>
-            </Box>
+                <FileList
+                    files={uploadedFiles}
+                    email={email}
+                    onFileDownload={handleFileDownload}
+                    onFileDelete={handleFileDelete}
+                    formatFileSize={formatFileSize}
+                />
+            )
+            }
+            <Pagination currentPage={currentPage} totalPages={totalPages}
+                        onPageChange={handlePageChange}/>
           </AccordionDetails>
         </Accordion>
       </Box>
   );
-};
-
-StudyDetailPage.propTypes = {
-  uploadedFiles: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        targetId: PropTypes.string.isRequired,
-        targetType: PropTypes.string.isRequired,
-        userEmail: PropTypes.string.isRequired,
-        fileSize: PropTypes.number.isRequired,
-        extension: PropTypes.string.isRequired,
-        contentType: PropTypes.string.isRequired,
-        originalFileName: PropTypes.string.isRequired,
-        createdAt: PropTypes.string.isRequired,
-      })
-  ),
 };
 
 export default StudyDetailPage;

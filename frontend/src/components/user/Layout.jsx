@@ -9,6 +9,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Layout = ({ children }) => {
         throw new Error('로그인이 필요합니다.');
       }
 
-      const response = await axios.get('https://api.esquad.click/dev/users/get-user-info', {
+      const response = await axios.get(`${getUserApi()}/get-user-info`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +87,7 @@ const Layout = ({ children }) => {
             {userInfo?.nickname?.charAt(0).toUpperCase()}
           </Avatar>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            {userInfo?.nickname || 'Guest'} 
+            {userInfo?.nickname || 'Guest'}
           </Typography>
           <Typography variant="body2" color="textSecondary">
             {userInfo?.email || 'example@email.com'}

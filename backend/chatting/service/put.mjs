@@ -15,7 +15,7 @@ async function putItem(tableName, item) {
 
   try {
     await docClient.send(new PutCommand(params));
-    console.log("Put succeeded");
+    console.log("Put succeeded", JSON.stringify(item, null, 2));
   } catch (err) {
     console.error("Unable to add item. Error:", JSON.stringify(err, null, 2));
     throw err;
@@ -27,7 +27,7 @@ export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = JSON.parse(event.body);
-  const { room_id, message, user_id, file } = body;
+  const { room_id, message, user_id, fileKey, presignedUrl, contentType, originalFileName, timestamp } = body;
 
   if (!room_id || !message || !user_id) {
     return {
@@ -36,13 +36,19 @@ export const handler = async (event) => {
     };
   }
 
-  const now = moment().valueOf();
+  // const now = moment().valueOf();
   const item = {
-    room_id,
-    timestamp: now,
-    message: message,
-    user_id,
+    room_id: String(room_id),
+    timestamp: timestamp,
+    message: message || null,
+    user_id: String(user_id),
+    isFile: fileKey ? true : false, // 파일 여부 플래그 추가
+    fileKey: fileKey ? fileKey : null,
+    presignedUrl: fileKey ? presignedUrl : null,
+    contentType: fileKey ? contentType : null,
+    originalFileName: fileKey ? originalFileName : null,
   };
+  console.log("Attempting to put item in DynamoDB:", JSON.stringify(item, null, 2));
 
   // DynamoDB에 메시지 PUT 하기
   try {

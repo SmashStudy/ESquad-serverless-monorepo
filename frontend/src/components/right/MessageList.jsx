@@ -1,22 +1,21 @@
 import React from 'react';
 import MessageItem from "./MessageItem.jsx";
 
-const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDownloadFile }) => {
+const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDownloadFile, onDeleteFile }) => {
     return (
         <div className="message-list">
             {messages.map((msg, index) => {
-                const key = (msg.room_id && msg.timestamp) ? `${msg.room_id}-${msg.timestamp}` : `fallback-${index}-${Date.now()}`;
-
+                const key = `${msg.room_id}-${msg.timestamp}-${msg.fileKey || 'text'}`;
                 return (
                     <MessageItem
-                        key={key}  // key를 고유하게 설정
+                        key={key}
                         message={msg}
-                        userId={msg.userId}
+                        user_id={msg.user_id}
                         currentUsername={username}
                         onEditMessage={onEditMessage}
                         onDeleteMessage={onDeleteMessage}
                         onDownloadFile={onDownloadFile}
-                        fileUrl={msg.fileUrl}
+                        onDeleteFile={onDeleteFile}
                     />
                 );
             })}
