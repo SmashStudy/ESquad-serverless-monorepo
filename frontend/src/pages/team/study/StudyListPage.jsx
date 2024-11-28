@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Typography,
   Card,
-  CardContent,
   CardActions,
+  CardContent,
   Grid,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import { alpha, useTheme } from "@mui/material";
-import { useUser } from "/src/components/form/UserContext";
-import SearchComponent from "../../../components/team/SearchComponent.jsx";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import LiveStreamWindow from "../../stream/LiveStreamWindow.jsx";
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
@@ -24,14 +22,14 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   // 더미 스터디 리스트 데이터
   const [studys, setStudys] = useState([
     {
-      id: 2,
+      id: "STUDY101",
       teamId: teamId,
       bookId: 4,
       title: "스터디읻이디리딩딩딩",
       members: 12,
     },
     {
-      id: 5,
+      id: "STUDY105",
       teamId: teamId,
       bookId: 2,
       title: "케로케로케로디리딩딩딩",
@@ -176,7 +174,10 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                 {/*</Box>*/}
               </CardContent>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <LiveStreamWindow username={userInfo.username} studyId={study.id}/>{" "}
+                <LiveStreamWindow
+                  username={userInfo.username}
+                  studyId={study.id}
+                />{" "}
               </CardActions>
             </Card>
           </Grid>
