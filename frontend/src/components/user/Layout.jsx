@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
-    navigate('/login');
+    navigate('/logout');
   };
 
   useEffect(() => {
@@ -52,17 +52,25 @@ const Layout = ({ children }) => {
 
 
   return (
-    <Box sx={{ display: 'flex', height: 'calc(98vh - 57px)', backgroundColor: '#f5f5f5' }}>
+    <Box
+    sx={{
+      display: 'flex',
+      height: { xs: 'auto', sm: 'calc(98vh - 57px)' }, // 작은 화면에서는 auto, 큰 화면에서는 calc 사용
+      minHeight: 'calc(98vh - 57px)', // 기본 최소 높이 설정
+      backgroundColor: '#f5f5f5',
+    }}
+  >
       {/* Sidebar */}
       <Box
         sx={{
-          width: 240,
-          backgroundColor: '#fff',
+          width: { xs: 60, sm: 240 }, // 작은 화면에서는 축소된 사이드바
+          backgroundColor: '#ffffff', // 사이드바 배경색
           color: '#000',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: 2,
+          padding: { xs: 1, sm: 2 }, // 작은 화면에서는 패딩 감소
+          transition: 'width 0.3s ease',
         }}
       >
         {/* User Profile */}
@@ -72,73 +80,134 @@ const Layout = ({ children }) => {
             flexDirection: 'column',
             alignItems: 'center',
             gap: 1,
-            padding: 2,
+            padding: { xs: 1, sm: 2 },
             borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
           }}
         >
           <Avatar
             sx={{
-              width: 60,
-              height: 60,
+              width: { xs: 40, sm: 60 }, // 작은 화면에서는 아바타 크기 축소
+              height: { xs: 40, sm: 60 },
               bgcolor: theme.palette.primary.main,
-              fontSize: 24,
+              fontSize: { xs: 16, sm: 24 },
             }}
           >
             {userInfo?.nickname?.charAt(0).toUpperCase()}
           </Avatar>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            {userInfo?.nickname || 'Guest'}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {userInfo?.email || 'example@email.com'}
-          </Typography>
+          {window.innerWidth >= 600 && (
+            <>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                {userInfo?.nickname || 'Guest'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {userInfo?.name || '게스트'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {userInfo?.email || 'example@email.com'}
+              </Typography>
+            </>
+          )}
         </Box>
 
         {/* Navigation Links */}
         <Box sx={{ flexGrow: 1 }}>
           <List>
-            <ListItem button onClick={() => navigate('/user/profile')}>
+            <ListItem
+              onClick={() => navigate('/user/profile')}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)', // hover 배경색
+                },
+              }}
+              component="div"
+            >
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary="홈" />
+              {window.innerWidth >= 600 && <ListItemText primary="홈" />}
             </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/category')}>
+            <ListItem
+              onClick={() => navigate('/user/profile/category')}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+              component="div"
+            >
               <ListItemIcon>
                 <CategoryIcon />
               </ListItemIcon>
-              <ListItemText primary="S3 사용량" />
+              {window.innerWidth >= 600 && <ListItemText primary="S3 사용량" />}
             </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/nickname')}>
+            <ListItem
+              onClick={() => navigate('/user/profile/nickname')}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+              component="div"
+            >
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
-              <ListItemText primary="닉네임 관리" />
+              {window.innerWidth >= 600 && <ListItemText primary="닉네임 관리" />}
             </ListItem>
-            <ListItem button>
+            <ListItem
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+              component="div"
+            >
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
-              <ListItemText primary="Settings" />
+              {window.innerWidth >= 600 && <ListItemText primary="Settings" />}
             </ListItem>
           </List>
         </Box>
 
         {/* Logout Button */}
         <List>
-          <ListItem button onClick={() => navigate('/logout')}>
+          <ListItem
+            onClick={handleLogout}
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              },
+            }}
+            component="div"
+          >
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Logout" />
+            {window.innerWidth >= 600 && <ListItemText primary="Logout" />}
           </ListItem>
         </List>
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, padding: 4 }}>{children}</Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          padding: 4,
+          backgroundColor: '#ffffff', // 메인 콘텐츠 영역 배경색
+          overflow: 'auto',
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
+
 };
 
 export default Layout;

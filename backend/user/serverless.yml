@@ -16,8 +16,32 @@ provider:
             - dynamodb:Scan
           Resource:
             - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
-
 functions:
+
+  signup:
+    handler: service/signup.handler
+    events:
+      - http:
+          path: signup
+          method: post
+          cors: true # CORS 활성화
+
+  signin:
+    handler: service/signin.handler
+    events:
+      - http:
+          path: signin
+          method: post
+          cors: true
+  
+  confirm:
+    handler: service/confirm.handler
+    events:
+      - http:
+          path: confirm
+          method: post
+          cors: true
+
   authorizer:
     handler: service/handler.authorizer
     events:
