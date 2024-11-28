@@ -1,4 +1,5 @@
 import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
@@ -8,12 +9,9 @@ export const handler = async (event) => {
     const createdAt = event.queryStringParameters?.createdAt;
 
     if (!postId || !createdAt) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: "Missing required parameters: postId or createdAt",
-        }),
-      };
+      return createResponse(400, {
+        message: "Missing required parameters: postId or createdAt",
+      });
     }
 
     const params = {
@@ -29,10 +27,7 @@ export const handler = async (event) => {
     const data = await ddbClient.send(new GetItemCommand(params));
 
     if (!data.Item) {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: "Post not found" }),
-      };
+      return createResponse(404, { message: "Post not found" });
     }
 
     const post = {
@@ -68,18 +63,12 @@ export const handler = async (event) => {
           : undefined,
     };
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(post),
-    };
+    return createResponse(200, post);
   } catch (error) {
     console.error("Error fetching post:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };

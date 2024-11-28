@@ -1,4 +1,5 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
@@ -9,7 +10,7 @@ export const handler = async (event) => {
     const validBoardTypes = ["general", "questions", "team-recruit"];
 
     if (!validBoardTypes.includes(boardType)) {
-      return generateResponse(400, { message: "Invalid boardType" });
+      return createResponse(400, { message: "Invalid boardType" });
     }
 
     const {
@@ -62,27 +63,18 @@ export const handler = async (event) => {
     const data = await ddbClient.send(new QueryCommand(params));
     const posts = formatPosts(data.Items);
 
-    return generateResponse(200, {
+    return createResponse(200, {
       items: posts,
       lastEvaluatedKey: data.LastEvaluatedKey,
     });
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
-    return generateResponse(500, {
+    return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
   }
 };
-
-const generateResponse = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  },
-  body: JSON.stringify(body),
-});
 
 const parseQueryStringParameters = (queryStringParameters = {}) => ({
   limit: queryStringParameters.limit
@@ -95,7 +87,6 @@ const parseQueryStringParameters = (queryStringParameters = {}) => ({
   recruitStatus: queryStringParameters.recruitStatus,
 });
 
-// DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷
 const formatPosts = (items) => {
   return items.map((item) => {
     const post = {
