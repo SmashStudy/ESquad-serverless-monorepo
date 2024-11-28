@@ -17,6 +17,7 @@ import BookListPage from "./pages/team/book/BookListPage.jsx";
 import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import StudyListPage from "./pages/team/study/StudyListPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
+import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 
 const theme = createTheme({
   palette: {
