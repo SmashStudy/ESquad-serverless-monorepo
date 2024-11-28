@@ -13,7 +13,7 @@ const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const MAX_BATCH_SIZE = 25;
 
 // 사용자들에게 알림을 저장
-const saveNotifications = async (users, message, studyName) => {
+const saveNotifications = async (users, message, studyId) => {
   try {
     // 사용자 목록을 25개씩 나누어 처리합니다 (DynamoDB BatchWriteItem의 최대 크기)
     for (let i = 0; i < users.length; i += MAX_BATCH_SIZE) {
@@ -24,7 +24,7 @@ const saveNotifications = async (users, message, studyName) => {
             id: { S: `${uuidv4()}` },
             userId: { S: user },
             message: { S: message },
-            sender: { S: studyName },
+            sender: { S: studyId },
             isRead: { N: "0" }, // Corrected the format to string "0"
             isSave: { N: "0" },
             createdAt: { S: new Date().toISOString() },
@@ -107,7 +107,7 @@ export const handler = async (event) => {
         const users = teamResponse.Items.filter(
           (item) =>
             item.itemType?.S === "StudyUser" &&
-            item.inviteState?.S === "complete"
+            item.inviteState?.S === "Active"
         )
           .map((item) => item.SK?.S)
           .filter(Boolean);
@@ -122,7 +122,7 @@ export const handler = async (event) => {
         console.log(`message: ${message}`);
 
         // 3. 알림 저장
-        await saveNotifications(users, message, studyName);
+        await saveNotifications(users, message, targetId);
         console.log("Notifications written successfully.");
 
         return {
