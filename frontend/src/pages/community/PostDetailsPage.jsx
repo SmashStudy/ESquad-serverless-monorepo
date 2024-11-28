@@ -1,192 +1,353 @@
-import React, { useState } from 'react';
-import { Box, Typography, Button, InputBase, Divider, IconButton } from '@mui/material';
-import { useTheme } from '@mui/material';
-import { ThumbUp } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Divider,
+  Paper,
+  Button,
+  TextField,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 
-const PostDetailsPage = ({ isSmallScreen, isMediumScreen }) => {
-    const theme = useTheme();
-    // const study = location.state.study;
-    const params = useParams();
-    const { postId } = useParams();
-    const navigate = useNavigate();
-    // const { userInfo } = useUser();
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
-    // const [post, setPost] = useState(null);
-    const [post, setPost] = useState( {"id": 32, "writer": "룰루레몬", "title": "테스트부치기", "views": 5, "createdAt": "2024-10-11" ,"description": "룰루랄라라람", "likes": 2} );   // 더미 포스트
-    // const [comments, setComments] = useState([]);
-    const [comments, setComments] = useState([
-        {
-            writer: 'Alice',
-            createdAt: new Date().toISOString(),
-            content: '정말 좋은 게시글입니다! 공유해 주셔서 감사합니다.',
-            likes: 5,
-        },
-        {
-            writer: 'Bob',
-            createdAt: new Date().toISOString(),
-            content: '매우 유익한 내용이네요. 감사합니다!',
-            likes: 3,
-        },
-        {
-            writer: 'Charlie',
-            createdAt: new Date().toISOString(),
-            content: '여기에서 언급된 내용에 대해 질문이 있습니다...',
-            likes: 1,
-        },
-        {
-            writer: 'Diana',
-            createdAt: new Date().toISOString(),
-            content: '놀라운 통찰력이네요! 이런 콘텐츠를 더 기대합니다.',
-            likes: 8,
-        },
-        {
-            writer: 'Eve',
-            createdAt: new Date().toISOString(),
-            content: '몇 가지 점에는 동의하지 않지만, 전체적으로 좋은 글입니다.',
-            likes: 2,
-        },
-        {
-            writer: 'Frank',
-            createdAt: new Date().toISOString(),
-            content: '이 내용을 보고 주제를 훨씬 더 잘 이해하게 되었어요. 감사합니다!',
-            likes: 7,
-        },
-        {
-            writer: 'Grace',
-            createdAt: new Date().toISOString(),
-            content: '기사의 두 번째 부분에 대해 좀 더 설명해 주실 수 있나요?',
-            likes: 4,
-        },
-        {
-            writer: 'Hank',
-            createdAt: new Date().toISOString(),
-            content: '잘 설명해 주셨네요! 좋은 글 계속 부탁드립니다!',
-            likes: 6,
-        },
-        {
-            writer: 'Ivy',
-            createdAt: new Date().toISOString(),
-            content: '이 내용을 실제로 적용하는 방법을 아는 분 계신가요?',
-            likes: 0,
-        },
-        {
-            writer: 'Jack',
-            createdAt: new Date().toISOString(),
-            content: '좋은 팁이네요, 꼭 시도해 볼게요.',
-            likes: 9,
-        },
-    ])
-    const [newComment, setNewComment] = useState('');
-    const [likes, setLikes] = useState(0);
-    const [isLiked, setIsLiked] = useState(false);
+const PostDetailsPage = () => {
+  const { boardType, postId } = useParams();
+  const navigate = useNavigate();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [commentContent, setCommentContent] = useState(""); // 댓글 내용
+  const menuOpen = Boolean(menuAnchorEl);
 
-    const handleLike = async () => {
+  const createdAt = new URLSearchParams(window.location.search).get(
+    "createdAt"
+  );
 
+  // 유저 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) throw new Error("로그인이 필요합니다.");
+
+        const response = await axios.get(`${getUserApi()}/get-user-info`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error("유저 정보를 불러오는 중 오류 발생:", error);
+      }
     };
-    const handleCommentSubmit = async () => {
 
-    };
-    const handleEdit = () => {
-    };
-    const handleDelete = async () => {
+    fetchUserInfo();
+  }, []);
 
-    };
-    if (!post) return <Typography>Loading...</Typography>;
+  // 게시글 가져오기
+  // 게시글 및 댓글 가져오기
+  useEffect(() => {
+    const fetchPostAndComments = async () => {
+      try {
+        setLoading(true);
+        if (!createdAt) {
+          console.error("createdAt 값이 누락되었습니다.");
+          navigate(`/community/${boardType}`, { replace: true });
+          return;
+        }
 
+        // 게시글 가져오기
+        const postResponse = await axios.get(
+          `${getCommunityApi()}/${boardType}/${postId}`,
+          {
+            params: { createdAt },
+          }
+        );
+
+        if (postResponse.data) {
+          setPost(postResponse.data);
+        } else {
+          setPost(null);
+        }
+
+        // 댓글 가져오기
+        const commentsResponse = await axios.get(
+          `${getCommunityApi()}/${boardType}/${postId}/comments`,
+          {
+            params: { createdAt },
+          }
+        );
+
+        if (commentsResponse.data && commentsResponse.data.comments) {
+          setComments(commentsResponse.data.comments);
+        }
+      } catch (error) {
+        console.error("데이터를 불러오는 중 오류 발생:", error);
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPostAndComments();
+  }, [boardType, postId, createdAt, navigate]);
+
+  const handleMenuClick = (event) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
+  const handleEdit = () => {
+    navigate(`/community/${boardType}/${postId}/edit`);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      await axios.delete(`${getCommunityApi()}/${boardType}/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { createdAt },
+      });
+      alert("게시글이 삭제되었습니다.");
+      navigate(`/community/${boardType}`);
+    } catch (error) {
+      console.error("게시글 삭제 중 오류 발생:", error);
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!commentContent.trim()) {
+      alert("댓글 내용을 입력해주세요.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("jwtToken");
+
+      const newComment = {
+        content: commentContent,
+        writer: {
+          name: currentUser.name,
+          nickname: currentUser.nickname,
+          email: currentUser.email,
+        },
+      };
+
+      const response = await axios.post(
+        `${getCommunityApi()}/${boardType}/${postId}`,
+        newComment,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          params: { createdAt },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("댓글이 성공적으로 등록되었습니다.");
+        setComments((prevComments) => [
+          {
+            ...newComment,
+            createdAt: new Date().toISOString(),
+          },
+          ...prevComments,
+        ]);
+        setCommentContent(""); // 댓글 입력 초기화
+      } else {
+        alert("댓글 등록에 실패했습니다. 서버가 응답하지 않았습니다.");
+      }
+    } catch (error) {
+      console.error("댓글 등록 중 오류 발생:", error);
+      alert("댓글 등록에 실패했습니다. 서버와의 통신 중 오류가 발생했습니다.");
+    }
+  };
+
+  if (loading) {
     return (
-        <Box sx={{ width: '100%', p: 2 }}>
-            <Button onClick={() => navigate(`/teams/1/questions`)} variant="text" sx={{ mb: 2 }}>
-                &larr; 뒤로가기
-            </Button>
-            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box>
-                    <Typography variant="h5" fontWeight="bold">
-                        {post.title}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                        작성자: {userInfo.username} · {new Date(post.createdAt).toLocaleString()} · 조회수: {post.views || 0}
-                    </Typography>
-                </Box>
-                <Box>
-                    <Button variant="outlined" onClick={handleEdit} sx={{ mr: 1 }}>
-                        수정
-                    </Button>
-                    <Button variant="outlined" color="error" onClick={handleDelete}>
-                        삭제
-                    </Button>
-                </Box>
-            </Box>
-            <Divider sx={{ mb: 3 }} />
-
-            {/* 이미지 표시 */}
-            {post.imageUrl && (
-                <Box sx={{ mb: 3 }}>
-                    <img src={post.imageUrl} alt="게시글 이미지" style={{ maxWidth: '100%', borderRadius: 8 }} />
-                </Box>
-            )}
-
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="body1">{post.content}</Typography>
-            </Box>
-            <Divider sx={{ mb: 3 }} />
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                <IconButton onClick={handleLike} color={isLiked ? "primary" : "default"}>
-                    <ThumbUp />
-                </IconButton>
-                <Typography>{likes}명이 좋아합니다</Typography>
-            </Box>
-
-            {/* Comment Section */}
-            <Box>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-                    답변 {comments.length}
-                </Typography>
-                <InputBase
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="댓글을 작성해보세요..."
-                    fullWidth
-                    sx={{
-                        mb: 2,
-                        p: 2,
-                        border: '1px solid #ccc',
-                        borderRadius: 1,
-                    }}
-                />
-                <Button
-                    onClick={handleCommentSubmit}
-                    variant="contained"
-                    sx={{ mb: 3, backgroundColor: theme.palette.primary.main }}
-                >
-                    댓글 작성
-                </Button>
-                <Divider sx={{ mb: 3 }} />
-
-                {comments.map((comment, index) => (
-                    <Box key={index} sx={{ mb: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Typography variant="body1" fontWeight="bold">
-                                {comment.writer}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                {new Date(comment.createdAt).toLocaleString()}
-                            </Typography>
-                        </Box>
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                            {comment.content}
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                            <Typography variant="caption">👍 {comment.likes}</Typography>
-                            <Typography variant="caption">답글</Typography>
-                        </Box>
-                        <Divider sx={{ mt: 2 }} />
-                    </Box>
-                ))}
-            </Box>
-        </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
     );
+  }
+
+  if (!post) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Typography variant="h6" color="error">
+          게시글을 찾을 수 없습니다. 다시 시도해주세요.
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        padding: 3,
+        maxWidth: "1200px",
+        margin: "0 auto",
+        backgroundColor: "#fafafa",
+        borderRadius: 2,
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Button
+        onClick={() => navigate(`/community/${boardType}`)}
+        startIcon={<ArrowBackIcon />}
+        sx={{
+          marginBottom: 2,
+          textTransform: "none",
+          color: "primary.main",
+        }}
+      >
+        뒤로가기
+      </Button>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold">
+          {post.title}
+        </Typography>
+        {post.writer?.email === currentUser?.email && (
+          <div>
+            <IconButton onClick={handleMenuClick}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleEdit}>수정</MenuItem>
+              <MenuItem onClick={handleDelete}>삭제</MenuItem>
+            </Menu>
+          </div>
+        )}
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+          color: "text.secondary",
+        }}
+      >
+        <Typography variant="body2">
+          작성자: {post.writer?.nickname || "알 수 없음"} •{" "}
+          {new Date(post.createdAt).toLocaleString()}
+        </Typography>
+        <Typography variant="body2">
+          조회수: {post.viewCount} • 좋아요: {post.likeCount}
+        </Typography>
+      </Box>
+
+      <Divider sx={{ marginBottom: 3 }} />
+
+      <Paper
+        elevation={2}
+        sx={{
+          padding: 3,
+          marginBottom: 3,
+          backgroundColor: "#fff",
+          borderRadius: 2,
+        }}
+      >
+        <Typography
+          variant="body1"
+          sx={{ whiteSpace: "pre-line", fontSize: "1rem", lineHeight: 1.6 }}
+        >
+          {post.content}
+        </Typography>
+      </Paper>
+
+      <Typography variant="h6" fontWeight="bold" mb={2}>
+        댓글
+      </Typography>
+      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+        <TextField
+          value={commentContent}
+          onChange={(e) => setCommentContent(e.target.value)}
+          placeholder="댓글을 입력하세요."
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={2}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddComment}
+          disabled={!commentContent.trim()}
+        >
+          댓글 등록
+        </Button>
+      </Box>
+      <Box
+        sx={{
+          mb: 2,
+          flexDirection: "column",
+          height: 350,
+          overflow: "hidden",
+          overflowY: "scroll",
+        }}
+      >
+        {comments
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((comment, index) => (
+            <Paper
+              key={index}
+              elevation={1}
+              sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                {comment.writer?.nickname || "익명"}
+              </Typography>
+              <Typography variant="body2">{comment.content}</Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: "text.secondary", display: "block", mt: 1 }}
+              >
+                {new Date(comment.createdAt).toLocaleString()}
+              </Typography>
+            </Paper>
+          ))}
+      </Box>
+    </Box>
+  );
 };
 
 export default PostDetailsPage;
