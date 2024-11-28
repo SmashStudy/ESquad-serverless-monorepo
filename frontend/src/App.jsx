@@ -5,7 +5,7 @@ import AuthCallback from "./components/google/AuthCallback.jsx";
 import GoogleLogin from "./components/google/GoogleLogin.jsx";
 import GoogleLogout from "./components/google/GoogleLogout.jsx";
 import Layout from "./components/user/Layout.jsx";
-import Category from "./components/user/UserCategory.jsx";
+import UserStorageUsage from "./components/user/UserStorageUsage";
 import Nickname from "./components/user/UserNickname.jsx";
 import UserProfile from "./components/user/UserProfile.jsx";
 import "./index.css";
@@ -71,7 +71,7 @@ function App() {
           <Route path="/" element={<Home />}>
             {/* user */}
             <Route path="/user/profile" element={<UserProfile />} />
-            <Route path="/user/profile/category" element={<Category />} />
+            <Route path="/user/profile/category" element={<UserStorageUsage />} />
             <Route path="/user/profile/nickname" element={<Nickname />} />
             <Route path="/user/profile/layout" element={<Layout />} />
 

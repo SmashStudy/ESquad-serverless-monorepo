@@ -21,7 +21,7 @@ import {formatFileSize} from "../../utils/fileFormatUtils.js";
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1'];
 const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB in bytes
 
-const Category = () => {
+const UserStorageUsage = () => {
   const [loading, setLoading] = useState()
   const { email, error: emailError} = useUserEmail();
   const {usage, userLoading, error: usageError} = useUserUsage(email);
@@ -99,4 +99,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default UserStorageUsage;
