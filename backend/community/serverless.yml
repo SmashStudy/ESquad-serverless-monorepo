@@ -70,6 +70,38 @@ functions:
           method: DELETE
           cors: true
 
+  createComment:
+    handler: service/createComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: POST
+          cors: true
+
+  getComment:
+    handler: service/getComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: GET
+          cors: true
+
+  updateComment:
+    handler: service/updateComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: PUT
+          cors: true
+
+  deleteComment:
+    handler: service/deleteComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: DELETE
+          cors: true
+
 resources:
   Resources:
     EsquadPostsTable:
