@@ -1,6 +1,7 @@
 import axios from "axios";
+import {getChatApi} from "../../../utils/apiConfig.js";
 
-const apiUrl = "https://api.esquad.click/chat";
+const apiUrl = getChatApi();
 
 const apiClient = axios.create({
     baseURL: apiUrl,
