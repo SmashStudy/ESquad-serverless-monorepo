@@ -78,8 +78,8 @@ functions:
           method: POST
           cors: true
 
-  getComment:
-    handler: service/getComment.handler
+  listComments:
+    handler: service/listComments.handler
     events:
       - http:
           path: /{boardType}/{postId}/comments
