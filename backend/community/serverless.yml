@@ -34,7 +34,7 @@ functions:
     handler: service/createPost.handler
     events:
       - http:
-          path: /{boardType}/new
+          path: /{boardType}
           method: POST
           cors: true
 
