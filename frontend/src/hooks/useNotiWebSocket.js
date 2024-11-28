@@ -9,15 +9,15 @@ import { useEffect, useRef } from "react";
  */
 
 const useNotiWebSocket = ({ user, onMessageReceived }) => {
-  // const address = `wss://ws.noti.api.esquad.click?userId=${encodeURIComponent(
-  //   user.email
-  // )}`;
-  const address = `wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local?userId=${encodeURIComponent(
-    user?.email
-  )}`;
+
   const socketRef = useRef(null);
 
   const connectToWebSocket = () => {
+    if(!user?.email) {
+      console.error("WebSocket connection failed: User email is undefined.");
+      return;
+    }
+
     if (
       socketRef.current &&
       (socketRef.current.readyState === WebSocket.OPEN ||
@@ -27,6 +27,12 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
       return;
     }
 
+    // const address = `wss://ws.noti.api.esquad.click?userId=${encodeURIComponent(
+    //   user.email
+    // )}`;
+    const address = `wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local?userId=${encodeURIComponent(
+        user?.email
+    )}`;
     const ws = new WebSocket(address);
     console.log("Creating a new WebSocket connection.");
 
@@ -59,8 +65,19 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
   };
 
   useEffect(() => {
-    connectToWebSocket(); // Connect WebSocket on mount
-  }, []);
+    // Only connect when user is available
+    if (user?.email) {
+      connectToWebSocket();
+    }
+
+    return () => {
+      // Cleanup on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+        console.log("WebSocket 연결 해제");
+      }
+    };
+  }, [user]);
 
   return { connectToWebSocket };
 };

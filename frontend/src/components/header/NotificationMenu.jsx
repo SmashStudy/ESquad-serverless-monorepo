@@ -13,13 +13,14 @@ const NotificationsMenu = ({
   markAsSave,
   releaseSaved,
   formatTimeAgo,
+  unReadCount,    // AppBarComponent에서 전달받은 알림 개수
+  setUnReadCount, // AppBarComponent에서 전달받은 상태 업데이트 함수
 }) => {
   const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showArchived, setShowArchived] = useState(false);
   const [lastEvaluatedKey, setLastEvaluatedKey] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
-  const [unReadCount, setUnReadCount] = useState(0);
   const notificationMenuRef = useRef(null);
 
   // 알림 메뉴를 열고 알림 데이터를 새로 가져오는 과정 처리

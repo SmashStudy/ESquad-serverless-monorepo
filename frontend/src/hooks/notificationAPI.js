@@ -1,6 +1,7 @@
 import axios from "axios";
+import {getNotificationApi} from "../utils/apiConfig.js";
 
-const API_GATEWAY_URL = "https://api.esquad.click/local/notification";
+const API_GATEWAY_URL = getNotificationApi();
 
 export const fetchAll = async ({ lastEvaluatedKey = null, user }) => {
   try {
@@ -89,7 +90,7 @@ export const markAsSave = async ({ user, notificationId }) => {
   try {
     const response = await axios.put(
         `${API_GATEWAY_URL}/save`,
-        { userId: user.email, notificationId },
+        { userId: user.email, id: notificationId },
         {
           headers: {
             "Content-Type": "application/json",
@@ -109,7 +110,7 @@ export const releaseSaved = async ({ user, notificationId }) => {
   try {
     const response = await axios.put(
         `${API_GATEWAY_URL}/release-save`,
-        { userId: user.email, notificationId },
+        { userId: user.email, id: notificationId },
         {
           headers: {
             "Content-Type": "application/json",

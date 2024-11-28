@@ -92,6 +92,7 @@ const AppBarComponent = ({
   const [accountAnchorEl, setAccountAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unReadCount, setUnReadCount] = useState(0);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
@@ -106,10 +107,11 @@ const AppBarComponent = ({
                 Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
             },
         });
-        setUser({
+        setUser((prev) => ({
+          ...prev,
           nickname: response.data.nickname,
-          ...user,
-        });
+        }));
+
     } catch (err) {
         console.error("닉네임 가져오기 오류:", err);
         setError('닉네임을 가져오는 중 오류가 발생했습니다.');
@@ -118,22 +120,35 @@ const AppBarComponent = ({
 
   // 컴포넌트 로드 시 닉네임 가져오기
   useEffect(() => {
-    const fetchToken = async () => {
-      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
-      const token = localStorage.getItem("jwtToken");
-      if (token) {
-        const decodedToken = decodeJWT(token);
-        if (decodedToken) {
-          setUser({
-            username: decodedToken.name || "Name",
-            email: decodedToken.email,
-            nickname: decodedToken.nickname,
-          });
+    const fetchTokenAndData = async () => {
+      try {
+        await delay(100); // JWT 토큰 저장 딜레이
+        const token = localStorage.getItem("jwtToken");
+
+        if (token) {
+          const decodedToken = decodeJWT(token);
+          if (decodedToken) {
+            // 사용자 정보를 먼저 업데이트
+            setUser({
+              username: decodedToken.name || "Name",
+              email: decodedToken.email,
+            });
+
+            // 닉네임 데이터 가져오기
+            await fetchNickname();
+
+            // 모든 데이터가 준비되었음을 표시
+            setIsUserLoaded(true);
+
+          }
         }
+      } catch (err) {
+        console.error("토큰 처리 오류:", err);
+        setError('사용자 정보를 처리하는 중 오류가 발생했습니다.');
       }
     };
 
-    fetchToken();
+    fetchTokenAndData();
   }, []);
 
 
@@ -161,6 +176,12 @@ const AppBarComponent = ({
     user,
     onMessageReceived,
   });
+
+  useEffect(() => {
+    if (isUserLoaded && user?.email) {
+      connectToWebSocket();
+    }
+  }, [isUserLoaded, user]);
 
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
@@ -453,6 +474,8 @@ const AppBarComponent = ({
                 markAsSave={markAsSave}
                 releaseSaved={releaseSaved}
                 formatTimeAgo={formatTimeAgo}
+                unReadCount={unReadCount}
+                setUnReadCount={setUnReadCount}
               />
               {/* chatting sidebar*/}
               <IconButton
