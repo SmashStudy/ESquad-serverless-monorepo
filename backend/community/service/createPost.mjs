@@ -8,7 +8,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags } = body;
+    const { title, content, writer, book, tags = [] } = body;
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -47,13 +47,14 @@ export const handler = async (event) => {
             },
           }
         : { NULL: true },
-      tags: { SS: tags || [] },
+      ...(tags.length > 0 && { tags: { SS: tags } }),
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
+      comments: { L: [] },
     };
 
     const command = new PutItemCommand({
