@@ -1,4 +1,5 @@
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
@@ -6,22 +7,13 @@ const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  let { userId, id } = event.queryStringParameters || {};
+  let { userId, id } = JSON.parse(event.body);
   console.log(`userId: ${userId}, id: ${id}`);
-  userId = decodeURIComponent(userId);
-  id = decodeURIComponent(id);
 
   if (!userId || !id) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        error: "userId and id must be provided as query parameters.",
-      }),
-    };
+    return createResponse(400, {
+      error: "Required parameter is invalid.",
+    });
   }
 
   try {
@@ -56,27 +48,11 @@ export const handler = async (event) => {
     console.log(`formattedResponse: ${JSON.stringify(formattedResponse)}`);
 
     // 객체 형식으로 반환할 수 있도록 업데이트된 아이템을 resultObject에 저장
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify(formattedResponse),
-    };
+    return createResponse(200, {body: formattedResponse});
   } catch (error) {
-    console.error("Error marking notifications as read:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify({ error: "Failed to mark notifications as read." }),
-    };
+    console.error("Error saving notification:", error);
+    return createResponse(500, {
+      error: "Failed saving notification.",
+    });
   }
 };

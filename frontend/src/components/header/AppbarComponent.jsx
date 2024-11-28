@@ -1,43 +1,45 @@
+import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
-import DoneAllIcon from "@mui/icons-material/Done";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
-import TurnedInIcon from "@mui/icons-material/TurnedIn";
-import TurnedInNotIcon from "@mui/icons-material/TurnedInNot";
 import {
   alpha,
   AppBar,
   Avatar,
-  Badge,
   Box,
   Button,
-  CircularProgress,
   Divider,
   IconButton,
   InputBase,
   List,
   ListItem,
-  ListItemAvatar,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   styled,
   Toolbar,
-  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import {
+  fetchAll,
+  fetchAllSaved,
+  markAllAsRead,
+  markAsSave,
+  releaseSaved,
+} from "../../hooks/notificationAPI.js";
+import useNotiWebSocket from "../../hooks/useNotiWebSocket.js";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import NotificationItem from "./NotificationItem.jsx";
+import NotificationsMenu from "./NotificationMenu.jsx";
+import {getUserApi} from "../../utils/apiConfig.js";
 import {decodeJWT} from "../../utils/decodeJWT.js";
-import Notifications from "./Notifications.jsx";
+import formatTimeAgo from "../../utils/formatTimeAgo.js";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -83,34 +85,73 @@ const AppBarComponent = ({
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState('');
+  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
+  const [showSearchBar, setShowSearchBar] = useState(null);
+  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [unReadCount, setUnReadCount] = useState(0);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
+
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
 
-  const [user, setUser] = useState(null);
-  // let [token, setToken] = useState(null);
-
-  const [showSearchBar, setShowSearchBar] = useState(null);
-  const [teamAnchorEl, setTeamAnchorEl] = useState(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
+  const fetchNickname = async () => {
+    try {
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            },
+        });
+        setUser((prev) => ({
+          ...prev,
+          nickname: response.data.nickname,
+        }));
+
+    } catch (err) {
+        console.error("닉네임 가져오기 오류:", err);
+        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 컴포넌트 로드 시 닉네임 가져오기
   useEffect(() => {
-    const fetchToken = async () => {
-      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
-      const token = localStorage.getItem("jwtToken");
-      if (token) {
-        const decodedToken = decodeJWT(token);
-        if (decodedToken) {
-          setUser({
-            username: decodedToken.name || "Name",
-            userId: decodedToken.email,
-          });
+    const fetchTokenAndData = async () => {
+      try {
+        await delay(100); // JWT 토큰 저장 딜레이
+        const token = localStorage.getItem("jwtToken");
+
+        if (token) {
+          const decodedToken = decodeJWT(token);
+          if (decodedToken) {
+            // 사용자 정보를 먼저 업데이트
+            setUser({
+              username: decodedToken.name || "Name",
+              email: decodedToken.email,
+            });
+
+            // 닉네임 데이터 가져오기
+            await fetchNickname();
+
+            // 모든 데이터가 준비되었음을 표시
+            setIsUserLoaded(true);
+
+          }
         }
+      } catch (err) {
+        console.error("토큰 처리 오류:", err);
+        setError('사용자 정보를 처리하는 중 오류가 발생했습니다.');
       }
     };
-    fetchToken();
+
+    fetchTokenAndData();
   }, []);
+
+
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
@@ -119,6 +160,28 @@ const AppBarComponent = ({
   };
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const onMessageReceived = (message) => {
+    if (message.unReadCount) {
+      setUnReadCount(message.unReadCount);
+    }
+
+    if (message.studyNotification) {
+      setUnReadCount((prevCount) => prevCount + 1);
+      setNotifications((prev) => [message.studyNotification, ...prev]);
+    }
+  };
+
+  const { connectToWebSocket } = useNotiWebSocket({
+    user,
+    onMessageReceived,
+  });
+
+  useEffect(() => {
+    if (isUserLoaded && user?.email) {
+      connectToWebSocket();
+    }
+  }, [isUserLoaded, user]);
 
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
@@ -251,15 +314,14 @@ const AppBarComponent = ({
                 }}
               >
                 <List>
-                  <ListItem
-                    button
+                  <ListItemButton
                     onClick={handleCreateTeamButtonClick}
                     sx={{
                       "&:hover": { cursor: "pointer", fontSize: "1.4rem" },
                     }}
                   >
                     <ListItemText primary="새로운 팀 생성" />
-                  </ListItem>
+                  </ListItemButton>
 
                   {/* Team Creation Modal */}
                   <TeamCreationDialog
@@ -279,8 +341,7 @@ const AppBarComponent = ({
                           className={`menu-team${index}`}
                           key={index}
                         >
-                          <ListItem
-                            button
+                          <ListItemButton
                             onClick={() => updateSelectedTeam(index)}
                             sx={{
                               "&:hover": {
@@ -296,7 +357,7 @@ const AppBarComponent = ({
                               />
                             </ListItemIcon>
                             <ListItemText primary={team?.teamName} />
-                          </ListItem>
+                          </ListItemButton>
                         </Link>
                       ))}
                     </>
@@ -371,9 +432,10 @@ const AppBarComponent = ({
                     gap: 1,
                   }}
                 >
-                  <Avatar alt="User Avatar" src="/src/assets/user-avatar.png" />
-                  {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                  <Typography variant="body1">{user ? user.username : "유저 이름"}</Typography>
+                  <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                    {user?.nickname}
+                  </Avatar>
+                  <Typography variant="body1">{user?.nickname}</Typography>
                 </IconButton>
               </Box>
               <Menu
@@ -402,11 +464,20 @@ const AppBarComponent = ({
                 <MenuItem onClick={handleAccountClose}>고객센터</MenuItem>
                 <MenuItem onClick={handleAccountClose}>의견 보내기</MenuItem>
               </Menu>
-
-              <Notifications userId={user ? user.userId : "유저 이름"} theme={theme} />
-
+              {/* Notification Button */}
+              <NotificationsMenu
+                theme={theme}
+                user={user}
+                fetchAll={fetchAll}
+                fetchAllSaved={fetchAllSaved}
+                markAllAsRead={markAllAsRead}
+                markAsSave={markAsSave}
+                releaseSaved={releaseSaved}
+                formatTimeAgo={formatTimeAgo}
+                unReadCount={unReadCount}
+                setUnReadCount={setUnReadCount}
+              />
               {/* chatting sidebar*/}
-
               <IconButton
                 color="inherit"
                 onClick={toggleChatDrawer}

@@ -1,5 +1,11 @@
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand
+} from "@aws-sdk/client-s3";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
+import {createResponse} from '../util/responseHelper.mjs'
 
 const s3 = new S3Client({});
 const BUCKET_NAME = process.env.S3_BUCKET;
@@ -9,20 +15,19 @@ export const handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
-    const { action, fileKey, contentType } = body;
+    let {action, fileKey, contentType} = body;
+
+    try {
+      // 인코딩 여부에 따라 디코딩 시도
+      fileKey = decodeURIComponent(fileKey);
+    } catch (error) {
+      // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
+      console.log("File name did not require decoding:", fileKey);
+    }
 
     if (!action || !fileKey) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type,Authorization",
-          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
-        },
-        body: JSON.stringify({
-          error: "Missing required parameters: action and fileKey are required.",
-        }),
-      };
+      return createResponse(400,
+          {error: "Missing required parameters: action and fileKey are required.",});
     }
 
     const params = {
@@ -35,51 +40,28 @@ export const handler = async (event) => {
 
     if (action === "getObject") {
       const command = new GetObjectCommand(params);
-      url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+      url = await getSignedUrl(s3, command, {expiresIn: 60 * 5});
     } else if (action === "putObject") {
       const command = new PutObjectCommand(params);
-      url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+      url = await getSignedUrl(s3, command, {expiresIn: 60 * 5});
     } else if (action === "deleteObject") {
       const command = new DeleteObjectCommand({
         Bucket: BUCKET_NAME,
         Key: fileKey,
       });
-      url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 });
+      url = await getSignedUrl(s3, command, {expiresIn: 60 * 5});
     } else {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type,Authorization",
-          "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
-        },
-        body: JSON.stringify({
-          error: "Invalid action. Supported actions are getObject, putObject, deleteObject.",
-        }),
-      };
+      return createResponse(400, {
+        error: "Invalid action. Supported actions are getObject, putObject, deleteObject.",
+      });
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
-      },
-      body: JSON.stringify({ presignedUrl: url }),
-    };
+    return createResponse(200, {presignedUrl: url});
   } catch (error) {
     console.error("Error generating presigned URL:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE",
-      },
-      body: JSON.stringify({
-        error: `Failed to generate presigned URL: ${error.message}`,
-      }),
-    };
+    return createResponse(500, {
+      error: `Failed to generate presigned URL: ${error.message}`,
+    });
+
   }
 };

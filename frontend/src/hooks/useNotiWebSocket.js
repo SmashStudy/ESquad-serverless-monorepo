@@ -1,62 +1,85 @@
 import { useEffect, useRef } from "react";
+import {getNotificationWebsocketApi} from "../utils/apiConfig.js";
 
-const domainName = 'ws.noti.api.esquad.click';
-const useWebSocket = (userId, onMessageReceived) => {
-    const socketRef = useRef(null);
+/**
+ * Custom hook for managing a WebSocket connection.
+ * @param {Function} onMessageReceived - Callback to handle incoming WebSocket messages.
+ * @param {Object} options - Optional configurations.
+ * @param {Function} setUnReadCount - Function to update unread count state.
+ * @param {Function} setNotifications - Function to update notifications state.
+ */
 
-    useEffect(() => {
-        const connectToWebSocket = () => {
-            if (
-                socketRef.current &&
-                (socketRef.current.readyState === WebSocket.OPEN ||
-                    socketRef.current.readyState === WebSocket.CONNECTING)
-            ) {
-                console.log("WebSocket is already active. Skipping new connection.");
-                return;
-            }
+const NOTIFICATION_WEBSOCKET_API = getNotificationWebsocketApi();
 
-            const address = `wss:/${domainName}?userId=${encodeURIComponent(userId)}`;
-            const ws = new WebSocket(address);
-            console.log("Creating a new WebSocket connection.");
+const useNotiWebSocket = ({ user, onMessageReceived }) => {
 
-            ws.onopen = () => {
-                console.log("WebSocket 연결 성공");
-                const fetchNotificationsMessage = JSON.stringify({
-                    action: "countUnReadNotifications",
-                    userId: userId,
-                });
-                ws.send(fetchNotificationsMessage);
-            };
+  const socketRef = useRef(null);
 
-            ws.onmessage = (message) => {
-                const obj = JSON.parse(message.data);
-                console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
-                onMessageReceived(obj);
-            };
+  const connectToWebSocket = () => {
+    if(!user?.email) {
+      console.error("WebSocket connection failed: User email is undefined.");
+      return;
+    }
 
-            ws.onclose = () => {
-                console.log("WebSocket 연결 종료");
-                socketRef.current = null;
-            };
+    if (
+      socketRef.current &&
+      (socketRef.current.readyState === WebSocket.OPEN ||
+        socketRef.current.readyState === WebSocket.CONNECTING)
+    ) {
+      console.log("WebSocket is already active. Skipping new connection.");
+      return;
+    }
 
-            ws.onerror = (event) => {
-                console.error("WebSocket 에러 발생:", event);
-                socketRef.current = null;
-            };
+    const address = `${NOTIFICATION_WEBSOCKET_API}?userId=${encodeURIComponent(
+        user?.email
+    )}`;
+    const ws = new WebSocket(address);
+    console.log("Creating a new WebSocket connection.");
 
-            socketRef.current = ws;
-        };
+    ws.onopen = () => {
+      console.log("WebSocket 연결 성공");
+      const fetchNotificationsMessage = JSON.stringify({
+        action: "countUnReadNotifications",
+        userId: user?.email,
+      });
+      ws.send(fetchNotificationsMessage);
+    };
 
-        connectToWebSocket();
+    ws.onmessage = (message) => {
+      const obj = JSON.parse(message.data);
+      console.log(`Received messages from websocket: ${JSON.stringify(obj)}`);
+      onMessageReceived(obj);
+    };
 
-        return () => {
-            if (socketRef.current) {
-                console.log("Closing WebSocket connection.");
-                socketRef.current.close();
-                socketRef.current = null;
-            }
-        };
-    }, [userId, onMessageReceived]);
+    ws.onclose = () => {
+      console.log("WebSocket 연결 종료");
+      socketRef.current = null;
+    };
+
+    ws.onerror = (event) => {
+      console.error("WebSocket 에러 발생:", event);
+      socketRef.current = null;
+    };
+
+    socketRef.current = ws;
+  };
+
+  useEffect(() => {
+    // Only connect when user is available
+    if (user?.email) {
+      connectToWebSocket();
+    }
+
+    return () => {
+      // Cleanup on component unmount
+      if (socketRef.current) {
+        socketRef.current.close();
+        console.log("WebSocket 연결 해제");
+      }
+    };
+  }, [user]);
+
+  return { connectToWebSocket };
 };
 
-export default useWebSocket;
+export default useNotiWebSocket;

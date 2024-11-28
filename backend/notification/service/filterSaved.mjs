@@ -1,4 +1,5 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
@@ -10,10 +11,9 @@ export const handler = async (event) => {
   const { userId, lastEvaluatedKey } = JSON.parse(event.body);
 
   if (!userId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "No User IDs provided." }),
-    };
+    return createResponse(400, {
+      error: "None of user provided.",
+    });
   }
 
   try {
@@ -55,27 +55,13 @@ export const handler = async (event) => {
         fetchResponse
       )}`
     );
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify(fetchResponse),
-    };
+    return createResponse(200,
+        {body: fetchResponse});
   } catch (error) {
     console.error("Error marking notifications as read:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, GET",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify({ error: "Failed to mark notifications as read." }),
-    };
+    return createResponse(
+        500,
+        { error: "Failed to mark notifications as read." },
+    );
   }
 };

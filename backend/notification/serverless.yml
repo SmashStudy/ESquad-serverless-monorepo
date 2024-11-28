@@ -1,3 +1,8 @@
+plugins:
+  - serverless-export-env
+
+useDotenv: true
+
 service: notification-service
 org: persii
 #app: esquad-monorepo
@@ -9,9 +14,11 @@ provider:
   region: ${env:AWS_REGION}
   environment:
     STAGE: ${opt:stage, 'dev'}
-    WEBSOCKET_ENDPOINT: ws.noti.api.esquad.click/${opt:stage, 'dev'}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    WEBSOCKET_ENDPOINT: ${env:WEBSOCKET_ENDPOINT}
     STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
     TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
+    TEAM_TABLE_STREAM_LABEL: ${env:TEAM_TABLE_STREAM_LABEL}
     NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
     NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
@@ -64,9 +71,10 @@ functions:
   preflightHandler:
     handler: service/preflight.handler
     events:
-      - httpApi:
+      - http:
           path: /{proxy+}
           method: OPTIONS
+          cors: true
 
   onConnect:
     handler: service/onConnect.handler
@@ -85,12 +93,12 @@ functions:
     handler: service/fetch.handler
     events:
       - http:
-          path: notification/all
+          path: /all
           method: post
           cors: true
 
-  send_notifications:
-    handler: service/sendNotifications.handler
+  send_notification:
+    handler: service/sendNotification.handler
     events:
       - stream:
           type: dynamodb
@@ -107,7 +115,7 @@ functions:
     handler: ./service/markAllAsRead.handler
     events:
       - http:
-          path: notification/mark
+          path: /mark
           method: post
           cors: true
 
@@ -115,23 +123,23 @@ functions:
     handler: ./service/markAsSave.handler
     events:
       - http:
-          path: notification/save
-          method: get
+          path: /save
+          method: put
           cors: true
 
   mark_as_release:
     handler: ./service/markAsRelease.handler
     events:
       - http:
-          path: notification/release-save
-          method: get
+          path: /release-save
+          method: put
           cors: true
 
   filter_saved_notifications:
     handler: ./service/filterSaved.handler
     events:
       - http:
-          path: notification/filter-saved
+          path: /filter-saved
           method: post
           cors: true
 
@@ -143,11 +151,20 @@ functions:
           route: $disconnect # 클라이언트가 웹소켓에서 연결을 끊을 때 호출
 
   publish_notification_on_file_upload:
-    handler: service/publishNotificationOnFileUpload.handler # Lambda 핸들러 함수
+    handler: service/publishNotificationOnFileUpload.handler
     events:
       - stream: # DynamoDB Streams 트리거
           type: dynamodb
           arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/stream/${env:METADATA_TABLE_STREAM_LABEL}
+          batchSize: 5 # 스트림 배치 처리 크기
+          startingPosition: LATEST # 최신 이벤트부터 시작
+
+  publish_notification_on_team_created:
+    handler: service/publishNotificationOnTeamCreated.handler
+    events:
+      - stream: # DynamoDB Streams 트리거
+          type: dynamodb
+          arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}/stream/${env:TEAM_TABLE_STREAM_LABEL}
           batchSize: 5 # 스트림 배치 처리 크기
           startingPosition: LATEST # 최신 이벤트부터 시작
 
@@ -234,26 +251,35 @@ resources:
           StreamViewType: NEW_IMAGE
 
     ApiGatewayCloudWatchRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: serverlessApiGatewayCloudWatchRole
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: apigateway.amazonaws.com
-              Action: sts:AssumeRole
-        Policies:
-          - PolicyName: ApiGatewayCloudWatchPolicy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
+     Type: AWS::IAM::Role
+     Properties:
+       RoleName: serverlessApiGatewayCloudWatchRole
+       AssumeRolePolicyDocument:
+         Version: "2012-10-17"
+         Statement:
+           - Effect: Allow
+             Principal:
+               Service: apigateway.amazonaws.com
+             Action: sts:AssumeRole
+       Policies:
+         - PolicyName: ApiGatewayCloudWatchPolicy
+           PolicyDocument:
+             Version: "2012-10-17"
+             Statement:
+               - Effect: Allow
+                 Action:
+                   - logs:CreateLogGroup
+                   - logs:CreateLogStream
+                   - logs:PutLogEvents
+                 Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
 
-useDotenv: true
+#  Outputs:
+#    WebSocketEndpoint:
+#      Description: 알림 Websocket API Endpoint
+#      Value:
+#        Fn::Sub: "https://${ApiGatewayWebsocketApi}.execute-api.${AWS::REGION}.amazonaws.com/${opt:stage, 'local'}"
+
+
+
+
+

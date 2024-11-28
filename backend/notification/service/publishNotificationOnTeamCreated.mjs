@@ -14,7 +14,7 @@ const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const MAX_BATCH_SIZE = 25;
 
 // 사용자들에게 알림을 저장
-const saveNotifications = async (users, message, studyId) => {
+const saveNotifications = async (users, message, teamId) => {
   try {
     // 사용자 목록을 25개씩 나누어 처리합니다 (DynamoDB BatchWriteItem의 최대 크기)
     for (let i = 0; i < users.length; i += MAX_BATCH_SIZE) {
@@ -25,7 +25,7 @@ const saveNotifications = async (users, message, studyId) => {
             id: { S: `${uuidv4()}` },
             userId: { S: user },
             message: { S: message },
-            sender: { S: studyId },
+            sender: { S: teamId },
             isRead: { N: "0" }, // Corrected the format to string "0"
             isSave: { N: "0" },
             createdAt: { S: new Date().toISOString() },
@@ -60,6 +60,7 @@ const saveNotifications = async (users, message, studyId) => {
           unprocessedItems = {};
         }
       }
+
       console.log("Chunk of notifications written successfully.");
     }
   } catch (error) {
@@ -73,27 +74,27 @@ export const handler = async (event) => {
     console.log("Received DynamoDB Stream Event:", JSON.stringify(event));
 
     for (const record of event.Records) {
-      if (!["INSERT"].includes(record.eventName)) {
+      if (!["INSERT", "UPDATE"].includes(record.eventName)) {
         continue; // INSERT 및 REMOVE 이벤트만 처리
       }
 
       const newImage = record.dynamodb.NewImage;
-      if (!newImage || newImage.targetType.S !== "STUDY_PAGE") {
-        continue; // targetType이 STUDY_PAGE가 아니면 무시
+      if (!newImage || newImage.itemType.S !== "Team") {
+        continue; // itemType이 Team 이 아니면 무시
       }
 
       try {
         // 삽입된 항목에서 사용자 ID를 추출
-        const userEmail = newImage.userEmail.S;
-        const targetId = newImage.targetId.S;
-        const fileName = newImage.originalFileName.S;
+        const userId = newImage.userId.S;
+        const teamId = newImage.PK.S;
+        const teamName = newImage.teamName.S;
 
         // 1. StudyPage 정보 가져오기 ( 유저ID 및 studyPageName)
         const teamQueryCommand = new QueryCommand({
           TableName: TEAM_TABLE,
           KeyConditionExpression: "PK = :pk",
           ExpressionAttributeValues: {
-            ":pk": { S: targetId },
+            ":pk": { S: teamId },
           },
         });
 
@@ -101,27 +102,23 @@ export const handler = async (event) => {
         console.log(`TeamTable Items: ${JSON.stringify(teamResponse.Items)}`);
 
         // 2. 스터디페이지명과 유저정보 분리
-        const studyName = teamResponse.Items.find(
-          (item) => item.itemType.S === "Study"
-        )?.studyName.S;
         const users = teamResponse.Items.filter(
           (item) =>
-            item.itemType?.S === "StudyUser" &&
-            item.inviteState?.S === "Active"
+            item.itemType.S === "TeamUser" && item.inviteState?.S === "complete"
         )
           .map((item) => item.SK?.S)
           .filter(Boolean);
 
-        if (!studyName || users.length === 0) {
-          console.warn("Study name or users not found, skipping notification.");
+        if (!users || users.length === 0) {
+          console.warn("Users not found, skipping notification.");
           continue;
         }
 
         // 3. 알림 메시지 생성
-        const message = `${userEmail} 가 파일 ${fileName} 을 ${studyName} 스터디에 공유했습니다.`;
+        const message = `${userId} 가 ${user} 님을 ${teamName} 팀에 초대했습니다.`;
 
         // 3. 알림 저장
-        await saveNotifications(users, message, targetId);
+        await saveNotifications(users, message, teamId);
         console.log("Notifications written successfully.");
 
         return createResponse(200, {
@@ -129,7 +126,7 @@ export const handler = async (event) => {
         });
       } catch (error) {
         return createResponse(500, {
-          error: "Error while publishing notification on file uploaded: " + error,
+          error: "Error while publishing notification on team created: " + error,
         });
       }
     }
