@@ -1,23 +1,25 @@
-import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import AuthCallback from "./components/google/AuthCallback.jsx";
+import Home from "./pages/home/Home.jsx";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import "./index.css";
+import PostListPage from "./pages/community/PostListPage.jsx";
+import StudyListPage from "./pages/team/study/StudyListPage.jsx";
+import BookListPage from "./pages/team/book/BookListPage.jsx";
+import BookDetailPage from "./pages/team/book/BookDetailPage.jsx";
+import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
+import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
+import TeamMainPage from "./pages/team/TeamMainPage.jsx";
+import PostEditPage from "./pages/community/PostEditPage.jsx";
 import GoogleLogin from "./components/google/GoogleLogin.jsx";
+import AuthCallback from "./components/google/AuthCallback.jsx";
 import GoogleLogout from "./components/google/GoogleLogout.jsx";
-import Layout from "./components/user/Layout.jsx";
+import UserProfile from "./components/user/UserProfile.jsx";
 import UserStorageUsage from "./components/user/UserStorageUsage";
 import Nickname from "./components/user/UserNickname.jsx";
-import UserProfile from "./components/user/UserProfile.jsx";
-import "./index.css";
-import PostEditPage from "./pages/community/PostEditPage.jsx";
-import PostListPage from "./pages/community/PostListPage.jsx";
-import Home from "./pages/home/Home.jsx";
-import BookDetailPage from "./pages/team/book/BookDetailPage.jsx";
-import BookListPage from "./pages/team/book/BookListPage.jsx";
-import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
-import StudyListPage from "./pages/team/study/StudyListPage.jsx";
-import TeamMainPage from "./pages/team/TeamMainPage.jsx";
-import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
+import Layout from "./components/user/Layout.jsx";
+import SignUp from './components/google/SignUp.jsx';
+import Confirm from './components/google/EmailVerification.jsx'
 
 const theme = createTheme({
   palette: {
@@ -61,12 +63,14 @@ function App() {
         <Routes>
           {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
           {!isLoggedIn && (
-            <Route path="*" element={<Navigate to="/google" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           )}
 
-          <Route path="/google" element={<GoogleLogin />} />
+          <Route path="/login" element={<GoogleLogin />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/logout" element={<GoogleLogout />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/confirm" element={<Confirm />} />
 
           <Route path="/" element={<Home />}>
             {/* user */}
@@ -78,7 +82,7 @@ function App() {
             {/* community */}
             <Route path="community/questions" element={<PostListPage />} />
             <Route
-              path="community/questions/:postId"
+              path="community/:boardType/:postId"
               element={<PostDetailsPage />}
             />
             <Route path="community/general" element={<PostListPage />} />
@@ -101,7 +105,7 @@ function App() {
           <Route
             path="*"
             element={
-              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/google" />
+              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
             }
           />
         </Routes>

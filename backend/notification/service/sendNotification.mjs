@@ -18,9 +18,12 @@ const getConnectionIds = async (userId) => {
   const params = {
     TableName: NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE,
     IndexName: NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX,
-    KeyConditionExpression: "userId = :userId",
+    KeyConditionExpression: "#userId = :userId",
+    ExpressionAttributeNames: {
+      "#userId": "userId", // Handle reserved characters
+    },
     ExpressionAttributeValues: {
-      ":userId": { S: userId },
+      ":userId": { S: userId }, // Dynamically provide the userId value
     },
   };
 

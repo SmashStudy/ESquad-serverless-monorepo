@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography, ListItemButton } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('jwtToken');
-    navigate('/login');
+    navigate('/logout');
   };
 
   useEffect(() => {
@@ -52,17 +52,25 @@ const Layout = ({ children }) => {
 
 
   return (
-    <Box sx={{ display: 'flex', height: 'calc(98vh - 57px)', backgroundColor: '#f5f5f5' }}>
+    <Box
+    sx={{
+      display: 'flex',
+      height: { xs: 'auto', sm: 'calc(98vh - 57px)' }, // 작은 화면에서는 auto, 큰 화면에서는 calc 사용
+      minHeight: 'calc(98vh - 57px)', // 기본 최소 높이 설정
+      backgroundColor: '#f5f5f5',
+    }}
+  >
       {/* Sidebar */}
       <Box
         sx={{
-          width: 240,
-          backgroundColor: '#fff',
+          width: { xs: 60, sm: 240 }, // 작은 화면에서는 축소된 사이드바
+          backgroundColor: '#ffffff', // 사이드바 배경색
           color: '#000',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: 2,
+          padding: { xs: 1, sm: 2 }, // 작은 화면에서는 패딩 감소
+          transition: 'width 0.3s ease',
         }}
       >
         {/* User Profile */}
@@ -72,73 +80,90 @@ const Layout = ({ children }) => {
             flexDirection: 'column',
             alignItems: 'center',
             gap: 1,
-            padding: 2,
+            padding: { xs: 1, sm: 2 },
             borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
           }}
         >
           <Avatar
             sx={{
-              width: 60,
-              height: 60,
+              width: { xs: 40, sm: 60 }, // 작은 화면에서는 아바타 크기 축소
+              height: { xs: 40, sm: 60 },
               bgcolor: theme.palette.primary.main,
-              fontSize: 24,
+              fontSize: { xs: 16, sm: 24 },
             }}
           >
             {userInfo?.nickname?.charAt(0).toUpperCase()}
           </Avatar>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            {userInfo?.nickname || 'Guest'}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {userInfo?.email || 'example@email.com'}
-          </Typography>
+          {window.innerWidth >= 600 && (
+            <>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                {userInfo?.nickname || 'Guest'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {userInfo?.name || '게스트'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {userInfo?.email || 'example@email.com'}
+              </Typography>
+            </>
+          )}
         </Box>
 
         {/* Navigation Links */}
         <Box sx={{ flexGrow: 1 }}>
           <List>
-            <ListItem button onClick={() => navigate('/user/profile')}>
+            <ListItemButton onClick={() => navigate('/user/profile')}>
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary="홈" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/category')}>
+              {window.innerWidth >= 600 && <ListItemText primary="홈" />}
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/user/profile/category')}>
               <ListItemIcon>
                 <CategoryIcon />
               </ListItemIcon>
-              <ListItemText primary="S3 사용량" />
-            </ListItem>
-            <ListItem button onClick={() => navigate('/user/profile/nickname')}>
+              {window.innerWidth >= 600 && <ListItemText primary="S3 사용량" />}
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/user/profile/nickname')}>
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
-              <ListItemText primary="닉네임 관리" />
-            </ListItem>
-            <ListItem button>
+              {window.innerWidth >= 600 && <ListItemText primary="닉네임 관리" />}
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/logout')}>
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItem>
+              {window.innerWidth >= 600 && <ListItemText primary="Settings" />}
+            </ListItemButton>
           </List>
         </Box>
 
         {/* Logout Button */}
         <List>
-          <ListItem button onClick={() => navigate('/logout')}>
+          <ListItemButton onClick={() => navigate('/logout')}>
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItem>
+            {window.innerWidth >= 600 && <ListItemText primary="Logout" />}
+          </ListItemButton>
         </List>
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, padding: 4 }}>{children}</Box>
+      <Box
+        sx={{
+          flexGrow: 1,
+          padding: 4,
+          backgroundColor: '#ffffff', // 메인 콘텐츠 영역 배경색
+          overflow: 'auto',
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
+
 };
 
 export default Layout;

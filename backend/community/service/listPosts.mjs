@@ -87,6 +87,7 @@ const parseQueryStringParameters = (queryStringParameters = {}) => ({
   recruitStatus: queryStringParameters.recruitStatus,
 });
 
+// DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷
 const formatPosts = (items) => {
   return items.map((item) => {
     const post = {
@@ -100,6 +101,15 @@ const formatPosts = (items) => {
       likeCount: parseInt(item.likeCount.N, 10),
       tags: item.tags?.SS || [],
     };
+
+    // 작성자 정보 추가
+    if (item.writer && item.writer.M) {
+      post.writer = {
+        name: item.writer.M.name?.S || "익명",
+        nickname: item.writer.M.nickname?.S || "익명",
+        email: item.writer.M.email?.S || "",
+      };
+    }
 
     if (item.boardType.S === "questions") {
       post.resolved = item.resolved?.S === "true";
