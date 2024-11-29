@@ -16,7 +16,19 @@ provider:
             - dynamodb:Scan
           Resource:
             - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
+  environment:
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+    COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
+    CALLBACK_URLS: ${env:CALLBACK_URLS}
 functions:
+
+  authCallback:
+    handler: service/authcallback.handler
+    events:
+      - http:
+          path: auth/callback
+          method: get
+          cors: true
 
   signup:
     handler: service/signup.handler
@@ -34,6 +46,14 @@ functions:
           method: post
           cors: true
   
+  signout:
+    handler: service/signout.handler # Lambda 핸들러 파일 경로
+    events:
+      - http:
+          path: signout
+          method: post
+          cors: true
+
   confirm:
     handler: service/confirm.handler
     events:
@@ -178,6 +198,11 @@ resources:
           - Google
         GenerateSecret: false
         AllowedOAuthFlowsUserPoolClient: true
+        ExplicitAuthFlows: # 추가된 섹션
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_CUSTOM_AUTH
 
     CognitoIdentityPool:
       Type: AWS::Cognito::IdentityPool
@@ -246,6 +271,7 @@ package:
   include:
     - node_modules/**
     - backend/user/service/handler.js
+    - backend/user/service/authcallback.mjs
 useDotenv: true
 plugins:
   - serverless-dotenv-plugin
