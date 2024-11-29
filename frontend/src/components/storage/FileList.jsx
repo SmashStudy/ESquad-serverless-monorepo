@@ -11,13 +11,12 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
-
+import {formatFileSize} from "../../utils/fileFormatUtils.js";
 const FileList = ({
   files,
   email,
   onFileDownload,
   onFileDelete,
-  formatFileSize
 }) => {
   return (
       <List>
@@ -163,7 +162,6 @@ FileList.propTypes = {
   email: PropTypes.string.isRequired,
   onFileDownload: PropTypes.func.isRequired,
   onFileDelete: PropTypes.func.isRequired,
-  formatFileSize: PropTypes.func.isRequired,
 };
 
 export default FileList;
