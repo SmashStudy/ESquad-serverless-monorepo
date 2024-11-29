@@ -135,6 +135,13 @@ const UserProfile = () => {
     navigate("/login");
   };
 
+  const itemsPerPage = 3; // 페이지당 표시할 카드 수
+  const totalPages = Math.ceil(studyGroups.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
+  }
+
   const handlePrevPage = () => {
     if (currentPage > 0) setCurrentPage(currentPage - 1);
   };
