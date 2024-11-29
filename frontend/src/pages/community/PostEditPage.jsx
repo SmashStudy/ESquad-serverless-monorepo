@@ -56,7 +56,7 @@ const PostEditPage = ({ onUpdate }) => {
         return;
       }
 
-      if (tags.length >= 10) {
+      if (tags.length > 10) {
         alert("태그는 최대 10개까지 추가할 수 있습니다.");
         return;
       }
@@ -86,11 +86,6 @@ const PostEditPage = ({ onUpdate }) => {
   const handleSaveChanges = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
-
       const updatedPost = {
         title,
         content,
