@@ -16,6 +16,8 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -26,6 +28,8 @@ const PostDetailsPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [commentContent, setCommentContent] = useState(""); // 댓글 내용
+  const [editingCommentId, setEditingCommentId] = useState(null); // 수정 중인 댓글 ID
+
   const menuOpen = Boolean(menuAnchorEl);
 
   const createdAt = new URLSearchParams(window.location.search).get(
@@ -51,7 +55,6 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  // 게시글 가져오기
   // 게시글 및 댓글 가져오기
   useEffect(() => {
     const fetchPostAndComments = async () => {
@@ -135,43 +138,114 @@ const PostDetailsPage = () => {
     try {
       const token = localStorage.getItem("jwtToken");
 
-      const newComment = {
-        content: commentContent,
-        writer: {
-          name: currentUser.name,
-          nickname: currentUser.nickname,
-          email: currentUser.email,
-        },
-      };
+      if (editingCommentId) {
+        // 댓글 수정
+        const updatedComment = {
+          content: commentContent,
+        };
 
-      const response = await axios.post(
-        `${getCommunityApi()}/${boardType}/${postId}`,
-        newComment,
+        await axios.put(
+          `${getCommunityApi()}/${boardType}/${postId}/comments/${editingCommentId}`,
+          updatedComment,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            params: { createdAt },
+          }
+        );
+
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === editingCommentId
+              ? {
+                  ...comment,
+                  content: commentContent,
+                  updatedAt: new Date().toISOString(),
+                }
+              : comment
+          )
+        );
+
+        setEditingCommentId(null);
+      } else {
+        // 댓글 추가
+        const newComment = {
+          content: commentContent,
+          writer: {
+            name: currentUser.name,
+            nickname: currentUser.nickname,
+            email: currentUser.email,
+          },
+        };
+
+        const response = await axios.post(
+          `${getCommunityApi()}/${boardType}/${postId}`,
+          newComment,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            params: { createdAt },
+          }
+        );
+
+        if (response.status === 200) {
+          setComments((prevComments) => [
+            {
+              ...newComment,
+              createdAt: new Date().toISOString(),
+            },
+            ...prevComments,
+          ]);
+        }
+      }
+
+      setCommentContent(""); // 댓글 입력 초기화
+    } catch (error) {
+      console.error("댓글 처리 중 오류 발생:", error);
+      alert("댓글 등록/수정에 실패했습니다.");
+    }
+  };
+
+  const handleCancelComment = () => {
+    setCommentContent("");
+    setEditingCommentId(null); // 수정 모드 취소
+  };
+
+  const handleEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setCommentContent(comment.content);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+
+      // 댓글 삭제 요청 시 필요한 데이터를 쿼리 매개변수로 전달
+      await axios.delete(
+        `${getCommunityApi()}/${boardType}/${postId}/comments/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
-          params: { createdAt },
+          params: {
+            createdAt,
+            userEmail: currentUser.email, // 쿼리 매개변수로 사용자 이메일 전달
+          },
         }
       );
 
-      if (response.status === 200) {
-        alert("댓글이 성공적으로 등록되었습니다.");
-        setComments((prevComments) => [
-          {
-            ...newComment,
-            createdAt: new Date().toISOString(),
-          },
-          ...prevComments,
-        ]);
-        setCommentContent(""); // 댓글 입력 초기화
-      } else {
-        alert("댓글 등록에 실패했습니다. 서버가 응답하지 않았습니다.");
-      }
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId)
+      );
+
+      alert("댓글이 삭제되었습니다.");
     } catch (error) {
-      console.error("댓글 등록 중 오류 발생:", error);
-      alert("댓글 등록에 실패했습니다. 서버와의 통신 중 오류가 발생했습니다.");
+      console.error("댓글 삭제 중 오류 발생:", error);
+      alert("댓글 삭제에 실패했습니다.");
     }
   };
 
@@ -313,7 +387,18 @@ const PostDetailsPage = () => {
           onClick={handleAddComment}
           disabled={!commentContent.trim()}
         >
-          댓글 등록
+          {editingCommentId ? "수정" : "등록"}
+        </Button>
+        <Button
+          variant="text"
+          color="black"
+          onClick={handleCancelComment}
+          sx={{
+            textTransform: "none",
+            padding: "6px 16px",
+          }}
+        >
+          취소
         </Button>
       </Box>
       <Box
@@ -343,6 +428,24 @@ const PostDetailsPage = () => {
               >
                 {new Date(comment.createdAt).toLocaleString()}
               </Typography>
+
+              {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
+              {comment.writer?.email === currentUser?.email && (
+                <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleEditComment(comment)}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleDeleteComment(comment.id)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
             </Paper>
           ))}
       </Box>
