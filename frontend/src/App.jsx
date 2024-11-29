@@ -19,6 +19,7 @@ import Category from './components/user/UserCategory.jsx';
 import Nickname from './components/user/UserNickname.jsx'
 import Layout from './components/user/Layout.jsx';
 import SignUp from './components/google/SignUp.jsx';
+import Confirm from './components/google/EmailVerification.jsx'
 
 
 const theme = createTheme({
@@ -69,6 +70,7 @@ function App() {
                         <Route path="/auth/callback" element={<AuthCallback />} />
                         <Route path="/logout" element={<GoogleLogout />} />
                         <Route path="/signup" element={<SignUp />} />
+                        <Route path="/confirm" element={<Confirm />} />
 
 
 

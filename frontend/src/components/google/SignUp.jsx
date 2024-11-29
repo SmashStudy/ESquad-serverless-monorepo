@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Grid, TextField, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const API_URL = "https://jg3x4yqtfb.execute-api.us-east-1.amazonaws.com/local";
 
@@ -32,7 +33,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/signup`, {
+      const response = await fetch(`${getUserApi()}/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

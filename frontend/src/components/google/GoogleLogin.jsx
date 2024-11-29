@@ -3,6 +3,7 @@ import { Box, Button, Typography, Grid, TextField, Alert } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { initializeCognitoConfig, getCognitoConfig } from "./Config.js";
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const API_URL = "https://jg3x4yqtfb.execute-api.us-east-1.amazonaws.com/local";
 
@@ -58,7 +59,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/signin`, {
+      const response = await fetch(`${getUserApi()}/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,12 +70,17 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.error === "User is not confirmed. Please confirm your email first.") {
+          localStorage.setItem("email", email); // 이메일 저장
+          navigate("/confirm");
+          return;
+        }
         throw new Error(data.error || "로그인에 실패했습니다.");
       }
 
       setSuccess("로그인에 성공했습니다!");
       setError("");
-      
+
       const { accessToken, idToken, refreshToken } = data;
       localStorage.setItem("jwtToken", idToken);
 
