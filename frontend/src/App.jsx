@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./index.css";
@@ -15,7 +15,7 @@ import GoogleLogin from "./components/google/GoogleLogin.jsx";
 import AuthCallback from "./components/google/AuthCallback.jsx";
 import GoogleLogout from "./components/google/GoogleLogout.jsx";
 import UserProfile from "./components/user/UserProfile.jsx";
-import Category from "./components/user/UserCategory.jsx";
+import UserStorageUsage from "./components/user/UserStorageUsage";
 import Nickname from "./components/user/UserNickname.jsx";
 import Layout from "./components/user/Layout.jsx";
 import SignUp from './components/google/SignUp.jsx';
@@ -75,7 +75,7 @@ function App() {
           <Route path="/" element={<Home />}>
             {/* user */}
             <Route path="/user/profile" element={<UserProfile />} />
-            <Route path="/user/profile/category" element={<Category />} />
+            <Route path="/user/profile/category" element={<UserStorageUsage />} />
             <Route path="/user/profile/nickname" element={<Nickname />} />
             <Route path="/user/profile/layout" element={<Layout />} />
 
