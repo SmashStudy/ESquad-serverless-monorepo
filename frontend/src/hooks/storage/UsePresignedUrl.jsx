@@ -10,7 +10,7 @@ const UsePresignedUrl = () => {
 
         // 'putObject'일 때 파일 정보 포함
         const payload =
-            action === 'putObject'
+            action === 'putObject' || 'getObject'
                 ? {
                   action,
                   fileKey: `files/${fileOrKey.name}`, // unique file key
