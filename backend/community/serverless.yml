@@ -7,18 +7,7 @@ provider:
   environment:
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
-  httpApi:
-    cors:
-      allowedOrigins:
-        - "*"
-      allowedHeaders:
-        - Content-Type
-        - Authorization
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
   iam:
     role:
       statements:
@@ -44,37 +33,42 @@ functions:
   createPost:
     handler: service/createPost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/new
           method: POST
+          cors: true
 
   getPost:
     handler: service/getPost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: GET
+          cors: true
 
   listPosts:
     handler: service/listPosts.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}
           method: GET
+          cors: true
 
   updatePost:
     handler: service/updatePost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: PUT
+          cors: true
 
   deletePost:
     handler: service/deletePost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: DELETE
+          cors: true
 
 resources:
   Resources:
@@ -126,6 +120,8 @@ resources:
               ProjectionType: ALL
         SSESpecification:
           SSEEnabled: true
+
+useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
