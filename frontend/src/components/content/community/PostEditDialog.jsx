@@ -15,7 +15,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../../utils/apiConfig";
 
-const PostEditDialog = ({ open, handleClose, postDetails }) => {
+const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
   const { boardType, postId } = useParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -103,6 +103,12 @@ const PostEditDialog = ({ open, handleClose, postDetails }) => {
       );
 
       alert("게시글이 수정되었습니다.");
+
+      // 부모 컴포넌트에 업데이트된 데이터를 반영하기 위해 onUpdate 콜백 호출
+      if (onUpdate) {
+        onUpdate(updatedPost);
+      }
+
       handleClose();
     } catch (error) {
       console.error("게시글 수정 중 오류 발생:", error);

@@ -139,6 +139,14 @@ const PostDetailsPage = () => {
     handleMenuClose();
   };
 
+  const handleUpdatePost = (updatedPost) => {
+    // 게시글 수정 후 상태 업데이트
+    setPost((prevPost) => ({
+      ...prevPost,
+      ...updatedPost,
+    }));
+  };
+
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -530,6 +538,7 @@ const PostDetailsPage = () => {
         open={isEditDialogOpen}
         handleClose={() => setIsEditDialogOpen(false)}
         postDetails={post}
+        onUpdate={handleUpdatePost}
       />
     </Box>
   );

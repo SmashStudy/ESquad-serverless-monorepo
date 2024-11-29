@@ -12,7 +12,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../utils/apiConfig";
 
-const PostEditPage = () => {
+const PostEditPage = ({ onUpdate }) => {
   const { boardType, postId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -109,6 +109,13 @@ const PostEditPage = () => {
       );
 
       alert("게시글이 수정되었습니다.");
+
+      // 게시글이 수정된 후 부모 컴포넌트에 알리기 위해 onUpdate 콜백 호출
+      if (onUpdate) {
+        onUpdate(updatedPost);
+      }
+
+      // 게시글 상세 페이지로 이동
       navigate(`/community/${boardType}/${postId}`);
     } catch (error) {
       console.error("게시글 수정 중 오류 발생:", error);
