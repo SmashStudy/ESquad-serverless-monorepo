@@ -6,7 +6,7 @@ const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const app = "meeting";
 
 // 로컬 개발 환경에서만 HTTPS 설정
-const isLocalDevelopment = process.env.NODE_ENV === 'development';
+const isLocalDevelopment = process.env.NODE_ENV === 'dev';
 
 // 로컬에서만 사용하는 경로 설정
 const keyPath = isLocalDevelopment ? process.env.SSL_KEY_PATH : null;
