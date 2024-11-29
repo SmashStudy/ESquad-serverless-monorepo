@@ -57,7 +57,7 @@ custom:
 
 functions:
   ChimeSdkJoinLambda:
-    handler: service/joinMeetingHandler.handler  # 미팅 참가 핸들러
+    handler: src/joinMeetingHandler.handler  # 미팅 참가 핸들러
     events:
       - http:
           path: /join
@@ -72,7 +72,7 @@ functions:
       USE_EVENT_BRIDGE: ${self:custom.useEventBridge}  # EventBridge 사용 여부
 
   ChimeSdkEndLambda:
-    handler: service/endMeetingHandler.handler  # 미팅 종료 핸들러
+    handler: src/endMeetingHandler.handler  # 미팅 종료 핸들러
     events:
       - http:
           path: /end
@@ -85,7 +85,7 @@ functions:
             allowCredentials: true
 
   ChimeSdkAttendeeLambda:
-    handler: service/attendeeMeetingHandler.handler  # 참석자 정보 핸들러
+    handler: src/attendeeMeetingHandler.handler  # 참석자 정보 핸들러
     events:
       - http:
           path: /attendee
@@ -98,7 +98,7 @@ functions:
             allowCredentials: true
 
   ChimeSQSQueueLambda:
-    handler: service/sqsHandler.handler  # SQS 메시지 처리 핸들러
+    handler: src/sqsHandler.handler  # SQS 메시지 처리 핸들러
     events:
       - sqs:
           arn:
@@ -108,11 +108,11 @@ functions:
           batchSize: 10
 
   ChimeEventBridgeLambda:
-    handler: service/eventHandler.handler  # EventBridge 이벤트 핸들러
+    handler: src/eventHandler.handler  # EventBridge 이벤트 핸들러
     events: ${self:custom.chimeEventBridgeEvents.${self:custom.useEventBridge}}  # 조건부 이벤트 바인딩
 
   ChimeSdkBrowserLogsLambda:
-    handler: service/logHandler.handler  # 브라우저 로그 핸들러
+    handler: src/logHandler.handler  # 브라우저 로그 핸들러
     events:
       - http:
           path: /logs
