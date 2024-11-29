@@ -85,7 +85,7 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
       const updatedPost = {
         title,
         content,
-        tags,
+        tags: tags.length > 0 ? tags : [], // tags가 비어있어도 포함
       };
 
       await axios.put(
@@ -97,14 +97,13 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
             "Content-Type": "application/json",
           },
           params: {
-            createdAt: postDetails.createdAt, // createdAt을 쿼리 파라미터로 전달
+            createdAt: postDetails.createdAt,
           },
         }
       );
 
       alert("게시글이 수정되었습니다.");
 
-      // 부모 컴포넌트에 업데이트된 데이터를 반영하기 위해 onUpdate 콜백 호출
       if (onUpdate) {
         onUpdate(updatedPost);
       }
@@ -148,11 +147,11 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
               const { key, ...restProps } = getTagProps({ index });
               return (
                 <Chip
-                  key={`tag-${index}`} // 명시적으로 key 설정
+                  key={`tag-${index}`}
                   variant="outlined"
                   size="small"
                   label={option}
-                  {...restProps} // 나머지 props 전달
+                  {...restProps}
                 />
               );
             })
