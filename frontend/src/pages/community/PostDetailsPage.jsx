@@ -32,6 +32,7 @@ const PostDetailsPage = () => {
   const [commentContent, setCommentContent] = useState(""); // 댓글 내용
   const [editingCommentId, setEditingCommentId] = useState(null); // 수정 중인 댓글 ID
   const [commentAlertOpen, setCommentAlertOpen] = useState(false); // 댓글 등록 알림 스낵바
+  const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false); // 댓글 삭제 알림 스낵바
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -254,7 +255,7 @@ const PostDetailsPage = () => {
         prevComments.filter((comment) => comment.id !== commentId)
       );
 
-      alert("댓글이 삭제되었습니다.");
+      setDeleteCommentAlertOpen(true); // 댓글 삭제 알림 열기
       await fetchComments(); // 댓글 목록 새로고침
     } catch (error) {
       console.error("댓글 삭제 중 오류 발생:", error);
@@ -264,6 +265,10 @@ const PostDetailsPage = () => {
 
   const handleCloseCommentAlert = () => {
     setCommentAlertOpen(false);
+  };
+
+  const handleCloseDeleteCommentAlert = () => {
+    setDeleteCommentAlertOpen(false);
   };
 
   if (loading) {
@@ -478,6 +483,20 @@ const PostDetailsPage = () => {
           sx={{ width: "100%" }}
         >
           댓글이 등록되었습니다!
+        </Alert>
+      </Snackbar>
+      {/* 댓글 삭제 알림 스낵바 */}
+      <Snackbar
+        open={deleteCommentAlertOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseDeleteCommentAlert}
+      >
+        <Alert
+          onClose={handleCloseDeleteCommentAlert}
+          severity="error" 
+          sx={{ width: "100%" }}
+        >
+          댓글이 삭제되었습니다!
         </Alert>
       </Snackbar>
     </Box>
