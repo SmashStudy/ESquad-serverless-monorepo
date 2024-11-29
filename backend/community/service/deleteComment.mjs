@@ -9,11 +9,10 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   try {
-    const body =
-      typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { commentId, userEmail } = body;
+    const { commentId } = event.pathParameters;
     const { boardType, postId } = event.pathParameters;
     const createdAt = event.queryStringParameters?.createdAt;
+    const userEmail = event.queryStringParameters?.userEmail;
 
     // 필수 매개변수 확인
     if (!commentId || !userEmail || !postId || !createdAt) {
@@ -21,25 +20,12 @@ export const handler = async (event) => {
         message:
           "Missing required parameters: commentId, userEmail, postId, or createdAt",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({
-      //     message:
-      //       "Missing required parameters: commentId, userEmail, postId, or createdAt",
-      //   }),
-      // };
     }
 
     // 유효한 게시판 타입 확인
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
       return createResponse(400, { message: "Invalid boardType" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Invalid boardType" }),
-      // };
     }
 
     // DynamoDB에서 댓글 데이터 가져오기
@@ -56,11 +42,6 @@ export const handler = async (event) => {
 
     if (!data.Item) {
       return createResponse(404, { message: "Post not found" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 404,
-      //   body: JSON.stringify({ message: "Post not found" }),
-      // };
     }
 
     const comments = data.Item.comments?.L || [];
@@ -72,11 +53,6 @@ export const handler = async (event) => {
 
     if (commentIndex === -1) {
       return createResponse(404, { message: "Comment not found" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 404,
-      //   body: JSON.stringify({ message: "Comment not found" }),
-      // };
     }
 
     // 댓글 작성자 확인
@@ -87,13 +63,6 @@ export const handler = async (event) => {
       return createResponse(403, {
         message: "You are not authorized to delete this comment",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 403,
-      //   body: JSON.stringify({
-      //     message: "You are not authorized to delete this comment",
-      //   }),
-      // };
     }
 
     // 댓글 삭제
@@ -116,35 +85,17 @@ export const handler = async (event) => {
       ReturnValues: "UPDATED_NEW",
     };
 
-    const updateResponse = await ddbClient.send(
-      new UpdateItemCommand(updateParams)
-    );
+    await ddbClient.send(new UpdateItemCommand(updateParams));
 
     return createResponse(200, {
       message: "Comment deleted successfully",
       deletedCommentId: commentId,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({
-    //     message: "Comment deleted successfully",
-    //     deletedCommentId: commentId,
-    //   }),
-    // };
   } catch (error) {
     console.error("Error deleting comment:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    // };
   }
 };
