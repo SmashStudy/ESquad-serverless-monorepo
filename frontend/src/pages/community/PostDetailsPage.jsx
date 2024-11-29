@@ -14,6 +14,7 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Chip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -355,6 +356,23 @@ const PostDetailsPage = () => {
               <MenuItem onClick={handleDelete}>삭제</MenuItem>
             </Menu>
           </div>
+        )}
+      </Box>
+
+      {/* 태그 표시 */}
+      <Box sx={{ mt: 1, mb: 2 }}>
+        {post.tags && post.tags.length > 0 && (
+          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            {post.tags.map((tag, index) => (
+              <Chip
+                key={`tag-${index}`}
+                label={tag}
+                variant="outlined"
+                color="primary"
+                size="small"
+              />
+            ))}
+          </Box>
         )}
       </Box>
 
