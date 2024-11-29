@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import axios from 'axios';
 import {getStorageApi} from "../../utils/apiConfig.js";
 
-const UsePresignedUrl = () => {
+const usePresignedUrl = () => {
   const storageApi = getStorageApi();
 
   const requestPresignedUrl = useCallback(
@@ -33,4 +33,4 @@ const UsePresignedUrl = () => {
   return { requestPresignedUrl };
 };
 
-export default UsePresignedUrl;
+export default usePresignedUrl;

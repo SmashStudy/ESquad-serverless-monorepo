@@ -15,7 +15,7 @@ import FileList from '../../../components/storage/FileList.jsx';
 import Pagination from '../../../components/storage/Pagination.jsx';
 import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
 import {useTheme} from '@mui/material';
-import UsePresignedUrl from '../../../hooks/storage/UsePresignedUrl.jsx';
+import usePresignedUrl from '../../../hooks/storage/UsePresignedUrl.jsx';
 import {
   fetchFiles,
   fetchUserEmail,
@@ -29,7 +29,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const study = location.state.study;
   const theme = useTheme();
   const {studyId} = useParams();
-  const {requestPresignedUrl} = UsePresignedUrl();
+  const {requestPresignedUrl} = usePresignedUrl();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
