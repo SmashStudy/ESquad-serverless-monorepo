@@ -76,7 +76,8 @@ export const fetchUserEmail = async (setEmail) => {
 };
 
 export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
-    studyId, setIsUploading, setSnackbar, setUploadedFiles, setSelectedFile,
+    targetId, targetType, setIsUploading, setSnackbar, setUploadedFiles,
+    setSelectedFile,
     fetchFiles, setCurrentPage) => {
   if (!selectedFile) {
     return;
@@ -93,17 +94,17 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
       headers: {'Content-Type': selectedFile.type},
     });
 
-
     const metadataResponse = await axios.post(
         `${storageApi}/store-metadata`,
         {
           fileKey: `files/${uniqueFileName}`,
           metadata: {
-            targetId: studyId,
-            targetType: 'STUDY_PAGE',
+            targetId: targetId,
+            targetType: targetType,
             userEmail: email,
             fileSize: selectedFile.size,
-            extension: selectedFile.name.substring(selectedFile.name.lastIndexOf('.') + 1),
+            extension: selectedFile.name.substring(
+                selectedFile.name.lastIndexOf('.') + 1),
             contentType: getMimeType(selectedFile.name),
             originalFileName: selectedFile.name,
             createdAt: getFormattedDate(),
