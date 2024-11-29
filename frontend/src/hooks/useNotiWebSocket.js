@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import {getNotificationWebsocketApi} from "../utils/apiConfig.js";
+import { getNotificationWebsocketApi } from "../utils/apiConfig.js";
 
 /**
  * Custom hook for managing a WebSocket connection.
@@ -12,11 +12,10 @@ import {getNotificationWebsocketApi} from "../utils/apiConfig.js";
 const NOTIFICATION_WEBSOCKET_API = getNotificationWebsocketApi();
 
 const useNotiWebSocket = ({ user, onMessageReceived }) => {
-
   const socketRef = useRef(null);
 
   const connectToWebSocket = () => {
-    if(!user?.email) {
+    if (!user?.email) {
       return;
     }
 
@@ -29,7 +28,7 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
     }
 
     const address = `${NOTIFICATION_WEBSOCKET_API}?userId=${encodeURIComponent(
-        user?.email
+      user?.email
     )}`;
     const ws = new WebSocket(address);
 
@@ -51,6 +50,7 @@ const useNotiWebSocket = ({ user, onMessageReceived }) => {
     };
 
     ws.onerror = (event) => {
+      console.error("WebSocket occurred error: ", event);
       socketRef.current = null;
     };
 

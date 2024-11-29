@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,21 +14,56 @@ import { Autocomplete } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import { getCommunityApi } from "../../utils/apiConfig";
+import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const userInfo = {
-    id: "testwnsgud",
-    name: "박준형",
-    email: "testwnsgud@example.com",
-  };
+
+  // 유저 정보 상태
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [activeTab, setActiveTab] = useState("질문");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [file, setFile] = useState(null);
+
+  // 유저 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+          throw new Error("로그인이 필요합니다.");
+        }
+
+        const url = `${getUserApi()}/get-user-info`;
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUserInfo(response.data);
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "유저 정보를 불러오는 중 오류가 발생했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const boardType =
     activeTab === "질문"
@@ -37,15 +72,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       ? "general"
       : "team-recruit";
 
+  // 탭 변경 함수
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setTitle("");
-    setContent("");
-    setTags([]);
-    setFile(null);
-    setIsDraft(false);
+    setActiveTab(tab); // 탭 변경
+    setTitle(""); // 제목 초기화
+    setContent(""); // 내용 초기화
+    setTags([]); // 태그 초기화
+    setFile(null); // 첨부 파일 초기화
+    setIsDraft(false); // 드래프트 상태 초기화
   };
-
   const renderTabContent = () => {
     const studyTemplate = `[스터디 모집 내용 예시]
 • 스터디 주제 :
@@ -61,6 +96,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
+
         const newTag = event.target.value.trim();
         if (!newTag) return;
 
@@ -150,11 +186,11 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 const { key, ...restProps } = getTagProps({ index });
                 return (
                   <Chip
-                    key={`tag-${index}`}
+                    key={`tag-${index}`} // 명시적으로 key 설정
                     variant="outlined"
                     size="small"
                     label={option}
-                    {...restProps}
+                    {...restProps} // 나머지 props 전달
                   />
                 );
               })
@@ -245,17 +281,17 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       return;
     }
     try {
-      const url = `${getCommunityApi()}/${boardType}/new`;
+      const url = `${getCommunityApi()}/${boardType}`;
 
       const data = {
         title,
         content,
         writer: {
-          id: userInfo.id,
           name: userInfo.name,
+          nickname: userInfo.nickname,
           email: userInfo.email,
         },
-        tags: tags.length > 0 ? tags : [],
+        tags: tags, // 태그가 없어도 빈 배열로 설정
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 

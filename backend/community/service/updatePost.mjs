@@ -89,6 +89,7 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new UpdateItemCommand(params));
 
+    // 변환된 데이터 반환
     const updatedPost = convertDynamoDBItem(data.Attributes);
 
     return createResponse(200, {

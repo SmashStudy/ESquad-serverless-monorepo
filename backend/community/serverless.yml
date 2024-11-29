@@ -34,7 +34,7 @@ functions:
     handler: service/createPost.handler
     events:
       - http:
-          path: /{boardType}/new
+          path: /{boardType}
           method: POST
           cors: true
 
@@ -67,6 +67,46 @@ functions:
     events:
       - http:
           path: /{boardType}/{postId}
+          method: DELETE
+          cors: true
+
+  createComment:
+    handler: service/createComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: POST
+          cors: true
+
+  listComments:
+    handler: service/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: GET
+          cors: true
+
+  getComment:
+    handler: service/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: GET
+          cors: true
+
+  updateComment:
+    handler: service/updateComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: PUT
+          cors: true
+
+  deleteComment:
+    handler: service/deleteComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
           method: DELETE
           cors: true
 
