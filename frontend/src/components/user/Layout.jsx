@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Avatar, Typography, ListItemButton } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -112,85 +112,41 @@ const Layout = ({ children }) => {
         {/* Navigation Links */}
         <Box sx={{ flexGrow: 1 }}>
           <List>
-            <ListItem
-              onClick={() => navigate('/user/profile')}
-              sx={{
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)', // hover 배경색
-                },
-              }}
-              component="div"
-            >
+            <ListItemButton onClick={() => navigate('/user/profile')}>
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
               {window.innerWidth >= 600 && <ListItemText primary="홈" />}
-            </ListItem>
-            <ListItem
-              onClick={() => navigate('/user/profile/category')}
-              sx={{
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-              }}
-              component="div"
-            >
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/user/profile/category')}>
               <ListItemIcon>
                 <CategoryIcon />
               </ListItemIcon>
               {window.innerWidth >= 600 && <ListItemText primary="S3 사용량" />}
-            </ListItem>
-            <ListItem
-              onClick={() => navigate('/user/profile/nickname')}
-              sx={{
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-              }}
-              component="div"
-            >
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/user/profile/nickname')}>
               <ListItemIcon>
                 <PersonIcon />
               </ListItemIcon>
               {window.innerWidth >= 600 && <ListItemText primary="닉네임 관리" />}
-            </ListItem>
-            <ListItem
-              sx={{
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                },
-              }}
-              component="div"
-            >
+            </ListItemButton>
+            <ListItemButton onClick={() => navigate('/logout')}>
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
               {window.innerWidth >= 600 && <ListItemText primary="Settings" />}
-            </ListItem>
+            </ListItemButton>
           </List>
         </Box>
 
         {/* Logout Button */}
         <List>
-          <ListItem
-            onClick={handleLogout}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              },
-            }}
-            component="div"
-          >
+          <ListItemButton onClick={() => navigate('/logout')}>
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
             {window.innerWidth >= 600 && <ListItemText primary="Logout" />}
-          </ListItem>
+          </ListItemButton>
         </List>
       </Box>
 
