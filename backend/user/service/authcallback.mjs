@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { createResponse } from "../util/responseHelper.mjs";
 
 export const handler = async (event) => {
   try {
@@ -7,14 +8,7 @@ export const handler = async (event) => {
     // 인증 코드 가져오기
     const code = queryStringParameters?.code;
     if (!code) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-        body: JSON.stringify({ message: "Authorization code is missing." }),
-      };
+      return createResponse(400, { message: "Authorization code is missing." });
     }
 
     // 환경 변수에서 Cognito 설정 가져오기
@@ -45,14 +39,7 @@ export const handler = async (event) => {
     if (!response.ok) {
       const error = await response.json();
       console.error("Failed to exchange code for token:", error);
-      return {
-        statusCode: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-        body: JSON.stringify({ message: "Token exchange failed.", error }),
-      };
+      return createResponse(500, { message: "Token exchange failed.", error });
     }
 
     const data = await response.json();
@@ -61,34 +48,13 @@ export const handler = async (event) => {
     const { id_token } = data;
 
     if (!id_token) {
-      return {
-        statusCode: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
-        body: JSON.stringify({ message: "ID token not received." }),
-      };
+      return createResponse(500, { message: "ID token not received." });
     }
 
     // 성공적으로 ID 토큰 반환
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*", // 모든 도메인 허용
-        "Access-Control-Allow-Headers": "Content-Type", // 필요한 헤더 명시
-      },
-      body: JSON.stringify({ message: "Authentication successful", idToken: id_token }),
-    };
+    return createResponse(200, { message: "Authentication successful", idToken: id_token });
   } catch (error) {
     console.error("Error during authentication:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-      body: JSON.stringify({ message: "Internal server error", error: error.message }),
-    };
+    return createResponse(500, { message: "Internal server error", error: error.message });
   }
 };

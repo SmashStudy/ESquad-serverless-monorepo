@@ -20,6 +20,7 @@ provider:
     COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
     COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
     CALLBACK_URLS: ${env:CALLBACK_URLS}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
 functions:
 
   authCallback:
