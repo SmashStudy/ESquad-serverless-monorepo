@@ -36,9 +36,9 @@ export const handler = async (event) => {
       title: data.Item.title.S,
       content: data.Item.content.S,
       writer: {
-        id: data.Item.writer.M.id.S,
-        name: data.Item.writer.M.name.S,
         email: data.Item.writer.M.email.S,
+        name: data.Item.writer.M.name.S,
+        nickname: data.Item.writer.M.nickname.S,
       },
       book: data.Item.book?.M
         ? {
@@ -55,11 +55,11 @@ export const handler = async (event) => {
       likeCount: parseInt(data.Item.likeCount.N, 10),
       resolved:
         data.Item.boardType.S === "questions"
-          ? data.Item.resolved?.BOOL
+          ? data.Item.resolved?.S === "true"
           : undefined,
       recruitStatus:
         data.Item.boardType.S === "team-recruit"
-          ? data.Item.recruitStatus?.BOOL
+          ? data.Item.recruitStatus?.S === "true"
           : undefined,
     };
 
