@@ -433,7 +433,7 @@ const AppBarComponent = ({
                   }}
                 >
                   <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                    {user?.nickname}
+                    {user?.nickname?.charAt(0).toUpperCase()}
                   </Avatar>
                   <Typography variant="body1">{user?.nickname}</Typography>
                 </IconButton>
