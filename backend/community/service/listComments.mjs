@@ -13,13 +13,6 @@ export const handler = async (event) => {
       return createResponse(400, {
         message: "Missing required parameters: postId or createdAt",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({
-      //     message: "Missing required parameters: postId or createdAt",
-      //   }),
-      // };
     }
 
     const params = {
@@ -38,11 +31,6 @@ export const handler = async (event) => {
     // 게시글이 없을 경우
     if (!data.Item) {
       return createResponse(404, { message: "Post not found" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 404,
-      //   body: JSON.stringify({ message: "Post not found" }),
-      // };
     }
 
     // 댓글 데이터 파싱
@@ -66,27 +54,11 @@ export const handler = async (event) => {
       message: "Comments retrieved successfully",
       comments: comments,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({
-    //     message: "Comments retrieved successfully",
-    //     comments: comments,
-    //   }),
-    // };
   } catch (error) {
     console.error("Error fetching comments:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    // };
   }
 };

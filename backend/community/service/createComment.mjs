@@ -16,21 +16,11 @@ export const handler = async (event) => {
       return createResponse(400, {
         message: "Missing createdAt query parameter",
       });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Missing createdAt query parameter" }),
-      // };
     }
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
       return createResponse(400, { message: "Invalid boardType" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Invalid boardType" }),
-      // };
     }
 
     if (
@@ -41,11 +31,6 @@ export const handler = async (event) => {
       !writer.email
     ) {
       return createResponse(400, { message: "Missing required fields" });
-      // 기존 코드:
-      // return {
-      //   statusCode: 400,
-      //   body: JSON.stringify({ message: "Missing required fields" }),
-      // };
     }
 
     const commentId = uuidv4();
@@ -108,27 +93,11 @@ export const handler = async (event) => {
       message: "Comment added successfully",
       commentId: commentId,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 200,
-    //   body: JSON.stringify({
-    //     message: "Comment added successfully",
-    //     commentId: commentId,
-    //   }),
-    // };
   } catch (error) {
     console.error("Error adding comment:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
-    // 기존 코드:
-    // return {
-    //   statusCode: 500,
-    //   body: JSON.stringify({
-    //     message: "Internal server error",
-    //     error: error.message,
-    //   }),
-    // };
   }
 };
