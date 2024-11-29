@@ -18,6 +18,8 @@ import UserProfile from "./components/user/UserProfile.jsx";
 import Category from "./components/user/UserCategory.jsx";
 import Nickname from "./components/user/UserNickname.jsx";
 import Layout from "./components/user/Layout.jsx";
+import SignUp from './components/google/SignUp.jsx';
+import Confirm from './components/google/EmailVerification.jsx'
 
 const theme = createTheme({
   palette: {
@@ -61,12 +63,14 @@ function App() {
         <Routes>
           {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
           {!isLoggedIn && (
-            <Route path="*" element={<Navigate to="/google" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           )}
 
-          <Route path="/google" element={<GoogleLogin />} />
+          <Route path="/login" element={<GoogleLogin />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/logout" element={<GoogleLogout />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/confirm" element={<Confirm />} />
 
           <Route path="/" element={<Home />}>
             {/* user */}
