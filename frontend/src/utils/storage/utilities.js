@@ -2,6 +2,7 @@ import axios from 'axios';
 import {getStorageApi, getUserApi} from "../apiConfig.js";
 import {UserByEmail} from "../../components/user/UserByEmail.jsx";
 import {getFormattedDate} from "../fileFormatUtils.js";
+import {getMimeType} from "./getMimeType.js";
 
 const storageApi = getStorageApi();
 const userApi = getUserApi();
@@ -92,6 +93,7 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
       headers: {'Content-Type': selectedFile.type},
     });
 
+
     const metadataResponse = await axios.post(
         `${storageApi}/store-metadata`,
         {
@@ -101,8 +103,8 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
             targetType: 'STUDY_PAGE',
             userEmail: email,
             fileSize: selectedFile.size,
-            extension: selectedFile.type.split('/').pop(),
-            contentType: selectedFile.type,
+            extension: selectedFile.name.substring(selectedFile.name.lastIndexOf('.') + 1),
+            contentType: getMimeType(selectedFile.name),
             originalFileName: selectedFile.name,
             createdAt: getFormattedDate(),
           },
