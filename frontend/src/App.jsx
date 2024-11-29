@@ -18,6 +18,8 @@ import UserProfile from "./components/user/UserProfile.jsx";
 import Category from "./components/user/UserCategory.jsx";
 import Nickname from "./components/user/UserNickname.jsx";
 import Layout from "./components/user/Layout.jsx";
+import SignUp from './components/google/SignUp.jsx';
+import Confirm from './components/google/EmailVerification.jsx'
 
 const theme = createTheme({
   palette: {
