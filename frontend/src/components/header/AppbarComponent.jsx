@@ -154,9 +154,9 @@ const AppBarComponent = ({
 
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("jwtToken");
     alert("로그아웃 되었습니다. 다음에 또 만나요!");
-    navigate("/google");
+    navigate("/login");
   };
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

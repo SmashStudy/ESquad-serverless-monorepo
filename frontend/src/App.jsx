@@ -63,10 +63,10 @@ function App() {
         <Routes>
           {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
           {!isLoggedIn && (
-            <Route path="*" element={<Navigate to="/google" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           )}
 
-          <Route path="/google" element={<GoogleLogin />} />
+          <Route path="/login" element={<GoogleLogin />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/logout" element={<GoogleLogout />} />
           <Route path="/signup" element={<SignUp />} />
@@ -105,7 +105,7 @@ function App() {
           <Route
             path="*"
             element={
-              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/google" />
+              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
             }
           />
         </Routes>
