@@ -1,102 +1,135 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-} from '@mui/material';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Box, Typography, Card, CardContent, Grid } from '@mui/material';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import * as echarts from 'echarts';
 import Layout from './Layout';
 import useUserEmail from "../../hooks/user/UseUserEmail.jsx";
-import useUserUsage from "../../hooks/storage/UseUserUsage.jsx";
-import {formatFileSize} from "../../utils/fileFormatUtils.js";
+import { formatFileSize } from "../../utils/fileFormatUtils.js";
+import { getStorageApi } from "../../utils/apiConfig.js";
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1'];
-const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB in bytes
+const UserStorageUsageRenewed = () => {
+  const [gridData, setGridData] = useState([]);
+  const { email, error: emailError } = useUserEmail();
+  const [loading, setLoading] = useState(false);
+  const [usage, setUsage] = useState(0);
+  const [usageError, setUsageError] = useState(null);
 
-const UserStorageUsage = () => {
-  const [loading, setLoading] = useState()
-  const { email, error: emailError} = useUserEmail();
-  const {usage, userLoading, error: usageError} = useUserUsage(email);
+  useEffect(() => {
+    // 데이터를 불러오는 함수
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // API 호출을 통해 유저 사용량 및 파일 목록 받아오기
+        const response = await axios.get(`${getStorageApi()}/get-user-usage`, {
+          params: { userEmail: email },
+        });
+        const files = response.data;
 
-  const s3Usage = usage || 0; // Bytes
-  const remaining = MAX_USAGE - s3Usage;
+        // 파일 데이터 업데이트
+        setGridData(files);
 
-  const pieData = [
-    {name: '사용됨', value: s3Usage},
-    {name: '남은 공간', value: remaining > 0 ? remaining : 0},
+        // 사용량 계산: 모든 파일의 크기를 합산
+        const totalUsage = files.reduce((sum, file) => sum + file.fileSize, 0);
+        setUsage(totalUsage);
+      } catch (error) {
+        setUsageError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (email) {
+      fetchData();
+    }
+  }, [email]);
+
+  useEffect(() => {
+    // eChart 게이지 차트 설정
+    const chartDom = document.getElementById('usageGauge');
+    if (chartDom) {
+      const myChart = echarts.init(chartDom);
+      const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB
+      const usagePercent = (usage / MAX_USAGE) * 100;
+      const option = {
+        series: [
+          {
+            type: 'gauge',
+            progress: { show: true },
+            axisLine: { lineStyle: { width: 10 } },
+            detail: { valueAnimation: true, formatter: '{value}%' },
+            data: [{ value: usagePercent.toFixed(2), name: '사용량' }],
+          },
+        ],
+      };
+      myChart.setOption(option);
+    }
+  }, [usage]);
+
+  const columnDefs = [
+    { headerName: '파일 이름', field: 'originalFileName', sortable: true, filter: true },
+    { headerName: '올린 시간', field: 'createdAt', sortable: true, filter: true },
+    { headerName: '파일 크기', field: 'fileSize', sortable: true, filter: true, valueFormatter: ({ value }) => formatFileSize(value) },
+    { headerName: '확장자', field: 'extension', sortable: true, filter: true },
+    { headerName: '위치 (파일 경로)', field: 'fileKey', sortable: true, filter: true },
   ];
 
   return (
       <Layout>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" sx={{marginBottom: 2}}>
-                  S3 Storage Usage
-                </Typography>
-                {loading ? (
-                    <Typography variant="body1">Loading...</Typography>
-                ) : usageError || emailError ? (
-                    <Typography variant="body1" color="error">
-                      Error: {usageError?.message || emailError?.message}
-                    </Typography>
-                ) : (
-                    <>
-                      <Box
-                          sx={{
-                            border: '1px solid #ddd',
-                            borderRadius: 2,
-                            padding: 1.5,
-                            marginBottom: 2,
-                          }}
-                      >
-                        <Typography variant="body1">S3</Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          사용됨: {formatFileSize(s3Usage)}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          남은 공간: {formatFileSize(remaining)}
-                        </Typography>
-                      </Box>
-                      <ResponsiveContainer width="100%" height={500}>
-                        <PieChart>
-                          <Pie
-                              data={pieData}
-                              dataKey="value"
-                              nameKey="name"
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={0}
-                              outerRadius={200}
-                              fill="#8884d8"
-                              label={({name, value, percent}) =>
-                                  `${name}: ${formatFileSize(value)} (${(percent
-                                      * 100).toFixed(2)}%)`
-                              }
-                          >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`}
-                                      fill={COLORS[index % COLORS.length]}/>
-                            ))}
-                          </Pie>
-                          <Tooltip
-                              formatter={(value) => formatFileSize(value)}/>
-                          <Tooltip/>
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </>
-                )}
-              </CardContent>
-            </Card>
+        <Box sx={{ padding: 1 }}>
+          {/* 상단 타이틀 */}
+          <Typography variant="h4" sx={{ marginBottom: 5 }}>
+            스토리지 사용량 통계
+          </Typography>
+
+          {/* 전체 레이아웃 그리드 */}
+          <Grid container spacing={3}>
+            {/* 좌측 - AG Grid 테이블 */}
+            <Grid item xs={8}>
+              <Box sx={{ height: '100%' }}>
+                <div className="ag-theme-alpine" style={{ height: '500px', width: '100%' }}>
+                  <AgGridReact
+                      rowData={gridData}
+                      columnDefs={columnDefs}
+                      pagination={true}
+                      paginationPageSize={10}
+                      domLayout="autoHeight"
+                  />
+                </div>
+              </Box>
+            </Grid>
+
+            {/* 우측 상단 - 게이지 차트 */}
+            <Grid item xs={4}>
+              <Box sx={{ height: '300px', marginBottom: 2 }}>
+                <Box id="usageGauge" sx={{ height: '100%' }} />
+              </Box>
+
+              {/* 우측 하단 - 요약 정보 카드 */}
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">총 용량: 5GB</Typography>
+                  {loading ? (
+                      <Typography variant="body1">Loading...</Typography>
+                  ) : usageError || emailError ? (
+                      <Typography variant="body1" color="error">
+                        Error: {usageError?.message || emailError?.message}
+                      </Typography>
+                  ) : (
+                      <>
+                        <Typography variant="body1">사용량: {formatFileSize(usage)}</Typography>
+                        <Typography variant="body1">남은 용량: {formatFileSize(5 * 1024 * 1024 * 1024 - usage)}</Typography>
+                      </>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
       </Layout>
   );
 };
 
-export default UserStorageUsage;
+export default UserStorageUsageRenewed;
