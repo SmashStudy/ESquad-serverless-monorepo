@@ -72,11 +72,7 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
   const handleSaveChanges = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      if (!token) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
-
+      
       if (!postDetails?.createdAt) {
         alert("createdAt 정보가 누락되었습니다.");
         return;
