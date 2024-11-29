@@ -144,6 +144,7 @@ const PostDetailsPage = () => {
     setPost((prevPost) => ({
       ...prevPost,
       ...updatedPost,
+      updatedAt: new Date().toISOString(), // updatedAt 필드를 현재 시간으로 업데이트
     }));
   };
 
@@ -396,6 +397,10 @@ const PostDetailsPage = () => {
         <Typography variant="body2">
           작성자: {post.writer?.nickname || "알 수 없음"} •{" "}
           {new Date(post.createdAt).toLocaleString()}
+          {post.updatedAt &&
+            new Date(post.updatedAt).getTime() !==
+              new Date(post.createdAt).getTime() &&
+            ` (수정됨: ${new Date(post.updatedAt).toLocaleString()})`}
         </Typography>
         <Typography variant="body2">
           조회수: {post.viewCount} • 좋아요: {post.likeCount}
@@ -538,7 +543,10 @@ const PostDetailsPage = () => {
         open={isEditDialogOpen}
         handleClose={() => setIsEditDialogOpen(false)}
         postDetails={post}
-        onUpdate={handleUpdatePost}
+        onUpdate={(updatedPost) => {
+          updatedPost.updatedAt = new Date().toISOString();
+          handleUpdatePost(updatedPost);
+        }}
       />
     </Box>
   );
