@@ -12,6 +12,8 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -29,6 +31,7 @@ const PostDetailsPage = () => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [commentContent, setCommentContent] = useState(""); // 댓글 내용
   const [editingCommentId, setEditingCommentId] = useState(null); // 수정 중인 댓글 ID
+  const [commentAlertOpen, setCommentAlertOpen] = useState(false); // 댓글 등록 알림 스낵바
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -101,6 +104,23 @@ const PostDetailsPage = () => {
 
     fetchPostAndComments();
   }, [boardType, postId, createdAt, navigate]);
+  // 댓글 가져오기 함수
+  const fetchComments = async () => {
+    try {
+      const commentsResponse = await axios.get(
+        `${getCommunityApi()}/${boardType}/${postId}/comments`,
+        {
+          params: { createdAt },
+        }
+      );
+
+      if (commentsResponse.data && commentsResponse.data.comments) {
+        setComments(commentsResponse.data.comments);
+      }
+    } catch (error) {
+      console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
 
   const handleMenuClick = (event) => {
     setMenuAnchorEl(event.currentTarget);
@@ -191,19 +211,11 @@ const PostDetailsPage = () => {
             params: { createdAt },
           }
         );
-
-        if (response.status === 200) {
-          setComments((prevComments) => [
-            {
-              ...newComment,
-              createdAt: new Date().toISOString(),
-            },
-            ...prevComments,
-          ]);
-        }
+        setCommentAlertOpen(true); // 댓글 등록 알림 열기
       }
 
       setCommentContent(""); // 댓글 입력 초기화
+      await fetchComments(); // 댓글 목록 새로고침
     } catch (error) {
       console.error("댓글 처리 중 오류 발생:", error);
       alert("댓글 등록/수정에 실패했습니다.");
@@ -243,10 +255,15 @@ const PostDetailsPage = () => {
       );
 
       alert("댓글이 삭제되었습니다.");
+      await fetchComments(); // 댓글 목록 새로고침
     } catch (error) {
       console.error("댓글 삭제 중 오류 발생:", error);
       alert("댓글 삭제에 실패했습니다.");
     }
+  };
+
+  const handleCloseCommentAlert = () => {
+    setCommentAlertOpen(false);
   };
 
   if (loading) {
@@ -449,6 +466,20 @@ const PostDetailsPage = () => {
             </Paper>
           ))}
       </Box>
+      {/* 댓글 등록 알림 스낵바 */}
+      <Snackbar
+        open={commentAlertOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseCommentAlert}
+      >
+        <Alert
+          onClose={handleCloseCommentAlert}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          댓글이 등록되었습니다!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
