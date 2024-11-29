@@ -451,6 +451,10 @@ const PostDetailsPage = () => {
                 sx={{ color: "text.secondary", display: "block", mt: 1 }}
               >
                 {new Date(comment.createdAt).toLocaleString()}
+                {comment.updatedAt &&
+                  new Date(comment.updatedAt).getTime() !==
+                    new Date(comment.createdAt).getTime() &&
+                  ` (수정됨: ${new Date(comment.updatedAt).toLocaleString()})`}
               </Typography>
 
               {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
