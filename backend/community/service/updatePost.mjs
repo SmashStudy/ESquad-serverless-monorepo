@@ -1,4 +1,5 @@
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
@@ -28,22 +29,16 @@ export const handler = async (event) => {
     const { title, content, resolved, tags } = JSON.parse(event.body);
 
     if (!postId || !createdAt) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: "Missing required parameters: postId or createdAt",
-        }),
-      };
+      return createResponse(400, {
+        message: "Missing required parameters: postId or createdAt",
+      });
     }
 
     if (!title && !content && !tags && resolved === undefined) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message:
-            "At least title, content, or tags must be provided for update.",
-        }),
-      };
+      return createResponse(400, {
+        message:
+          "At least title, content, or tags must be provided for update.",
+      });
     }
 
     const updateExpressionParts = [];
@@ -94,24 +89,17 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new UpdateItemCommand(params));
 
-    // 변환된 데이터 반환
     const updatedPost = convertDynamoDBItem(data.Attributes);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "Post updated successfully",
-        updatedPost,
-      }),
-    };
+    return createResponse(200, {
+      message: "Post updated successfully",
+      updatedPost,
+    });
   } catch (error) {
     console.error("Error updating post:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
