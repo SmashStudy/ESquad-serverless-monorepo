@@ -26,7 +26,7 @@ export const handler = async (event) => {
     const postId = event.pathParameters.postId;
     const createdAt = event.queryStringParameters?.createdAt;
 
-    const { title, content, resolved, tags = [] } = JSON.parse(event.body);
+    const { title, content, resolved, tags } = JSON.parse(event.body);
 
     if (!postId || !createdAt) {
       return createResponse(400, {
@@ -62,19 +62,32 @@ export const handler = async (event) => {
       expressionAttributeValues[":resolved"] = { BOOL: resolved };
       expressionAttributeNames["#resolved"] = "resolved";
     }
-    if (tags.length > 0) {
-      updateExpressionParts.push("#tags = :tags");
-      expressionAttributeValues[":tags"] = { SS: tags };
-      expressionAttributeNames["#tags"] = "tags";
-    } else {
-      updateExpressionParts.push("REMOVE #tags");
-      expressionAttributeNames["#tags"] = "tags";
+    if (tags !== undefined) {
+      if (tags.length > 0) {
+        updateExpressionParts.push("#tags = :tags");
+        expressionAttributeValues[":tags"] = { SS: tags };
+        expressionAttributeNames["#tags"] = "tags";
+      } else {
+        updateExpressionParts.push("REMOVE #tags");
+        expressionAttributeNames["#tags"] = "tags";
+      }
     }
 
     updateExpressionParts.push("#updatedAt = :updatedAt");
     expressionAttributeValues[":updatedAt"] = { S: new Date().toISOString() };
 
-    const updateExpression = "SET " + updateExpressionParts.join(", ");
+    const updateExpression =
+      "SET " +
+      updateExpressionParts
+        .filter((part) => !part.startsWith("REMOVE"))
+        .join(", ");
+    const removeExpression = updateExpressionParts
+      .filter((part) => part.startsWith("REMOVE"))
+      .join(", ");
+
+    const finalUpdateExpression = removeExpression
+      ? `${updateExpression} ${removeExpression}`
+      : updateExpression;
 
     const params = {
       TableName: process.env.DYNAMODB_TABLE,
@@ -82,7 +95,7 @@ export const handler = async (event) => {
         PK: { S: `POST#${postId}` },
         SK: { S: createdAt },
       },
-      UpdateExpression: updateExpression,
+      UpdateExpression: finalUpdateExpression,
       ExpressionAttributeNames: expressionAttributeNames,
       ExpressionAttributeValues: expressionAttributeValues,
       ReturnValues: "ALL_NEW",
