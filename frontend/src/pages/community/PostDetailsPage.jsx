@@ -163,6 +163,8 @@ const PostDetailsPage = () => {
         // 댓글 수정
         const updatedComment = {
           content: commentContent,
+          commentId: editingCommentId, // **commentId를 포함해야 합니다.**
+          userEmail: currentUser.email, // 작성자의 이메일 추가
         };
 
         await axios.put(
@@ -493,7 +495,7 @@ const PostDetailsPage = () => {
       >
         <Alert
           onClose={handleCloseDeleteCommentAlert}
-          severity="error" 
+          severity="error"
           sx={{ width: "100%" }}
         >
           댓글이 삭제되었습니다!
