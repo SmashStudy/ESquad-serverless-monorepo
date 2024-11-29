@@ -18,6 +18,8 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import StudyListPage from "./pages/team/study/StudyListPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
+import SignUp from './components/google/SignUp.jsx';
+import Confirm from './components/google/EmailVerification.jsx'
 
 const theme = createTheme({
   palette: {
@@ -67,6 +69,8 @@ function App() {
           <Route path="/google" element={<GoogleLogin />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/logout" element={<GoogleLogout />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/confirm" element={<Confirm />} />
 
           <Route path="/" element={<Home />}>
             {/* user */}
