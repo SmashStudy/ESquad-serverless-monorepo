@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals';
 
 // 모듈을 Mock 처리
-jest.mock('../service/getItem.mjs', () => ({
+jest.mock('../src/getItem.mjs', () => ({
   getItem: jest.fn(),
 }));
 
 // Mock 함수 가져오기
-import { getItem } from '../service/getItem.mjs';
+import { getItem } from '../src/getItem.mjs';
 
 describe('getMeeting 함수 테스트', () => {
   let getMeeting; // 동적으로 모듈 임포트
@@ -22,7 +22,7 @@ describe('getMeeting 함수 테스트', () => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // getMeeting 모듈 동적 임포트 (환경 변수 설정 후)
-    const module = await import('../service/getMeeting.mjs');
+    const module = await import('../src/getMeeting.mjs');
     getMeeting = module.getMeeting;
   });
 
@@ -33,9 +33,9 @@ describe('getMeeting 함수 테스트', () => {
 
   test('DynamoDB에서 회의 정보가 존재하는 경우', async () => {
     const meetingTitle = 'Team Sync';
-    const mockData = { Title: 'Team Sync', Date: '2024-01-01', Participants: ['Alice', 'Bob'] };
+    const mockData = { title: 'Team Sync', Date: '2024-01-01', Participants: ['Alice', 'Bob'] };
     const mockDynamoDBResponse = {
-      Data: { S: JSON.stringify(mockData) },
+      data: { S: JSON.stringify(mockData) },
     };
 
     // getItem Mock 설정
@@ -43,7 +43,7 @@ describe('getMeeting 함수 테스트', () => {
 
     const result = await getMeeting(meetingTitle);
 
-    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { Title: { S: meetingTitle } });
+    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
     expect(result).toEqual(mockData);
   });
 
@@ -55,7 +55,7 @@ describe('getMeeting 함수 테스트', () => {
 
     const result = await getMeeting(meetingTitle);
 
-    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { Title: { S: meetingTitle } });
+    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
     expect(result).toBeNull();
   });
 
@@ -68,7 +68,7 @@ describe('getMeeting 함수 테스트', () => {
 
     await expect(getMeeting(meetingTitle)).rejects.toThrow(`Failed to retrieve meeting: ${mockError.message}`);
 
-    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { Title: { S: meetingTitle } });
+    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching meeting:', mockError);
   });
 
@@ -83,14 +83,14 @@ describe('getMeeting 함수 테스트', () => {
 
     const result = await getMeeting(meetingTitle);
 
-    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { Title: { S: meetingTitle } });
+    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
     expect(result).toBeNull();
   });
 
   test('회의 정보의 Data.S가 없는 경우 null을 반환', async () => {
     const meetingTitle = 'Invalid Data Meeting';
     const mockDynamoDBResponse = {
-      Data: {}, // S 필드 없음
+      data: {}, // S 필드 없음
     };
 
     // getItem Mock 설정
@@ -98,7 +98,7 @@ describe('getMeeting 함수 테스트', () => {
 
     const result = await getMeeting(meetingTitle);
 
-    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { Title: { S: meetingTitle } });
+    expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
     expect(result).toBeNull();
   });
 });

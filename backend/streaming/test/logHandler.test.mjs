@@ -1,12 +1,12 @@
 import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
-import { handler } from '../service/logHandler.mjs';
-import { ensureLogStream } from '../service/logStreamManager.mjs';
+import { handler } from '../src/logHandler.mjs';
+import { ensureLogStream } from '../src/logStreamManager.mjs';
 
 jest.mock('@aws-sdk/client-cloudwatch-logs', () => ({
   CloudWatchLogs: jest.fn(),
 }));
 
-jest.mock('../service/logStreamManager.mjs', () => ({
+jest.mock('../src/logStreamManager.mjs', () => ({
   ensureLogStream: jest.fn(),
 }));
 

@@ -10,15 +10,15 @@ describe('putAttendee 함수 테스트', () => {
       jest.clearAllMocks();
   
       // `putItem.mjs` 모듈을 모킹
-      jest.mock('../service/putItem.mjs', () => ({
+      jest.mock('../src/putItem.mjs', () => ({
         putItem: jest.fn(),
       }));
   
       // 모킹된 `putItem` 가져오기
-      putItemMock = require('../service/putItem.mjs').putItem;
+      putItemMock = require('../src/putItem.mjs').putItem;
   
       // 테스트 대상 함수 가져오기
-      putAttendee = require('../service/putAttendee.mjs').putAttendee;
+      putAttendee = require('../src/putAttendee.mjs').putAttendee;
   
       // console.log와 console.error 모킹
       consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -36,9 +36,9 @@ describe('putAttendee 함수 테스트', () => {
       const attendeeName = '참석자1';
   
       const expectedItem = {
-        AttendeeId: { S: `${title}/${attendeeId}` },
-        Name: { S: attendeeName },
-        TTL: { N: expect.any(String) }, // TTL 값은 유효한 문자열이어야 함
+        attendeeId: { S: `${title}/${attendeeId}` },
+        name: { S: attendeeName },
+        ttl: { N: expect.any(String) }, // TTL 값은 유효한 문자열이어야 함
       };
   
       // `putItem` 모킹 설정
@@ -67,9 +67,9 @@ describe('putAttendee 함수 테스트', () => {
   
       // `putItem` 호출 검증
       expect(putItemMock).toHaveBeenCalledWith(process.env.ATTENDEES_TABLE_NAME, {
-        AttendeeId: { S: `${title}/${attendeeId}` },
-        Name: { S: attendeeName },
-        TTL: { N: expect.any(String) },
+        attendeeId: { S: `${title}/${attendeeId}` },
+        name: { S: attendeeName },
+        ttl: { N: expect.any(String) },
       });
   
       // 오류 로그 호출 검증
@@ -87,7 +87,7 @@ describe('putAttendee 함수 테스트', () => {
   
       // TTL 값 확인
       const [_, item] = putItemMock.mock.calls[0];
-      const ttl = parseInt(item.TTL.N, 10);
+      const ttl = parseInt(item.ttl.N, 10);
       const now = Math.floor(Date.now() / 1000);
       const oneDay = 60 * 60 * 24;
   

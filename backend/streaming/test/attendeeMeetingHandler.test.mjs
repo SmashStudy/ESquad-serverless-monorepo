@@ -13,21 +13,21 @@ describe('attendeeMeetingHandler 테스트', () => {
 
   beforeAll(async () => {
     // 모듈 모킹
-    jest.mock('../service/getAttendee.mjs', () => ({
+    jest.mock('../src/getAttendee.mjs', () => ({
       __esModule: true,
       getAttendee: mockGetAttendee,
     }));
 
-    jest.mock('../service/corsConfig.mjs', () => ({
+    jest.mock('../src/corsConfig.mjs', () => ({
       __esModule: true,
       handleOptions: mockHandleOptions,
       CORS_HEADERS: mockCORS_HEADERS,
     }));
 
     // 모킹된 모듈 가져오기
-    ({ handler } = await import('../service/attendeeMeetingHandler.mjs'));
-    ({ getAttendee } = await import('../service/getAttendee.mjs'));
-    corsConfig = await import('../service/corsConfig.mjs');
+    ({ handler } = await import('../src/attendeeMeetingHandler.mjs'));
+    ({ getAttendee } = await import('../src/getAttendee.mjs'));
+    corsConfig = await import('../src/corsConfig.mjs');
 
     // console.error 모킹
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});

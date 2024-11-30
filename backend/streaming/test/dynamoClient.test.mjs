@@ -18,7 +18,7 @@ describe('DynamoDB 클라이언트 초기화', () => {
     const mockInstance = {};
     DynamoDB.mockImplementation(() => mockInstance);
 
-    const { ddb } = await import('../service/dynamoClient.mjs');
+    const { ddb } = await import('../src/dynamoClient.mjs');
 
     expect(DynamoDB).toHaveBeenCalledWith({
       region: 'us-east-1',
@@ -37,7 +37,7 @@ describe('DynamoDB 클라이언트 초기화', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // 동적 임포트를 사용하여 오류를 잡습니다.
-    await expect(import('../service/dynamoClient.mjs')).rejects.toThrow('DynamoDB 클라이언트를 초기화할 수 없습니다.');
+    await expect(import('../src/dynamoClient.mjs')).rejects.toThrow('DynamoDB 클라이언트를 초기화할 수 없습니다.');
 
     // console.error 호출 확인
     expect(consoleErrorSpy).toHaveBeenCalledWith(

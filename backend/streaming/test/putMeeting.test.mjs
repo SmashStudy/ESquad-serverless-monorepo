@@ -15,16 +15,16 @@ describe('putMeeting 함수 테스트', () => {
     process.env.MEETINGS_TABLE_NAME = 'testMeetingsTable';
 
     // `putItem.mjs` 모듈을 모킹
-    await jest.doMock('../service/putItem.mjs', () => ({
+    await jest.doMock('../src/putItem.mjs', () => ({
       putItem: jest.fn(),
     }));
 
     // 모킹된 `putItem` 가져오기
-    const putItemModule = await import('../service/putItem.mjs');
+    const putItemModule = await import('../src/putItem.mjs');
     putItemMock = putItemModule.putItem;
 
     // 테스트 대상 함수 `putMeeting` 가져오기
-    const putMeetingModule = await import('../service/putMeeting.mjs');
+    const putMeetingModule = await import('../src/putMeeting.mjs');
     putMeeting = putMeetingModule.putMeeting;
 
     // console.log와 console.error 모킹
@@ -47,9 +47,9 @@ describe('putMeeting 함수 테스트', () => {
     const meetingInfo = { host: 'John Doe', participants: ['Alice', 'Bob'] };
 
     const expectedItem = {
-      Title: { S: title },
-      Data: { S: JSON.stringify(meetingInfo) },
-      TTL: { N: expect.any(String) },
+      title: { S: title },
+      data: { S: JSON.stringify(meetingInfo) },
+      ttl: { N: expect.any(String) },
     };
 
     // `putItem` 모킹 설정 (성공)
@@ -79,9 +79,9 @@ describe('putMeeting 함수 테스트', () => {
 
     // `putItem` 호출 검증
     expect(putItemMock).toHaveBeenCalledWith(process.env.MEETINGS_TABLE_NAME, {
-      Title: { S: title },
-      Data: { S: JSON.stringify(meetingInfo) },
-      TTL: { N: expect.any(String) },
+      title: { S: title },
+      data: { S: JSON.stringify(meetingInfo) },
+      ttl: { N: expect.any(String) },
     });
 
     // 오류 로그 호출 검증
@@ -98,7 +98,7 @@ describe('putMeeting 함수 테스트', () => {
 
     // TTL 값 확인
     const [_, item] = putItemMock.mock.calls[0];
-    const ttl = parseInt(item.TTL.N, 10);
+    const ttl = parseInt(item.ttl.N, 10);
     const now = Math.floor(Date.now() / 1000);
     const threeHours = 60 * 60 * 3;
 

@@ -15,21 +15,21 @@ describe('endMeetingHandler 테스트', () => {
     process.env.SOME_ENV_VARIABLE = 'value';
 
     // 모듈 모킹
-    jest.mock('../service/deleteMeeting.mjs', () => ({
+    jest.mock('../src/deleteMeeting.mjs', () => ({
       __esModule: true,
       deleteMeeting: mockDeleteMeeting,
     }));
 
-    jest.mock('../service/corsConfig.mjs', () => ({
+    jest.mock('../src/corsConfig.mjs', () => ({
       __esModule: true,
       handleOptions: mockHandleOptions,
       CORS_HEADERS: mockCORS_HEADERS,
     }));
 
     // 모킹된 모듈 가져오기
-    ({ handler } = await import('../service/endMeetingHandler.mjs'));
-    ({ deleteMeeting } = await import('../service/deleteMeeting.mjs'));
-    corsConfig = await import('../service/corsConfig.mjs');
+    ({ handler } = await import('../src/endMeetingHandler.mjs'));
+    ({ deleteMeeting } = await import('../src/deleteMeeting.mjs'));
+    corsConfig = await import('../src/corsConfig.mjs');
   });
 
   beforeEach(() => {

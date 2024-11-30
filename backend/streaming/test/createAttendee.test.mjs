@@ -1,20 +1,20 @@
-import { createAttendee } from '../service/createAttendee.mjs';
-import { chimeSDKMeetings } from '../service/chimeMeetingsClient.mjs';
-import { uuid } from '../service/uuidGenerator.mjs';
-import { putAttendee } from '../service/putAttendee.mjs';
+import { createAttendee } from '../src/createAttendee.mjs';
+import { chimeSDKMeetings } from '../src/chimeMeetingsClient.mjs';
+import { uuid } from '../src/uuidGenerator.mjs';
+import { putAttendee } from '../src/putAttendee.mjs';
 
 // Jest를 사용하여 모듈 모킹
-jest.mock('../service/chimeMeetingsClient.mjs', () => ({
+jest.mock('../src/chimeMeetingsClient.mjs', () => ({
   chimeSDKMeetings: {
     createAttendee: jest.fn(),
   },
 }));
 
-jest.mock('../service/uuidGenerator.mjs', () => ({
+jest.mock('../src/uuidGenerator.mjs', () => ({
   uuid: jest.fn(),
 }));
 
-jest.mock('../service/putAttendee.mjs', () => ({
+jest.mock('../src/putAttendee.mjs', () => ({
   putAttendee: jest.fn(),
 }));
 

@@ -25,7 +25,7 @@ describe('getNotificationsConfig 함수 테스트', () => {
     // SQS_QUEUE_ARN을 설정하지 않아도 됩니다.
 
     // 환경 변수를 설정한 후 모듈을 동적으로 임포트합니다.
-    const module = await import('../service/getNotificationsConfig.mjs');
+    const module = await import('../src/getNotificationsConfig.mjs');
     const { getNotificationsConfig } = module;
 
     const config = getNotificationsConfig();
@@ -39,7 +39,7 @@ describe('getNotificationsConfig 함수 테스트', () => {
     process.env.SQS_QUEUE_ARN = 'arn:aws:sqs:us-east-1:123456789012:MyQueue';
 
     // 환경 변수를 설정한 후 모듈을 동적으로 임포트합니다.
-    const module = await import('../service/getNotificationsConfig.mjs');
+    const module = await import('../src/getNotificationsConfig.mjs');
     const { getNotificationsConfig } = module;
 
     const config = getNotificationsConfig();
@@ -53,7 +53,7 @@ describe('getNotificationsConfig 함수 테스트', () => {
     // SQS_QUEUE_ARN을 설정하지 않음
 
     // 환경 변수를 설정한 후 모듈을 동적으로 임포트하여 예외를 테스트합니다.
-    await expect(import('../service/getNotificationsConfig.mjs')).rejects.toThrow('SQS_QUEUE_ARN 환경 변수가 필요하지만 설정되어 있지 않습니다.');
+    await expect(import('../src/getNotificationsConfig.mjs')).rejects.toThrow('SQS_QUEUE_ARN 환경 변수가 필요하지만 설정되어 있지 않습니다.');
 
     // 모듈 로드 시점의 예외는 getNotificationsConfig 함수 내부에서 발생하지 않으므로,
     // console.error는 호출되지 않습니다. 따라서 이를 확인할 필요가 없습니다.

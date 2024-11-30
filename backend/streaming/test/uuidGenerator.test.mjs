@@ -1,4 +1,4 @@
-import { uuid } from '../service/uuidGenerator.mjs';
+import { uuid } from '../src/uuidGenerator.mjs';
 
 describe('uuid 함수', () => {
   

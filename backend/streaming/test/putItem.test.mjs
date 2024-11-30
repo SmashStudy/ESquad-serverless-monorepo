@@ -1,7 +1,7 @@
-import { putItem } from '../service/putItem.mjs';
-import { ddb } from '../service/dynamoClient.mjs';
+import { putItem } from '../src/putItem.mjs';
+import { ddb } from '../src/dynamoClient.mjs';
 
-jest.mock('../service/dynamoClient.mjs', () => ({
+jest.mock('../src/dynamoClient.mjs', () => ({
   ddb: {
     putItem: jest.fn(),
   },

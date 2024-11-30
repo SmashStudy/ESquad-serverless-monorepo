@@ -1,4 +1,4 @@
-import { handler } from '../service/eventHandler.mjs';
+import { handler } from '../src/eventHandler.mjs';
 
 describe('EventBridge Lambda Handler', () => {
   let consoleLogSpy;

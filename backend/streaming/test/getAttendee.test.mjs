@@ -1,7 +1,7 @@
-import { getItem } from '../service/getItem.mjs';
+import { getItem } from '../src/getItem.mjs';
 
 // Jest를 사용하여 모듈 모킹
-jest.mock('../service/getItem.mjs', () => ({
+jest.mock('../src/getItem.mjs', () => ({
   getItem: jest.fn(),
 }));
 
@@ -20,7 +20,7 @@ describe('getAttendee 함수 테스트', () => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // getAttendee 모듈 동적 임포트 (환경 변수 설정 후)
-    const module = await import('../service/getAttendee.mjs');
+    const module = await import('../src/getAttendee.mjs');
     getAttendee = module.getAttendee;
   });
 
@@ -33,7 +33,7 @@ describe('getAttendee 함수 테스트', () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
-      Name: {
+      name: {
         S: '참석자1',
       },
     };
@@ -45,7 +45,7 @@ describe('getAttendee 함수 테스트', () => {
 
     // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
-      AttendeeId: { S: `${title}/${attendeeId}` },
+      attendeeId: { S: `${title}/${attendeeId}` },
     });
 
     // 반환 값 검증
@@ -66,7 +66,7 @@ describe('getAttendee 함수 테스트', () => {
 
     // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
-      AttendeeId: { S: `${title}/${attendeeId}` },
+      attendeeId: { S: `${title}/${attendeeId}` },
     });
 
     // 반환 값 검증
@@ -90,7 +90,7 @@ describe('getAttendee 함수 테스트', () => {
 
     // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
-      AttendeeId: { S: `${title}/${attendeeId}` },
+      attendeeId: { S: `${title}/${attendeeId}` },
     });
 
     // 반환 값 검증
@@ -113,7 +113,7 @@ describe('getAttendee 함수 테스트', () => {
 
     // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
-      AttendeeId: { S: `${title}/${attendeeId}` },
+      attendeeId: { S: `${title}/${attendeeId}` },
     });
 
     // console.error 호출 검증
@@ -136,7 +136,7 @@ describe('getAttendee 함수 테스트', () => {
 
     // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
-      AttendeeId: { S: `${title}/${attendeeId}` },
+      attendeeId: { S: `${title}/${attendeeId}` },
     });
 
     // 반환 값 검증

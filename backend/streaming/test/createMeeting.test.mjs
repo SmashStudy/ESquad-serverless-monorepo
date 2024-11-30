@@ -1,25 +1,25 @@
-import { createMeeting } from '../service/createMeeting.mjs';
-import { chimeSDKMeetings } from '../service/chimeMeetingsClient.mjs';
-import { uuid } from '../service/uuidGenerator.mjs';
-import { getNotificationsConfig } from '../service/getNotificationsConfig.mjs';
-import { putMeeting } from '../service/putMeeting.mjs';
+import { createMeeting } from '../src/createMeeting.mjs';
+import { chimeSDKMeetings } from '../src/chimeMeetingsClient.mjs';
+import { uuid } from '../src/uuidGenerator.mjs';
+import { getNotificationsConfig } from '../src/getNotificationsConfig.mjs';
+import { putMeeting } from '../src/putMeeting.mjs';
 
 // Jest를 사용하여 모듈 모킹
-jest.mock('../service/chimeMeetingsClient.mjs', () => ({
+jest.mock('../src/chimeMeetingsClient.mjs', () => ({
   chimeSDKMeetings: {
     createMeeting: jest.fn(),
   },
 }));
 
-jest.mock('../service/uuidGenerator.mjs', () => ({
+jest.mock('../src/uuidGenerator.mjs', () => ({
   uuid: jest.fn(),
 }));
 
-jest.mock('../service/getNotificationsConfig.mjs', () => ({
+jest.mock('../src/getNotificationsConfig.mjs', () => ({
   getNotificationsConfig: jest.fn(),
 }));
 
-jest.mock('../service/putMeeting.mjs', () => ({
+jest.mock('../src/putMeeting.mjs', () => ({
   putMeeting: jest.fn(),
 }));
 

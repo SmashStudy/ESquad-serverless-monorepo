@@ -1,21 +1,21 @@
 import { jest } from '@jest/globals';
-import { handler } from '../service/joinMeetingHandler.mjs';
-import * as meetingService from '../service/getMeeting.mjs';
-import * as createMeetingService from '../service/createMeeting.mjs';
-import * as createAttendeeService from '../service/createAttendee.mjs';
-import * as corsConfig from '../service/corsConfig.mjs';
+import { handler } from '../src/joinMeetingHandler.mjs';
+import * as meetingService from '../src/getMeeting.mjs';
+import * as createMeetingService from '../src/createMeeting.mjs';
+import * as createAttendeeService from '../src/createAttendee.mjs';
+import * as corsConfig from '../src/corsConfig.mjs';
 
 // 모듈 Mock 처리
-jest.mock('../service/getMeeting.mjs', () => ({
+jest.mock('../src/getMeeting.mjs', () => ({
   getMeeting: jest.fn(),
 }));
-jest.mock('../service/createMeeting.mjs', () => ({
+jest.mock('../src/createMeeting.mjs', () => ({
   createMeeting: jest.fn(),
 }));
-jest.mock('../service/createAttendee.mjs', () => ({
+jest.mock('../src/createAttendee.mjs', () => ({
   createAttendee: jest.fn(),
 }));
-jest.mock('../service/corsConfig.mjs', () => ({
+jest.mock('../src/corsConfig.mjs', () => ({
   handleOptions: jest.fn(),
   CORS_HEADERS: { 'Content-Type': 'application/json' },
 }));

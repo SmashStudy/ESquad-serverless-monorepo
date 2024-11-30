@@ -1,4 +1,4 @@
-import { CORS_HEADERS, handleOptions } from '../service/corsConfig.mjs';
+import { CORS_HEADERS, handleOptions } from '../src/corsConfig.mjs';
 
 describe('CORS_HEADERS 상수', () => {
   test('CORS_HEADERS는 올바른 CORS 헤더를 포함해야 합니다', () => {

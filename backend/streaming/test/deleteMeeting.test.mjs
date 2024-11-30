@@ -1,15 +1,15 @@
-import { deleteMeeting } from '../service/deleteMeeting.mjs';
-import { chimeSDKMeetings } from '../service/chimeMeetingsClient.mjs';
-import { getMeeting } from '../service/getMeeting.mjs';
+import { deleteMeeting } from '../src/deleteMeeting.mjs';
+import { chimeSDKMeetings } from '../src/chimeMeetingsClient.mjs';
+import { getMeeting } from '../src/getMeeting.mjs';
 
 // Jest를 사용하여 모듈 모킹
-jest.mock('../service/chimeMeetingsClient.mjs', () => ({
+jest.mock('../src/chimeMeetingsClient.mjs', () => ({
   chimeSDKMeetings: {
     deleteMeeting: jest.fn(),
   },
 }));
 
-jest.mock('../service/getMeeting.mjs', () => ({
+jest.mock('../src/getMeeting.mjs', () => ({
   getMeeting: jest.fn(),
 }));
 

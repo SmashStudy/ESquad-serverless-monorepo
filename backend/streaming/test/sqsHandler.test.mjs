@@ -1,4 +1,4 @@
-import { handler } from '../service/sqsHandler.mjs';
+import { handler } from '../src/sqsHandler.mjs';
 
 describe('SQS Handler', () => {
   let consoleLogSpy;
