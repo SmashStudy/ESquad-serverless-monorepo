@@ -71,7 +71,6 @@ useEffect(() => {
       setUserInfo(response.data);
     } catch (err) {
       console.error(err);
-      // 에러 처리 로직을 추가하세요.
     }
   };
 
