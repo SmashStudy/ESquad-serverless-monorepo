@@ -156,7 +156,7 @@ useEffect(() => {
         {studys.map((study, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card
-              Button
+              button
               onClick={() =>
                 navigate(`/teams/${params.teamId}/study/${study.id}`, {
                   state: { study },
