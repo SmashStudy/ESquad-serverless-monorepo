@@ -13,9 +13,9 @@ export const putMeeting = async (title, meetingInfo) => {
   try {
     // 회의 정보 항목 구성
     const item = {
-      Title: { S: title },
-      Data: { S: JSON.stringify(meetingInfo) },
-      TTL: { N: '' + threeHoursFromNow },
+      title: { S: title },
+      data: { S: JSON.stringify(meetingInfo) },
+      ttl: { N: '' + threeHoursFromNow },
     };
 
     // DynamoDB에 항목 저장

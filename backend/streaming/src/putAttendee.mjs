@@ -14,9 +14,9 @@ export const putAttendee = async (title, attendeeId, attendeeName) => {
   try {
     // 저장할 항목 구성
     const item = {
-      AttendeeId: { S: `${title}/${attendeeId}` },
-      Name: { S: attendeeName },
-      TTL: { N: '' + threeHoursFromNow },
+      attendeeId: { S: `${title}/${attendeeId}` },
+      name: { S: attendeeName },
+      ttl: { N: '' + threeHoursFromNow },
     };
 
     // DynamoDB에 항목 저장

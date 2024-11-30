@@ -129,36 +129,36 @@ resources:
     Meetings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'MeetingsTable'  # 미팅 테이블
+        TableName: 'esquad-streaming-meetings-${self:provider.stage}'  # 미팅 테이블
         AttributeDefinitions:
-          - AttributeName: 'Title'
+          - AttributeName: 'title'
             AttributeType: 'S'
-          - AttributeName: 'Passcode'
+          - AttributeName: 'passcode'
             AttributeType: 'S'
         KeySchema:
-          - AttributeName: 'Title'
+          - AttributeName: 'title'
             KeyType: HASH  # 기본 키 설정
         BillingMode: PAY_PER_REQUEST  # 온디맨드 과금 방식
         GlobalSecondaryIndexes:
-          - IndexName: 'Passcode'
+          - IndexName: 'passcode'
             KeySchema:
-              - AttributeName: 'Passcode'
+              - AttributeName: 'passcode'
                 KeyType: HASH  # 보조 인덱스 설정
             Projection:
               ProjectionType: ALL
         TimeToLiveSpecification:
-          AttributeName: 'TTL'  # TTL 설정
+          AttributeName: 'ttl'  # TTL 설정
           Enabled: true
 
     Attendees:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'AttendeesTable'  # 참석자 테이블
+        TableName: 'esquad-streaming-attendees-${self:provider.stage}'  # 참석자 테이블
         AttributeDefinitions:
-          - AttributeName: 'AttendeeId'
+          - AttributeName: 'attendeeId'
             AttributeType: 'S'
         KeySchema:
-          - AttributeName: 'AttendeeId'
+          - AttributeName: 'attendeeId'
             KeyType: HASH  # 기본 키 설정
         BillingMode: PAY_PER_REQUEST
 

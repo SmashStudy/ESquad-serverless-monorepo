@@ -11,11 +11,11 @@ const attendeesTableName = process.env.ATTENDEES_TABLE_NAME;
 export const getAttendee = async (title, attendeeId) => {
   try {
     // DynamoDB에서 참가자 정보 조회
-    const attendee = await getItem(attendeesTableName, { AttendeeId: { S: `${title}/${attendeeId}` } });
+    const attendee = await getItem(attendeesTableName, { attendeeId: { S: `${title}/${attendeeId}` } });
 
     // 참가자가 존재하고, Name 속성이 올바르게 반환되는 경우
-    if (attendee && attendee.Name && attendee.Name.S) {
-      return attendee.Name.S;
+    if (attendee && attendee.name && attendee.name.S) {
+      return attendee.name.S;
     }
 
     // 참가자가 존재하지 않거나 이름 정보가 없을 경우 'Unknown' 반환

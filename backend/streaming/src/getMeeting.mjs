@@ -10,11 +10,11 @@ const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
 export const getMeeting = async (meetingTitle) => {
   try {
     // DynamoDB에서 회의 정보 조회
-    const meeting = await getItem(meetingsTableName, { Title: { S: meetingTitle } });
+    const meeting = await getItem(meetingsTableName, { title: { S: meetingTitle } });
 
     // 회의 정보가 존재하고, Data가 정상적으로 반환된 경우
-    if (meeting && meeting.Data && meeting.Data.S) {
-      return JSON.parse(meeting.Data.S);
+    if (meeting && meeting.data && meeting.data.S) {
+      return JSON.parse(meeting.data.S);
     }
 
     // 회의 정보가 존재하지 않으면 null 반환
