@@ -114,6 +114,15 @@ const FileList = ({
                           {formatFileSize(file.fileSize)}
                         </Typography>
                       </Box>
+                      <Box sx={{display: 'flex', alignItems: 'center'}}>
+                        <Typography variant="body2" color="textSecondary"
+                                    sx={{mr: 1}}>
+                          다운로드 수:
+                        </Typography>
+                        <Typography variant="body2" color="textPrimary">
+                          {file.downloadCount}
+                        </Typography>
+                      </Box>
                     </Box>
                     <Box sx={{display: 'flex', gap: 1}}>
                       <IconButton
@@ -156,6 +165,7 @@ FileList.propTypes = {
         nickname: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
         fileSize: PropTypes.number.isRequired,
+        downloadCount: PropTypes.number.isRequired,
         userEmail: PropTypes.string.isRequired,
       })
   ).isRequired,
