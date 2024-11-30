@@ -98,7 +98,6 @@ function App() {
               <Route path="book/search/:bookId" element={<BookDetailPage />} />
               <Route path="questions" element={<PostListPage />} />
               <Route path="questions/:postId" element={<PostDetailsPage />} />
-              <Route path="questions/:postId/edit" element={<PostEditPage />} />
             </Route>
           </Route>
 

@@ -14,12 +14,14 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Chip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PostEditDialog from "../../components/content/community/PostEditDialog";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -29,10 +31,11 @@ const PostDetailsPage = () => {
   const [comments, setComments] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [commentContent, setCommentContent] = useState(""); // 댓글 내용
-  const [editingCommentId, setEditingCommentId] = useState(null); // 수정 중인 댓글 ID
-  const [commentAlertOpen, setCommentAlertOpen] = useState(false); // 댓글 등록 알림 스낵바
-  const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false); // 댓글 삭제 알림 스낵바
+  const [commentContent, setCommentContent] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [commentAlertOpen, setCommentAlertOpen] = useState(false);
+  const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // 수정 모달창
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -132,7 +135,17 @@ const PostDetailsPage = () => {
   };
 
   const handleEdit = () => {
-    navigate(`/community/${boardType}/${postId}/edit`);
+    setIsEditDialogOpen(true);
+    handleMenuClose();
+  };
+
+  const handleUpdatePost = (updatedPost) => {
+    // 게시글 수정 후 상태 업데이트
+    setPost((prevPost) => ({
+      ...prevPost,
+      ...updatedPost,
+      updatedAt: new Date().toISOString(), // updatedAt 필드를 현재 시간으로 업데이트
+    }));
   };
 
   const handleDelete = async () => {
@@ -355,6 +368,23 @@ const PostDetailsPage = () => {
         )}
       </Box>
 
+      {/* 태그 표시 */}
+      <Box sx={{ mt: 1, mb: 2 }}>
+        {post.tags && post.tags.length > 0 && (
+          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            {post.tags.map((tag, index) => (
+              <Chip
+                key={`tag-${index}`}
+                label={tag}
+                variant="outlined"
+                color="primary"
+                size="small"
+              />
+            ))}
+          </Box>
+        )}
+      </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -367,6 +397,10 @@ const PostDetailsPage = () => {
         <Typography variant="body2">
           작성자: {post.writer?.nickname || "알 수 없음"} •{" "}
           {new Date(post.createdAt).toLocaleString()}
+          {post.updatedAt &&
+            new Date(post.updatedAt).getTime() !==
+              new Date(post.createdAt).getTime() &&
+            ` (수정됨: ${new Date(post.updatedAt).toLocaleString()})`}
         </Typography>
         <Typography variant="body2">
           조회수: {post.viewCount} • 좋아요: {post.likeCount}
@@ -505,8 +539,16 @@ const PostDetailsPage = () => {
           댓글이 삭제되었습니다!
         </Alert>
       </Snackbar>
+      <PostEditDialog
+        open={isEditDialogOpen}
+        handleClose={() => setIsEditDialogOpen(false)}
+        postDetails={post}
+        onUpdate={(updatedPost) => {
+          updatedPost.updatedAt = new Date().toISOString();
+          handleUpdatePost(updatedPost);
+        }}
+      />
     </Box>
   );
 };
-
 export default PostDetailsPage;
