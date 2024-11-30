@@ -8,10 +8,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import LiveStreamWindow from "../../stream/LiveStreamWindow.jsx";
+import axios from "axios";
+import { getUserApi } from "../../../utils/apiConfig.js";
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   const theme = useTheme();
@@ -44,8 +46,41 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   const [loading, setLoading] = useState(true); // 로딩 상태 관리
   const [error, setError] = useState(false); // 에러 상태 관리
 
-  const userInfo = { id: 28, username: "esquadback" };
 
+// 사용자 정보를 저장할 상태 추가
+const [userInfo, setUserInfo] = useState(null);
+
+// 사용자 정보를 가져오는 useEffect 추가
+useEffect(() => {
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+
+      if (!token) {
+        throw new Error("로그인이 필요합니다.");
+      }
+
+      const url = `${getUserApi()}/get-user-info`;
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUserInfo(response.data);
+    } catch (err) {
+      console.error(err);
+      // 에러 처리 로직을 추가하세요.
+    }
+  };
+
+  fetchUserInfo();
+}, []);
+
+
+  //const userInfo = { id: 28, username: "esquadback" };
+  
   // 2차
   // const handleWriteButtonClick = () => {
   //     setIsPostModalOpen(true);
@@ -117,12 +152,12 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         </Box>
       </Box>
 
-      {/* Posts List as Cards in a Grid */}
-      <Grid container spacing={3} sx={{ width: "100%", px: 2 }}>
+     {/* Posts List as Cards in a Grid */}
+     <Grid container spacing={3} sx={{ width: "100%", px: 2 }}>
         {studys.map((study, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Card
-              button
+              Button
               onClick={() =>
                 navigate(`/teams/${params.teamId}/study/${study.id}`, {
                   state: { study },
@@ -172,12 +207,14 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                 {/*        )*/}
                 {/*    )}*/}
                 {/*</Box>*/}
-              </CardContent>
+                </CardContent>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <LiveStreamWindow
-                  username={userInfo.username}
-                  studyId={study.id}
-                />{" "}
+                {userInfo && (
+                  <LiveStreamWindow
+                    nickname={userInfo.nickname}
+                    studyId={study.id}
+                  />
+                )}
               </CardActions>
             </Card>
           </Grid>
