@@ -94,6 +94,12 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
       headers: {'Content-Type': selectedFile.type},
     });
 
+    const userResponse = await axios.post(`${userApi}/get-user`,
+        {
+          email: email
+        });
+    const nickname = userResponse.data.nickname || 'Unknown';
+
     const metadataResponse = await axios.post(
         `${storageApi}/store-metadata`,
         {
@@ -102,12 +108,14 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
             targetId: targetId,
             targetType: targetType,
             userEmail: email,
+            userNickname: nickname,
             fileSize: selectedFile.size,
             extension: selectedFile.name.substring(
                 selectedFile.name.lastIndexOf('.') + 1),
             contentType: getMimeType(selectedFile.name),
             originalFileName: selectedFile.name,
             createdAt: getFormattedDate(),
+            downloadCount: 0
           },
         },
         {headers: {'Content-Type': 'application/json'}}
@@ -155,7 +163,10 @@ export const handleFileDownload = async (fileKey, originalFileName,
     requestPresignedUrl, setSnackbar) => {
   try {
     setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
-    const presignedResponse = await requestPresignedUrl('getObject', fileKey);
+    const presignedResponse = await axios.patch(`${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
+      updateType: 'incrementDownloadCount'
+    });
+
     const downloadResponse = await axios.get(presignedResponse, {
       responseType: 'blob',
     });
@@ -167,9 +178,15 @@ export const handleFileDownload = async (fileKey, originalFileName,
     link.href = url;
     link.download = originalFileName || fileKey;
     document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+    try {
+      link.click();
+    } catch (error) {
+      console.error('Failed to initiate download:', error);
+    } finally {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }
+
     setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'});
   } catch (error) {
     setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});

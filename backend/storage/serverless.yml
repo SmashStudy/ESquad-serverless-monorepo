@@ -19,6 +19,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:Query
         - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
       Resource:
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
@@ -66,6 +67,15 @@ functions:
           path: /get-user-usage
           method: get
           cors: true
+
+  downloadFile:
+    handler: service/downloadFileHandler.downloadFileHandler
+    events:
+      - http:
+          path: /metadata/{fileKey}
+          method: patch
+          cors: true
+
 
 resources:
   Resources:
