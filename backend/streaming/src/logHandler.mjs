@@ -1,5 +1,5 @@
 import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
-import { ensureLogStream } from './logs.mjs';
+import { ensureLogStream } from './logStreamManager.mjs';
 
 /**
  * Lambda 핸들러 함수

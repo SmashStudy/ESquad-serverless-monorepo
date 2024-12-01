@@ -20,7 +20,7 @@ const chimeSDKMeetings = new ChimeSDKMeetings({ region });
 const meetingCache = {};
 const attendeeCache = {};
 
-app.post("/api/stream/join", async (req, res) => {
+app.post("/stream/join", async (req, res) => {
   try {
     const { title, attendeeName, region = "us-east-1", ns_es } = req.body;
 
@@ -67,7 +67,7 @@ app.post("/api/stream/join", async (req, res) => {
   }
 });
 
-app.get("/api/stream/attendee", (req, res) => {
+app.get("/stream/attendee", (req, res) => {
   try {
     const { title, attendeeId } = req.query;
     const attendee = attendeeCache[title][attendeeId];
@@ -78,7 +78,7 @@ app.get("/api/stream/attendee", (req, res) => {
   }
 });
 
-app.post("/api/stream/end", async (req, res) => {
+app.post("/stream/end", async (req, res) => {
   try {
     const { title } = req.body;
 
@@ -94,7 +94,7 @@ app.post("/api/stream/end", async (req, res) => {
 });
 
 // Route to receive logs
-app.post("/api/stream/logs", (req, res) => {
+app.post("/stream/logs", (req, res) => {
   console.log("Received logs in the local server");
   res.end("Received logs in the local server");
 });

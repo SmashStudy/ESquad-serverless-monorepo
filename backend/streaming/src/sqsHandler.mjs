@@ -1,6 +1,3 @@
-import { ValidationError, ProcessingError } from './errors.mjs';
-import logger from './logger.mjs'; // 예: winston 설정된 로거
-
 /**
  * Lambda 핸들러 함수
  * @param {Object} event - SQS에서 전달된 이벤트 객체
@@ -19,11 +16,21 @@ export const handler = async (event) => {
 
   try {
     // 이벤트 로깅 (디버깅 용도)
-    logger.info('Received SQS Event', { event });
+    console.log('Received SQS Event:', JSON.stringify(event, null, 2));
 
     // 이벤트 레코드 검증
     if (!event.Records || !Array.isArray(event.Records)) {
-      throw new ValidationError('Invalid event structure: Records are missing or not an array.');
+      console.error('Invalid event structure: Records are missing or not an array.');
+      return {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'Invalid event structure: Records are missing or not an array.',
+        }),
+        isBase64Encoded: false,
+      };
     }
 
     const records = event.Records;
@@ -33,7 +40,7 @@ export const handler = async (event) => {
       try {
         // 레코드 검증
         if (!record.body) {
-          logger.warn('Record is missing body:', { record });
+          console.warn('Record is missing body:', record);
           continue; // 다음 레코드로 이동
         }
 
@@ -45,12 +52,11 @@ export const handler = async (event) => {
         //   // 처리 로직
         // }
 
-        logger.info('Processed message', { messageBody });
+        console.log('Processed message:', messageBody);
       } catch (recordError) {
         // 개별 레코드 처리 중 발생한 오류 로깅
-        logger.error('Error processing record:', { error: recordError, record });
+        console.error('Error processing record:', recordError, record);
         // 필요에 따라 SQS 메시지를 다시 시도하도록 할 수 있습니다.
-        // throw new ProcessingError('Failed to process a record.'); // 전체 핸들러를 실패시키려면 주석 해제
       }
     }
 
@@ -58,32 +64,18 @@ export const handler = async (event) => {
     return response;
   } catch (error) {
     // 전체 핸들러 처리 중 발생한 오류 로깅
-    logger.error('Error processing SQS event:', { error });
+    console.error('Error processing SQS event:', error);
 
-    let statusCode = 500;
-    let message = 'Internal Server Error';
-
-    if (error instanceof ValidationError) {
-      statusCode = 400;
-      message = error.message;
-    } else if (error instanceof ProcessingError) {
-      statusCode = 500;
-      message = 'Failed to process logs.';
-    }
-
-    const errorResponse = {
-      statusCode,
+    return {
+      statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message,
+        message: 'Internal Server Error',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       }),
       isBase64Encoded: false,
     };
-
-    // 오류 응답 반환
-    return errorResponse;
   }
 };

@@ -1,5 +1,5 @@
-import { getAttendee } from './db.mjs';
-import { CORS_HEADERS, handleOptions } from './cors.mjs';
+import { getAttendee } from './getAttendee.mjs';
+import { CORS_HEADERS, handleOptions } from './corsConfig.mjs';
 
 export const handler = async (event) => {
   // OPTIONS 요청에 대한 처리
