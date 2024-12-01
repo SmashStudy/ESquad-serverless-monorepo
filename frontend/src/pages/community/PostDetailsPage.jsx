@@ -296,14 +296,16 @@ const PostDetailsPage = () => {
       const token = localStorage.getItem("jwtToken");
       if (!token) throw new Error("로그인이 필요합니다.");
 
+      if (!currentUser || !currentUser.email) {
+        throw new Error("사용자 정보를 찾을 수 없습니다.");
+      }
+
       // 좋아요 API 호출
       const response = await axios.post(
         `${getCommunityApi()}/${boardType}/${postId}/like`,
-        {},
+        {}, // Body는 필요 없음
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           params: { createdAt },
         }
       );
@@ -314,9 +316,10 @@ const PostDetailsPage = () => {
           ...prevPost,
           likeCount: response.data.updatedAttributes.likeCount,
         }));
+        setLikedByUser(!likedByUser);
       }
     } catch (error) {
-      console.error("좋아요 처리 중 오류 발생:", error);
+      console.error("좋아요 처리 중 오류 발생:", error.message);
       alert("좋아요 처리에 실패했습니다.");
     }
   };
