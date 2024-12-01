@@ -23,6 +23,7 @@ import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
+import logoImage from "../../assets/esquad-logo-nbk.png";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -36,7 +37,7 @@ const PostDetailsPage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [commentAlertOpen, setCommentAlertOpen] = useState(false);
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // 수정 모달창
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -474,11 +475,92 @@ const PostDetailsPage = () => {
           {comments.length}
         </Box>
       </Typography>
+      {comments.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            mt: 4,
+          }}
+        >
+          <img
+            src={logoImage}
+            alt="답변 대기 이미지"
+            style={{ width: "100px", height: "100px", marginBottom: "20px" }}
+          />
+          <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
+            답변을 기다리고 있는 질문이에요
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+            첫번째 답변을 남겨보세요!
+          </Typography>
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            mb: 2,
+            flexDirection: "column",
+            height: 350,
+            overflow: "hidden",
+            overflowY: "scroll",
+          }}
+        >
+          {comments
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((comment, index) => (
+              <Paper
+                key={index}
+                elevation={1}
+                sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {comment.writer?.nickname || "익명"}
+                </Typography>
+                <Typography variant="body2">{comment.content}</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mt: 1 }}
+                >
+                  {new Date(comment.createdAt).toLocaleString()}
+                  {comment.updatedAt &&
+                    new Date(comment.updatedAt).getTime() !==
+                      new Date(comment.createdAt).getTime() &&
+                    ` (수정됨: ${new Date(
+                      comment.updatedAt
+                    ).toLocaleString()})`}
+                </Typography>
+
+                {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
+                {comment.writer?.email === currentUser?.email && (
+                  <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleEditComment(comment)}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDeleteComment(comment.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                )}
+              </Paper>
+            ))}
+        </Box>
+      )}
+
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
           value={commentContent}
           onChange={(e) => setCommentContent(e.target.value)}
-          placeholder="댓글을 입력하세요."
+          placeholder={`${
+            currentUser?.nickname || "알수없는 사용자"
+          }님, 답변을 작성해보세요.`}
           variant="outlined"
           fullWidth
           multiline
@@ -503,58 +585,6 @@ const PostDetailsPage = () => {
         >
           취소
         </Button>
-      </Box>
-      <Box
-        sx={{
-          mb: 2,
-          flexDirection: "column",
-          height: 350,
-          overflow: "hidden",
-          overflowY: "scroll",
-        }}
-      >
-        {comments
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .map((comment, index) => (
-            <Paper
-              key={index}
-              elevation={1}
-              sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
-            >
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {comment.writer?.nickname || "익명"}
-              </Typography>
-              <Typography variant="body2">{comment.content}</Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: "text.secondary", display: "block", mt: 1 }}
-              >
-                {new Date(comment.createdAt).toLocaleString()}
-                {comment.updatedAt &&
-                  new Date(comment.updatedAt).getTime() !==
-                    new Date(comment.createdAt).getTime() &&
-                  ` (수정됨: ${new Date(comment.updatedAt).toLocaleString()})`}
-              </Typography>
-
-              {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
-              {comment.writer?.email === currentUser?.email && (
-                <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleEditComment(comment)}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDeleteComment(comment.id)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              )}
-            </Paper>
-          ))}
       </Box>
       {/* 댓글 등록 알림 스낵바 */}
       <Snackbar
