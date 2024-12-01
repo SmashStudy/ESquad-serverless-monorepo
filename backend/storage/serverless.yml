@@ -148,6 +148,8 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${env:S3_BUCKET}
+        AccelerateConfiguration:
+          AccelerationStatus: Enabled
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:

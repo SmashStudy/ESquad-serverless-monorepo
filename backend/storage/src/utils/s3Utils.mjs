@@ -7,7 +7,7 @@ import {
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {createResponse} from './responseHelper.mjs'
 
-const s3 = new S3Client({});
+const s3 = new S3Client({useAccelerateEndpoint: true});
 const BUCKET_NAME = process.env.S3_BUCKET;
 
 export const requestPresignedUrl = async (event) => {
