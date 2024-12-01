@@ -5,7 +5,7 @@ const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const METADATA_TABLE = process.env.METADATA_TABLE;
 
-export const handler = async (event) => {
+export const trigger = async (event) => {
   console.log('DynamoDB Stream event:', JSON.stringify(event, null, 2));
 
   for (const record of event.Records) {

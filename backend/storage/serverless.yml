@@ -30,7 +30,7 @@ provider:
 functions:
 
   generatePresignedUrl:
-    handler: service/generatePresignedUrl.handler
+    handler: src/utils/s3Utils.requestPresignedUrl
     events:
       - http:
           path: /presigned-url
@@ -38,7 +38,7 @@ functions:
           cors: true
 
   fetchFileMetadata:
-    handler: service/fetchFileMetadata.handler
+    handler: src/handlers/fetchFileMetadata.handler
     events:
       - http:
           path: /metadata
@@ -46,7 +46,7 @@ functions:
           cors: true
 
   deleteFile:
-    handler: service/deleteFile.handler
+    handler: src/handlers/deleteFile.handler
     events:
       - http:
           path: /{fileKey}
@@ -54,7 +54,7 @@ functions:
           cors: true
 
   storeFileMetadata:
-    handler: service/storeFileMetadata.handler
+    handler: src/handlers/storeFileMetadata.handler
     events:
       - http:
           path: /store-metadata
@@ -62,7 +62,7 @@ functions:
           cors: true
 
   getUserUsage:
-    handler: service/getUserUsage.handler
+    handler: src/handlers/getUserUsage.handler
     events:
       - http:
           path: /get-user-usage
@@ -70,7 +70,7 @@ functions:
           cors: true
 
   downloadFile:
-    handler: service/downloadFileHandler.downloadFileHandler
+    handler: src/handlers/downloadFile.handler
     events:
       - http:
           path: /metadata/{fileKey}
@@ -78,7 +78,7 @@ functions:
           cors: true
 
   updateFileMetadataNickname:
-    handler: service/updateFileMetadataNickname.handler
+    handler: src/triggers/updateFileMetadataNickname.trigger
     events:
       - stream:
           type: dynamodb
@@ -178,4 +178,4 @@ plugins:
 
 package:
   exclude:
-    - test/**
+    - tests/**

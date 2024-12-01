@@ -1,13 +1,13 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { createResponse } from '../util/responseHelper.mjs';
-import { handler } from './generatePresignedUrl.mjs'; // Presigned URL 생성 함수
+import { createResponse } from '../utils/responseHelper.mjs';
+import { requestPresignedUrl } from '../utils/s3Utils.mjs'; // Presigned URL 생성 함수
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
-export const downloadFileHandler = async (event) => {
+export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
   let { fileKey } = event.pathParameters;
   try {
@@ -18,7 +18,7 @@ export const downloadFileHandler = async (event) => {
 
   let presignedUrl;
   try {
-    const presignedResponse = await handler('getObject', fileKey);
+    const presignedResponse = await requestPresignedUrl('getObject', fileKey);
     if (presignedResponse.error) {
       return createResponse(400, { error: presignedResponse.error });
     }
