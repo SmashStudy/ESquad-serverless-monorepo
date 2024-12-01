@@ -53,6 +53,7 @@ export const handler = async (event) => {
       updatedAt: data.Item.updatedAt.S,
       viewCount: parseInt(data.Item.viewCount.N, 10),
       likeCount: parseInt(data.Item.likeCount.N, 10),
+      likedUsers: data.Item.likedUsers?.SS || [],
       resolved:
         data.Item.boardType.S === "questions"
           ? data.Item.resolved?.S === "true"

@@ -10,9 +10,9 @@ const client = new DynamoDBClient({ region: process.env.REGION });
 export const handler = async (event) => {
   const { postId } = event.pathParameters;
   const createdAt = event.queryStringParameters?.createdAt;
-  const userEmail = event.headers?.Authorization; 
+  const body = typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+  const userEmail = body.userEmail; // 프론트엔드에서 명시적으로 전달
 
- 
   if (!postId || !createdAt || !userEmail) {
     return createResponse(400, {
       message: "Missing postId, createdAt, or userEmail in request",
@@ -20,7 +20,6 @@ export const handler = async (event) => {
   }
 
   try {
-   
     const params = {
       TableName: process.env.DYNAMODB_TABLE,
       Key: {
@@ -28,8 +27,6 @@ export const handler = async (event) => {
         SK: { S: createdAt },
       },
     };
-
-    console.log("DynamoDB Query Params:", JSON.stringify(params, null, 2));
 
     const data = await client.send(new GetItemCommand(params));
 
@@ -74,11 +71,7 @@ export const handler = async (event) => {
       ReturnValues: "UPDATED_NEW",
     };
 
-    console.log("Update parameters:", JSON.stringify(updateParams, null, 2));
-
     const response = await client.send(new UpdateItemCommand(updateParams));
-
-    console.log("DynamoDB update response:", JSON.stringify(response, null, 2));
 
     return createResponse(200, {
       message: hasLiked
