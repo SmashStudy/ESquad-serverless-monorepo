@@ -1,7 +1,7 @@
 plugins:
-  - serverless-export-env
+  - serverless-export-env   # 환경 변수를 내보내는 플러그인 추가
 
-useDotenv: true
+useDotenv: true   # .env 파일을 사용하여 환경 변수 설정
 
 service: notification-service
 org: persii
@@ -28,44 +28,62 @@ provider:
     NOTIFICATION_TABLE_STREAM_LABEL: ${env:NOTIFICATION_TABLE_STREAM_LABEL}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     METADATA_TABLE_STREAM_LABEL: ${env:METADATA_TABLE_STREAM_LABEL}
-  apiGateway:
-    role: serverlessApiGatewayCloudWatchRole
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:BatchWriteItem
-        - dynamodb:GetItem
-        - dynamodb:UpdateItem
-        - dynamodb:Query
-        - dynamodb:DeleteItem
-        - dynamodb:DescribeStream
-        - dynamodb:GetRecords
-        - dynamodb:GetShardIterator
-        - dynamodb:ListStreams
-        - execute-api:Invoke
-      Resource:
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_CREATED_INDEX}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_READ_INDEX}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_SAVE_INDEX}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
-        - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
-        - arn:aws:sns:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${env:SNS_STORAGE_TOPIC_PREFIX}
-    - Effect: Allow
-      Action:
-        - execute-api:ManageConnections
-      Resource:
-        - "arn:aws:execute-api:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:${ApiGatewayWebsocketApi}/*/@connections/*"
-    - Effect: Allow
-      Action:
-        - logs:CreateLogGroup
-        - logs:CreateLogStream
-        - logs:PutLogEvents
-      Resource:
-        - arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/*
+
+#  apiGateway:
+#    role: DefaultRole   # API Gateway 역할 정의
+
+  # one IAM Role is shared by all the Lambda functions in my service
+  # Also by default, my Lambda functions have permission to create and write to CloudWatch logs
+  # 서비스의 모든 Lambda 함수에서 공유
+  iam:
+    role:
+      name: esquad-user-01-${opt:stage}-role
+      assumeRolePolicyDocument: # Add the trust policy here
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com # Allow API Gateway to assume the role
+            Action: sts:AssumeRole
+      # To add permissions to this role, add IAM statements in provider.iam.role.statements.
+      # These will be merged into the generated policy
+      # As those statements will be merged into the CloudFormation template, you can use Join, Ref or any other CloudFormation method or feature.
+      statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections   # WebSocket 연결 관리 권한
+            - execute-api:Invoke
+          Resource:
+            - !Sub "arn:aws:execute-api:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:*/${opt:stage}/*/@connections/*"
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:BatchWriteItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:Query
+            - dynamodb:DeleteItem
+            - dynamodb:DescribeStream
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:ListStreams
+          Resource:
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_CREATED_INDEX}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_READ_INDEX}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_SAVE_INDEX}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource:
+            - arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/lambda/*
+            - arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*
 
 functions:
   preflightHandler:
@@ -176,6 +194,7 @@ resources:
         Name: WebSocketApi
         ProtocolType: WEBSOCKET
         RouteSelectionExpression: $request.body.action # 메시지 본문의 action field 를 기반으로 들어오는 Websocket 메시지를 라우팅하는데 역할
+        DisableExecuteApiEndpoint: true                 # Disable default endpoint
 
     ConnectionsTable:
       Type: AWS::DynamoDB::Table
@@ -249,37 +268,6 @@ resources:
         BillingMode: PAY_PER_REQUEST
         StreamSpecification:
           StreamViewType: NEW_IMAGE
-
-    ApiGatewayCloudWatchRole:
-     Type: AWS::IAM::Role
-     Properties:
-       RoleName: serverlessApiGatewayCloudWatchRole
-       AssumeRolePolicyDocument:
-         Version: "2012-10-17"
-         Statement:
-           - Effect: Allow
-             Principal:
-               Service: apigateway.amazonaws.com
-             Action: sts:AssumeRole
-       Policies:
-         - PolicyName: ApiGatewayCloudWatchPolicy
-           PolicyDocument:
-             Version: "2012-10-17"
-             Statement:
-               - Effect: Allow
-                 Action:
-                   - logs:CreateLogGroup
-                   - logs:CreateLogStream
-                   - logs:PutLogEvents
-                 Resource: "arn:aws:logs:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:log-group:/aws/apigateway/*"
-
-#  Outputs:
-#    WebSocketEndpoint:
-#      Description: 알림 Websocket API Endpoint
-#      Value:
-#        Fn::Sub: "https://${ApiGatewayWebsocketApi}.execute-api.${AWS::REGION}.amazonaws.com/${opt:stage, 'local'}"
-
-
 
 
 

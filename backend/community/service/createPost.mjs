@@ -8,7 +8,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags } = body;
+    const { title, content, writer, book, tags = [] } = body; // tags 기본값 빈 배열로 해서 태그 없어도 게시글 생성됨
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -32,8 +32,8 @@ export const handler = async (event) => {
       content: { S: content },
       writer: {
         M: {
-          id: { S: writer.id },
           name: { S: writer.name },
+          nickname: { S: writer.nickname },
           email: { S: writer.email },
         },
       },
@@ -47,13 +47,14 @@ export const handler = async (event) => {
             },
           }
         : { NULL: true },
-      tags: { SS: tags || [] },
+      ...(tags.length > 0 && { tags: { SS: tags } }),
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
+      comments: { L: [] }, // 빈 리스트로 초기화
     };
 
     const command = new PutItemCommand({

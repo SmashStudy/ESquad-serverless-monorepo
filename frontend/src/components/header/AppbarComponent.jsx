@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -37,8 +37,8 @@ import {
 import useNotiWebSocket from "../../hooks/useNotiWebSocket.js";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import NotificationsMenu from "./NotificationMenu.jsx";
-import {getUserApi} from "../../utils/apiConfig.js";
-import {decodeJWT} from "../../utils/decodeJWT.js";
+import { getUserApi } from "../../utils/apiConfig.js";
+import { decodeJWT } from "../../utils/decodeJWT.js";
 import formatTimeAgo from "../../utils/formatTimeAgo.js";
 
 const Search = styled("div")(({ theme }) => ({
@@ -86,7 +86,7 @@ const AppBarComponent = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [teamAnchorEl, setTeamAnchorEl] = useState(null);
   const [showSearchBar, setShowSearchBar] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null);
@@ -102,19 +102,18 @@ const AppBarComponent = ({
 
   const fetchNickname = async () => {
     try {
-        const response = await axios.get(`${getUserApi()}/get-nickname`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-            },
-        });
-        setUser((prev) => ({
-          ...prev,
-          nickname: response.data.nickname,
-        }));
-
+      const response = await axios.get(`${getUserApi()}/get-nickname`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
+      setUser((prev) => ({
+        ...prev,
+        nickname: response.data.nickname,
+      }));
     } catch (err) {
-        console.error("닉네임 가져오기 오류:", err);
-        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+      console.error("닉네임 가져오기 오류:", err);
+      setError("닉네임을 가져오는 중 오류가 발생했습니다.");
     }
   };
 
@@ -139,24 +138,21 @@ const AppBarComponent = ({
 
             // 모든 데이터가 준비되었음을 표시
             setIsUserLoaded(true);
-
           }
         }
       } catch (err) {
         console.error("토큰 처리 오류:", err);
-        setError('사용자 정보를 처리하는 중 오류가 발생했습니다.');
+        setError("사용자 정보를 처리하는 중 오류가 발생했습니다.");
       }
     };
 
     fetchTokenAndData();
   }, []);
 
-
-
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("jwtToken");
     alert("로그아웃 되었습니다. 다음에 또 만나요!");
-    navigate("/google");
+    navigate("/login");
   };
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -433,7 +429,7 @@ const AppBarComponent = ({
                   }}
                 >
                   <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                    {user?.nickname}
+                    {user?.nickname?.charAt(0).toUpperCase()}
                   </Avatar>
                   <Typography variant="body1">{user?.nickname}</Typography>
                 </IconButton>

@@ -8,4 +8,6 @@ export const getNotificationApi = () => `https://api.esquad.click/${environment}
 export const getTeamApi = () => 'https://api.esquad.click/teams';
 export const getStreamApi = () => `https://api.esquad.click/${environment}/stream`
 
-export const getNotificationWebsocketApi = () => environment === 'local' ? 'wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local' : 'wss://ws.noti.api.esquad.click'
+export const getNotificationWebsocketApi = () => environment === 'local' ?
+    'wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local'
+    : 'wss://u0ly4j754b.execute-api.us-east-1.amazonaws.com/dev'
