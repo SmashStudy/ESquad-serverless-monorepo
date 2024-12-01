@@ -287,7 +287,7 @@ const PostDetailsPage = () => {
     setDeleteCommentAlertOpen(false);
   };
 
- const handleLikePost = async () => {
+  const handleLikePost = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       if (!token) throw new Error("로그인이 필요합니다.");
@@ -469,7 +469,10 @@ const PostDetailsPage = () => {
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>
-        댓글
+        답변{" "}
+        <Box component="span" sx={{ color: "primary.main" }}>
+          {comments.length}
+        </Box>
       </Typography>
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
