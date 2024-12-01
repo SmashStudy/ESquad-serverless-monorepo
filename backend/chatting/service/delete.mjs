@@ -56,6 +56,11 @@ export const handler = async (event) => {
         console.log("Deleted item:", result.Attributes);
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // 모든 출처 허용
+                "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            },
             body: JSON.stringify(result.Attributes),
         };
     } catch (error) {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 
-const apiUrl = getChatApi();
+const apiUrl = "https://hxczylu7qb.execute-api.us-east-1.amazonaws.com/local";
 
 const apiClient = axios.create({
     baseURL: apiUrl,

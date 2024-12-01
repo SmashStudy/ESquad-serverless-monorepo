@@ -4,11 +4,11 @@ import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
 
-const wsUrl = "wss://ws.api.esquad.click";
+const wsUrl = "wss://3e6xvxu989.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessage, setEditingMessage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -16,6 +16,7 @@ function ChatMessages({currentChatRoom}) {
     const [previewUrl, setPreviewUrl] = useState("");
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const messageEndRef = useRef(null);
+    const socketRef = useRef(null);
 
     // 유저 더미 데이터
     const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
@@ -28,9 +29,9 @@ function ChatMessages({currentChatRoom}) {
         if(currentChatRoom && room_id) {
             connectWebSocket(room_id);
         }
-        return () => {
-            if(socket) { socket.close(); }
-        }
+        // return () => {
+        //     if(socket) { socket.close(); }
+        // }
     }, [currentChatRoom, room_id]);
 
     const sortMessages = (messages) => {
@@ -59,9 +60,9 @@ function ChatMessages({currentChatRoom}) {
     // 웹소켓 연결 함수
     const connectWebSocket = (room_id) => {
         const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${user_id}`);
-        setSocket(newSocket);
 
         newSocket.onopen = () => {
+            console.log("websocket 연결됨")
             loadMessages(room_id);
         };
         newSocket.onmessage = (event) => {
@@ -73,10 +74,14 @@ function ChatMessages({currentChatRoom}) {
         };
         newSocket.onerror = (error) => {
             console.error("WebSocket 오류:", error);
+            socketRef.current = null;
         };
         newSocket.onclose = () => {
             console.error("WebSocket 연결 종료");
+            socketRef.current = null;
         }
+
+        socketRef.current = newSocket;
     }
 
     const scrollToBottom = () => {
@@ -111,7 +116,7 @@ function ChatMessages({currentChatRoom}) {
                     isFile: true
                 };
                 // 웹소켓으로 전송
-                await sendMessageAPI(socket, fileMessage);
+                await sendMessageAPI(socketRef, fileMessage);
 
                 // 메시지 상태 업데이트
                 setMessages((prevMessages) => [...prevMessages, fileMessage]);
@@ -143,7 +148,7 @@ function ChatMessages({currentChatRoom}) {
                     timestamp,
                 };
                 // sendMessageAPI 호출 전후 로그 추가
-                await sendMessageAPI(socket, textMessage);
+                await sendMessageAPI(socketRef, textMessage);
                 setMessages((prevMessages) => [...prevMessages, textMessage]);
             }
             setMessageInput(""); // 메시지 입력 초기화

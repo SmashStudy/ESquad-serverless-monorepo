@@ -57,8 +57,20 @@ provider:
     region: ${self:provider.region}
     app: ${self:app}
     socket_api_gateway_id: !Ref WebsocketApi # WebSocket API ID 추가
-    MESSAGES_TABLE_NAME: esquad-chat-messages-${self:provider.stage}
+    MESSAGES_TABLE_NAME: esquad-chat-message-${self:provider.stage}
     USERLIST_TABLE_NAME: esquad-chat-userlist-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Query
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:MESSAGE_TABLE_NAME}
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:USERLIST_TABLE_NAME}
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:USERLIST_TABLE_NAME}/index/room_id-user_id-index
+
 #  deploymentBucket: # 배포에 사용할 S3 버킷 설정
 #    name: ${self:service}-deploy-${self:provider.stage}
 #    serverSideEncryption: AES256
@@ -223,7 +235,7 @@ resources:
     chatappChatMessages: # 채팅 메시지 DynamoDB 테이블
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: esquad-chat-messages-${self:provider.stage}
+        TableName: esquad-chat-message-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: room_id
             AttributeType: S
