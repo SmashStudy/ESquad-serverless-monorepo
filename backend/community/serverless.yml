@@ -110,6 +110,15 @@ functions:
           method: DELETE
           cors: true
 
+  likePost:
+    handler: service/likePost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/like
+          method: POST
+          cors: true
+  
+
 resources:
   Resources:
     EsquadPostsTable:
