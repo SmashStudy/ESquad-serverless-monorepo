@@ -147,7 +147,6 @@ export const handleFileDownload = async (fileKey, originalFileName,
       updateType: 'incrementDownloadCount'
     });
 
-    console.log(`presignedResponse is ${JSON.stringify(presignedResponse)}`);
     const presignedUrl = presignedResponse.data.presignedUrl;
     const downloadResponse = await axios.get(presignedUrl, {
       responseType: 'blob',
