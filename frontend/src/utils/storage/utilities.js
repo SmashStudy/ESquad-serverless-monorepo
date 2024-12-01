@@ -115,8 +115,7 @@ export const handleFileUpload = async (
   }
 };
 
-export const handleFileDelete = async (fileKey, userEmail, email,
-    requestPresignedUrl, setSnackbar, setUploadedFiles, fetchFiles,
+export const handleFileDelete = async (fileKey, userEmail, email, setSnackbar, setUploadedFiles, fetchFiles,
     setCurrentPage) => {
   if (email !== userEmail) {
     setSnackbar({severity: 'error', message: '업로더만 삭제할 수 있습니다.', open: true});
@@ -124,10 +123,8 @@ export const handleFileDelete = async (fileKey, userEmail, email,
   }
   try {
     setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
-    const presignedResponse = await requestPresignedUrl('deleteObject',
-        fileKey);
-    await axios.delete(presignedResponse);
-    await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
+    const presignedResponse = await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
+    await axios.delete(presignedResponse.data.presignedUrl);
     setUploadedFiles(
         (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
     setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});

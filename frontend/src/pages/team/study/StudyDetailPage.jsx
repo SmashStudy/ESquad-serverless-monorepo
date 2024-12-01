@@ -185,7 +185,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                             fileKey,
                             userEmail,
                             email,
-                            requestPresignedUrl,
                             setSnackbar,
                             setUploadedFiles,
                             () =>
