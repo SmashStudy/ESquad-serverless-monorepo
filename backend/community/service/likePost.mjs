@@ -12,6 +12,7 @@ export const handler = async (event) => {
   const createdAt = event.queryStringParameters?.createdAt;
   const userEmail = event.headers?.Authorization; 
 
+ 
   if (!postId || !createdAt || !userEmail) {
     return createResponse(400, {
       message: "Missing postId, createdAt, or userEmail in request",
@@ -19,7 +20,7 @@ export const handler = async (event) => {
   }
 
   try {
-    // 게시글 가져오기
+   
     const params = {
       TableName: process.env.DYNAMODB_TABLE,
       Key: {
@@ -28,7 +29,7 @@ export const handler = async (event) => {
       },
     };
 
-    console.log("DynamoDB Query Params:", params);
+    console.log("DynamoDB Query Params:", JSON.stringify(params, null, 2));
 
     const data = await client.send(new GetItemCommand(params));
 
@@ -37,7 +38,7 @@ export const handler = async (event) => {
     }
 
     // 좋아요 여부 확인
-    const likedUsers = data.Item.likedUsers ? data.Item.likedUsers.SS : [];
+    const likedUsers = data.Item.likedUsers?.SS || [];
     const hasLiked = likedUsers.includes(userEmail);
 
     let updateExpression, expressionAttributeValues;
@@ -73,22 +74,22 @@ export const handler = async (event) => {
       ReturnValues: "UPDATED_NEW",
     };
 
-    console.log("Update parameters:", updateParams);
+    console.log("Update parameters:", JSON.stringify(updateParams, null, 2));
 
     const response = await client.send(new UpdateItemCommand(updateParams));
 
-    console.log("DynamoDB update response:", response);
+    console.log("DynamoDB update response:", JSON.stringify(response, null, 2));
 
     return createResponse(200, {
       message: hasLiked
         ? "Post unliked successfully"
         : "Post liked successfully",
       updatedAttributes: {
-        likeCount: response.Attributes.likeCount.N,
+        likeCount: response.Attributes?.likeCount?.N || "0",
       },
     });
   } catch (error) {
-    console.error("Error liking post: ", error);
+    console.error("Error liking post: ", error.message);
     return createResponse(500, {
       message: "An error occurred while liking the post",
       error: error.message,
