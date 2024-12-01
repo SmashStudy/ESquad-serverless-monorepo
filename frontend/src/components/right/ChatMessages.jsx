@@ -145,7 +145,7 @@ function ChatMessages({currentChatRoom}) {
                     message: messageContent,
                     room_id,
                     user_id,
-                    timestamp,
+                    timestamp: timestamp
                 };
                 // sendMessageAPI 호출 전후 로그 추가
                 await sendMessageAPI(socketRef, textMessage);
