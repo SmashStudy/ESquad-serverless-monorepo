@@ -55,6 +55,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         setUploadedFiles,
         setLastEvaluatedKeys,
         setTotalPages,
+        totalPages,
         setSnackbar,
         setIsLoading
     );
@@ -151,6 +152,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 setUploadedFiles,
                                 setLastEvaluatedKeys,
                                 setTotalPages,
+                                totalPages,
                                 setSnackbar,
                                 setIsLoading
                             ),
@@ -196,6 +198,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                     setUploadedFiles,
                                     setLastEvaluatedKeys,
                                     setTotalPages,
+                                    totalPages,
                                     setSnackbar,
                                     setIsLoading
                                 ),

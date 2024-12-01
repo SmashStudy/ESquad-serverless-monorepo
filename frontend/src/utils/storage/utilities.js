@@ -7,7 +7,7 @@ const storageApi = getStorageApi();
 const userApi = getUserApi();
 
 export const fetchFiles = async (targetId, targetType, limit, currentPage,
-    lastEvaluatedKeys, setUploadedFiles, setLastEvaluatedKeys, setTotalPages,
+    lastEvaluatedKeys, setUploadedFiles, setLastEvaluatedKeys, setTotalPages, totalPages,
     setSnackbar, setIsLoading) => {
   try {
     setIsLoading(true);
