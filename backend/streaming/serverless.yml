@@ -1,5 +1,7 @@
 service: streaming-service  # 서비스 이름 정의
 
+frameworkVersion: "^3.15.0"
+
 provider:
   name: aws  # AWS 클라우드 제공자 설정
   runtime: nodejs20.x  # Node.js 런타임 버전
