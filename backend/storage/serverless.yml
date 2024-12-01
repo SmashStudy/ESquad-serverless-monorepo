@@ -11,6 +11,7 @@ provider:
     METADATA_TABLE: ${env:METADATA_TABLE}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    USER_TABLE_STREAM_ARN: ${env:USER_TABLE_STREAM_ARN}
 
   iamRoleStatements:
     - Effect: Allow
@@ -75,6 +76,16 @@ functions:
           path: /metadata/{fileKey}
           method: patch
           cors: true
+
+  updateFileMetadataNickname:
+    handler: service/updateFileMetadataNickname.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: ${env:USER_TABLE_STREAM_ARN}
+          batchSize: 5
+          startingPosition: LATEST
+
 
 
 resources:

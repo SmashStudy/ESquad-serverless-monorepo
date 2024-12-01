@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {getStorageApi, getUserApi} from "../apiConfig.js";
-import {UserByEmail} from "../../components/user/UserByEmail.jsx";
 import {getFormattedDate} from "../fileFormatUtils.js";
 import {getMimeType} from "./getMimeType.js";
 
@@ -22,20 +21,7 @@ export const fetchFiles = async (targetId, targetType, limit, currentPage,
       },
     });
 
-    const filesWithNicknames = await Promise.all(
-        response.data.items.map(async (file) => {
-          try {
-            const user = await UserByEmail(file.userEmail);
-            return {
-              ...file,
-              nickname: user.nickname || 'Unknown',
-            };
-          } catch (error) {
-            return {...file, nickname: 'Unknown'};
-          }
-        })
-    );
-    setUploadedFiles(filesWithNicknames);
+    setUploadedFiles(response.data.items);
 
     setLastEvaluatedKeys((prevKeys) => {
       const newKeys = [...prevKeys];

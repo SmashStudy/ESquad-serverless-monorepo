@@ -93,7 +93,7 @@ const FileList = ({
                           업로더:
                         </Typography>
                         <Typography variant="body2" color="textPrimary">
-                          {file.nickname}
+                          {file.userNickname}
                         </Typography>
                       </Box>
                       <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -120,7 +120,7 @@ const FileList = ({
                           다운로드 수:
                         </Typography>
                         <Typography variant="body2" color="textPrimary">
-                          {file.downloadCount}
+                          {file.downloadCount || "0"}
                         </Typography>
                       </Box>
                     </Box>
@@ -162,7 +162,7 @@ FileList.propTypes = {
         fileKey: PropTypes.string.isRequired,
         originalFileName: PropTypes.string.isRequired,
         extension: PropTypes.string.isRequired,
-        nickname: PropTypes.string.isRequired,
+        userNickname: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
         fileSize: PropTypes.number.isRequired,
         downloadCount: PropTypes.number.isRequired,
