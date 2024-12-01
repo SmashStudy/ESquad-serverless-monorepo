@@ -29,7 +29,7 @@ provider:
 
 functions:
 
-  generatePresignedUrl:
+  generatePresignedUrl: # Deprecated
     handler: src/utils/s3Utils.requestPresignedUrl
     events:
       - http:
@@ -53,7 +53,7 @@ functions:
           method: delete
           cors: true
 
-  storeFileMetadata:
+  storeFileMetadata: # Deprecated
     handler: src/handlers/storeFileMetadata.handler
     events:
       - http:
@@ -75,6 +75,14 @@ functions:
       - http:
           path: /metadata/{fileKey}
           method: patch
+          cors: true
+
+  uploadFile:
+    handler: src/handlers/uploadFile.handler
+    events:
+      - http:
+          path: /upload-file
+          method: post
           cors: true
 
   updateFileMetadataNickname:

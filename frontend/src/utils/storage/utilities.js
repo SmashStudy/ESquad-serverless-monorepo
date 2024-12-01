@@ -61,61 +61,55 @@ export const fetchUserEmail = async (setEmail) => {
   }
 };
 
-export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
-    targetId, targetType, setIsUploading, setSnackbar, setUploadedFiles,
+export const handleFileUpload = async (
+    selectedFile,
+    email,
+    targetId,
+    targetType,
+    setIsUploading,
+    setSnackbar,
+    setUploadedFiles,
     setSelectedFile,
-    fetchFiles, setCurrentPage) => {
+    fetchFiles,
+    setCurrentPage
+) => {
   if (!selectedFile) {
     return;
   }
   setIsUploading(true);
-  setSnackbar({severity: 'info', message: '파일 업로드 중...', open: true});
+  setSnackbar({ severity: 'info', message: '파일 업로드 중...', open: true });
 
   try {
-    const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
-    const presignedResponse = await requestPresignedUrl('putObject',
-        uniqueFileName);
-
-    await axios.put(presignedResponse, selectedFile, {
-      headers: {'Content-Type': selectedFile.type},
-    });
-
-    const userResponse = await axios.post(`${userApi}/get-user`,
-        {
-          email: email
-        });
+    const userResponse = await axios.post(`${userApi}/get-user`, { email });
     const nickname = userResponse.data.nickname || 'Unknown';
 
-    const metadataResponse = await axios.post(
-        `${storageApi}/store-metadata`,
+    const response = await axios.post(
+        `${storageApi}/upload-file`,
         {
-          fileKey: `files/${uniqueFileName}`,
-          metadata: {
-            targetId: targetId,
-            targetType: targetType,
-            userEmail: email,
-            userNickname: nickname,
-            fileSize: selectedFile.size,
-            extension: selectedFile.name.substring(
-                selectedFile.name.lastIndexOf('.') + 1),
-            contentType: getMimeType(selectedFile.name),
-            originalFileName: selectedFile.name,
-            createdAt: getFormattedDate(),
-            downloadCount: 0
-          },
+          originalFileName: encodeURIComponent(selectedFile.name),
+          targetId,
+          targetType,
+          userEmail: email,
+          userNickname: nickname,
+          fileSize: selectedFile.size,
+          contentType: getMimeType(selectedFile.name),
+          actualType: selectedFile.type,
+          createdAt: getFormattedDate(),
         },
-        {headers: {'Content-Type': 'application/json'}}
+        { headers: { 'Content-Type': 'application/json' } }
     );
 
-    const newFileData = metadataResponse.data.data;
-    setUploadedFiles((prevFiles) => [newFileData, ...prevFiles]);
+    await axios.put(response.data.presignedUrl, selectedFile, {
+      headers: { 'Content-Type': selectedFile.type },
+    });
+
     setSelectedFile(null);
-    setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true});
+    setSnackbar({ severity: 'success', message: '파일 업로드 완료', open: true });
     setCurrentPage(1);
     fetchFiles();
   } catch (error) {
     console.error('Failed to upload file:', error);
-    setSnackbar({severity: 'error', message: '파일 업로드 실패', open: true});
+    setSnackbar({ severity: 'error', message: '파일 업로드 실패', open: true });
   } finally {
     setIsUploading(false);
   }
@@ -146,7 +140,7 @@ export const handleFileDelete = async (fileKey, userEmail, email,
 };
 
 export const handleFileDownload = async (fileKey, originalFileName,
-    requestPresignedUrl, setSnackbar) => {
+     setSnackbar) => {
   try {
     setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
     const presignedResponse = await axios.patch(`${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {

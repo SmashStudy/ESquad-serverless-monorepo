@@ -134,7 +134,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 onFileUpload={() =>
                     handleFileUpload(
                         selectedFile,
-                        requestPresignedUrl,
                         email,
                         studyId,
                         'STUDY_PAGE',
@@ -177,8 +176,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                     files={uploadedFiles}
                     email={email}
                     onFileDownload={(fileKey, originalFileName) =>
-                        handleFileDownload(fileKey, originalFileName,
-                            requestPresignedUrl, setSnackbar)
+                        handleFileDownload(fileKey, originalFileName, setSnackbar)
                     }
                     onFileDelete={(fileKey, userEmail) =>
                         handleFileDelete(
