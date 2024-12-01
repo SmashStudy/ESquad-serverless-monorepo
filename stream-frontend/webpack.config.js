@@ -6,11 +6,31 @@ const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const app = "meeting";
 
 // 로컬 개발 환경에서만 HTTPS 설정
-const isLocalDevelopment = process.env.NODE_ENV === 'development';
+const isLocalDevelopment = process.env.NODE_ENV === 'dev';
 
 // 로컬에서만 사용하는 경로 설정
 const keyPath = isLocalDevelopment ? process.env.SSL_KEY_PATH : null;
 const certPath = isLocalDevelopment ? process.env.SSL_CERT_PATH : null;
+
+// 랜덤 값 생성 함수
+function getRandomValue(minLength) {
+  const length = Math.max(minLength, Math.floor(Math.random() * 10) + 2); // 최소 2자리
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+// 랜덤 이름 목록
+const names = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Hannah", "Ivy", "Jack"];
+
+// 랜덤 이름 선택 함수
+function getRandomName() {
+  const randomIndex = Math.floor(Math.random() * names.length);
+  return names[randomIndex];
+}
 
 module.exports = {
   mode: "production",
@@ -62,11 +82,11 @@ module.exports = {
   ],
   devServer: {
     proxy: {
-      "/api": {
+      "/stream": {
         target: "https://api.esquad.click/dev",
         secure: false,
         changeOrigin: true,
-        pathRewrite: { "^/api": "/api" },
+        pathRewrite: { "^/stream": "/stream" },
       },
     },
     historyApiFallback: {
@@ -91,6 +111,6 @@ module.exports = {
           cert: fs.existsSync(certPath) ? fs.readFileSync(certPath) : undefined,
         }
       : undefined,
-    open: true,
+    open: `https://localhost:9000/?studyId=${getRandomValue(2)}&name=${getRandomName()}`,  // 랜덤 이름 및 값 삽입
   },
 };

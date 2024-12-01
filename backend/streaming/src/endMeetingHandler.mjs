@@ -1,6 +1,5 @@
-import { getMeeting } from './db.mjs';
-import { chimeSDKMeetings } from './chime.mjs';
-import { CORS_HEADERS, handleOptions } from './cors.js';
+import { CORS_HEADERS, handleOptions } from './corsConfig.mjs';
+import { deleteMeeting } from './deleteMeeting.mjs';
 
 export const handler = async (event) => {
   // 프리플라이트(OPTIONS) 요청 처리
@@ -19,29 +18,19 @@ export const handler = async (event) => {
       };
     }
 
-    const meetingInfo = await getMeeting(title);
-
-    if (!meetingInfo) {
-      return {
-        statusCode: 404,
-        headers: CORS_HEADERS,
-        body: JSON.stringify({ message: 'Meeting not found' })
-      };
-    }
-
-    await chimeSDKMeetings.deleteMeeting({ MeetingId: meetingInfo.Meeting.MeetingId });
+    const response = await deleteMeeting(title);
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ message: 'Meeting deleted successfully' })
+      body: JSON.stringify(response)
     };
   } catch (error) {
     return {
-      statusCode: 500,
+      statusCode: error.message === 'Meeting not found' ? 404 : 500,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: 'Internal Server Error',
+        message: error.message === 'Meeting not found' ? 'Meeting not found' : 'Internal Server Error',
         error: error.message
       }),
     };
