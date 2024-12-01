@@ -65,7 +65,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/confirm`, {
+      const response = await fetch(`${getUserApi()}/confirm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

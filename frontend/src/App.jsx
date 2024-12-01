@@ -18,8 +18,9 @@ import UserProfile from "./components/user/UserProfile.jsx";
 import UserStorageUsage from "./components/user/UserStorageUsage";
 import Nickname from "./components/user/UserNickname.jsx";
 import Layout from "./components/user/Layout.jsx";
-import SignUp from './components/google/SignUp.jsx';
-import Confirm from './components/google/EmailVerification.jsx'
+import SignUp from "./components/google/SignUp.jsx";
+import Confirm from "./components/google/EmailVerification.jsx"
+import PrivateRoute from "./components/user/PrivateRoute.jsx";
 
 const theme = createTheme({
   palette: {
@@ -46,14 +47,14 @@ const theme = createTheme({
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("jwtToken"); // 로컬 스토리지에서 JWT 토큰 확인
     if (token) {
       setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
-    } else {
-      setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
-    }
+    } 
+    setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
   }, []); // 컴포넌트가 처음 렌더링될 때만 실행
 
   return (
@@ -72,7 +73,15 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/confirm" element={<Confirm />} />
 
-          <Route path="/" element={<Home />}>
+          {/* 보호된 경로 */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          >
             {/* user */}
             <Route path="/user/profile" element={<UserProfile />} />
             <Route path="/user/profile/category" element={<UserStorageUsage />} />

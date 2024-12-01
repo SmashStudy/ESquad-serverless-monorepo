@@ -21,6 +21,7 @@ provider:
     COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
     CALLBACK_URLS: ${env:CALLBACK_URLS}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    REGION: ${env:REGION}
 functions:
 
   authCallback:
@@ -236,6 +237,8 @@ resources:
           - AttributeName: email
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
 
     GoogleIdentityProvider:
       Type: AWS::Cognito::UserPoolIdentityProvider
@@ -271,7 +274,7 @@ package:
   individually: true
   include:
     - node_modules/**
-    - backend/user/service/handler.mjs
+    - backend/user/service/handler.js
     - backend/user/service/authcallback.mjs
 useDotenv: true
 plugins:
