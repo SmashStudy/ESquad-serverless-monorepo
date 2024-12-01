@@ -131,7 +131,7 @@ resources:
     Meetings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'esquad-streaming-meetings-${self:provider.stage}'  # 미팅 테이블
+        TableName: 'esquad-streaming-meeting-${self:provider.stage}'  # 미팅 테이블
         AttributeDefinitions:
           - AttributeName: 'title'
             AttributeType: 'S'
@@ -155,7 +155,7 @@ resources:
     Attendees:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: 'esquad-streaming-attendees-${self:provider.stage}'  # 참석자 테이블
+        TableName: 'esquad-streaming-attendee-${self:provider.stage}'  # 참석자 테이블
         AttributeDefinitions:
           - AttributeName: 'attendeeId'
             AttributeType: 'S'
