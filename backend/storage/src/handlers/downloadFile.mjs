@@ -10,6 +10,7 @@ const TABLE_NAME = process.env.METADATA_TABLE;
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
   let { fileKey } = event.pathParameters;
+
   try {
     fileKey = decodeURIComponent(fileKey);
   } catch (error) {
@@ -18,13 +19,23 @@ export const handler = async (event) => {
 
   let presignedUrl;
   try {
-    const presignedResponse = await requestPresignedUrl('getObject', fileKey);
+    // Presigned URL 생성
+    const presignedResponse = await requestPresignedUrl({
+      body: JSON.stringify({
+        action: 'getObject',
+        fileKey
+      })
+    });
+
     if (presignedResponse.error) {
       return createResponse(400, { error: presignedResponse.error });
     }
-    presignedUrl = presignedResponse.presignedUrl;
 
-    // 2. 다운로드 횟수 업데이트
+    // `createResponse`로부터 실제 `presignedUrl`을 추출
+    const responseData = JSON.parse(presignedResponse.body);
+    presignedUrl = responseData.presignedUrl;
+
+    // 다운로드 횟수 업데이트
     const updateParams = {
       TableName: TABLE_NAME,
       Key: { fileKey },
