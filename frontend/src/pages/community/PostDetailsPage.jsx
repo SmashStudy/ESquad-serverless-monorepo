@@ -57,7 +57,9 @@ const PostDetailsPage = () => {
         const response = await axios.get(`${getUserApi()}/get-user-info`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setCurrentUser(response.data);
+
+        const userEmail = response.data?.email;
+        setCurrentUser({ ...response.data, email: userEmail });
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
@@ -87,6 +89,7 @@ const PostDetailsPage = () => {
 
         if (postResponse.data) {
           setPost(postResponse.data);
+
           setLikedByUser(postResponse.data.likedByUser); // 좋아요 상태 설정
         } else {
           setPost(null);
@@ -294,16 +297,13 @@ const PostDetailsPage = () => {
   const handleLikePost = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      if (!token) throw new Error("로그인이 필요합니다.");
+      const userEmail = currentUser.email; // currentUser에서 이메일 추출
 
-      if (!currentUser || !currentUser.email) {
-        throw new Error("사용자 정보를 찾을 수 없습니다.");
-      }
+      if (!token || !userEmail) throw new Error("로그인이 필요합니다.");
 
-      // 좋아요 API 호출
       const response = await axios.post(
         `${getCommunityApi()}/${boardType}/${postId}/like`,
-        {}, // Body는 필요 없음
+        { userEmail }, // userEmail 전달
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { createdAt },
@@ -311,7 +311,6 @@ const PostDetailsPage = () => {
       );
 
       if (response.status === 200) {
-        // 좋아요 상태 업데이트
         setPost((prevPost) => ({
           ...prevPost,
           likeCount: response.data.updatedAttributes.likeCount,
