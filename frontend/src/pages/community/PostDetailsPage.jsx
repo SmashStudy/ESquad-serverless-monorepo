@@ -40,6 +40,7 @@ const PostDetailsPage = () => {
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [likedByUser, setLikedByUser] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -82,15 +83,20 @@ const PostDetailsPage = () => {
         // 게시글 가져오기
         const postResponse = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}`,
-          {
-            params: { createdAt },
-          }
+          { params: { createdAt } }
         );
 
         if (postResponse.data) {
-          setPost(postResponse.data);
+          const postData = postResponse.data;
 
-          setLikedByUser(postResponse.data.likedByUser); // 좋아요 상태 설정
+          setPost(postData);
+
+          // 좋아요 상태 확인
+          if (postData.likedUsers?.includes(currentUser?.email)) {
+            setLikedByUser(true);
+          } else {
+            setLikedByUser(false);
+          }
         } else {
           setPost(null);
         }
@@ -115,7 +121,8 @@ const PostDetailsPage = () => {
     };
 
     fetchPostAndComments();
-  }, [boardType, postId, createdAt, navigate]);
+  }, [boardType, postId, createdAt, navigate, currentUser]);
+
   // 댓글 가져오기 함수
   const fetchComments = async () => {
     try {
@@ -297,13 +304,14 @@ const PostDetailsPage = () => {
   const handleLikePost = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      const userEmail = currentUser.email; // currentUser에서 이메일 추출
 
-      if (!token || !userEmail) throw new Error("로그인이 필요합니다.");
+      if (!token || !currentUser?.email) {
+        throw new Error("로그인이 필요합니다.");
+      }
 
       const response = await axios.post(
         `${getCommunityApi()}/${boardType}/${postId}/like`,
-        { userEmail }, // userEmail 전달
+        { userEmail: currentUser.email },
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { createdAt },
@@ -464,21 +472,14 @@ const PostDetailsPage = () => {
       </Box>
 
       <Button
-        variant="text"
         startIcon={<ThumbUpIcon />}
         onClick={handleLikePost}
         sx={{
-          color: post.likedByUser ? "primary.main" : "text.secondary",
-          fontWeight: post.likedByUser ? "bold" : "normal",
-          ":hover": {
-            backgroundColor: "transparent",
-            color: "primary.main",
-          },
+          color: likedByUser ? "primary.main" : "text.secondary",
         }}
       >
         {post.likeCount}
       </Button>
-
       <Divider sx={{ marginBottom: 3 }} />
 
       <Paper
