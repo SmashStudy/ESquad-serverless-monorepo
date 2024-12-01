@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
-  Typography,
   CircularProgress,
   Divider,
   Paper,
@@ -15,9 +14,11 @@ import {
   Snackbar,
   Alert,
   Chip,
+  Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -286,6 +287,36 @@ const PostDetailsPage = () => {
     setDeleteCommentAlertOpen(false);
   };
 
+ const handleLikePost = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) throw new Error("로그인이 필요합니다.");
+
+      // 좋아요 API 호출
+      const response = await axios.post(
+        `${getCommunityApi()}/${boardType}/${postId}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { createdAt },
+        }
+      );
+
+      if (response.status === 200) {
+        // 좋아요 상태 업데이트
+        setPost((prevPost) => ({
+          ...prevPost,
+          likeCount: response.data.updatedAttributes.likeCount,
+        }));
+      }
+    } catch (error) {
+      console.error("좋아요 처리 중 오류 발생:", error);
+      alert("좋아요 처리에 실패했습니다.");
+    }
+  };
+
   if (loading) {
     return (
       <Box
@@ -406,6 +437,17 @@ const PostDetailsPage = () => {
           조회수: {post.viewCount} • 좋아요: {post.likeCount}
         </Typography>
       </Box>
+
+      {/* 좋아요 버튼 */}
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<ThumbUpIcon />}
+        onClick={handleLikePost}
+        sx={{ marginBottom: 2 }}
+      >
+        좋아요
+      </Button>
 
       <Divider sx={{ marginBottom: 3 }} />
 
