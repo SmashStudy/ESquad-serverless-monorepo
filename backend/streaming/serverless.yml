@@ -167,13 +167,13 @@ resources:
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: 'MeetingNotificationsQueue'  # 미팅 알림용 SQS 큐
-        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS  # KMS 키 사용
+        QueueName: 'MeetingNotificationsQueue-${self:provider.stage}'  # 미팅 알림용 SQS 큐
+        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS-${self:provider.stage}  # KMS 키 사용
 
     ChimeBrowserLogs:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: 'ChimeBrowserLogs'  # 브라우저 로그 그룹
+        LogGroupName: 'ChimeBrowserLogs-${self:provider.stage}'  # 브라우저 로그 그룹
 
     ChimeKMSKey:
       Type: AWS::KMS::Key
