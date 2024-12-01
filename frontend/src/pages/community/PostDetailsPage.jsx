@@ -24,6 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
 import logoImage from "../../assets/esquad-logo-nbk.png";
+import Tooltip from "@mui/material/Tooltip";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -38,6 +39,7 @@ const PostDetailsPage = () => {
   const [commentAlertOpen, setCommentAlertOpen] = useState(false);
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [likedByUser, setLikedByUser] = useState(false);
 
   const menuOpen = Boolean(menuAnchorEl);
 
@@ -85,6 +87,7 @@ const PostDetailsPage = () => {
 
         if (postResponse.data) {
           setPost(postResponse.data);
+          setLikedByUser(postResponse.data.likedByUser); // 좋아요 상태 설정
         } else {
           setPost(null);
         }
@@ -420,34 +423,58 @@ const PostDetailsPage = () => {
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
+          alignItems: "center",
           mb: 2,
           color: "text.secondary",
         }}
       >
+        <Box>
+          <Typography variant="body2">
+            {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
+            {post.updatedAt &&
+              new Date(post.updatedAt).getTime() !==
+                new Date(post.createdAt).getTime() && (
+                <Tooltip
+                  title={`${new Date(post.updatedAt).toLocaleString()} 수정`}
+                >
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      ml: 1,
+                    }}
+                  >
+                    수정됨
+                  </Typography>
+                </Tooltip>
+              )}
+          </Typography>
+        </Box>
         <Typography variant="body2">
-          작성자: {post.writer?.nickname || "알 수 없음"} •{" "}
-          {new Date(post.createdAt).toLocaleString()}
-          {post.updatedAt &&
-            new Date(post.updatedAt).getTime() !==
-              new Date(post.createdAt).getTime() &&
-            ` (수정됨: ${new Date(post.updatedAt).toLocaleString()})`}
-        </Typography>
-        <Typography variant="body2">
-          조회수: {post.viewCount} • 좋아요: {post.likeCount}
+          작성자:{" "}
+          <Typography component="span" variant="body2" sx={{ color: "black" }}>
+            {post.writer?.nickname || "알 수 없음"}
+          </Typography>
         </Typography>
       </Box>
 
-      {/* 좋아요 버튼 */}
       <Button
-        variant="contained"
-        color="primary"
+        variant="text"
         startIcon={<ThumbUpIcon />}
         onClick={handleLikePost}
-        sx={{ marginBottom: 2 }}
+        sx={{
+          color: post.likedByUser ? "primary.main" : "text.secondary",
+          fontWeight: post.likedByUser ? "bold" : "normal",
+          ":hover": {
+            backgroundColor: "transparent",
+            color: "primary.main",
+          },
+        }}
       >
-        좋아요
+        {post.likeCount}
       </Button>
 
       <Divider sx={{ marginBottom: 3 }} />
