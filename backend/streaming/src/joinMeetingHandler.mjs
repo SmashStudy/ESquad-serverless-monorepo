@@ -1,6 +1,7 @@
-import { getMeeting, putMeeting, putAttendee } from './db.mjs';
-import { chimeSDKMeetings, uuid, getNotificationsConfig } from './chime.mjs';
-import { CORS_HEADERS, handleOptions } from './cors.mjs';
+import { getMeeting } from './getMeeting.mjs';
+import { CORS_HEADERS, handleOptions } from './corsConfig.mjs';
+import { createMeeting } from './createMeeting.mjs';
+import { createAttendee } from './createAttendee.mjs';
 
 export const handler = async (event) => {
   // 프리플라이트(OPTIONS) 요청 처리
@@ -21,22 +22,10 @@ export const handler = async (event) => {
 
     let meetingInfo = await getMeeting(title);
     if (!meetingInfo) {
-      const request = {
-        ClientRequestToken: uuid(),
-        MediaRegion: region,
-        NotificationsConfiguration: getNotificationsConfig(),
-        ExternalMeetingId: title.substring(0, 64),
-        MeetingFeatures: ns_es === 'true' ? { Audio: { EchoReduction: 'AVAILABLE' } } : undefined,
-      };
-      meetingInfo = await chimeSDKMeetings.createMeeting(request);
-      await putMeeting(title, meetingInfo);
+      meetingInfo = await createMeeting(title, region, ns_es);
     }
 
-    const attendeeInfo = await chimeSDKMeetings.createAttendee({
-      MeetingId: meetingInfo.Meeting.MeetingId,
-      ExternalUserId: uuid(),
-    });
-    await putAttendee(title, attendeeInfo.Attendee.AttendeeId, attendeeName);
+    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName);
 
     return {
       statusCode: 200,

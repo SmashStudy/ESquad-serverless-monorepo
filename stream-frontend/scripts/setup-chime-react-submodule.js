@@ -29,21 +29,35 @@ function spawnOrFail(command, args, options, printOutput = true) {
 
 const pjson = require('../package.json');
 
-// No need to setup if we do not depend on submodule
+// 서브모듈 의존성이 있는지 확인
 if (pjson.dependencies['amazon-chime-sdk-component-library-react'] !== 'file:../../amazon-chime-sdk-component-library-react') {
   process.exit(0);
 }
 
 process.chdir(path.join(__dirname, '../../../amazon-chime-sdk-component-library-react'));
 
+// node_modules가 없으면 서브모듈 설정
 if (!fs.existsSync('node_modules')) {
-  console.log('Setup amazon-chime-sdk-component-library-react submodule')
-  spawnOrFail('git', [ 'submodule init']);
-  spawnOrFail('git', [ 'submodule update']);
-  spawnOrFail('npm', [ 'install']);
+  console.log('Setup amazon-chime-sdk-component-library-react submodule');
+  spawnOrFail('git', ['submodule', 'init']);
+  spawnOrFail('git', ['submodule', 'update']);
+  spawnOrFail('npm', ['install']);
 }
 
-console.log('Building amazon-chime-sdk-component-library-react submodule');
-spawnOrFail('npm', [ 'run build']);
+// WEBPACK_ENV 환경 변수 확인
+const webpackEnv = process.env.WEBPACK_ENV;
+let buildCommand;
 
+if (webpackEnv === 'dev') {
+  buildCommand = ['run', 'build'];
+  console.log('Building amazon-chime-sdk-component-library-react submodule with build');
+} else if (webpackEnv === 'local') {
+  buildCommand = ['run', 'build_local'];
+  console.log('Building amazon-chime-sdk-component-library-react submodule with build_local');
+} else {
+  console.log('Skipping build for amazon-chime-sdk-component-library-react submodule');
+  process.exit(0);
+}
 
+// 지정된 빌드 명령어 실행
+spawnOrFail('npm', buildCommand);
