@@ -66,6 +66,13 @@ const PostListPage = ({ isSmallScreen }) => {
       const url = `${getCommunityApi()}/${boardType}`; // 동적 API 경로 설정
       const response = await axios.get(url, { params });
 
+      const items = response.data.items || [];
+
+      const updatedItems = items.map((item) => ({
+        ...item,
+        comments: item.comments || [],
+      }));
+
       setPosts(response.data.items || []);
       const newLastEvaluatedKeys = [...lastEvaluatedKeys];
       newLastEvaluatedKeys[curPage] = response.data.lastEvaluatedKey || null;
@@ -395,7 +402,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     👁 {post.viewCount || 0}
                   </Typography>
                   <Typography variant="caption">
-                    💬 {post.comments?.length || 0}
+                    💬 {post.commentCount || 0}
                   </Typography>
                 </Box>
               </Box>

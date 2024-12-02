@@ -1,7 +1,7 @@
 // storeFileMetadata.test.mjs
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
-import { handler } from '../service/storeFileMetadata.mjs';
+import { handler } from '../handlers/storeFileMetadata.mjs';
 
 // AWS SDK Mock 설정
 AWSMock.setSDKInstance(AWS);
