@@ -87,8 +87,8 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                 <Grid item xs={12} md={4}>
                     <Box
                         component="img"
-                        src={selectedBook.image}
-                        alt={selectedBook.title}
+                        src={selectedBook.imgPath}
+                        alt={selectedBook.maintitle}
                         sx={{
                             width: '60%',
                             height: 'auto',
@@ -101,10 +101,10 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                 {/* Book Info Column */}
                 <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        {selectedBook.title}
+                        {selectedBook.subtitle}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-                        {selectedBook.writer}
+                        {selectedBook.authors}
                     </Typography>
 
                     <Divider
