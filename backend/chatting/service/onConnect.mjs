@@ -6,6 +6,8 @@ import * as ddbUtil from "../lib/ddbUtil.mjs"
 // DynamoDB 클라이언트 초기화
 const dynamodb = new DynamoDBClient({ region: process.env.CHATTING_REGION });
 
+const USERLIST_TABLE_NAME = process.env.USERLIST_TABLE_NAME;
+
 const apiSpec = {
     category: "chat",
     event: [
@@ -39,6 +41,7 @@ export const handler = async (event, context) => {
 
     // 쿼리 문자열 파라미터에서 room_id와 user_id를 추출
     const queryStringParameters = event.queryStringParameters || {};
+
     const { room_id, user_id } = queryStringParameters;
 
     if (!room_id || !user_id) {
@@ -57,7 +60,7 @@ export const handler = async (event, context) => {
 
     try {
         const command = new PutItemCommand({
-            TableName: `${process.env.service}-${process.env.stage}-chat-userlist`,
+            TableName: USERLIST_TABLE_NAME,
             Item: item,
         });
 
@@ -65,6 +68,11 @@ export const handler = async (event, context) => {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // 모든 출처 허용
+                "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            },
             body: JSON.stringify({ message: "Connected successfully" }),
         };
     } catch (e) {

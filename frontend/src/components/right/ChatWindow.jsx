@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import ChatMessages from './ChatMessages.jsx';
+import {fetchTeamListAPI} from "./chatApi/ChatApi.jsx";
 
-const ChatWindow = ({ teams }) => {
+const ChatWindow = () => {
     const theme = useTheme();
-    const [currentChatRoom, setCurrentChatRoom] = useState(teams[0] || null);
-    const [teamList, setTeamList] = useState(teams || []);
 
-    // 팀 채팅방 생성
-    const handleCreateTeamChatRoom = async (teamName) => {
+    const [teams, setTeams] = useState([]); // 서버에서 가져온 팀 데이터 저장
+    const [currentChatRoom, setCurrentChatRoom] = useState(null); // 현재 선택된 채팅방
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+    const [error, setError] = useState(null); // 에러 상태
+
+    // 팀 데이터 가져오는 함수
+    const fetchTeams = async () => {
         try {
-            const newTeam = {
-                teamID: `team_${Date.now()}`,
-                teamName: teamName,
-            };
+            setIsLoading(true);
+            setError(null);
 
-            setTeamList((prevList) => [...prevList, newTeam]);
-            setCurrentChatRoom(newTeam);
+            const teamData = await fetchTeamListAPI(); // API 호출
+            setTeams(teamData);
+            setCurrentChatRoom(teamData[0] || null); // 첫 번째 팀을 기본값으로 설정
         } catch (error) {
-            console.error("채팅방 생성 실패:", error.message);
+            console.error("팀 목록 가져오기 실패:", error.message);
+            setError("팀 데이터를 불러오는 중 오류가 발생했습니다.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    // 채팅방 선택
+    useEffect(() => {
+        fetchTeams();
+    }, []);
+
     const handleChatRoomSelect = (room) => {
         setCurrentChatRoom(room);
     };
@@ -38,14 +47,29 @@ const ChatWindow = ({ teams }) => {
                 backgroundColor: '#f7f7f7',
             }}
         >
-            {/* 팀 목록이 없는 경우 */}
-            {teams.length === 0 ? (
+            {isLoading ? (
+                // 로딩 상태 표시
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Typography variant="h6" color={theme.palette.text.secondary}>
+                        팀 데이터를 불러오는 중입니다...
+                    </Typography>
+                </Box>
+            ) : error ? (
+                // 에러 상태 표시
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Typography variant="h6" color={theme.palette.error.main}>
+                        {error}
+                    </Typography>
+                </Box>
+            ) : teams.length === 0 ? (
+                // 팀 목록이 없는 경우
                 <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Typography variant="h6" color={theme.palette.text.secondary}>
                         현재 가입된 팀이 없습니다. 팀에 가입해주세요!
                     </Typography>
                 </Box>
             ) : (
+                // 팀 목록 및 채팅창
                 <>
                     {/* 팀 목록 */}
                     <Box
@@ -64,7 +88,7 @@ const ChatWindow = ({ teams }) => {
                             marginBottom: '12px',
                         }}
                     >
-                        {teamList.map((team, index) => (
+                        {teams.map((team, index) => (
                             <Button
                                 key={index}
                                 onClick={() => handleChatRoomSelect(team)}
@@ -92,7 +116,13 @@ const ChatWindow = ({ teams }) => {
                             borderRadius: 3,
                         }}
                     >
-                        <ChatMessages currentChatRoom={currentChatRoom} />
+                        {currentChatRoom ? (
+                            <ChatMessages currentChatRoom={currentChatRoom} />
+                        ) : (
+                            <Typography variant="h6" color={theme.palette.text.secondary}>
+                                채팅방을 선택해주세요.
+                            </Typography>
+                        )}
                     </Box>
                 </>
             )}

@@ -47,7 +47,7 @@ export async function createMeetingAndAttendee(
   };
 
   // API Gateway URL로 요청을 보냄
-  const res = await fetch(BASE_URL + 'api/stream/join', {
+  const res = await fetch(BASE_URL + 'stream/join', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export async function getAttendee(
   };
 
   const res = await fetch(
-    BASE_URL + 'api/stream/attendee?' + new URLSearchParams(params),
+    BASE_URL + 'stream/attendee?' + new URLSearchParams(params),
     {
       method: 'GET',
     }
@@ -98,7 +98,7 @@ export async function endMeeting(title: string): Promise<void> {
     title: encodeURIComponent(title),
   };
 
-  const res = await fetch(BASE_URL + 'api/stream/end', {
+  const res = await fetch(BASE_URL + 'stream/end', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

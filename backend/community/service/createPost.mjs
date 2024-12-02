@@ -23,6 +23,7 @@ export const handler = async (event) => {
     const postId = uuidv4();
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
+    const likedUsers = []; // 빈 배열로 초기화
 
     const item = {
       PK: { S: `POST#${postId}` },
@@ -52,6 +53,7 @@ export const handler = async (event) => {
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
+      ...(likedUsers.length > 0 && { likedUsers: { SS: likedUsers } }), // 빈 likedUsers 방지
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
       comments: { L: [] }, // 빈 리스트로 초기화
