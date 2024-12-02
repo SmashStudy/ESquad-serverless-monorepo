@@ -11,10 +11,11 @@ import * as TeamUserService from '../services/teamUserService.mjs';
  */
 export const getTeams = async (event) => {
     try {
+        console.log(`event is ${JSON.stringify(event, null, 2)}`);
         const decoded = decodeToken(event.headers);
         const userEmail = decoded?.email;
-        const teams = await TeamUserService.getTeams(userEmail);
-        return createResponse(200, { message: 'User to Team List successfully', data: teams });
+        const sortedTeams = await TeamUserService.getTeams(userEmail);
+        return createResponse(200, { message: 'User to Team List successfully', data: sortedTeams });
     } catch (error) {
         console.error('Error retrieving teams:', error);
         return createResponse(500, { error: `Error retrieving teams ${error.message}` });

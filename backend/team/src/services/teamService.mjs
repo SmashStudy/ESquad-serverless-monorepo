@@ -27,7 +27,7 @@ export const createTeam = async ({ teamName, description, userIds }) => {
     if (userIds.length > 12) return { isValid: false, message: '최대 12명이어야 합니다.' };
     
     const nameValidation = validateTeamName(teamName);
-    if (!nameValidation.isValid)throw new Error(nameValidation.message);
+    if (!nameValidation.isValid) throw new Error(nameValidation.message);
     
     const descriptionValidation = validateTeamDescription(description);
     if (!descriptionValidation.isValid) throw new Error(descriptionValidation.message);
