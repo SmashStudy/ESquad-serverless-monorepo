@@ -114,14 +114,14 @@ const UserStorageUsageRenewed = () => {
 
             {/* 우측 상단 - 게이지 차트 */}
             <Grid item xs={4}>
-              <Box sx={{ height: '300px', marginBottom: 2 }}>
+              <Box sx={{ height: '300px' }}>
                 <Box id="usageGauge" sx={{ height: '100%' }} />
               </Box>
 
               {/* 우측 하단 - 요약 정보 카드 */}
-              <Card>
+              <Card sx={{ padding: 1, backgroundColor: '#f9f9f9', boxShadow: 3 }}>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>총 용량: 5GB</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>스토리지 요약 정보</Typography>
                   {loading ? (
                       <Typography variant="body1">Loading...</Typography>
                   ) : usageError || emailError ? (
@@ -130,24 +130,38 @@ const UserStorageUsageRenewed = () => {
                       </Typography>
                   ) : (
                       <>
-                        <Typography variant="body1">사용량: {formatFileSize(usage)}</Typography>
-                        <Typography variant="body1">남은 용량: {formatFileSize(5 * 1024 * 1024 * 1024 - usage)}</Typography>
-                        <Box sx={{ marginTop: 2 }}>
-                          <Typography variant="body2">남은 용량 상태:</Typography>
-                          <Box sx={{ width: '100%', bgcolor: '#f3f3f3' }}>
-                            <Box
-                                sx={{
-                                  width: `${(usage / (5 * 1024 * 1024 * 1024)) * 100}%`,
-                                  bgcolor: '#76c7c0',
-                                  height: 10,
-                                }}
-                            />
-                          </Box>
-                        </Box>
+                        <Typography variant="body2" sx={{ marginBottom: 1 }}>
+                          <strong>총 파일 수:</strong> {gridData.length}
+                        </Typography>
+                        <Typography variant="body2" sx={{ marginBottom: 1 }}>
+                          <strong>총 용량:</strong> 5GB
+                        </Typography>
+                        <Typography variant="body2" sx={{ marginBottom: 1 }}>
+                          <strong>사용량:</strong> {formatFileSize(usage)}
+                        </Typography>
+                        <Typography variant="body2" sx={{ marginBottom: 1 }}>
+                          <strong>남은 용량:</strong> {formatFileSize(5 * 1024 * 1024 * 1024 - usage)}
+                        </Typography>
+                        { usage < 1.5 * 1024 * 1024 * 1024 ? (
+                            <Typography variant="body2" sx={{ color: 'green', marginTop: 1 }}>
+                              현재 용량 상태는 안정적입니다.
+                            </Typography>
+                        ) : usage < 4 * 1024 * 1024 * 1024 ? (
+                            <Typography variant="body2" sx={{ color: 'orange', marginTop: 1 }}>
+                              현재 용량 상태는 보통입니다.
+                            </Typography>
+                        ) : (
+                            <Typography variant="body2" sx={{ color: 'red', marginTop: 1 }}>
+                              현재 용량 상태는 포화 상태입니다. 파일을 삭제하거나 프리미엄 회원 구독하세요.
+                            </Typography>
+                        )
+                        }
+
                       </>
                   )}
                 </CardContent>
               </Card>
+
 
             </Grid>
           </Grid>
