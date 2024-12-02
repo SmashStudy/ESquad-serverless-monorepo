@@ -1,7 +1,7 @@
 // deleteFile.test.mjs
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
-import { handler } from '../service/deleteFile.mjs';
+import { handler } from '../handlers/deleteFile.mjs';
 
 // AWS SDK Mock 설정
 AWSMock.setSDKInstance(AWS);

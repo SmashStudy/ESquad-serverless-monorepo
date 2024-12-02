@@ -15,7 +15,6 @@ import FileList from '../../../components/storage/FileList.jsx';
 import Pagination from '../../../components/storage/Pagination.jsx';
 import SnackbarAlert from '../../../components/storage/SnackBarAlert.jsx';
 import {useTheme} from '@mui/material';
-import usePresignedUrl from '../../../hooks/storage/UsePresignedUrl.jsx';
 import {
   fetchFiles,
   fetchUserEmail,
@@ -23,16 +22,18 @@ import {
   handleFileDelete,
   handleFileDownload
 } from '../../../utils/storage/utilities.js';
+import LinearProgressWithLabel from "../../../components/custom/CustomMui.jsx";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
   const study = location.state.study;
   const theme = useTheme();
   const {studyId} = useParams();
-  const {requestPresignedUrl} = usePresignedUrl();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -55,6 +56,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         setUploadedFiles,
         setLastEvaluatedKeys,
         setTotalPages,
+        totalPages,
         setSnackbar,
         setIsLoading
     );
@@ -134,7 +136,6 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 onFileUpload={() =>
                     handleFileUpload(
                         selectedFile,
-                        requestPresignedUrl,
                         email,
                         studyId,
                         'STUDY_PAGE',
@@ -152,14 +153,39 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 setUploadedFiles,
                                 setLastEvaluatedKeys,
                                 setTotalPages,
+                                totalPages,
                                 setSnackbar,
                                 setIsLoading
                             ),
-                        setCurrentPage
+                        setCurrentPage,
+                        setUploadProgress
                     )
                 }
                 isUploading={isUploading}
             />
+
+            {downloadProgress && (
+                <Box sx={{ my: 2,  alignItems: 'center' }}>
+                  <Typography variant="subtitle1" sx = {{mr: 2}}>
+                    다운로드 중... {downloadProgress.fileName}
+                  </Typography>
+                  <Box sx = {{flexGrow:1}}>
+                  <LinearProgressWithLabel variant="determinate" value={downloadProgress.percent} />
+                  </Box>
+                </Box>
+            )}
+
+            {uploadProgress && (
+                <Box sx={{ my: 2,  alignItems: 'center' }}>
+                  <Typography variant="subtitle1" sx = {{mr: 2}}>
+                    업로드 중... {uploadProgress.fileName}
+                  </Typography>
+                  <Box sx = {{flexGrow:1}}>
+                    <LinearProgressWithLabel variant="determinate" value={uploadProgress.percent} />
+                  </Box>
+                </Box>
+            )}
+
             {isLoading ? (
                 <Typography
                     variant="h5"
@@ -177,15 +203,13 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                     files={uploadedFiles}
                     email={email}
                     onFileDownload={(fileKey, originalFileName) =>
-                        handleFileDownload(fileKey, originalFileName,
-                            requestPresignedUrl, setSnackbar)
+                        handleFileDownload(fileKey, originalFileName, setSnackbar, setDownloadProgress)
                     }
                     onFileDelete={(fileKey, userEmail) =>
                         handleFileDelete(
                             fileKey,
                             userEmail,
                             email,
-                            requestPresignedUrl,
                             setSnackbar,
                             setUploadedFiles,
                             () =>
@@ -198,12 +222,13 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                     setUploadedFiles,
                                     setLastEvaluatedKeys,
                                     setTotalPages,
+                                    totalPages,
                                     setSnackbar,
                                     setIsLoading
                                 ),
                             setCurrentPage
                         )
-                    }
+                    } theme={theme}
 
                 />
             )}

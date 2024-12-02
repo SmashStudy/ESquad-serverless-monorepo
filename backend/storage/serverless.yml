@@ -11,6 +11,7 @@ provider:
     METADATA_TABLE: ${env:METADATA_TABLE}
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    USER_TABLE_STREAM_ARN: ${env:USER_TABLE_STREAM_ARN}
 
   iamRoleStatements:
     - Effect: Allow
@@ -19,6 +20,7 @@ provider:
         - dynamodb:GetItem
         - dynamodb:Query
         - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
       Resource:
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
@@ -27,8 +29,8 @@ provider:
 
 functions:
 
-  generatePresignedUrl:
-    handler: service/generatePresignedUrl.handler
+  generatePresignedUrl: # Deprecated
+    handler: src/utils/s3Utils.requestPresignedUrl
     events:
       - http:
           path: /presigned-url
@@ -36,7 +38,7 @@ functions:
           cors: true
 
   fetchFileMetadata:
-    handler: service/fetchFileMetadata.handler
+    handler: src/handlers/fetchFileMetadata.handler
     events:
       - http:
           path: /metadata
@@ -44,15 +46,15 @@ functions:
           cors: true
 
   deleteFile:
-    handler: service/deleteFile.handler
+    handler: src/handlers/deleteFile.handler
     events:
       - http:
           path: /{fileKey}
           method: delete
           cors: true
 
-  storeFileMetadata:
-    handler: service/storeFileMetadata.handler
+  storeFileMetadata: # Deprecated
+    handler: src/handlers/storeFileMetadata.handler
     events:
       - http:
           path: /store-metadata
@@ -60,12 +62,39 @@ functions:
           cors: true
 
   getUserUsage:
-    handler: service/getUserUsage.handler
+    handler: src/handlers/getUserUsage.handler
     events:
       - http:
           path: /get-user-usage
           method: get
           cors: true
+
+  downloadFile:
+    handler: src/handlers/downloadFile.handler
+    events:
+      - http:
+          path: /metadata/{fileKey}
+          method: patch
+          cors: true
+
+  uploadFile:
+    handler: src/handlers/uploadFile.handler
+    events:
+      - http:
+          path: /upload-file
+          method: post
+          cors: true
+
+  updateFileMetadataNickname:
+    handler: src/triggers/updateFileMetadataNickname.trigger
+    events:
+      - stream:
+          type: dynamodb
+          arn: ${env:USER_TABLE_STREAM_ARN}
+          batchSize: 5
+          startingPosition: LATEST
+
+
 
 resources:
   Resources:
@@ -119,6 +148,8 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${env:S3_BUCKET}
+        AccelerateConfiguration:
+          AccelerationStatus: Enabled
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
@@ -157,4 +188,4 @@ plugins:
 
 package:
   exclude:
-    - test/**
+    - tests/**
