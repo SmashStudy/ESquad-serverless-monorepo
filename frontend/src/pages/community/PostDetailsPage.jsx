@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -40,9 +40,9 @@ const PostDetailsPage = () => {
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [likedByUser, setLikedByUser] = useState(false);
-  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   const menuOpen = Boolean(menuAnchorEl);
+  const fetchRef = useRef(false); // 중복 호출 방지 플래그
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
@@ -69,59 +69,60 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  // 게시글 및 댓글 가져오기
   useEffect(() => {
-    const fetchPostAndComments = async () => {
-      try {
-        setLoading(true);
-        if (!createdAt) {
-          console.error("createdAt 값이 누락되었습니다.");
-          navigate(`/community/${boardType}`, { replace: true });
-          return;
-        }
+    const fetchPostAndIncrementView = async () => {
+      if (fetchRef.current) return;
+      fetchRef.current = true;
 
-        // 게시글 가져오기
-        const postResponse = await axios.get(
+      setLoading(true);
+
+      try {
+        setLoading(true); // 로딩 시작
+        const response = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}`,
           { params: { createdAt } }
         );
 
-        if (postResponse.data) {
-          const postData = postResponse.data;
-
+        if (response.status === 200) {
+          const postData = response.data;
           setPost(postData);
-
-          // 좋아요 상태 확인
-          if (postData.likedUsers?.includes(currentUser?.email)) {
-            setLikedByUser(true);
-          } else {
-            setLikedByUser(false);
-          }
-        } else {
-          setPost(null);
-        }
-
-        // 댓글 가져오기
-        const commentsResponse = await axios.get(
-          `${getCommunityApi()}/${boardType}/${postId}/comments`,
-          {
-            params: { createdAt },
-          }
-        );
-
-        if (commentsResponse.data && commentsResponse.data.comments) {
-          setComments(commentsResponse.data.comments);
+          setLikedByUser(
+            postData.likedUsers?.includes(currentUser?.email) || false
+          );
         }
       } catch (error) {
         console.error("데이터를 불러오는 중 오류 발생:", error);
-        setPost(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPostAndComments();
-  }, [boardType, postId, createdAt, navigate, currentUser]);
+    if (boardType && postId && createdAt) {
+      fetchPostAndIncrementView();
+    }
+  }, [boardType, postId, createdAt, currentUser]);
+
+  // 댓글 가져오기
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        if (!post) return;
+
+        const response = await axios.get(
+          `${getCommunityApi()}/${boardType}/${postId}/comments`,
+          { params: { createdAt } }
+        );
+
+        if (response.data?.comments) {
+          setComments(response.data.comments);
+        }
+      } catch (error) {
+        console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchComments();
+  }, [boardType, postId, createdAt, post]);
 
   // 댓글 가져오기 함수
   const fetchComments = async () => {
@@ -346,7 +347,22 @@ const PostDetailsPage = () => {
     );
   }
 
-  if (!post) {
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!loading && (!post || post === null)) {
     return (
       <Box
         sx={{
