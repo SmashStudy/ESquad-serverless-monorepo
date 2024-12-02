@@ -101,7 +101,7 @@ const PostDetailsPage = () => {
       }
     };
 
-    if (boardType && postId && createdAt) {
+    if (boardType && postId && createdAt && currentUser) {
       fetchPostAndIncrementView();
     }
   }, [boardType, postId, createdAt, currentUser]);
@@ -327,7 +327,7 @@ const PostDetailsPage = () => {
       if (response.status === 200) {
         setPost((prevPost) => ({
           ...prevPost,
-          likeCount: response.data.updatedAttributes.likeCount,
+          likeCount: response.data.updatedAttributes?.likeCount || 0,
         }));
         setLikedByUser(!likedByUser);
       }
