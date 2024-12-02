@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useTheme, styled } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { searchBooks } from 'C:/DEV/workspace/GitHub/ESquad-serverless-monorepo/frontend/src/utils/bookApi.js';
 
 // 날짜 포맷 함수
 const formatDate = (dateStr) => {
@@ -82,18 +82,8 @@ const BookListPage = () => {
         if (!query.trim()) return; // 검색어가 비어있으면 실행하지 않음
         setLoading(true);
         try {
-            const response = await axios.get(
-                `https://api.esquad.click/local/teams/book/search`,
-                {
-                    params: { query },
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-                    },
-                }
-            );
-
-            const mappedBooks = mapBooks(response.data);
+            const books = await searchBooks(query);
+            const mappedBooks = mapBooks(books);
             setBooks(mappedBooks);
         } catch (error) {
             console.error("Error fetching books:", error);
