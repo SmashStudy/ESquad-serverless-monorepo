@@ -7,6 +7,8 @@ export const getCommunityApi = () => `https://api.esquad.click/${environment}/co
 export const getNotificationApi = () => `https://api.esquad.click/${environment}/notification`;
 export const getTeamApi = () => 'https://api.esquad.click/teams';
 export const getStreamApi = () => `https://api.esquad.click/${environment}/stream`
+export const getStreamingApi = () => environment === 'local' ? 'https://localhost:9000/' : 'https://live.dev.esquad.click/';
+
 
 export const getNotificationWebsocketApi = () => environment === 'local' ?
     'wss://cjf00kxsf3.execute-api.us-east-1.amazonaws.com/local'
