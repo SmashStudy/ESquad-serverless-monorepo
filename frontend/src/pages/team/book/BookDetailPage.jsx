@@ -19,7 +19,6 @@ const BookDetailPage = () => {
     const theme = useTheme();
     const location = useLocation();
     const book = location.state.book; // 현재 책 데이터
-    console.log(`${JSON.stringify(book)}`);
     const params = useParams();
     const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
 
@@ -56,53 +55,46 @@ const BookDetailPage = () => {
     return (
         <Box sx={{ padding: theme.spacing(3), maxWidth: "1400px", margin: "auto" }}>
             {/* 책 상세 정보 */}
-            <Grid container spacing={4}>
+            <Grid container spacing={4} alignItems="flex-start">
                 {/* 책 이미지 */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={4} sx={{ display: "flex", justifyContent: "center" }}>
                     <Box
                         component="img"
                         src={book.imgPath}
                         alt={book.maintitle}
                         sx={{
                             width: "100%",
-                            maxHeight: "700px",
-                            height: "620px",
-                            width:'442px',
-                            objectFit: "contain", // 내용이 영역 안에 들어가도록
+                            maxWidth: "100%", // 이미지가 부모 크기를 벗어나지 않도록
+                            height: "auto",
+                            maxHeight: "600px",
+                            objectFit: "contain", // 이미지가 영역을 벗어나지 않도록
                             borderRadius: theme.spacing(1),
                             boxShadow: theme.shadows[2],
                             border: "1px solid #ddd",
+                            transition: "all 0.3s ease", // 크기 변경 시 애니메이션
                         }}
                     />
                 </Grid>
 
                 {/* 책 정보 */}
                 <Grid item xs={12} md={8}>
-                <Typography variant="h4" fontWeight="bold" gutterBottom>
-    {book.maintitle}
-</Typography>
+                    <Typography variant="h4" fontWeight="bold" gutterBottom>
+                        {book.maintitle}
+                    </Typography>
+                    {book.subTitle && (
+                        <Typography variant="h6" color="textSecondary" gutterBottom>
+                            {book.subTitle || "부제 없음"}
+                        </Typography>
+                    )}
+                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                        {book.authors || "저자 정보 없음"}
+                    </Typography>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h6" fontWeight="medium" gutterBottom>
+                        책 소개
+                    </Typography>
+                    <BookDescription description={book.description || ""} />
 
-{/* 부제목 (옵션: 부제목이 없을 경우 "부제 없음") */}
-{book.subTitle && (
-    <Typography variant="h6" color="textSecondary" gutterBottom>
-        {book.subTitle || "부제 없음"}
-    </Typography>
-)}
-
-{/* 저자 정보 (옵션: 저자 정보가 없을 경우 "저자 정보 없음") */}
-<Typography variant="subtitle1" color="textSecondary" gutterBottom>
-    {book.authors || "저자 정보 없음"}
-</Typography>
-
-{/* 구분선 */}
-<Divider sx={{ my: 2 }} />
-
-{/* 책 소개 */}
-<Typography variant="h6" fontWeight="medium" gutterBottom>
-    책 소개
-</Typography>
-<BookDescription description={book.description || ""} />
-                    
                     {/* 추천 도서 섹션 */}
                     <Divider sx={{ my: 4 }} />
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -127,7 +119,7 @@ const BookDetailPage = () => {
                                         image={recBook.imgPath}
                                         alt={recBook.maintitle}
                                     />
-                                    <CardContent sx={{ height: 90, objectFit: "cover" }}>
+                                    <CardContent>
                                         <Typography variant="body1" fontWeight="bold" gutterBottom>
                                             {recBook.maintitle}
                                         </Typography>
@@ -141,8 +133,6 @@ const BookDetailPage = () => {
                     </Grid>
                 </Grid>
             </Grid>
-
-            
 
             {/* 스터디 생성 버튼 */}
             <Fab
