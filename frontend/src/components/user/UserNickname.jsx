@@ -68,6 +68,8 @@ const NicknameEditor = () => {
       );
       setSuccess('닉네임이 성공적으로 업데이트되었습니다.');
       setNickname(newNickname);
+      window.location.reload();
+
     } catch (err) {
       if (err.response?.status === 500) {
         setError('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.');

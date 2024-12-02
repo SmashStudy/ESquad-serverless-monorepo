@@ -31,7 +31,7 @@ export const saveUserToDynamoDB = async (event) => {
         name: { S: name },
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할 설정
-        entryPoint: { SS: ["/dashboard", "/profile", "/settings"] },
+        entryPoint: { SS: ["*"] },
         lastLogin: { S: new Date().toISOString() },
         lastLogout: { S: "" },
         createdAt: { S: new Date().toISOString() },

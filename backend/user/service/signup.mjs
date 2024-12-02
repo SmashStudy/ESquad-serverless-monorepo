@@ -100,7 +100,7 @@ const saveUserToDynamoDB = async (email, name, nickname) => {
         name: { S: name },
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할: user
-        entryPoint: { SS: ["/dashboard", "/profile", "/settings"] }, // 기본 엔트리 포인트
+        entryPoint: { SS: ["*"] }, // 기본 엔트리 포인트
         lastLogin: { S: new Date().toISOString() }, // 로그인 시간 초기화
         lastLogout: { S: "" }, // 로그아웃 시간 초기화
         createdAt: { S: new Date().toISOString() }, // 생성 시간

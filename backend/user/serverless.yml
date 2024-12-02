@@ -22,6 +22,7 @@ provider:
             - cognito-idp:AdminAddUserToGroup
             - cognito-idp:AdminGetUser
             - "cognito-idp:ListUsers"
+            - cognito-idp:*
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         
@@ -31,13 +32,22 @@ provider:
     CALLBACK_URLS: ${env:CALLBACK_URLS}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
     REGION: ${env:REGION}
+
 functions:
 
-  authCallback:
-    handler: service/authcallback.handler
+  grouprole:
+    handler: service/grouprole.handler
     events:
       - http:
-          path: auth/callback
+          path: role
+          method: get
+          cors: true
+    
+  admingetuser:
+    handler: service/admingetuser.handler
+    events:
+      - http:
+          path: admin
           method: get
           cors: true
 
@@ -70,6 +80,22 @@ functions:
     events:
       - http:
           path: confirm
+          method: post
+          cors: true
+
+  confirmPassword:
+    handler: service/confirmpassword.handler
+    events:
+      - http:
+          path: confirm/password
+          method: post
+          cors: true
+
+  reset:
+    handler: service/reset.handler
+    events:
+      - http:
+          path: reset
           method: post
           cors: true
 

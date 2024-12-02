@@ -21,6 +21,12 @@ import Layout from "./components/user/Layout.jsx";
 import SignUp from "./components/google/SignUp.jsx";
 import Confirm from "./components/google/EmailVerification.jsx"
 import PrivateRoute from "./components/user/PrivateRoute.jsx";
+import AdminPage from "./components/user/AdminPage.jsx";
+import AdminRoute from "./components/google/AdminRoute.jsx";
+import UnauthorizedPage from "./components/google/UnauthorizedPage.jsx";
+import ConfirmPassword from "./components/user/ConfirmPassword.jsx";
+import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx"
+
 
 const theme = createTheme({
   palette: {
@@ -72,6 +78,9 @@ function App() {
           <Route path="/logout" element={<GoogleLogout />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/confirm" element={<Confirm />} />
+          <Route path="/reset" element={<RequestPasswordReset />} />
+          <Route path="/confirm/password" element={<ConfirmPassword />} />
+
 
           {/* 보호된 경로 */}
           <Route
@@ -87,6 +96,11 @@ function App() {
             <Route path="/user/profile/category" element={<UserStorageUsage />} />
             <Route path="/user/profile/nickname" element={<Nickname />} />
             <Route path="/user/profile/layout" element={<Layout />} />
+            {/* admin */}
+            <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
+
+            {/* 403 접근 금지 페이지 */}
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* community */}
             <Route path="community/questions" element={<PostListPage />} />
