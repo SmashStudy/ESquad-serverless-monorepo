@@ -1,4 +1,8 @@
-import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  UpdateItemCommand,
+  GetItemCommand,
+} from "@aws-sdk/client-dynamodb";
 import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
@@ -14,7 +18,8 @@ export const handler = async (event) => {
       });
     }
 
-    const params = {
+    // 1. 데이터 조회
+    const getParams = {
       TableName: process.env.DYNAMODB_TABLE,
       Key: {
         PK: { S: `POST#${postId}` },
@@ -22,14 +27,31 @@ export const handler = async (event) => {
       },
     };
 
-    console.log("DynamoDB Query Params:", params);
-
-    const data = await ddbClient.send(new GetItemCommand(params));
+    const data = await ddbClient.send(new GetItemCommand(getParams));
 
     if (!data.Item) {
       return createResponse(404, { message: "Post not found" });
     }
 
+    // 2. 조회수 증가
+    const updateParams = {
+      TableName: process.env.DYNAMODB_TABLE,
+      Key: {
+        PK: { S: `POST#${postId}` },
+        SK: { S: createdAt },
+      },
+      UpdateExpression: "ADD viewCount :inc",
+      ExpressionAttributeValues: {
+        ":inc": { N: "1" },
+      },
+      ReturnValues: "UPDATED_NEW",
+    };
+
+    const updatedData = await ddbClient.send(
+      new UpdateItemCommand(updateParams)
+    );
+
+    // 3. 응답 데이터 생성
     const post = {
       postId: data.Item.PK.S.split("#")[1],
       boardType: data.Item.boardType.S,
@@ -51,7 +73,7 @@ export const handler = async (event) => {
       tags: data.Item.tags?.SS || [],
       createdAt: data.Item.createdAt.S,
       updatedAt: data.Item.updatedAt.S,
-      viewCount: parseInt(data.Item.viewCount.N, 10),
+      viewCount: parseInt(updatedData.Attributes.viewCount.N, 10), // 업데이트된 조회수 반영
       likeCount: parseInt(data.Item.likeCount.N, 10),
       likedUsers: data.Item.likedUsers?.SS || [],
       resolved:
@@ -66,7 +88,7 @@ export const handler = async (event) => {
 
     return createResponse(200, post);
   } catch (error) {
-    console.error("Error fetching post:", error);
+    console.error("Error fetching post and updating view count:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,

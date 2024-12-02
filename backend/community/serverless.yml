@@ -118,14 +118,6 @@ functions:
           method: POST
           cors: true
 
-  incrementViewCount:
-    handler: service/incrementViewCount.handler
-    events:
-      - http:
-          path: /{boardType}/{postId}/increment-view
-          method: PUT
-          cors: true
-
 resources:
   Resources:
     EsquadPostsTable:
