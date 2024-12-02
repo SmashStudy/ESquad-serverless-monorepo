@@ -10,10 +10,12 @@ const TeamApi = axios.create({
   },
 });
 
-// 팀 ID 가져오기
-export const getTeamIds = async () => {
+// 팀 ID 및 이름 가져오기
+export const getTeamIdsAndNames = async () => {
+  console.log('getTeamIdsAndNames 처리 시작...')
   const response = await TeamApi.get("/get");
-  return response.data.data||[]; // team IDs
+  console.log(`getTeamIdsAndNames: ${JSON.stringify(response.data.body)}`);
+  return response.data.body || []; // team IDs
 };
 
 // 팀 프로필 가져오기
@@ -21,7 +23,8 @@ export const getTeamProfiles = async (teamIds) => {
   const profiles = await Promise.all(
     teamIds.map(async (id) => {
       const response = await TeamApi.get(`/${encodeURIComponent(id)}`);
-      const profile = response.data.data;
+      console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
+      const profile = response.data.body;
       return typeof profile === "string" ? JSON.parse(profile) : profile;
     })
   );
@@ -29,14 +32,14 @@ export const getTeamProfiles = async (teamIds) => {
 };
 
 // 모든 팀 데이터 가져오기
-export const fetchAllTeams = async () => {
-  const teamIds = await getTeamIds();
-  const teamProfiles = await getTeamProfiles(teamIds)
-  const sortedTeams = teamProfiles.sort((a, b) =>
-    a.teamName.localeCompare(b.teamName)
-  );
-  return sortedTeams||[];
-};
+// export const fetchAllTeams = async () => {
+  // const teamIds = await getTeamIdsAndNames();
+  // const teamProfiles = await getTeamProfiles(teamIds)
+  // const sortedTeams = teamProfiles.sort((a, b) =>
+  //   a.teamName.localeCompare(b.teamName)
+  // );
+  // return sortedTeams||[];
+// };
 
 // 팀 역할 확인
 export const checkTeamRole = async (teamId) => {

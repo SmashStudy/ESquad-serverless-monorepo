@@ -10,13 +10,12 @@ import {
     Stack,
     Stepper,
     Step,
-    StepLabel,
+    StepLabel, useTheme,
 } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import CheckIcon from '@mui/icons-material/Check';
 import { useNavigate } from 'react-router-dom';
-import {getTeamApi, getUserApi} from "../../utils/apiConfig.js";
 import {
   checkTeamNameAvailability,
   createTeam,
@@ -25,22 +24,24 @@ import {
 
 const steps = ['팀 이름', '팀원 초대', '확인', '이동'];
 
-const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab}) => {
-  const navigate = useNavigate();
+const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
+    const theme = useTheme();
+    const navigate = useNavigate();
 
-  const [activeStep, setActiveStep] = useState(0);
-  const [teamName, setTeamName] = useState('');
-  const [teamUsers, setTeamUsers] = useState([]);
-  const [newTeamUser, setnewTeamUser] = useState('');
-  const [searchError, setSearchError] = useState('');
-  const [teamNameError, setTeamNameError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [teamId, setTeamId] = useState('');
+    const [activeStep, setActiveStep] = useState(0);
+    const [teamName, setTeamName] = useState('');
+    const [teamUsers, setTeamUsers] = useState([]);
+    const [newTeamUser, setnewTeamUser] = useState('');
+    const [searchError, setSearchError] = useState('');
+    const [teamNameError, setTeamNameError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [teamId, setTeamId] = useState('');
+    const [error, setError] = useState('');
 
-  useEffect(() => {
+    useEffect(() => {
     const fetchEmail = async () => {
       try {
-        setLoading(true);            
+        setLoading(true);
         const email = await getUserEmail();
         setTeamUsers([email]);
       } catch (err) {
@@ -49,28 +50,30 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
         setLoading(false);
       }
     };
-    fetchEmail(); 
-  }, []);
+    fetchEmail();
+    }, []);
 
-  const searchUser = async () => {
+    const searchUser = async () => {
     if (!validatenewTeamUser(newTeamUser)) return ;
 
     try {
       setTeamUsers((prevUsers) => [...prevUsers, newTeamUser]);
       setnewTeamUser('');
       setSearchError('');
-        
+
     } catch (error) {
       console.error('Error searching user:', error);
       setSearchError('유저 초대 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
-  };
-  const removeTeamUser= (removeUser) => {
+    };
+
+    const removeTeamUser= (removeUser) => {
       setTeamUsers(teamUsers.filter((teamUser) => teamUser !== removeUser));
-  };
-  const handleCreateTeam = async () => {
+    };
+
+    const handleCreateTeam = async () => {
     const teamForm = {
       teamName: teamName,
       description: '이 팀은 React와 Serverless 프로젝트를 위한 공간입니다.',
@@ -79,9 +82,10 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
 
     try {
       setLoading(true);
+      console.log('생성예정 팀: ', JSON.stringify(teamForm));
       const newTeam = await createTeam(teamForm);
       updateTeams(newTeam);
-      setTeamId(newTeam.PK);  
+      setTeamId(newTeam.PK);
       return true;
     } catch (error) {
       console.error('Error creating team:', error);
@@ -90,9 +94,10 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
     } finally {
       setLoading(false);
     }
-  };
-  const handleBack = () => setActiveStep((prev) => prev - 1);
-  const handleNext = async () => {
+    };
+
+    const handleBack = () => setActiveStep((prev) => prev - 1);
+    const handleNext = async () => {
     if (activeStep === 0) {
       const isValidTeamName = await validateTeamName();
       if (!isValidTeamName) return;
@@ -109,38 +114,40 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
     }
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-  const handleMove = () => {
+    };
+
+    const handleMove = () => {
     if (!teamId) {
       console.error('팀 ID가 설정되지 않았습니다. 이동을 중단합니다.');
       alert('팀 ID가 설정되지 않았습니다. 팀을 다시 생성해 주세요.');
       return;
     }
     handleTab(1);
-    
+
     onCancel();
     navigate(`/teams/${encodeURIComponent(teamId)}`);
-  }
-  // const handle
-  const validateTeamName = async () => {
+    }
+
+    // const handle
+    const validateTeamName = async () => {
 
     if (!teamName.trim()) {
         setTeamNameError('팀 이름을 입력해주세요.');
         return false;
     }
-    
+
     try {
         setLoading(true);
         setTeamNameError('');
-        
+
         const { isAvailable, message } = await checkTeamNameAvailability(teamName);
 
         if (!isAvailable) {
           setTeamNameError(message);
-          setTeamName(''); 
+          setTeamName('');
           return false;
         }
-        return true;  
+        return true;
     } catch (error) {
         console.error('Error validate team:', error);
         setTeamNameError('팀 이름이 잘못되었습니다.. 다시 시도해주세요.');
@@ -148,9 +155,10 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
         return false;
     } finally {
         setLoading(false);
-    }        
-  };  
-  const validatenewTeamUser = (newTeamUser) => {
+    }
+    };
+
+    const validatenewTeamUser = (newTeamUser) => {
     if (!newTeamUser.trim()) {
         setSearchError('유저 ID를 입력해주세요');
         return false;
@@ -169,17 +177,17 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
 
     setSearchError('');
     return true;
-  };
+    };
 
-  return (
+    return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
         maxWidth: '70vw',
-        maxHeight: '50vh',
-        height: '1000px',
+        maxHeight: '80vh',
+        height: '80vh',
         mx: 'auto',
         my: 'auto',
         py: 2,
@@ -207,19 +215,18 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
                 닫기
               </Button>
             </Box>
-          </Box>                                         
+          </Box>
           ):(
-            <Stack 
-              spacing={2} 
-              sx={{ 
-                alignItems: 'center', 
-                justifyItems: 'center', 
-                justifyContent: 'center', 
-                maxWidth: '80vw', 
-                height: '50vh', 
-                padding:0, 
+            <Stack
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                justifyItems: 'center',
+                justifyContent: 'center',
+                maxWidth: '80vw',
+                padding:0,
                 height: 'calc(100% - 30px)', // 중앙 영역의 높이를 조절하여 Stepper와 페이징 버튼 사이의 균형 맞추기
-                overflowY: 'auto', // 중앙 UI 스크롤 가능 
+                // overflowY: 'auto', // 중앙 UI 스크롤 가능
               }}>
               <Box
                 sx={{
@@ -232,7 +239,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
                   pd: 1, // 패딩을 줄여서 여백을 최소화
                   py: 2,
                   boxSizing: 'border-box',
-                  bgcolor: '#ffffff',
                 }}
               >
             {activeStep === 0 && (
@@ -259,19 +265,18 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
           </Stack>
         )}
                 {/* 페이징 */}
-                <Box sx={{ 
+                <Box sx={{
           width: '100%',
-          position: 'absolute', 
+          position: 'absolute',
           marginTop:'0px',
           bottom: 0,
-          display: 'flex', 
-          flexDirection: 'row',  
+          display: 'flex',
+          flexDirection: 'row',
           justifyContent: 'center',  // 중앙 정렬
-          alignItems: 'center',  
-          bgcolor: '#ffffff',
+          alignItems: 'center',
           paddingBottom:0,
           mt: 10,
-          pd: 2 
+          pd: 2
             }}>
           <Button
             color="inherit"
@@ -281,7 +286,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
             sx={{ mr: 1 }}
             startIcon={<NavigateBeforeIcon />}
           > 이전 </Button>
-            
+
           <Button
             onClick={handleNext}
             disabled={activeStep === 0 && !teamName.trim()}
@@ -291,7 +296,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams, handleTab})
         </Box>
       </Box>
     </Box>
-  );
+    );
 };
 
 export default TeamCreationHorizontalLinerStepper;

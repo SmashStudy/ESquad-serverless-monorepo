@@ -8,41 +8,45 @@ import { useTheme, useMediaQuery } from '@mui/material';
 import AppBarComponent from "../../components/header/AppbarComponent.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
 import ChatDrawer from "../../components/right/ChatDrawer.jsx";
-import { fetchAllTeams } from "../../utils/TeamApi.jsx";
+import TeamsProvider, { useTeams } from "../../context/TeamContext.jsx";
 
-const Home = () => {
+const HomeContent = () => {
   const theme = useTheme();
   const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
   const [sidebarOpen, setSidebarOpen] = useState(true); 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [teams, setTeams] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState(""); 
+  // const [teams, setTeams] = useState([]);
+  // const [selectedTeam, setSelectedTeam] = useState("");
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   
-  useEffect(() => {
-    if (selectedTeam.PK) 
-    fetchTeams();
-  }, [selectedTeam]);
+  // useEffect(() => {
+  //   if (selectedTeam.PK)
+  //   fetchTeams();
+  // }, [selectedTeam]);
+  //
   useEffect(() => {
     fetchTeams();
   }, []);
-  
-  const fetchTeams = async () => {
-    try {
-      setLoading(true);
-      const teamProfiles = await fetchAllTeams();
-      setTeams(teamProfiles);  
-      console.log("Updated selectedTeam:", selectedTeam); 
+  //
+  // const fetchTeams = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const teamProfiles = await fetchAllTeams();
+  //     setTeams((prev) => [...prev, ...teamProfiles]);
+  //     console.log("Updated selectedTeam:", selectedTeam);
+  //   } catch (error) {
+  //     console.error("Error fetching teams:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-    } catch (error) {
-      console.error("Error fetching teams:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    teams, selectedTeam, fetchTeams, updateSelectedTeam, updateTeams,
+  } = useTeams();
 
   const toggleChatDrawer = () => {
     setChatDrawerOpen((prevState) => !prevState);
@@ -71,35 +75,34 @@ const Home = () => {
       return;
     }
 
-      updateSelectedTeam(newSelectedTeam);
-      handleTab(1);
-    
+    updateSelectedTeam(newSelectedTeam);
+    handleTab(1);
   };
 
-  const updateSelectedTeam = (updatedTeam) => {
-    setSelectedTeam((prevTeam) => {
-      if (JSON.stringify(prevTeam) === JSON.stringify(updatedTeam)) {
-        console.log("No changes detected in selectedTeam.");
-        return prevTeam; // 변경사항이 없으면 상태를 유지
-      }
-      console.log("Updating selectedTeam:", updatedTeam);
-      return updatedTeam; // 변경사항이 있으면 업데이트
-    });
-  };
-
-  const updateTeams = async (updatedTeam) => {
-    try {
-      setTeams((teams) =>
-        teams.map((team) =>
-          team.PK === updatedTeam.PK ? updatedTeam : team
-        ));
-      if (selectedTeam?.PK === updatedTeam.PK) {
-        updateSelectedTeam(updatedTeam);
-      }
-    } catch (error) {
-      console.error('Error fetching team:', error);
-    }
-  };
+  // const updateSelectedTeam = (updatedTeam) => {
+  //   setSelectedTeam((prevTeam) => {
+  //     if (JSON.stringify(prevTeam) === JSON.stringify(updatedTeam)) {
+  //       console.log("No changes detected in selectedTeam.");
+  //       return prevTeam; // 변경사항이 없으면 상태를 유지
+  //     }
+  //     console.log("Updating selectedTeam:", updatedTeam);
+  //     return updatedTeam; // 변경사항이 있으면 업데이트
+  //   });
+  // };
+  //
+  // const updateTeams = async (updatedTeam) => {
+  //   try {
+  //     setTeams((teams) =>
+  //       teams.map((team) =>
+  //         team.PK === updatedTeam.PK ? updatedTeam : team
+  //       ));
+  //     if (selectedTeam?.PK === updatedTeam.PK) {
+  //       updateSelectedTeam(updatedTeam);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching team:', error);
+  //   }
+  // };
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -109,9 +112,9 @@ const Home = () => {
         <AppBarComponent
           handleSidebarToggle={handleSidebarToggle}
           selectedTab={selectedTab}
-          changeSelectedTeam={changeSelectedTeam}
-          updateTeams={updateTeams}
-          teams={teams}
+          // changeSelectedTeam={changeSelectedTeam}
+          // updateTeams={updateTeams}
+          // teams={teams}
           handleTab={handleTab}
           toggleChatDrawer={toggleChatDrawer}
         />
@@ -143,7 +146,7 @@ const Home = () => {
             sidebarOpen={sidebarOpen}
             handleDrawerClose={handleDrawerClose}
             selectedTab={selectedTab}
-            selectedTeam={selectedTeam}
+            // selectedTeam={selectedTeam}
           />
 
           {/* Home Content Area - Sidebar 제외한 나머지 body 영역 */}
@@ -186,5 +189,11 @@ const Home = () => {
     </Box>
   );
 };
+
+const Home = () => (
+    <TeamsProvider>
+      <HomeContent />
+    </TeamsProvider>
+);
 
 export default Home;

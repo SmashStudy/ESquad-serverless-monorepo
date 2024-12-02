@@ -1,10 +1,20 @@
 import React from 'react';
-import { Box, Typography, InputLabel, Input } from '@mui/material';
+import {Box, Typography, InputLabel, Input, useTheme} from '@mui/material';
 
 function TeamNameInput({ teamName, handleInputChange, teamNameError }) {
+    const theme = useTheme();
+
     return (
         <Box sx={{ pt: 2, textAlign: 'center' }}>
-            <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>
+            <Typography
+                sx={{
+                    mt: 4,
+                    mb: 1,
+                    fontSize: 'x-large',
+                    fontWeight: 'bolder',
+                    color: theme.palette.primary.main,
+                }}
+            >
                 팀 이름 커스터마이즈하기
             </Typography>
             <Typography sx={{ mt: 2, mb: 8, fontSize: 'large' }}>

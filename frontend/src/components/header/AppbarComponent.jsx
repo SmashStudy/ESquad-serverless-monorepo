@@ -32,6 +32,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
 import axios from 'axios';
 import {getUserApi} from "../../utils/apiConfig.js";
+import { useTeams } from "../../context/TeamContext.jsx";
 
 function decodeJWT(token) {
   try {
@@ -90,13 +91,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const AppBarComponent = ({
   handleSidebarToggle,
   selectedTab,
-  changeSelectedTeam,
   handleTab,
-  updateTeams,
-  teams,
+  // updateTeams,
+  // teams,
   toggleChatDrawer,
 }) => {
-
+  const { teams, selectedTeam, updateTeams, changeSelectedTeam } = useTeams();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [error, setError] = useState('');
@@ -327,45 +327,44 @@ useEffect(() => {
                     <ListItemText primary="새로운 팀 생성" />
                   </ListItemButton>
 
-                                    {/* Team Creation Modal */}
-                                    <TeamCreationDialog
-                                        open={isTeamCreationModalOpen}
-                                        onClose={handleCloseCreateTeamModal}
-                                        updateTeams={updateTeams}
-                                        teams={teams}
-                                        handleTab={handleTab}
-                                    />
+                  {/* Team Creation Modal */}
+                  <TeamCreationDialog
+                      open={isTeamCreationModalOpen}
+                      onClose={handleCloseCreateTeamModal}
+                      handleTab={handleTab}
 
-                                    {teams == null ? (
-                                        <ListItem>
-                                            <ListItemText primary="팀이 없습니다." />
-                                        </ListItem>
-                                    ) : (
-                                        <>
-                                            {teams.map((team, index) => (
-                                                <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
-                                                  <ListItemButton 
-                                                    onClick={() => changeSelectedTeam(index)} 
-                                                    sx={{
-                                                      "&:hover": {
-                                                        cursor: "pointer",
-                                                        fontSize: "1.4rem",
-                                                      },
-                                                    }}>
-                                                      <ListItemIcon>
-                                                        <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
-                                                      </ListItemIcon>
-                                                      <ListItemText primary={team?.teamName} />
-                                                  </ListItemButton>
-                                                </Link>
-                                            ))}
-                                        </>
-                                    )}
-                                </List>
-                            </Menu>
-                        </Box>
-                    )}
-                </Box>
+                  />
+
+                  {teams == null ? (
+                      <ListItem>
+                          <ListItemText primary="팀이 없습니다." />
+                      </ListItem>
+                  ) : (
+                      <>
+                          {teams.map((team, index) => (
+                              <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                                <ListItemButton
+                                  onClick={() => changeSelectedTeam(index)}
+                                  sx={{
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      fontSize: "1.4rem",
+                                    },
+                                  }}>
+                                    <ListItemIcon>
+                                      <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                                    </ListItemIcon>
+                                    <ListItemText primary={team?.teamName} />
+                                </ListItemButton>
+                              </Link>
+                          ))}
+                      </>
+                  )}
+                </List>
+            </Menu>
+        </Box>
+    )}
+</Box>
 
         <Box sx={{ display: "flex", alignItems: "center", flex: 4 }}>
           {/* 3:4:3 Ratio */}
