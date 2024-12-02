@@ -3,13 +3,13 @@ import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
-import {getChatWebSocketApi} from "../../utils/apiConfig.js";
+import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
+import axios from "axios";
 
-const wsUrl = getChatWebSocketApi();
+const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
-    // const [socket, setSocket] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessage, setEditingMessage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -18,22 +18,42 @@ function ChatMessages({currentChatRoom}) {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const messageEndRef = useRef(null);
     const socketRef = useRef(null);
+    const [userInfo, setUserInfo] = useState(null);
 
     // 유저 더미 데이터
-    const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
-    const user_id = String(userInfo.id);              // 더미 유저
-    const username = userInfo.username;   // 더미 유저
-    const room_id = String(currentChatRoom?.id);
+    // const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
+    // const user_id = String(userInfo.id);              // 더미 유저
+    // const username = userInfo.username;   // 더미 유저
+    // const room_id = String(currentChatRoom?.id);
+    const room_id = String (currentChatRoom?.id);
+
+    // 유저 정보 로드
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const token = localStorage.getItem("jwtToken");
+                if (!token) throw new Error("로그인이 필요합니다.");
+
+                const response = await axios.get(`${getUserApi()}/get-user-info`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setUserInfo(response.data); // 유저 정보 설정
+            } catch (err) {
+                console.error("유저 정보 가져오기 실패:", err);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
 
     // websocket 연결 및 메시지 수신
     useEffect(() => {
         if(currentChatRoom && room_id) {
             connectWebSocket(room_id);
         }
-        // return () => {
-        //     if(socket) { socket.close(); }
-        // }
-    }, [currentChatRoom, room_id]);
+    }, [currentChatRoom, room_id, userInfo]);
 
     const sortMessages = (messages) => {
         return [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -60,7 +80,7 @@ function ChatMessages({currentChatRoom}) {
 
     // 웹소켓 연결 함수
     const connectWebSocket = (room_id) => {
-        const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${user_id}`);
+        const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${userInfo.email}`);
 
         newSocket.onopen = () => {
             console.log("websocket 연결됨")
@@ -74,15 +94,10 @@ function ChatMessages({currentChatRoom}) {
                 console.error("Invalid JSON received: " + event.data);
             }
         };
-        newSocket.onerror = (error) => {
-            console.error("WebSocket 오류:", error);
-            socketRef.current = null;
-        };
         newSocket.onclose = () => {
             console.error("WebSocket 연결 종료");
             socketRef.current = null;
         }
-
         socketRef.current = newSocket;
     }
 
@@ -120,7 +135,7 @@ function ChatMessages({currentChatRoom}) {
                 const uploadedFile = await uploadFile({
                     file: selectedFile,
                     room_id,
-                    user_id,
+                    user_id: userInfo?.email,
                     targetType: 'CHAT',
                     timestamp,
                 });
@@ -133,13 +148,12 @@ function ChatMessages({currentChatRoom}) {
                     contentType: uploadedFile.contentType,
                     originalFileName: uploadedFile.originalFileName,
                     room_id: currentChatRoom.id,
-                    user_id,
+                    user_id: userInfo?.email,
                     timestamp: timestamp,
                     isFile: true
                 };
                 // 웹소켓으로 전송
                 await sendMessageAPI(socketRef, fileMessage);
-
                 // 메시지 상태 업데이트
                 setMessages((prevMessages) => [...prevMessages, fileMessage]);
                 setSelectedFile(null); // 파일 선택 초기화
@@ -166,7 +180,7 @@ function ChatMessages({currentChatRoom}) {
                     action: "sendmessage",
                     message: messageContent,
                     room_id,
-                    user_id,
+                    user_id: userInfo?.email,
                     timestamp: timestamp
                 };
                 // sendMessageAPI 호출 전후 로그 추가
@@ -238,7 +252,7 @@ function ChatMessages({currentChatRoom}) {
             const uploadResponse = await uploadFile({
                 file: selectedFile,
                 room_id: currentChatRoom.id,
-                user_id,
+                user_id: userInfo.email,
                 targetType: 'CHAT',
             });
 
@@ -248,7 +262,8 @@ function ChatMessages({currentChatRoom}) {
                 id: uploadResponse.id,
                 presignedUrl: uploadResponse.presignedUrl,
                 room_id: currentChatRoom.id,
-                user_id,
+                user_id: userInfo.email,
+                nickname: userInfo.nickname,
                 contentType: uploadResponse.contentType,
                 originalFileName: uploadResponse.originalFileName,
                 isFile: true
@@ -289,12 +304,9 @@ function ChatMessages({currentChatRoom}) {
             }}>
                 <MessageList
                     messages={messages}
+                    currentUser={userInfo}
                     onEditMessage={handleEditMessage}
                     onDeleteMessage={deleteMessageHandler}
-
-                    username={username}
-                    user_id={user_id}
-
                     onDownloadFile={handleDownloadFile}
                     onDeleteFile={deleteMessageHandler}
                 />

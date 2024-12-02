@@ -13,7 +13,7 @@ import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
 import {deleteFile, downloadFile} from "./chatApi/ChatFileApi.jsx";
 import { getPresignedUrl} from "./chatApi/ChatUtils.jsx";
 
-const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }) => {
+const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) => {
     const theme = useTheme();
     const isFileMessage = message.fileKey && message.contentType && message.presignedUrl;
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -21,6 +21,8 @@ const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }
     const [isEditing, setIsEditing] = useState(false);
     const [editedMessage, setEditedMessage] = useState(message.message);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    const isCurrentUser = currentUser?.nickname === message.nickname;
 
     useEffect(() => {
         if (isFileMessage && !message.presignedUrl) {
@@ -87,19 +89,6 @@ const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }
         }
     };
 
-    const handleDeleteFile = async () => {
-        try {
-            if (!message.fileKey) {
-                throw new Error("파일 키가 누락되었습니다.");
-            }
-            await deleteFile(message.fileKey);
-            // 부모 컴포넌트에서 메시지 리스트 갱신
-            onDeleteMessage(message);
-        } catch (error) {
-            console.error("파일 삭제 실패:", error.message);
-        }
-    };
-
     return (
         <div
             className="message-item"
@@ -120,10 +109,10 @@ const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }
             {/* 아바타 및 유저 정보 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '0.8rem' }}>
                 <span style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '0.3rem' }}>
-                    {message.username || message.userId}
+                    {message.nickname || "알 수 없는 사용자"}
                 </span>
                 <Avatar sx={{ bgcolor: getAvatarColor(message.username) }}>
-                    {getInitials(message.username)}
+                    {getInitials(message.nickname)}
                 </Avatar>
             </div>
 
@@ -158,36 +147,33 @@ const MessageItem = ({ message, onEditMessage, onDeleteMessage, onDownloadFile }
                 className="message-actions"
                 style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}
             >
-                {isFileMessage ? (
-                    // 파일 메시지: 다운로드 & 삭제 버튼
+                {isCurrentUser && ( // 작성자만 수정/삭제 가능
                     <>
-                        <IconButton color="primary" size="small" onClick={handleDownloadFile} aria-label="파일 다운로드" disabled={isProcessing}>
-                            <DownloadIcon />
-                        </IconButton>
-                        <IconButton size="small" onClick={handleDeleteFile} aria-label="삭제" sx={{ color: '#d81b60' }}>
-                            <DeleteIcon />
-                        </IconButton>
+                        {isEditing ? (
+                            <>
+                                <IconButton size="small" onClick={handleSaveClick} sx={{ color: '#43a047' }}>
+                                    <CheckIcon />
+                                </IconButton>
+                                <IconButton size="small" onClick={handleCancelClick} sx={{ color: pink[500] }}>
+                                    <CloseIcon />
+                                </IconButton>
+                            </>
+                        ) : (
+                            <>
+                                <IconButton size="small" onClick={handleEditClick} aria-label="메시지 수정" sx={{ color: '#8e24aa' }}>
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton size="small" onClick={handleDeleteClick} aria-label="삭제" sx={{ color: '#d81b60' }}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </>
+                        )}
                     </>
-                ) : isEditing ? (
-                    // 텍스트 수정 중: 저장 & 취소 버튼
-                    <>
-                        <IconButton size="small" onClick={handleSaveClick} sx={{ color: '#43a047' }}>
-                            <CheckIcon />
-                        </IconButton>
-                        <IconButton size="small" onClick={handleCancelClick} sx={{ color: pink[500] }}>
-                            <CloseIcon />
-                        </IconButton>
-                    </>
-                ) : (
-                    // 텍스트 메시지: 수정 & 삭제 버튼
-                    <>
-                        <IconButton size="small" onClick={handleEditClick} aria-label="메시지 수정" sx={{ color: '#8e24aa' }}>
-                            <EditIcon />
-                        </IconButton>
-                        <IconButton size="small" onClick={handleDeleteClick} aria-label="삭제" sx={{ color: '#d81b60' }}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </>
+                )}
+                {isFileMessage && (
+                    <IconButton sx={{ color: '#8e24aa' }} size="small" onClick={handleDownloadFile} aria-label="파일 다운로드" disabled={isProcessing}>
+                        <DownloadIcon />
+                    </IconButton>
                 )}
             </div>
         </div>
