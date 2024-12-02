@@ -1,5 +1,6 @@
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
@@ -7,22 +8,16 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags } = body;
+    const { title, content, writer, book, tags = [] } = body; // tags 기본값 빈 배열로 해서 태그 없어도 게시글 생성됨
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
     if (!validBoardTypes.includes(boardType)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Invalid boardType" }),
-      };
+      return createResponse(400, { message: "Invalid boardType" });
     }
 
     if (!title || !content || !writer) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Missing required fields" }),
-      };
+      return createResponse(400, { message: "Missing required fields" });
     }
 
     const postId = uuidv4();
@@ -37,8 +32,8 @@ export const handler = async (event) => {
       content: { S: content },
       writer: {
         M: {
-          id: { S: writer.id },
           name: { S: writer.name },
+          nickname: { S: writer.nickname },
           email: { S: writer.email },
         },
       },
@@ -52,13 +47,14 @@ export const handler = async (event) => {
             },
           }
         : { NULL: true },
-      tags: { SS: tags || [] },
+      ...(tags.length > 0 && { tags: { SS: tags } }),
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
+      comments: { L: [] }, // 빈 리스트로 초기화
     };
 
     const command = new PutItemCommand({
@@ -68,23 +64,17 @@ export const handler = async (event) => {
 
     await ddbClient.send(command);
 
-    return {
-      statusCode: 201,
-      body: JSON.stringify({
-        message: "Post created successfully",
-        postId: postId,
-        boardType: boardType,
-        createdAt: createdAt,
-      }),
-    };
+    return createResponse(201, {
+      message: "Post created successfully",
+      postId: postId,
+      boardType: boardType,
+      createdAt: createdAt,
+    });
   } catch (error) {
     console.error("Error creating post:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };

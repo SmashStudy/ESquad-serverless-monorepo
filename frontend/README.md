@@ -1,8 +1,11 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  signup: esquad-google-login-local-signup (1.4 MB)
+  signin: esquad-google-login-local-signin (1.4 MB)
+  confirm: esquad-google-login-local-confirm (1.4 MB)
+  authorizer: esquad-google-login-local-authorizer (1.4 MB)
+  saveUserToDynamoDB: esquad-google-login-local-saveUserToDynamoDB (1.4 MB)
+  updateUserNickname: esquad-google-login-local-updateUserNickname (1.4 MB)
+  getUserNickname: esquad-google-login-local-getUserNickname (1.4 MB)
+  myEnvironments: esquad-google-login-local-myEnvironments (1.4 MB)
+  getUserByEmail: esquad-google-login-local-getUserByEmail (1.4 MB)
+  getUserInfoByToken: esquad-google-login-local-getUserInfoByToken (1.4 MB)
+  getEmailFromToken: esquad-google-login-local-getEmailFromToken (1.4 MB)

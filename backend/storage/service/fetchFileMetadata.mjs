@@ -1,29 +1,30 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, QueryCommand} from '@aws-sdk/lib-dynamodb';
+import {createResponse} from '../util/responseHelper.mjs'
 
-const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
 const TABLE_NAME = process.env.METADATA_TABLE;
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
-  const {
+  let {
     targetId,
     targetType,
     limit = 5,
     lastEvaluatedKey
   } = event.queryStringParameters || {};
 
+  try {
+    // 인코딩 여부에 따라 디코딩 시도
+    targetId = decodeURIComponent(targetId);
+  } catch (error) {
+    // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
+    console.log("File name did not require decoding:", targetId);
+  }
+
   if (!targetId) {
-    return {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-      },
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Please provide the targetId.' }),
-    };
+    return createResponse(400, {error: 'Please provide the targetId.'});
   }
 
   const params = {
@@ -44,42 +45,20 @@ export const handler = async (event) => {
       params.ExclusiveStartKey = JSON.parse(lastEvaluatedKey);
     } catch (err) {
       console.error("Invalid lastEvaluatedKey format:", err);
-      return {
-        statusCode: 400,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-        },
-        body: JSON.stringify({ error: 'Invalid lastEvaluatedKey format' }),
-      };
+      return createResponse(400, {error: 'Invalid lastEvaluatedKey format'});
     }
   }
 
   try {
     const data = await dynamoDb.send(new QueryCommand(params));
-    return {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-      },
-      statusCode: 200,
-      body: JSON.stringify({
-        items: data.Items,
-        lastEvaluatedKey: data.LastEvaluatedKey ? JSON.stringify(data.LastEvaluatedKey) : null,
-      }),
-    };
+    return createResponse(200, {
+      items: data.Items,
+      lastEvaluatedKey: data.LastEvaluatedKey ? JSON.stringify(
+          data.LastEvaluatedKey) : null,
+    })
   } catch (error) {
     console.error('Error fetching metadata:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET,DELETE',
-      },
-      body: JSON.stringify({ error: `Failed to fetch metadata: ${error.message}` }),
-    };
+    return createResponse(500,
+        {error: `Failed to fetch metadata: ${error.message}`});
   }
 };

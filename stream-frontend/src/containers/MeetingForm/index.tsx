@@ -302,8 +302,8 @@ const MeetingForm: React.FC = () => {
           <ModalHeader title={`Meeting ID: ${meetingId}`} />
           <ModalBody>
             <Card
-              title="Unable to join meeting"
-              description="There was an issue finding that meeting. The meeting may have already ended, or your authorization may have expired."
+              title="회의에 참여할 수 없습니다"
+              description="해당 미팅을 찾는 동안 문제가 발생했습니다. 미팅이 이미 종료되었거나 권한이 만료되었을 수 있습니다. 잠시 후 다시 시도해주세요."
               smallText={errorMessage}
             />
           </ModalBody>

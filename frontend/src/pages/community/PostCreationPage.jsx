@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,20 +14,56 @@ import { Autocomplete } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const userInfo = {
-    id: "testwnsgud",
-    name: "박준형",
-    email: "testwnsgud@example.com",
-  };
+
+  // 유저 정보 상태
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [activeTab, setActiveTab] = useState("질문");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [file, setFile] = useState(null);
+
+  // 유저 정보 가져오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("jwtToken");
+
+        if (!token) {
+          throw new Error("로그인이 필요합니다.");
+        }
+
+        const url = `${getUserApi()}/get-user-info`;
+
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUserInfo(response.data);
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "유저 정보를 불러오는 중 오류가 발생했습니다."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const boardType =
     activeTab === "질문"
@@ -45,7 +81,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setFile(null); // 첨부 파일 초기화
     setIsDraft(false); // 드래프트 상태 초기화
   };
-
   const renderTabContent = () => {
     const studyTemplate = `[스터디 모집 내용 예시]
 • 스터디 주제 :
@@ -60,10 +95,10 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
 
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
-        event.preventDefault(); // 기본 엔터 동작 방지
+        event.preventDefault();
 
         const newTag = event.target.value.trim();
-        if (!newTag) return; // 빈 값 방지
+        if (!newTag) return;
 
         if (tags.includes(newTag)) {
           alert(`중복된 태그: "${newTag}"는 추가할 수 없습니다.`);
@@ -76,14 +111,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         }
 
         setTags((prevTags) => [...prevTags, newTag]);
-        event.target.value = ""; // 입력창 초기화
+        event.target.value = "";
         setIsDraft(true);
       }
     };
 
     const handleTagChange = (event, newValue, reason) => {
       if (reason === "clear") {
-        // Clear Button 클릭 시 태그 초기화
         setTags([]);
         setIsDraft(true);
       } else if (
@@ -91,7 +125,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         reason === "createOption" ||
         reason === "selectOption"
       ) {
-        // 중복 태그 제거 및 추가
         const uniqueTags = Array.from(new Set(newValue));
         if (uniqueTags.length > 10) {
           alert("태그는 최대 10개까지 추가할 수 있습니다.");
@@ -143,14 +176,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Autocomplete
             multiple
             freeSolo
-            options={[]} // 자동 완성 옵션 비활성화
+            options={[]}
             value={tags}
             onChange={(event, newValue, reason) =>
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
               value.map((option, index) => {
-                const { key, ...restProps } = getTagProps({ index }); 
+                const { key, ...restProps } = getTagProps({ index });
                 return (
                   <Chip
                     key={`tag-${index}`} // 명시적으로 key 설정
@@ -248,17 +281,17 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       return;
     }
     try {
-      const url = `https://api.esquad.click/api/community/${boardType}/new`;
+      const url = `${getCommunityApi()}/${boardType}`;
 
       const data = {
         title,
         content,
         writer: {
-          id: userInfo.id,
           name: userInfo.name,
+          nickname: userInfo.nickname,
           email: userInfo.email,
         },
-        tags: tags.length > 0 ? tags : [],
+        tags: tags, // 태그가 없어도 빈 배열로 설정
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 
@@ -267,7 +300,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
         setIsDraft(false);
-        onSubmit(); // PostCreationDialog의 onSubmit 호출
+        onSubmit();
         navigate(`/community/${boardType}`);
       } else {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
@@ -303,7 +336,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <Button
             key={tab}
             variant="text"
-            onClick={() => handleTabChange(tab)} // 탭 변경 로직 추가
+            onClick={() => handleTabChange(tab)}
             sx={{
               fontSize: "large",
               fontWeight: activeTab === tab ? "bold" : "normal",

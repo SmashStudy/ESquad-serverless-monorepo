@@ -8,9 +8,15 @@ import {
 
 import { useAppState } from "../../providers/AppStateProvider";
 import { StyledList } from "./Styled";
+import { AVAILABLE_AWS_REGIONS } from "../../constants/index";
 
 const MeetingDetails = () => {
   const { meetingId, toggleTheme, theme, region } = useAppState();
+
+  // region을 keyof typeof AVAILABLE_AWS_REGIONS로 지정
+  const hostResion =
+    AVAILABLE_AWS_REGIONS[region as keyof typeof AVAILABLE_AWS_REGIONS] ||
+    "알 수 없는 지역";
 
   return (
     <Flex container layout="fill-space-centered">
@@ -24,8 +30,8 @@ const MeetingDetails = () => {
             <dd>{meetingId}</dd>
           </div>
           <div>
-            <dt>호스트의 리전</dt>
-            <dd>{region}</dd>
+            <dt>호스트의 지역</dt>
+            <dd>{hostResion}</dd> {/* 호스트 지역 한국어로 맵핑 - 가까운 리전 */}
           </div>
         </StyledList>
         <PrimaryButton
