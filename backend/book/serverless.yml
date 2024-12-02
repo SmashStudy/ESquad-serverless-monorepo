@@ -1,21 +1,20 @@
-service: book-service
+service: team-service
 
 
 provider:
   name: aws
   runtime: nodejs20.x
-  stage: dev
+  stage: ${env:STAGE}
   region: ${env:REGION}
   environment:
     CLIENT_ID: ${env:CLIENT_ID}
-    CLIENT_SECRET: ${env:CLIENT_SECRET}
 
 functions:
   testEndpoint:
     handler: service/bookHandler.js
     events:
       - http:
-          path: 
+          path: /book/search
           method: get
           cors: true
 
@@ -23,9 +22,13 @@ plugins:
   - serverless-dotenv-plugin
 
 package:
-  individually: true
-  patterns:
-    - "!package-lock.json"
-    - "package.json" 
+  include:
+    - package.json
     - node_modules/axios/**
-    - "!.env"
+    - src/utils/**
+    - src/handler/**
+  exclude:
+    - package-lock.json
+    - .env.dev
+    - .env.local
+    - .env.prod
