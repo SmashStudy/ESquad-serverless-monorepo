@@ -29,40 +29,24 @@ provider:
 
 functions:
 
-  generatePresignedUrl: # Deprecated
-    handler: src/utils/s3Utils.requestPresignedUrl
+  uploadFile:
+    handler: src/handlers/uploadFile.handler
     events:
       - http:
-          path: /presigned-url
+          path: /upload-file
           method: post
           cors: true
 
-  fetchFileMetadata:
-    handler: src/handlers/fetchFileMetadata.handler
+  fetchFiles:
+    handler: src/handlers/fetchFiles.handler
     events:
       - http:
           path: /metadata
           method: get
           cors: true
 
-  deleteFile:
-    handler: src/handlers/deleteFile.handler
-    events:
-      - http:
-          path: /{fileKey}
-          method: delete
-          cors: true
-
-  storeFileMetadata: # Deprecated
-    handler: src/handlers/storeFileMetadata.handler
-    events:
-      - http:
-          path: /store-metadata
-          method: post
-          cors: true
-
-  getUserUsage:
-    handler: src/handlers/getUserUsage.handler
+  getUserFiles:
+    handler: src/handlers/getUserFiles.handler
     events:
       - http:
           path: /get-user-usage
@@ -77,12 +61,12 @@ functions:
           method: patch
           cors: true
 
-  uploadFile:
-    handler: src/handlers/uploadFile.handler
+  deleteFile:
+    handler: src/handlers/deleteFile.handler
     events:
       - http:
-          path: /upload-file
-          method: post
+          path: /{fileKey}
+          method: delete
           cors: true
 
   updateFileMetadataNickname:
@@ -93,6 +77,22 @@ functions:
           arn: ${env:USER_TABLE_STREAM_ARN}
           batchSize: 5
           startingPosition: LATEST
+
+  storeFileMetadata: # Deprecated
+    handler: src/handlers/storeFileMetadata.handler
+    events:
+      - http:
+          path: /store-metadata
+          method: post
+          cors: true
+
+  generatePresignedUrl: # Deprecated
+    handler: src/utils/s3Utils.requestPresignedUrl
+    events:
+      - http:
+          path: /presigned-url
+          method: post
+          cors: true
 
 
 

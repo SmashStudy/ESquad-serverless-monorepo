@@ -1,7 +1,7 @@
 // getUserUsage.test.mjs
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
-import { handler } from '../handlers/getUserUsage.mjs';
+import { handler } from '../handlers/getUserFiles.mjs';
 
 // AWS SDK Mock 설정
 AWSMock.setSDKInstance(AWS);

@@ -1,7 +1,7 @@
 // fetchFileMetadata.test.mjs
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
-import { handler } from '../handlers/fetchFileMetadata.mjs';
+import { handler } from '../handlers/fetchFiles.mjs';
 
 // AWS SDK Mock 설정
 AWSMock.setSDKInstance(AWS);
