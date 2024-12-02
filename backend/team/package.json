@@ -1,25 +1,18 @@
 {
-  "name": "team",
-  "version": "1.0.0",
-  "main": "service/handler.mjs",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "serverless deploy",
-    "remove": "serverless remove"
-  },
   "author": "",
   "license": "ISC",
   "description": "",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.687.0",
     "@aws-sdk/lib-dynamodb": "^3.687.0",
     "dotenv": "^16.4.5",
-    "serverless-dotenv-plugin": "^6.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "serverless": "^3.15.0",
     "uuid": "^11.0.2"
   },
   "devDependencies": {
     "serverless-domain-manager": "^7.4.0",
-    "serverless-offline": "^14.3.4"
+    "serverless-dotenv-plugin": "^6.0.0"
   }
 }

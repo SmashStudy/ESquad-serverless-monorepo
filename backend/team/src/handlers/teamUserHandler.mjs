@@ -1,7 +1,9 @@
 // 팀 유저 핸들러 로직
-
 import { createResponse } from '../utils/responseHelper.mjs';
+import { decodeToken } from '../utils/auth.mjs';
+
 import * as TeamUserService from '../services/teamUserService.mjs';
+
 
 /**
  * 유저가 소속된 모든 팀 조회 핸들러
@@ -9,9 +11,9 @@ import * as TeamUserService from '../services/teamUserService.mjs';
  */
 export const getTeams = async (event) => {
     try {
-        const {userId} = JSON.parse(event.body);
-        const teams = await TeamUserService.getTeams(userId);
-
+        const decoded = decodeToken(event.headers);
+        const userEmail = decoded?.email;
+        const teams = await TeamUserService.getTeams(userEmail);
         return createResponse(200, { message: 'User to Team List successfully', data: teams });
     } catch (error) {
         console.error('Error retrieving teams:', error);
@@ -24,10 +26,11 @@ export const getTeams = async (event) => {
  */
 export const checkTeamUserRole = async (event) => {
     try {
-        const {userId} = JSON.parse(event.body);
+        const decoded = decodeToken(event.headers);
+        const userEmail = decoded?.email;
         const teamId = decodeURIComponent(event.pathParameters.teamId);
-        const isManager = await TeamUserService.checkTeamUserRole(teamId, userId);
-        return createResponse(200, { message: 'User to role successfully', data: isManager });
+        await TeamUserService.checkTeamUserRole(teamId, userEmail);
+        return createResponse(200, { message: 'User to role successfully', data: userEmail });
     } catch (error) {
         console.error('Error checking role:', error);
         return createResponse(500, { error: error.message });

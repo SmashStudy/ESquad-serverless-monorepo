@@ -3,13 +3,9 @@ service: team-service
 provider:
   name: aws
   runtime: nodejs20.x
-  stage: dev
   region: ${env:REGION}
   environment:
-    TEAM_TABLE: ${env:TEAM_TABLE}  
-    USER_TABLE: ${env:USER_TABLE}
-    CLIENT_ID: ${env:CLIENT_ID}
-    CLIENT_SECRET: ${env:CLIENT_SECRET}
+    TEAM_TABLE: ${env:TEAM_TABLE}
   iam:
     role:
       statements:
@@ -34,14 +30,6 @@ provider:
       managedPolicies:
         - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
         - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
-  logs:
-    restApi: # API Gateway 로그 설정
-      accessLogging: true
-      executionLogging: true
-      level: INFO
-      fullExecutionData: true # 전체 실행 데이터 로깅
-    httpApi: # HTTP API 로그 활성화 (옵션)
-      accessLogging: true
 
 resources:
   Resources:
@@ -94,7 +82,8 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: KEYS_ONLY
-
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
 
 functions:
   getTeams:
@@ -102,7 +91,7 @@ functions:
     events:
       - http:
           path: /get
-          method: post
+          method: get
           cors: true
   createTeam:
     handler: src/handlers/teamHandler.createTeam
@@ -132,7 +121,7 @@ functions:
     events:
       - http:
           path: /{teamId}/role
-          method: post
+          method: get
           cors: true
 
   getTeamUsersProfile:
@@ -165,15 +154,32 @@ functions:
           method: put
           cors: true
 
+useDotenv: true
+
 plugins:
   - serverless-dotenv-plugin
 
 
+#package:
+#  individually: true
+#  patterns:
+#    - "!package-lock.json"
+#    - "package.json"
+#    - node_modules/uuid/**
+#    - node_modules/axios/**
+#    - node_modules/jsonwebtoken/**
+#    - "!.env"
+
 package:
-  individually: true
-  patterns:
-    - "!package-lock.json"
-    - "package.json" 
+  include:
+    - package.json
     - node_modules/uuid/**
     - node_modules/axios/**
-    - "!.env"
+    - node_modules/jsonwebtoken/**
+    - src/utils/**
+    - src/handler/**
+  exclude:
+    - package-lock.json
+    - .env.dev
+    - .env.local
+    - .env.prod

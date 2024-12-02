@@ -22,6 +22,7 @@ export const checkTeamName = async (teamName) => {
  */
 export const createTeam = async ({ teamName, description, userIds }) => {
     const teamId = `TEAM#${uuidv4()}`; 
+    const now = new Date().toISOString();
 
     if (userIds.length > 12) return { isValid: false, message: '최대 12명이어야 합니다.' };
     
@@ -33,19 +34,20 @@ export const createTeam = async ({ teamName, description, userIds }) => {
     
     const validation = validateTeamUserIds(teamId, userIds);
     if (!validation.isValid) throw new Error(validation.message);
-
+    const item = {
+        PK: teamId,
+        SK: teamId,
+        itemType: 'Team',
+        teamName,
+        description,
+        createdAt: now,
+        updatedAt: now
+    }
     const teamParams = {
         TableName: TEAM_TABLE,
-        Item: {
-            PK: teamId,
-            SK: teamId,
-            itemType: 'Team',
-            teamName,
-            description,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        }
+        Item: item
     };
+
     await dynamoDb.send(new PutCommand(teamParams));
 
     const getRoleAndState = (index) => ({
@@ -73,7 +75,7 @@ export const createTeam = async ({ teamName, description, userIds }) => {
     });
 
     await Promise.all(memberPromises);
-    return {teamId, teamName};
+    return item;
 };
 
 /**

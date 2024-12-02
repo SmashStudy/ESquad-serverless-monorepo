@@ -29,7 +29,7 @@ export const createTeam = async (event) => {
     try {
         const teamData = JSON.parse(event.body);
         const result = await TeamService.createTeam(teamData);
-        return createResponse(201, { message: 'Team created successfully', data: result });
+        return createResponse(201, { message: 'Team created successfully', data: JSON.stringify(result) });
     } catch (error) {
         console.error('Error creating team:', error);
         return createResponse(400, { error: `Failed to create team: ${error.message}` });
@@ -44,7 +44,7 @@ export const getTeamProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const teamProfile = await TeamService.getTeamProfile(teamId);
-        return createResponse(200, { message: 'Team search successfully', data: teamProfile});
+        return createResponse(200, { message: 'Team search successfully', data: JSON.stringify(teamProfile)});
     } catch (error) {
         console.error('Error retrieving team profile:', error);
         return createResponse(500, { error: `Error retrieving team profile ${error.message}` });
@@ -60,7 +60,7 @@ export const updateTeam = async (event) => {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const teamData = JSON.parse(event.body);
         const updatedTeam = await TeamService.updateTeam(teamId, teamData);
-        return createResponse(200, { message: 'Team updated successfully', data: updatedTeam });
+        return createResponse(200, { message: 'Team updated successfully', data: JSON.stringify(updatedTeam) });
     } catch (error) {
         console.error('Error updating team:', error);
         return createResponse(500, { error: `Error updating team ${error.message}` });
@@ -75,7 +75,7 @@ export const deleteTeam = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         await TeamService.deleteTeam(teamId);
-        return createResponse(200, { message: 'Team deleted successfully', data: teamId });
+        return createResponse(200, { message: 'Team deleted successfully', data: JSON.stringify(teamId) });
     } catch (error) {
         console.error('Error deleting team:', error);
         return createResponse(500, { error: `Error deleting team ${error.message}` });

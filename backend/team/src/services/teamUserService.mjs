@@ -5,14 +5,14 @@ import { validateTeamUserIds, validateRoleCheckData } from '../utils/teamUserVal
 /**
  * 한 유저가 소속된 모든 팀 조회 서비스
  */
-export const getTeams = async (userId) => {
+export const getTeams = async (userEmail) => {
     
     const params = {
         TableName: TEAM_TABLE,
         IndexName: 'SK-ItemType-Index',
         KeyConditionExpression: 'SK = :sk AND itemType = :itemType',
         ExpressionAttributeValues: {
-            ':sk': userId,
+            ':sk': userEmail,
             ':itemType': 'TeamUser'
         }
     };
@@ -24,12 +24,9 @@ export const getTeams = async (userId) => {
 /**
  * 팀 유저 권한 확인 서비스
  */
-export const checkTeamUserRole = async (teamId, userId) => {
-    if (!teamId || !userId) {
-        return createResponse(400, { error: 'teamId와 userId는 필수입니다.' });
-    }
+export const checkTeamUserRole = async (teamId, userEmail) => {
 
-    const roleCheckValidation = validateRoleCheckData(teamId, userId);
+    const roleCheckValidation = validateRoleCheckData(teamId, userEmail);
     if (!roleCheckValidation.isValid) throw new Error(roleCheckValidation.message);
 
     const teamUserParams = {
@@ -37,16 +34,17 @@ export const checkTeamUserRole = async (teamId, userId) => {
         KeyConditionExpression: 'PK = :pk AND SK = :sk',
         ExpressionAttributeValues: {
             ':pk': teamId,
-            ':sk': userId
+            ':sk': userEmail
         }
     };
     const teamUserResult = await dynamoDb.send(new QueryCommand(teamUserParams));
     const teamUser = teamUserResult.Items?.[0];
+    // console.dir(teamUser);
 
     if (!teamUser) {
         throw new Error('User does not have manager permissions');
     }
-    return true;
+    return userEmail;
 };
 
 /**
