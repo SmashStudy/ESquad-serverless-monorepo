@@ -40,6 +40,7 @@ const PostDetailsPage = () => {
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [likedByUser, setLikedByUser] = useState(false);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true); // 댓글 로딩 상태 추가
 
   const menuOpen = Boolean(menuAnchorEl);
   const fetchRef = useRef(false); // 중복 호출 방지 플래그
@@ -47,6 +48,9 @@ const PostDetailsPage = () => {
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
   );
+
+  const logoUrl =
+    "https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png";
 
   // 유저 정보 가져오기
   useEffect(() => {
@@ -106,8 +110,7 @@ const PostDetailsPage = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        if (!post) return;
-
+        setIsCommentsLoading(true); // 댓글 로딩 시작
         const response = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}/comments`,
           { params: { createdAt } }
@@ -118,11 +121,13 @@ const PostDetailsPage = () => {
         }
       } catch (error) {
         console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
+      } finally {
+        setIsCommentsLoading(false); // 댓글 로딩 완료
       }
     };
 
     fetchComments();
-  }, [boardType, postId, createdAt, post]);
+  }, [boardType, postId, createdAt]);
 
   // 댓글 가져오기 함수
   const fetchComments = async () => {
@@ -521,6 +526,7 @@ const PostDetailsPage = () => {
           {comments.length}
         </Box>
       </Typography>
+
       {comments.length === 0 ? (
         <Box
           sx={{
@@ -532,7 +538,7 @@ const PostDetailsPage = () => {
           }}
         >
           <img
-            src={logoImage}
+            src={logoUrl}
             alt="답변 대기 이미지"
             style={{ width: "100px", height: "100px", marginBottom: "20px" }}
           />
