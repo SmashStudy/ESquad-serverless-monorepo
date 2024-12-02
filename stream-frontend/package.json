@@ -24,7 +24,7 @@
     "test": "jest",
     "lint": "eslint --fix",
     "preinstall": "node ./scripts/setup-chime-react-submodule.js",
-    "build:fast": "webpack --config ./webpack.config.dev.js",
+    "build:fast": "webpack --config ./webpack.config.js",
     "build": "cross-env NODE_ENV=production npm run lint && npm install && npm run build:fast",
     "build_local:fast": "webpack --config ./webpack.config.local.js",
     "build_local": "cross-env NODE_ENV=production npm run lint && npm install && npm run build_local:fast",
