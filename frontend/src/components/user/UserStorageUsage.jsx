@@ -50,6 +50,8 @@ const UserStorageUsageRenewed = () => {
     // eChart 게이지 차트 설정
     const chartDom = document.getElementById('usageGauge');
     if (chartDom) {
+      echarts.dispose(chartDom);
+
       const myChart = echarts.init(chartDom);
       const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB
       const usagePercent = (usage / MAX_USAGE) * 100;
@@ -57,23 +59,31 @@ const UserStorageUsageRenewed = () => {
         series: [
           {
             type: 'gauge',
-            progress: { show: true },
-            axisLine: { lineStyle: { width: 10 } },
-            detail: { valueAnimation: true, formatter: '{value}%' },
+            progress: {
+              show: true,
+              width: 10,
+              itemStyle: {
+                color: usagePercent < 30 ? '#63869e' : usagePercent < 60 ? '#f6d05f' : '#e26a6a'
+              }
+            },
+            detail: { valueAnimation: true, formatter: '{value}%', fontSize: 20 },
             data: [{ value: usagePercent.toFixed(2), name: '사용량' }],
+            animationDuration: 1000, // 애니메이션 지속 시간 설정
+            animationEasing: 'circularOut'
           },
         ],
       };
+
       myChart.setOption(option);
     }
   }, [usage]);
 
   const columnDefs = [
     { headerName: '파일 이름', field: 'originalFileName', sortable: true, filter: true },
-    { headerName: '올린 시간', field: 'createdAt', sortable: true, filter: true },
+    { headerName: '다운로드 수', field: 'downloadCount', sortable: true, filter: true },
     { headerName: '파일 크기', field: 'fileSize', sortable: true, filter: true, valueFormatter: ({ value }) => formatFileSize(value) },
+    { headerName: '올린 시간', field: 'createdAt', sortable: true, filter: true },
     { headerName: '확장자', field: 'extension', sortable: true, filter: true },
-    { headerName: '위치 (파일 경로)', field: 'fileKey', sortable: true, filter: true },
   ];
 
   return (
@@ -95,6 +105,7 @@ const UserStorageUsageRenewed = () => {
                       columnDefs={columnDefs}
                       pagination={true}
                       paginationPageSize={10}
+                      paginationPageSizeSelector={[10, 20, 50, 100]}
                       domLayout="autoHeight"
                   />
                 </div>
@@ -110,7 +121,7 @@ const UserStorageUsageRenewed = () => {
               {/* 우측 하단 - 요약 정보 카드 */}
               <Card>
                 <CardContent>
-                  <Typography variant="h6">총 용량: 5GB</Typography>
+                  <Typography variant="h6" gutterBottom>총 용량: 5GB</Typography>
                   {loading ? (
                       <Typography variant="body1">Loading...</Typography>
                   ) : usageError || emailError ? (
@@ -121,10 +132,23 @@ const UserStorageUsageRenewed = () => {
                       <>
                         <Typography variant="body1">사용량: {formatFileSize(usage)}</Typography>
                         <Typography variant="body1">남은 용량: {formatFileSize(5 * 1024 * 1024 * 1024 - usage)}</Typography>
+                        <Box sx={{ marginTop: 2 }}>
+                          <Typography variant="body2">남은 용량 상태:</Typography>
+                          <Box sx={{ width: '100%', bgcolor: '#f3f3f3' }}>
+                            <Box
+                                sx={{
+                                  width: `${(usage / (5 * 1024 * 1024 * 1024)) * 100}%`,
+                                  bgcolor: '#76c7c0',
+                                  height: 10,
+                                }}
+                            />
+                          </Box>
+                        </Box>
                       </>
                   )}
                 </CardContent>
               </Card>
+
             </Grid>
           </Grid>
         </Box>
