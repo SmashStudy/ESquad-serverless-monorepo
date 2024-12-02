@@ -17,6 +17,7 @@ const FileList = ({
   email,
   onFileDownload,
   onFileDelete,
+    theme
 }) => {
   return (
       <List>
@@ -125,24 +126,29 @@ const FileList = ({
                       </Box>
                     </Box>
                     <Box sx={{display: 'flex', gap: 1}}>
+                      <Box>
                       <IconButton
                           edge="end"
                           aria-label="download"
+                          sx ={{ color:theme.palette.success.main }}
                           onClick={() => onFileDownload(file.fileKey,
                               file.originalFileName)}
                       >
                         <DownloadIcon/>
                       </IconButton>
+                      </Box>
+                      <Box>
                       {file.userEmail === email && (
                           <IconButton
                               edge="end"
                               aria-label="delete"
                               onClick={() => onFileDelete(file.fileKey, file.userEmail)}
-                              sx={{ display: file.userEmail === email ? 'block' : 'none' }}
+                              sx={{ display: file.userEmail === email ? 'block' : 'none', color:theme.palette.warning.main }}
                           >
                             <DeleteIcon/>
                           </IconButton>
                       )}
+                      </Box>
                     </Box>
                   </Box>
                 </ListItem>

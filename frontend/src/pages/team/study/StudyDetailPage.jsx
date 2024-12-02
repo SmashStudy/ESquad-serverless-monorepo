@@ -228,7 +228,7 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                                 ),
                             setCurrentPage
                         )
-                    }
+                    } theme={theme}
 
                 />
             )}
