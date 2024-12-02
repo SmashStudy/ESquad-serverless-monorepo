@@ -18,8 +18,6 @@ const corsHeaders = {
 };
 
 export const handler = async (event) => {
-    console.log("Received event:", JSON.stringify(event, null, 2));
-
     try {
         if (event.Records) {
             // Handle DynamoDB Stream events
@@ -95,8 +93,6 @@ const handleHttpGetTeam = async (event) => {
 };
 
 const handleStreamEvent = async (event) => {
-    console.log("Processing DynamoDB Stream Event");
-
     for (const record of event.Records) {
         if (record.eventName !== "INSERT") continue;
 
@@ -153,13 +149,8 @@ const getTeamCrewUsers = async (teamPK) => {
             ":inviteState": "complete",
         },
     };
-
-    console.log("DynamoDB Query Params:", JSON.stringify(params, null, 2));
-
     try {
         const result = await docClient.send(new QueryCommand(params));
-        console.log("DynamoDB Query Result:", JSON.stringify(result, null, 2));
-
         // Ensure result.Items is an array
         const items = result.Items || [];
         if (items.length === 0) {
@@ -171,10 +162,8 @@ const getTeamCrewUsers = async (teamPK) => {
         const crewUsers = items.map((item) => {
             try {
                 if (item.PK && item.SK && typeof item.SK === "string") {
-                    console.log("Processing item as JavaScript object:", item);
                     return item.SK; // Return SK directly if already unmarshalled
                 }
-                console.log("crewUsers item:", JSON.stringify(item));
                 const unmarshalledItem = unmarshall(item);
                 if (!unmarshalledItem.SK) {
                     throw new Error(`Missing SK field in item: ${JSON.stringify(unmarshalledItem)}`);
@@ -185,8 +174,6 @@ const getTeamCrewUsers = async (teamPK) => {
                 return null; // Skip problematic items
             }
         }).filter((user) => user !== null); // Remove null values
-
-        console.log("Crew users:", crewUsers);
         return crewUsers;
     } catch (error) {
         console.error(`Error fetching crew users for team ${teamPK}:`, error.message);
@@ -210,7 +197,6 @@ const saveMessageToTable = async (messageData) => {
 
     try {
         await docClient.send(new PutCommand(params));
-        console.log("Message saved to DynamoDB:", JSON.stringify(params, null, 2));
     } catch (error) {
         console.error("Failed to save message to table:", error.message);
         throw new Error("Failed to save message");
@@ -238,7 +224,6 @@ const broadcastToConnections = async (room_id, message) => {
             }));
         } catch (error) {
             if (error.statusCode === 410) {
-                console.log(`Stale connection, deleting: ${connection_id}`);
                 await docClient.send(new DeleteCommand({
                     TableName: USERLIST_TABLE,
                     Key: { connection_id },
@@ -249,5 +234,4 @@ const broadcastToConnections = async (room_id, message) => {
         }
     });
     await Promise.all(postCalls);
-    console.log(`Broadcasted message to room_id: ${room_id}`);
 };
