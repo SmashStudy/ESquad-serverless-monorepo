@@ -1,44 +1,99 @@
 import { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { createResponse } from '../util/responseHelper.mjs';
 
 
 const dynamoDb = new DynamoDBClient({ region: 'us-east-1' });
+const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.REGION });
 
-// 사용자 정보를 저장하는 함수
 export const saveUserToDynamoDB = async (event) => {
   try {
     const userAttributes = event.request.userAttributes;
 
     if (!userAttributes.email) {
-      throw new Error('사용자 속성에 이메일이 없습니다');
+      throw new Error("사용자 속성에 이메일이 없습니다.");
     }
 
     const email = userAttributes.email;
-    const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
+    const name = userAttributes.name || "No Name";
+    const nickname = userAttributes.nickname || `${email.split("@")[0]}`;
 
+    console.log(`Processing user with email: ${email}`);
+
+    // DynamoDB에 사용자 정보 저장
+    console.log(`Saving user ${email} to DynamoDB.`);
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || "esquad-table-user-dev",
       Item: {
         email: { S: email },
-        name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
+        name: { S: name },
         nickname: { S: nickname },
+        role: { S: "user" }, // 기본 역할 설정
+        entryPoint: { SS: ["/dashboard", "/profile", "/settings"] },
+        lastLogin: { S: new Date().toISOString() },
+        lastLogout: { S: "" },
         createdAt: { S: new Date().toISOString() },
       },
     };
 
     const command = new PutItemCommand(params);
     await dynamoDb.send(command);
+    console.log(`User ${email} successfully saved to DynamoDB.`);
 
-    console.log('사용자가 DynamoDB에 저장되었습니다:', params.Item);
+    // 사용자 그룹에 추가
+    try {
+      console.log(`Adding user ${email} to Cognito group.`);
+      await addUserToCognitoGroupByEmail(email, "user");
+    } catch (groupError) {
+      console.error(`Failed to add user ${email} to Cognito group:`, groupError);
+    }
 
     return event;
   } catch (error) {
-    console.error('DynamoDB에 사용자 저장 중 오류 발생:', error);
+    console.error("Error saving user to DynamoDB or adding to group:", error);
     throw error;
   }
 };
+
+// 이메일로 사용자를 검색하고 그룹에 추가하는 함수
+const addUserToCognitoGroupByEmail = async (email, groupName) => {
+  try {
+    console.log(`Searching for user with email: ${email}`);
+    const getUserParams = {
+      UserPoolId: process.env.COGNITO_USER_POOL_ID, // 사용자 풀 ID
+      Filter: `email = "${email}"`,
+    };
+
+    const command = new ListUsersCommand(getUserParams);
+    const { Users } = await cognitoClient.send(command);
+
+    if (!Users || Users.length === 0) {
+      console.warn(`No user found in Cognito with email: ${email}`);
+      return;
+    }
+
+    // 첫 번째 사용자의 Username 가져오기
+    const username = Users[0].Username;
+    console.log(`Found Cognito username for ${email}: ${username}`);
+
+    // 그룹에 사용자 추가
+    console.log(`Adding user ${username} to group: ${groupName}`);
+    const addGroupCommand = new AdminAddUserToGroupCommand({
+      UserPoolId: process.env.COGNITO_USER_POOL_ID,
+      Username: username, // Username은 Cognito 사용자 ID임
+      GroupName: groupName,
+    });
+
+    await cognitoClient.send(addGroupCommand);
+    console.log(`User ${username} successfully added to group ${groupName}`);
+  } catch (error) {
+    console.error(`Error adding user with email ${email} to group ${groupName}:`, error);
+    throw error;
+  }
+};
+
 
 // 닉네임 가져오기 함수
 export const getUserNickname = async (event) => {

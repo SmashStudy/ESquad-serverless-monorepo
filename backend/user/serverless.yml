@@ -5,6 +5,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: ${env:REGION}
+
   iam:
     role:
       statements:
@@ -16,6 +17,14 @@ provider:
             - dynamodb:Scan
           Resource:
             - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminGetUser
+            - "cognito-idp:ListUsers"
+          Resource:
+            - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
+        
   environment:
     COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
     COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
