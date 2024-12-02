@@ -115,6 +115,11 @@ const getTeamCrewUsers = async (teamPK) => {
         // Safely process each item and log potential issues
         const crewUsers = items.map((item) => {
             try {
+                if (item.PK && item.SK && typeof item.SK === "string") {
+                    console.log("Processing item as JavaScript object:", item);
+                    return item.SK; // Return SK directly if already unmarshalled
+                }
+                console.log("crewUsers item:", JSON.stringify(item));
                 const unmarshalledItem = unmarshall(item);
                 if (!unmarshalledItem.SK) {
                     throw new Error(`Missing SK field in item: ${JSON.stringify(unmarshalledItem)}`);
