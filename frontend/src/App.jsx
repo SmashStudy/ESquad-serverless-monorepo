@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Home from "./pages/home/Home.jsx";
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
@@ -24,12 +24,16 @@ import Layout from './components/user/Layout.jsx';
 
 const theme = createTheme({
     palette: {
+        info: {
+            main: '#090909'
+        },
         primary: {
             main: '#9f51e8', // Home color
             light: '#ac71e5',
         },
         secondary: {
             main: '#0095ff', // Emphasis color
+            light: '#04a4ea',
         },
         warning: {
             main: '#f51738',
