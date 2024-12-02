@@ -3,8 +3,9 @@ import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
+import {getChatWebSocketApi} from "../../utils/apiConfig.js";
 
-const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
+const wsUrl = getChatWebSocketApi();
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);

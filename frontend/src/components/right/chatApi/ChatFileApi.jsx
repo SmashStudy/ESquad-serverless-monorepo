@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {getStorageApi} from "../../../utils/apiConfig.js";
 
-const storageApi = "https://api.esquad.click/local/files";
+const storageApi = getStorageApi();
 
 export const fetchFiles = async (room_id) => {
     try {
