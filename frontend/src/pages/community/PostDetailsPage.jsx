@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
-  Typography,
   CircularProgress,
   Divider,
   Paper,
@@ -15,13 +14,17 @@ import {
   Snackbar,
   Alert,
   Chip,
+  Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
+import logoImage from "../../assets/esquad-logo-nbk.png";
+import Tooltip from "@mui/material/Tooltip";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -35,13 +38,19 @@ const PostDetailsPage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [commentAlertOpen, setCommentAlertOpen] = useState(false);
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // 수정 모달창
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [likedByUser, setLikedByUser] = useState(false);
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true); // 댓글 로딩 상태 추가
 
   const menuOpen = Boolean(menuAnchorEl);
+  const fetchRef = useRef(false); // 중복 호출 방지 플래그
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
   );
+
+  const logoUrl =
+    "https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png";
 
   // 유저 정보 가져오기
   useEffect(() => {
@@ -53,7 +62,9 @@ const PostDetailsPage = () => {
         const response = await axios.get(`${getUserApi()}/get-user-info`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setCurrentUser(response.data);
+
+        const userEmail = response.data?.email;
+        setCurrentUser({ ...response.data, email: userEmail });
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류 발생:", error);
       }
@@ -62,52 +73,62 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  // 게시글 및 댓글 가져오기
   useEffect(() => {
-    const fetchPostAndComments = async () => {
+    const fetchPostAndIncrementView = async () => {
+      if (fetchRef.current) return;
+      fetchRef.current = true;
+
+      setLoading(true);
+
       try {
-        setLoading(true);
-        if (!createdAt) {
-          console.error("createdAt 값이 누락되었습니다.");
-          navigate(`/community/${boardType}`, { replace: true });
-          return;
-        }
-
-        // 게시글 가져오기
-        const postResponse = await axios.get(
+        setLoading(true); // 로딩 시작
+        const response = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}`,
-          {
-            params: { createdAt },
-          }
+          { params: { createdAt } }
         );
 
-        if (postResponse.data) {
-          setPost(postResponse.data);
-        } else {
-          setPost(null);
-        }
-
-        // 댓글 가져오기
-        const commentsResponse = await axios.get(
-          `${getCommunityApi()}/${boardType}/${postId}/comments`,
-          {
-            params: { createdAt },
-          }
-        );
-
-        if (commentsResponse.data && commentsResponse.data.comments) {
-          setComments(commentsResponse.data.comments);
+        if (response.status === 200) {
+          const postData = response.data;
+          setPost(postData);
+          setLikedByUser(
+            postData.likedUsers?.includes(currentUser?.email) || false
+          );
         }
       } catch (error) {
         console.error("데이터를 불러오는 중 오류 발생:", error);
-        setPost(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPostAndComments();
-  }, [boardType, postId, createdAt, navigate]);
+    if (boardType && postId && createdAt) {
+      fetchPostAndIncrementView();
+    }
+  }, [boardType, postId, createdAt, currentUser]);
+
+  // 댓글 가져오기
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        setIsCommentsLoading(true); // 댓글 로딩 시작
+        const response = await axios.get(
+          `${getCommunityApi()}/${boardType}/${postId}/comments`,
+          { params: { createdAt } }
+        );
+
+        if (response.data?.comments) {
+          setComments(response.data.comments);
+        }
+      } catch (error) {
+        console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
+      } finally {
+        setIsCommentsLoading(false); // 댓글 로딩 완료
+      }
+    };
+
+    fetchComments();
+  }, [boardType, postId, createdAt]);
+
   // 댓글 가져오기 함수
   const fetchComments = async () => {
     try {
@@ -286,6 +307,36 @@ const PostDetailsPage = () => {
     setDeleteCommentAlertOpen(false);
   };
 
+  const handleLikePost = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+
+      if (!token || !currentUser?.email) {
+        throw new Error("로그인이 필요합니다.");
+      }
+
+      const response = await axios.post(
+        `${getCommunityApi()}/${boardType}/${postId}/like`,
+        { userEmail: currentUser.email },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { createdAt },
+        }
+      );
+
+      if (response.status === 200) {
+        setPost((prevPost) => ({
+          ...prevPost,
+          likeCount: response.data.updatedAttributes.likeCount,
+        }));
+        setLikedByUser(!likedByUser);
+      }
+    } catch (error) {
+      console.error("좋아요 처리 중 오류 발생:", error.message);
+      alert("좋아요 처리에 실패했습니다.");
+    }
+  };
+
   if (loading) {
     return (
       <Box
@@ -301,7 +352,22 @@ const PostDetailsPage = () => {
     );
   }
 
-  if (!post) {
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!loading && (!post || post === null)) {
     return (
       <Box
         sx={{
@@ -388,25 +454,53 @@ const PostDetailsPage = () => {
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
+          alignItems: "center",
           mb: 2,
           color: "text.secondary",
         }}
       >
+        <Box>
+          <Typography variant="body2">
+            {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
+            {post.updatedAt &&
+              new Date(post.updatedAt).getTime() !==
+                new Date(post.createdAt).getTime() && (
+                <Tooltip
+                  title={`${new Date(post.updatedAt).toLocaleString()} 수정`}
+                >
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      ml: 1,
+                    }}
+                  >
+                    수정됨
+                  </Typography>
+                </Tooltip>
+              )}
+          </Typography>
+        </Box>
         <Typography variant="body2">
-          작성자: {post.writer?.nickname || "알 수 없음"} •{" "}
-          {new Date(post.createdAt).toLocaleString()}
-          {post.updatedAt &&
-            new Date(post.updatedAt).getTime() !==
-              new Date(post.createdAt).getTime() &&
-            ` (수정됨: ${new Date(post.updatedAt).toLocaleString()})`}
-        </Typography>
-        <Typography variant="body2">
-          조회수: {post.viewCount} • 좋아요: {post.likeCount}
+          작성자:{" "}
+          <Typography component="span" variant="body2" sx={{ color: "black" }}>
+            {post.writer?.nickname || "알 수 없음"}
+          </Typography>
         </Typography>
       </Box>
 
+      <Button
+        startIcon={<ThumbUpIcon />}
+        onClick={handleLikePost}
+        sx={{
+          color: likedByUser ? "primary.main" : "text.secondary",
+        }}
+      >
+        {post.likeCount}
+      </Button>
       <Divider sx={{ marginBottom: 3 }} />
 
       <Paper
@@ -427,13 +521,98 @@ const PostDetailsPage = () => {
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>
-        댓글
+        답변{" "}
+        <Box component="span" sx={{ color: "primary.main" }}>
+          {comments.length}
+        </Box>
       </Typography>
+
+      {comments.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            mt: 4,
+          }}
+        >
+          <img
+            src={logoUrl}
+            alt="답변 대기 이미지"
+            style={{ width: "100px", height: "100px", marginBottom: "20px" }}
+          />
+          <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
+            답변을 기다리고 있는 질문이에요
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+            첫번째 답변을 남겨보세요!
+          </Typography>
+        </Box>
+      ) : (
+        <Box
+          sx={{
+            mb: 2,
+            flexDirection: "column",
+            height: 350,
+            overflow: "hidden",
+            overflowY: "scroll",
+          }}
+        >
+          {comments
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((comment, index) => (
+              <Paper
+                key={index}
+                elevation={1}
+                sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {comment.writer?.nickname || "익명"}
+                </Typography>
+                <Typography variant="body2">{comment.content}</Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mt: 1 }}
+                >
+                  {new Date(comment.createdAt).toLocaleString()}
+                  {comment.updatedAt &&
+                    new Date(comment.updatedAt).getTime() !==
+                      new Date(comment.createdAt).getTime() &&
+                    ` (수정됨: ${new Date(
+                      comment.updatedAt
+                    ).toLocaleString()})`}
+                </Typography>
+
+                {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
+                {comment.writer?.email === currentUser?.email && (
+                  <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleEditComment(comment)}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDeleteComment(comment.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                )}
+              </Paper>
+            ))}
+        </Box>
+      )}
+
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
           value={commentContent}
           onChange={(e) => setCommentContent(e.target.value)}
-          placeholder="댓글을 입력하세요."
+          placeholder={`${
+            currentUser?.nickname || "알수없는 사용자"
+          }님, 답변을 작성해보세요.`}
           variant="outlined"
           fullWidth
           multiline
@@ -458,58 +637,6 @@ const PostDetailsPage = () => {
         >
           취소
         </Button>
-      </Box>
-      <Box
-        sx={{
-          mb: 2,
-          flexDirection: "column",
-          height: 350,
-          overflow: "hidden",
-          overflowY: "scroll",
-        }}
-      >
-        {comments
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          .map((comment, index) => (
-            <Paper
-              key={index}
-              elevation={1}
-              sx={{ padding: 2, marginBottom: 1, backgroundColor: "#f9f9f9" }}
-            >
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {comment.writer?.nickname || "익명"}
-              </Typography>
-              <Typography variant="body2">{comment.content}</Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: "text.secondary", display: "block", mt: 1 }}
-              >
-                {new Date(comment.createdAt).toLocaleString()}
-                {comment.updatedAt &&
-                  new Date(comment.updatedAt).getTime() !==
-                    new Date(comment.createdAt).getTime() &&
-                  ` (수정됨: ${new Date(comment.updatedAt).toLocaleString()})`}
-              </Typography>
-
-              {/* 댓글 작성자가 현재 사용자와 일치할 때 수정/삭제 버튼 표시 */}
-              {comment.writer?.email === currentUser?.email && (
-                <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleEditComment(comment)}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleDeleteComment(comment.id)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              )}
-            </Paper>
-          ))}
       </Box>
       {/* 댓글 등록 알림 스낵바 */}
       <Snackbar

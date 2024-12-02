@@ -100,6 +100,7 @@ const formatPosts = (items) => {
       viewCount: parseInt(item.viewCount.N, 10),
       likeCount: parseInt(item.likeCount.N, 10),
       tags: item.tags?.SS || [],
+      commentCount: item.comments ? item.comments.L.length : 0, // 댓글 수 추가
     };
 
     // 작성자 정보 추가
