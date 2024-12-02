@@ -68,6 +68,7 @@ function ChatMessages({currentChatRoom}) {
         newSocket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                handleIncomingMessage(data);
             } catch (error) {
                 console.error("Invalid JSON received: " + event.data);
             }
@@ -83,6 +84,26 @@ function ChatMessages({currentChatRoom}) {
 
         socketRef.current = newSocket;
     }
+
+    const handleIncomingMessage = (data) => {
+        if (data.type === "newMessage") {
+            // 새로운 메시지 추가
+            setMessages((prev) => sortMessages([...prev, data]));
+        } else if (data.type === "updateMessage") {
+            // 메시지 수정
+            setMessages((prev) =>
+                prev.map((msg) =>
+                    msg.timestamp === data.timestamp ? { ...msg, ...data } : msg
+                )
+            );
+        } else if (data.type === "deleteMessage") {
+            // 메시지 삭제
+            setMessages((prev) => prev.filter((msg) => msg.timestamp !== data.timestamp));
+        } else {
+            console.warn("알 수 없는 메시지 유형:", data);
+        }
+        scrollToBottom(); // UI 스크롤 유지
+    };
 
     const scrollToBottom = () => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});

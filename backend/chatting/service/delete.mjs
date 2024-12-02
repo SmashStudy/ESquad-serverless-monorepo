@@ -1,5 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, DeleteCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 
 // DynamoDB 클라이언트 설정
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
@@ -51,6 +52,54 @@ export const handler = async (event) => {
                 body: JSON.stringify({ error: "Message Not Found" }),
             };
         }
+
+        const deleteMessage = {
+            type: "deleteMessage",
+            room_id,
+            timestamp: Number(timestamp),
+            fileKey: fileKey || null,
+        }
+
+        const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
+            apiVersion: "2018-11-29",
+            endpoint: `${event.requestContext.domainName}/${event.requestContext.stage}`,
+        });
+
+        const connections = await docClient.send(
+            new QueryCommand({
+                TableName: process.env.USERLIST_TABLE_NAME,
+                IndexName: "room_id-user_id-index",
+                KeyConditionExpression: "room_id = :room_id",
+                ExpressionAttributeValues: {
+                    ":room_id": room_id,
+                },
+            })
+        );
+
+        const postCalls = connections.Items.map(async ({ connection_id }) => {
+            try {
+                await apiGatewayManagementApi.send(
+                    new PostToConnectionCommand({
+                        ConnectionId: connection_id,
+                        Data: JSON.stringify(deletedMessage),
+                    })
+                );
+            } catch (e) {
+                if (e.statusCode === 410) {
+                    console.log(`Stale connection detected for connection_id: ${connection_id}`);
+                    await docClient.send(
+                        new DeleteCommand({
+                            TableName: process.env.USERLIST_TABLE_NAME,
+                            Key: { connection_id },
+                        })
+                    );
+                } else {
+                    console.error(`Failed to send WebSocket message to ${connection_id}`, e);
+                }
+            }
+        });
+
+        await Promise.all(postCalls);
 
         // 성공적인 삭제 후 결과 반환
         console.log("Deleted item:", result.Attributes);

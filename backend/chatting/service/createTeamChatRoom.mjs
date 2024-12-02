@@ -1,95 +1,40 @@
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
-import { DynamoDBClient, PutItemCommand, QueryCommand, DeleteCommand } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
+const docClient = DynamoDBDocumentClient.from(client);
 
 const MESSAGE_TABLE = process.env.MESSAGE_TABLE_NAME;
 const USERLIST_TABLE = process.env.USERLIST_TABLE_NAME;
-const TEAMS_TABLE = process.env.TEAMS_TABLE_NAME;
+const TEAM_TABLE = process.env.TEAM_TABLE_NAME;
 const WEBSOCKET_ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 
 if (!WEBSOCKET_ENDPOINT) {
     console.log("WEBSOCKET_ENDPOINT is not defined in environment variables");
     throw new Error("WEBSOCKET_ENDPOINT is not defined in environment variables");
 }
+
 export const handler = async (event) => {
-    console.log("-------------> RECEIVED EVENT : ", JSON.stringify(event, null, 2));
+    console.log("Received event:", JSON.stringify(event, null, 2));
+
     try {
-        if (event.requestContext?.http?.method === "POST") {
-            return await handleHttpEvent(event);
-        }
         if (event.Records) {
+            // DynamoDB Stream 이벤트 처리
             return await handleStreamEvent(event);
+        } else {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: "Invalid event type" }),
+            };
         }
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ message: "Invalid event type" }),
-        };
     } catch (error) {
-        console.error("ERROR processing message:", error.message);
+        console.error("Error processing event:", error.message);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: "Internal server error", details: error.message }),
         };
-    }
-};
-
-const handleHttpEvent = async (event) => {
-    let body;
-    try {
-        body = typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    } catch (error) {
-        console.error("Failed to parse request body:", error.message);
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Invalid JSON body" }),
-        };
-    }
-
-    const { teamID, teamName } = body;
-
-    if (!teamID || !teamName) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Missing required fields: teamID, teamName" }),
-        };
-    }
-
-    const timestamp = Date.now();
-
-    const initialMessage = {
-        room_id: teamID,
-        timestamp,
-        message: `Welcome to the chat room for ${teamName}`,
-    };
-
-    try {
-        await client.send(
-            new PutItemCommand({
-                TableName: MESSAGE_TABLE,
-                Item: {
-                    room_id: { S: initialMessage.room_id },
-                    timestamp: { N: initialMessage.timestamp.toString() },
-                    message: { S: initialMessage.message },
-                },
-            })
-        );
-
-        console.log(`Chat room ${teamID} created successfully.`);
-
-        return {
-            statusCode: 201,
-            headers: {
-                "Access-Control-Allow-Origin": "*", // 모든 출처 허용
-                "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            },
-            body: JSON.stringify({ message: "Chat room created successfully.", room_id: teamID }),
-        };
-    } catch (error) {
-        console.error("DynamoDB PutItemCommand failed:", error.message);
-        throw new Error("Failed to create chat room");
     }
 };
 
@@ -102,39 +47,31 @@ const handleStreamEvent = async (event) => {
         const newImage = record.dynamodb.NewImage;
         const teamData = unmarshall(newImage);
 
-        // 팀 정보만 가지고오기
+        // 팀 데이터 확인
         if (teamData.itemType === "Team") {
             const teamPK = teamData.PK;
-            const teamName = teamData.itemName;
+            const teamName = teamData.teamName;
 
-            const crew_users = await getTeamCrewUsers(teamPK);
+            // 팀 소속 크루 가져오기
+            const crewUsers = await getTeamCrewUsers(teamPK);
 
             const timestamp = Date.now();
 
-            const initialMessage = {
+            // 메시지 테이블에 저장
+            const messageData = {
                 room_id: teamPK,
                 timestamp,
-                crew_users,
+                crew_users: crewUsers,
                 teamName,
                 message: `Welcome to chat room, ${teamName}`,
             };
 
-            await client.send(
-                new PutItemCommand({
-                    TableName: MESSAGE_TABLE,
-                    Item: {
-                        room_id: { S: initialMessage.room_id },
-                        timestamp: { N: initialMessage.timestamp.toString() },
-                        crew_users: { SS: initialMessage.crew_users },
-                        teamName: { S: teamName },
-                        message: { S: initialMessage.message },
-                    },
-                })
-            );
-            await broadcastToConnections(teamPK, initialMessage.message);
+            await saveMessageToTable(messageData);
+
+            // 연결된 사용자들에게 메시지 브로드캐스트
+            await broadcastToConnections(teamPK, messageData.message);
         }
     }
-
     return {
         statusCode: 200,
         headers: {
@@ -149,60 +86,108 @@ const handleStreamEvent = async (event) => {
 // TeamTable 에 존재하는 itemType 이 TeamUser 일 경우 && PK 가 위 handleStreamEvent에서 찾은 팀 teamData.PK 이어야 함. 무적건.
 const getTeamCrewUsers = async (teamPK) => {
     const params = {
-        TableName: TEAMS_TABLE,
-        KeyConditionExpression: "#PK = :pk",
+        TableName: TEAM_TABLE,
+        KeyConditionExpression: "#PK = :PK",
         FilterExpression: "itemType = :itemType AND inviteState = :inviteState",
         ExpressionAttributeNames: {
-            "#pk": "pk", // 'pk'라는 실제 필드명을 매핑
+            "#PK": "PK",
         },
         ExpressionAttributeValues: {
-            ":pk": { S: teamPK },
-            ":itemType": { S: "TeamUser" },
-            ":inviteState": { S: "complete" },
+            ":PK": teamPK,
+            ":itemType": "TeamUser",
+            ":inviteState": "complete",
         },
     };
 
-    const result = await client.send(new QueryCommand(params));
-    return result.Items.map((item) => unmarshall(item).SK);
+    console.log("DynamoDB Query Params:", JSON.stringify(params, null, 2));
+
+    try {
+        const result = await docClient.send(new QueryCommand(params));
+        console.log("DynamoDB Query Result:", JSON.stringify(result, null, 2));
+
+        // Ensure result.Items is an array
+        const items = result.Items || [];
+        if (items.length === 0) {
+            console.warn(`No crew users found for team: ${teamPK}`);
+            return [];
+        }
+
+        // Safely process each item and log potential issues
+        const crewUsers = items.map((item) => {
+            try {
+                const unmarshalledItem = unmarshall(item);
+                if (!unmarshalledItem.SK) {
+                    throw new Error(`Missing SK field in item: ${JSON.stringify(unmarshalledItem)}`);
+                }
+                return unmarshalledItem.SK;
+            } catch (error) {
+                console.error(`Error unmarshalling item: ${JSON.stringify(item)}, Error: ${error.message}`);
+                return null; // Skip problematic items
+            }
+        }).filter((user) => user !== null); // Remove null values
+
+        console.log("Crew users:", crewUsers);
+        return crewUsers;
+    } catch (error) {
+        console.error(`Error fetching crew users for team ${teamPK}:`, error.message);
+        throw new Error("Failed to fetch team crew users");
+    }
+};
+
+const saveMessageToTable = async (messageData) => {
+    const { room_id, timestamp, crew_users, teamName, message } = messageData;
+
+    const params = {
+        TableName: MESSAGE_TABLE,
+        Item: {
+            room_id,
+            timestamp,
+            crew_users, // String Set
+            teamName,
+            message,
+        },
+    };
+
+    try {
+        await docClient.send(new PutCommand(params));
+        console.log("Message saved to DynamoDB:", JSON.stringify(params, null, 2));
+    } catch (error) {
+        console.error("Failed to save message to table:", error.message);
+        throw new Error("Failed to save message");
+    }
 };
 
 const broadcastToConnections = async (room_id, message) => {
     const params = {
         TableName: USERLIST_TABLE,
+        IndexName:"room_id-user_id-index",
         KeyConditionExpression: "room_id = :room_id",
-        ExpressionAttributeValues: { ":room_id": { S: room_id } },
+        ExpressionAttributeValues: { ":room_id": room_id },
     };
-    const result = await client.send(new QueryCommand(params));
+
+    const result = await docClient.send(new QueryCommand(params));
     const connections = result.Items.map((item) => unmarshall(item).connection_id);
 
-    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
-        apiVersion: "2018-11-29",
-        endpoint: WEBSOCKET_ENDPOINT,
-    });
+    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({ endpoint: WEBSOCKET_ENDPOINT });
 
     const postCalls = connections.map(async (connection_id) => {
         try {
-            await apiGatewayManagementApi.send(
-                new PostToConnectionCommand({
-                    ConnectionId: connection_id,
-                    Data: JSON.stringify({ message }),
-                })
-            );
-        } catch (e) {
-            if (e.statusCode === 410) {
+            await apiGatewayManagementApi.send(new PostToConnectionCommand({
+                ConnectionId: connection_id,
+                Data: JSON.stringify({ message }),
+            }));
+        } catch (error) {
+            if (error.statusCode === 410) {
                 console.log(`Stale connection, deleting: ${connection_id}`);
-                await client.send(
-                    new DeleteCommand({
-                        TableName: USERLIST_TABLE,
-                        Key: { connection_id: { S: connection_id } },
-                    })
-                );
+                await docClient.send(new DeleteCommand({
+                    TableName: USERLIST_TABLE,
+                    Key: { connection_id },
+                }));
             } else {
-                console.error(`Failed to send message to ${connection_id}:, e.message`);
+                console.error(`Failed to send message to ${connection_id}:`, error.message);
             }
         }
     });
-
     await Promise.all(postCalls);
     console.log(`Broadcasted message to room_id: ${room_id}`);
 };

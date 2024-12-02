@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
-import moment from "moment";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { ApiGatewayManagementApiClient, PostToConnectionCommand } from "@aws-sdk/client-apigatewaymanagementapi";
 
 // DynamoDB 클라이언트 초기화
 const client = new DynamoDBClient({ region: process.env.CHATTING_REGION });
@@ -20,6 +20,33 @@ async function putItem(tableName, item) {
     console.error("Unable to add item. Error:", JSON.stringify(err, null, 2));
     throw err;
   }
+}
+
+async function broadcastMessage(apiGatewayManagementApi, connections, message) {
+  const postCalls = connections.map(async ({ connection_id }) => {
+    try {
+      await apiGatewayManagementApi.send(
+          new PostToConnectionCommand({
+            ConnectionId: connection_id,
+            Data: JSON.stringify(message),
+          })
+      );
+    } catch (e) {
+      if (e.statusCode === 410) {
+        console.log(`Stale connection detected, removing connection_id: ${connection_id}`);
+        await docClient.send(
+            new DeleteCommand({
+              TableName: process.env.USERLIST_TABLE_NAME,
+              Key: { connection_id },
+            })
+        );
+      } else {
+        console.error(`Failed to send message to connection_id: ${connection_id}`, e);
+      }
+    }
+  });
+
+  await Promise.all(postCalls);
 }
 
 // 메시지 수신 함수
@@ -53,6 +80,33 @@ export const handler = async (event) => {
   // DynamoDB에 메시지 PUT 하기
   try {
     await putItem(process.env.MESSAGE_TABLE_NAME, item);
+
+    // WebSocket API Gateway 클라이언트 초기화
+    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
+      apiVersion: "2018-11-29",
+      endpoint: `${event.requestContext.domainName}/${event.requestContext.stage}`,
+    });
+
+    // 연결된 클라이언트 조회
+    const connectionsResult = await docClient.send(
+        new QueryCommand({
+          TableName: process.env.USERLIST_TABLE_NAME,
+          IndexName: "room_id-user_id-index",
+          KeyConditionExpression: "room_id = :room_id",
+          ExpressionAttributeValues: {
+            ":room_id": room_id,
+          },
+        })
+    );
+
+    const connections = connectionsResult.Items || [];
+
+    // 새 메시지를 WebSocket 클라이언트에 브로드캐스트
+    const newMessage = {
+      type: "newMessage",
+      ...item,
+    };
+    await broadcastMessage(apiGatewayManagementApi, connections, newMessage);
 
     return {
       statusCode: 200,
