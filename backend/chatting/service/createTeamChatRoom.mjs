@@ -65,7 +65,6 @@ const handleStreamEvent = async (event) => {
                 teamName,
                 message: `Welcome to chat room, ${teamName}`,
             };
-
             await saveMessageToTable(messageData);
 
             // 연결된 사용자들에게 메시지 브로드캐스트

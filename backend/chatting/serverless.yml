@@ -212,7 +212,7 @@ functions:
       - http:
           cors: true
           path: /team
-          method: post
+          method: get
       - stream:
           type: dynamodb
           arn: ${env:TEAM_TABLE_STREAM_ARN}
