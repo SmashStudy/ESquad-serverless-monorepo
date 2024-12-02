@@ -1,14 +1,22 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 
-const apiUrl = "https://hxczylu7qb.execute-api.us-east-1.amazonaws.com/local";
+const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
 
 const apiClient = axios.create({
     baseURL: apiUrl,
-    headers: {
-        "Content-Type": "application/json"
-    }
 });
+
+// 팀 목록 가져오기
+export const fetchTeamListAPI = async () => {
+    try{
+        const response = await apiClient.get(`/team`);
+        return response.data;
+    } catch (error) {
+      console.error("팀 목록 가져오기 실패: " , error.message);
+      throw error;
+    }
+}
 
 // 메시지 조회
 export const fetchMessageAPI = async (room_id) => {

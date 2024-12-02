@@ -11,21 +11,44 @@ const USERLIST_TABLE = process.env.USERLIST_TABLE_NAME;
 const TEAM_TABLE = process.env.TEAM_TABLE_NAME;
 const WEBSOCKET_ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 
-if (!WEBSOCKET_ENDPOINT) {
-    console.log("WEBSOCKET_ENDPOINT is not defined in environment variables");
-    throw new Error("WEBSOCKET_ENDPOINT is not defined in environment variables");
-}
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+};
 
 export const handler = async (event) => {
     console.log("Received event:", JSON.stringify(event, null, 2));
 
     try {
         if (event.Records) {
-            // DynamoDB Stream 이벤트 처리
-            return await handleStreamEvent(event);
+            // Handle DynamoDB Stream events
+            return {
+                ...await handleStreamEvent(event),
+                headers: corsHeaders,
+            };
+        } else if (event.httpMethod) {
+            // Handle HTTP events
+            if (event.httpMethod === "GET" && event.path === "/team") {
+                return await handleHttpGetTeam(event);
+            } else if (event.httpMethod === "OPTIONS") {
+                // Handle preflight CORS requests
+                return {
+                    statusCode: 200,
+                    headers: corsHeaders,
+                    body: null,
+                };
+            } else {
+                return {
+                    statusCode: 400,
+                    headers: corsHeaders,
+                    body: JSON.stringify({ message: "Invalid HTTP method" }),
+                };
+            }
         } else {
             return {
                 statusCode: 400,
+                headers: corsHeaders,
                 body: JSON.stringify({ message: "Invalid event type" }),
             };
         }
@@ -33,7 +56,40 @@ export const handler = async (event) => {
         console.error("Error processing event:", error.message);
         return {
             statusCode: 500,
+            headers: corsHeaders,
             body: JSON.stringify({ error: "Internal server error", details: error.message }),
+        };
+    }
+};
+
+const handleHttpGetTeam = async (event) => {
+    try {
+        const params = {
+            TableName: TEAM_TABLE,
+            KeyConditionExpression: "#PK = :PK",
+            FilterExpression: "itemType = :itemType",
+            ExpressionAttributeNames: {
+                "#PK": "PK",
+            },
+            ExpressionAttributeValues: {
+                ":PK": "TEAM_DATA", // 모든 팀 데이터를 저장한 PK
+                ":itemType": "Team",
+            },
+        };
+        const result = await docClient.send(new QueryCommand(params));
+
+        const teams = result.Items.map((item) => unmarshall(item));
+        return {
+            statusCode: 200,
+            headers: corsHeaders,
+            body: JSON.stringify(teams),
+        };
+    } catch (error) {
+        console.error("Failed to fetch teams:", error.message);
+        return {
+            statusCode: 500,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: "Failed to fetch teams", details: error.message }),
         };
     }
 };

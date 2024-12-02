@@ -210,9 +210,18 @@ functions:
     handler: service/createTeamChatRoom.handler
     events:
       - http:
-          cors: true
           path: /team
           method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false
+
       - stream:
           type: dynamodb
           arn: ${env:TEAM_TABLE_STREAM_ARN}
