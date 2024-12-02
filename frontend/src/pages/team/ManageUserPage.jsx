@@ -3,6 +3,13 @@ import { useParams, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Button, Typography, List, ListItem, ListItemText, TextField, Card, CardContent, CardActions, Divider } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
+import {getTeamApi, getUserApi} from "../../utils/apiConfig.js";
+import {
+    fetchTeamUsers,
+    checkTeamRole,
+    addTeamMember,
+    deleteTeamMember,
+  } from '../../utils/TeamApi';
 
 const ManageUserPage = () => {
     const { selectedTeam } = useOutletContext();
@@ -12,13 +19,13 @@ const ManageUserPage = () => {
     const [loading, setLoading] = useState(false);
     const [isManager, setIsManager] = useState(false);
     const [isLoadingRole, setIsLoadingRole] = useState(true);
-    const token = localStorage.getItem('jwtToken');
+    let managerEmail;
 
-    const fetchTeamUsers = async () => {
+    const loadTeamUsers = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/user`);
-            setUsers(response.data.data);
+            const teamUsers = await fetchTeamUsers(teamId);
+            setUsers(teamUsers);
         } catch (error) {
             console.error('Error fetching team users:', error);
         } finally {
@@ -27,11 +34,10 @@ const ManageUserPage = () => {
     };
 
     const checkUserRole = async () => {
-        try {
-            const response = await axios.post(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/role`, {
-                userId: jwtDecode(token).email
-            });
-            setIsManager(response.data.data);
+        try {            
+            const role = await checkTeamRole(teamId);
+            setIsManager(!!role);
+            managerEmail = role; // 관리자의 이메일 저장
         } catch (error) {
             console.error('Error checking role:', error);
             setIsManager(false);
@@ -42,41 +48,36 @@ const ManageUserPage = () => {
 
     useEffect(() => {
         if (teamId) {
-            fetchTeamUsers();
+            loadTeamUsers();
             checkUserRole();
         }
     }, [teamId]);
 
     const handleAddUser = async () => {
-        const gmailRegex = /^[^\s@]+@gmail\.com$/; // 이메일 유효성 검사 정규식
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 유효성 검사 정규식
     
         if (!newUser || users.length >= 12 || !isManager) return;
     
         // 이메일 형식 검증
-        if (!gmailRegex.test(newUser)) {
+        if (!emailRegex.test(newUser)) {
             alert('유효한 이메일 주소를 입력해 주세요.');
             return;
         }
     
         try {
-            await axios.put(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/setting/users`, {
-                membersToAdd: [newUser],
-                membersToDelete: [],
-            });
-            setNewUser(''); // 입력 필드 초기화
-            fetchTeamUsers(); // 사용자 목록 새로고침
+            await addTeamMember(teamId, newUser);
+            setNewUser('');             
+            loadTeamUsers(); 
         } catch (error) {
             console.error('Error adding user:', error);
         }
     };
     const handleDeleteUser = async (userId) => {
-        if (users.length <= 4 || !isManager) return;
+        if (userId!==managerEmail||!isManager) return;
+        
         try {
-            await axios.put(`https://api.esquad.click/teams/${encodeURIComponent(teamId)}/setting/users`, {
-                membersToAdd: [],
-                membersToDelete: [userId],
-            });
-            fetchTeamUsers();
+            await deleteTeamMember(teamId, userId);
+            loadTeamUsers();
         } catch (error) {
             console.error('Error deleting user:', error);
         }
@@ -116,7 +117,7 @@ const ManageUserPage = () => {
                                         secondary={`Invite State: ${user.inviteState || 'N/A'}`}
                                     />
                                 </Box>
-                                {users.length > 4 && isManager && (
+                                {users.length > 1 && isManager && (
                                     <Button
                                         variant="outlined"
                                         color="error"

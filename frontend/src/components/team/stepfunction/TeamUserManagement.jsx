@@ -2,18 +2,18 @@ import React from 'react';
 import { Box, Typography, Stack, TextField, Button } from '@mui/material';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
-function TeamUserManagement({ teamUsers = [], newTeamUser, handlenewTeamUserChange, searchUser, searchError,removeTeamUser }) {
+function TeamUserManagement({ teamUsers = [], newTeamUser, handlenewTeamUserChange, searchUser, searchError,removeTeamUser, makerEmail }) {
     const isTeamFull = teamUsers.length >= 12;
 
     return (
         <Box sx={{ pt: 2 }}>
-            <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bold', color: '#3f51b5' }}>
+            <Typography sx={{ mt: 0, mb: 1, fontSize: 'x-large', fontWeight: 'bold', color: '#3f51b5',textAlign: 'center' }}>
                 크루 초대하기
             </Typography>
-            <Typography sx={{ mt: 2, mb: 5, fontSize: 'large', color: '#616161' }}>
+            <Typography sx={{ mt: 2, mb: 1, fontSize: 'large', color: '#616161', textAlign: 'center'}}>
                 동행할 크루를 초대하여 함께 성장해요!
             </Typography>
-            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>
+            <Typography sx={{mt: 0, mb: 5, fontSize: 'small', color: 'red', textAlign: 'center' }}>
                 ( 크루는 본인을 포함하여 12명 이하로 꾸려주세요 )
             </Typography>
 
@@ -21,7 +21,7 @@ function TeamUserManagement({ teamUsers = [], newTeamUser, handlenewTeamUserChan
                 <TextField
                     id="input-new-User"
                     value={newTeamUser}
-                    placeholder="구글 이메일 주소를 입력하세요"
+                    placeholder="팀에 초대하고 싶은 사람의 이메일을 입력하세요!"
                     onChange={handlenewTeamUserChange}
                     disabled={isTeamFull}
                     fullWidth
@@ -34,16 +34,20 @@ function TeamUserManagement({ teamUsers = [], newTeamUser, handlenewTeamUserChan
                 <Button
                     variant="contained"
                     onClick={searchUser}
-                    size="large"
-                    endIcon={<PersonSearchIcon />}
+                    endIcon={<PersonSearchIcon />}  // 아이콘을 텍스트 앞에 배치
                     disabled={isTeamFull}
                     sx={{
                         bgcolor: '#3f51b5',
                         color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         '&:hover': {
                             bgcolor: '#303f9f',
                         },
                         boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)',
+                        padding: '1px 2px 1px 2px ',
+                        minWidth: '80px',  // 버튼이 너무 작아지는 것을 방지하는 최소 너비 설정
                     }}
                 >
                     초대
@@ -93,21 +97,23 @@ function TeamUserManagement({ teamUsers = [], newTeamUser, handlenewTeamUserChan
                                 },
                             }}
                         >
-                            <Typography sx={{ width: '100%', textAlign: 'left', fontWeight: 'bold', color: '#424242' }}>
+                            <Typography sx={{ width: '100%', textAlign: 'left', fontWeight: 'bold', color: '#424242', fontSize:'14px' }}>
                                 {user || '알 수 없는 사용자'}
                             </Typography>
-                            <Button
-                                color="error"
-                                onClick={() => removeTeamUser(user)}
-                                sx={{
-                                    fontWeight: 'bold',
-                                    '&:hover': {
-                                        bgcolor: '#ffcdd2',
-                                    },
-                                }}
-                            >
-                                삭제
-                            </Button>
+                            {user !== makerEmail &&(
+                                <Button
+                                    color="error"
+                                    onClick={() => removeTeamUser(user)}
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        '&:hover': {
+                                            bgcolor: '#ffcdd2',
+                                        },
+                                    }}
+                                >
+                                    삭제
+                                </Button>
+                            )}
                         </Box>
                     ))}
                 </Box>

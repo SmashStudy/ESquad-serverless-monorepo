@@ -89,10 +89,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const AppBarComponent = ({
   handleSidebarToggle,
-  handleTab,
   selectedTab,
-  updateSelectedTeam,
   changeSelectedTeam,
+  handleTab,
   updateTeams,
   teams,
   toggleChatDrawer,
@@ -207,11 +206,6 @@ useEffect(() => {
   };
   const handleAccountClose = () => {
     setAccountAnchorEl(null);
-  };
-
-  // 사용자의 팀탭에서 팀 선택
-  const handleSelectedTeam = (i) => {
-    updateSelectedTeam(i);
   };
 
   // Handle create team dialog open/close
@@ -339,6 +333,7 @@ useEffect(() => {
                                         onClose={handleCloseCreateTeamModal}
                                         updateTeams={updateTeams}
                                         teams={teams}
+                                        handleTab={handleTab}
                                     />
 
                                     {teams == null ? (
@@ -349,19 +344,19 @@ useEffect(() => {
                                         <>
                                             {teams.map((team, index) => (
                                                 <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
-                                                    <ListItemButton 
-                                                      onClick={() => changeSelectedTeam(index)} 
-                                                      sx={{
-                                                        "&:hover": {
-                                                          cursor: "pointer",
-                                                          fontSize: "1.4rem",
-                                                        },
-                                                      }}>
-                                                        <ListItemIcon>
-                                                            <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary={team?.teamName} />
-                                                    </ListItemButton>
+                                                  <ListItemButton 
+                                                    onClick={() => changeSelectedTeam(index)} 
+                                                    sx={{
+                                                      "&:hover": {
+                                                        cursor: "pointer",
+                                                        fontSize: "1.4rem",
+                                                      },
+                                                    }}>
+                                                      <ListItemIcon>
+                                                        <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                                                      </ListItemIcon>
+                                                      <ListItemText primary={team?.teamName} />
+                                                  </ListItemButton>
                                                 </Link>
                                             ))}
                                         </>

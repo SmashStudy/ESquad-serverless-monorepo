@@ -5,13 +5,13 @@ function TeamNameInput({ teamName, handleInputChange, teamNameError }) {
     return (
         <Box sx={{ pt: 2, textAlign: 'center' }}>
             <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>
-                스페이스명 커스터마이즈하기
+                팀 이름 커스터마이즈하기
             </Typography>
             <Typography sx={{ mt: 2, mb: 8, fontSize: 'large' }}>
-                개성있고 독특한 스페이스명으로 만들어보세요!
+                개성있고 독특한 팀 이름을 지어보세요!
             </Typography>
             <InputLabel htmlFor="input-team-name" sx={{ mb: 1, textAlign: 'left', fontSize: 'medium' }}>
-                스페이스명
+                팀 이름
             </InputLabel>
             <Input
                 id="input-team-name"
