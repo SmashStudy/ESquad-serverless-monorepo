@@ -1,15 +1,20 @@
 import axios from 'axios';
 import {getStorageApi, getUserApi} from "../apiConfig.js";
-import {UserByEmail} from "../../components/user/UserByEmail.jsx";
 import {getFormattedDate} from "../fileFormatUtils.js";
 import {getMimeType} from "./getMimeType.js";
 
 const storageApi = getStorageApi();
 const userApi = getUserApi();
 
-export const fetchFiles = async (targetId, targetType, limit, currentPage,
-    lastEvaluatedKeys, setUploadedFiles, setLastEvaluatedKeys, setTotalPages,
-    setSnackbar, setIsLoading) => {
+export const fetchFiles = async (targetId, targetType, limit = 5,
+    currentPage = 1,
+    lastEvaluatedKeys = null, setUploadedFiles = () => {
+    }, setLastEvaluatedKeys = () => {
+    }, setTotalPages = () => {
+    }, totalPages = 1,
+    setSnackbar = () => {
+    }, setIsLoading = () => {
+    }) => {
   try {
     setIsLoading(true);
     const lastEvaluatedKey = lastEvaluatedKeys[currentPage - 1];
@@ -22,20 +27,7 @@ export const fetchFiles = async (targetId, targetType, limit, currentPage,
       },
     });
 
-    const filesWithNicknames = await Promise.all(
-        response.data.items.map(async (file) => {
-          try {
-            const user = await UserByEmail(file.userEmail);
-            return {
-              ...file,
-              nickname: user.nickname || 'Unknown',
-            };
-          } catch (error) {
-            return {...file, nickname: 'Unknown'};
-          }
-        })
-    );
-    setUploadedFiles(filesWithNicknames);
+    setUploadedFiles(response.data.items);
 
     setLastEvaluatedKeys((prevKeys) => {
       const newKeys = [...prevKeys];
@@ -75,10 +67,25 @@ export const fetchUserEmail = async (setEmail) => {
   }
 };
 
-export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
-    targetId, targetType, setIsUploading, setSnackbar, setUploadedFiles,
-    setSelectedFile,
-    fetchFiles, setCurrentPage) => {
+export const handleFileUpload = async (
+    selectedFile,
+    email,
+    targetId,
+    targetType,
+    setIsUploading,
+    setSnackbar = () => {
+    },
+    setUploadedFiles = () => {
+    },
+    setSelectedFile = () => {
+    },
+    fetchFiles = () => {
+    },
+    setCurrentPage = () => {
+    },
+    setUploadProgress = () => {
+    }
+) => {
   if (!selectedFile) {
     return;
   }
@@ -86,37 +93,44 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
   setSnackbar({severity: 'info', message: '파일 업로드 중...', open: true});
 
   try {
-    const uniqueFileName = `${Date.now()}-${selectedFile.name}`;
-    const presignedResponse = await requestPresignedUrl('putObject',
-        uniqueFileName);
+    const userResponse = await axios.post(`${userApi}/get-user`, {email});
+    const nickname = userResponse.data.nickname || 'Unknown';
 
-    await axios.put(presignedResponse, selectedFile, {
-      headers: {'Content-Type': selectedFile.type},
-    });
-
-    const metadataResponse = await axios.post(
-        `${storageApi}/store-metadata`,
+    const response = await axios.post(
+        `${storageApi}/upload-file`,
         {
-          fileKey: `files/${uniqueFileName}`,
-          metadata: {
-            targetId: targetId,
-            targetType: targetType,
-            userEmail: email,
-            fileSize: selectedFile.size,
-            extension: selectedFile.name.substring(
-                selectedFile.name.lastIndexOf('.') + 1),
-            contentType: getMimeType(selectedFile.name),
-            originalFileName: selectedFile.name,
-            createdAt: getFormattedDate(),
-          },
+          originalFileName: encodeURIComponent(selectedFile.name),
+          targetId,
+          targetType,
+          userEmail: email,
+          userNickname: nickname,
+          fileSize: selectedFile.size,
+          contentType: getMimeType(selectedFile.name),
+          actualType: selectedFile.type,
+          createdAt: getFormattedDate(),
         },
         {headers: {'Content-Type': 'application/json'}}
     );
 
-    const newFileData = metadataResponse.data.data;
-    setUploadedFiles((prevFiles) => [newFileData, ...prevFiles]);
+    await axios.put(response.data.presignedUrl, selectedFile, {
+      headers: {'Content-Type': selectedFile.type},
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentComplete = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100);
+          setUploadProgress({
+            fileName: selectedFile.name, percent: percentComplete
+          });
+        }
+      },
+    });
+
     setSelectedFile(null);
     setSnackbar({severity: 'success', message: '파일 업로드 완료', open: true});
+    setUploadProgress({fileName: selectedFile.name, percent: 100});
+    setTimeout(() => {
+      setUploadProgress(null);
+    })
     setCurrentPage(1);
     fetchFiles();
   } catch (error) {
@@ -128,18 +142,21 @@ export const handleFileUpload = async (selectedFile, requestPresignedUrl, email,
 };
 
 export const handleFileDelete = async (fileKey, userEmail, email,
-    requestPresignedUrl, setSnackbar, setUploadedFiles, fetchFiles,
-    setCurrentPage) => {
+    setSnackbar = () => {
+    }, setUploadedFiles = () => {
+    }, fetchFiles = () => {
+    },
+    setCurrentPage = () => {
+    }) => {
   if (email !== userEmail) {
     setSnackbar({severity: 'error', message: '업로더만 삭제할 수 있습니다.', open: true});
     return;
   }
   try {
     setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
-    const presignedResponse = await requestPresignedUrl('deleteObject',
-        fileKey);
-    await axios.delete(presignedResponse);
-    await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
+    const presignedResponse = await axios.delete(
+        `${storageApi}/${encodeURIComponent(fileKey)}`);
+    await axios.delete(presignedResponse.data.presignedUrl);
     setUploadedFiles(
         (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
     setSnackbar({severity: 'success', message: '파일 삭제 완료', open: true});
@@ -152,12 +169,27 @@ export const handleFileDelete = async (fileKey, userEmail, email,
 };
 
 export const handleFileDownload = async (fileKey, originalFileName,
-    requestPresignedUrl, setSnackbar) => {
+    setSnackbar = () => {
+    }, setDownloadProgress = () => {
+    }) => {
   try {
     setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
-    const presignedResponse = await requestPresignedUrl('getObject', fileKey);
-    const downloadResponse = await axios.get(presignedResponse, {
+    const presignedResponse = await axios.patch(
+        `${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
+          updateType: 'incrementDownloadCount'
+        });
+
+    const presignedUrl = presignedResponse.data.presignedUrl;
+    const downloadResponse = await axios.get(presignedUrl, {
       responseType: 'blob',
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentComplete = Math.round(
+              (progressEvent.loaded / progressEvent.total) * 100);
+          setDownloadProgress(
+              {fileName: originalFileName, percent: percentComplete}); // 다운로드 진행률 업데이트
+        }
+      }
     });
     const blob = new Blob([downloadResponse.data], {
       type: downloadResponse.headers['content-type'],
@@ -167,10 +199,20 @@ export const handleFileDownload = async (fileKey, originalFileName,
     link.href = url;
     link.download = originalFileName || fileKey;
     document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+    try {
+      link.click();
+    } catch (error) {
+      console.error('Failed to initiate download:', error);
+    } finally {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    }
+
     setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'});
+    setTimeout(() => {
+      setDownloadProgress(null);
+    }, 1000);
+
   } catch (error) {
     setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});
     console.error('Failed to download file:', error);

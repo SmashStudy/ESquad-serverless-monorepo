@@ -1,7 +1,7 @@
 // generatePresignedUrl.test.mjs
 import AWSMock from 'aws-sdk-mock';
 import AWS from 'aws-sdk';
-import { handler } from '../service/generatePresignedUrl.mjs';
+import { requestPresignedUrl } from '../utils/s3Utils.mjs';
 
 // AWS SDK Mock 설정
 AWSMock.setSDKInstance(AWS);
@@ -31,7 +31,7 @@ describe('generatePresignedUrl Lambda Function', () => {
       }),
     };
 
-    const response = await handler(event);
+    const response = await requestPresignedUrl(event);
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toHaveProperty('presignedUrl');
@@ -47,7 +47,7 @@ describe('generatePresignedUrl Lambda Function', () => {
       }),
     };
 
-    const response = await handler(event);
+    const response = await requestPresignedUrl(event);
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toHaveProperty('presignedUrl');
@@ -63,7 +63,7 @@ describe('generatePresignedUrl Lambda Function', () => {
       }),
     };
 
-    const response = await handler(event);
+    const response = await requestPresignedUrl(event);
 
     expect(response.statusCode).toBe(200);
     expect(JSON.parse(response.body)).toHaveProperty('presignedUrl');
@@ -79,7 +79,7 @@ describe('generatePresignedUrl Lambda Function', () => {
       }),
     };
 
-    const response = await handler(event);
+    const response = await requestPresignedUrl(event);
 
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body).error).toContain('Failed to generate presigned URL');
