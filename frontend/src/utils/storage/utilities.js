@@ -71,7 +71,8 @@ export const handleFileUpload = async (
     setUploadedFiles,
     setSelectedFile,
     fetchFiles,
-    setCurrentPage
+    setCurrentPage,
+    setUploadProgress
 ) => {
   if (!selectedFile) {
     return;
@@ -101,10 +102,21 @@ export const handleFileUpload = async (
 
     await axios.put(response.data.presignedUrl, selectedFile, {
       headers: { 'Content-Type': selectedFile.type },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentComplete = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          setUploadProgress({fileName: selectedFile.name, percent: percentComplete
+        });
+        }
+      },
     });
 
     setSelectedFile(null);
     setSnackbar({ severity: 'success', message: '파일 업로드 완료', open: true });
+    setUploadProgress({fileName: selectedFile.name,percent: 100});
+    setTimeout(() => {
+      setUploadProgress(null);
+    })
     setCurrentPage(1);
     fetchFiles();
   } catch (error) {
@@ -137,7 +149,7 @@ export const handleFileDelete = async (fileKey, userEmail, email, setSnackbar, s
 };
 
 export const handleFileDownload = async (fileKey, originalFileName,
-     setSnackbar) => {
+     setSnackbar, setDownloadProgress) => {
   try {
     setSnackbar({severity: 'info', message: '파일 다운로드 중...', open: true});
     const presignedResponse = await axios.patch(`${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
@@ -147,6 +159,12 @@ export const handleFileDownload = async (fileKey, originalFileName,
     const presignedUrl = presignedResponse.data.presignedUrl;
     const downloadResponse = await axios.get(presignedUrl, {
       responseType: 'blob',
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentComplete = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          setDownloadProgress({fileName: originalFileName, percent:percentComplete}); // 다운로드 진행률 업데이트
+        }
+      }
     });
     const blob = new Blob([downloadResponse.data], {
       type: downloadResponse.headers['content-type'],
@@ -166,6 +184,10 @@ export const handleFileDownload = async (fileKey, originalFileName,
     }
 
     setSnackbar({open: true, message: '파일 다운로드 성공', severity: 'success'});
+    setTimeout(() => {
+      setDownloadProgress(null);
+    }, 1000);
+
   } catch (error) {
     setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});
     console.error('Failed to download file:', error);
