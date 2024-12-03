@@ -16,33 +16,13 @@ const HomeContent = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true); 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [teams, setTeams] = useState([]);
-  // const [selectedTeam, setSelectedTeam] = useState("");
   const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
-  
-  // useEffect(() => {
-  //   if (selectedTeam.PK)
-  //   fetchTeams();
-  // }, [selectedTeam]);
-  //
+
   useEffect(() => {
     fetchTeams();
   }, []);
-  //
-  // const fetchTeams = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const teamProfiles = await fetchAllTeams();
-  //     setTeams((prev) => [...prev, ...teamProfiles]);
-  //     console.log("Updated selectedTeam:", selectedTeam);
-  //   } catch (error) {
-  //     console.error("Error fetching teams:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const {
     teams, selectedTeam, fetchTeams, updateSelectedTeam, updateTeams,
