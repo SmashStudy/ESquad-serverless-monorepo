@@ -27,6 +27,7 @@ export const fetchMessageAPI = async (room_id) => {
         const response = await apiClient.get(`/read`, {
             params: {room_id}
         });
+        return response.data;
     } catch (error) {
         console.log("메시지 불러오기 실패 : ", error.message);
         throw error;

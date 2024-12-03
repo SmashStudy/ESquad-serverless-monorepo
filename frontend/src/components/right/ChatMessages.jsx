@@ -20,11 +20,6 @@ function ChatMessages({currentChatRoom}) {
     const socketRef = useRef(null);
     const [userInfo, setUserInfo] = useState(null);
 
-    // 유저 더미 데이터
-    // const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
-    // const user_id = String(userInfo.id);              // 더미 유저
-    // const username = userInfo.username;   // 더미 유저
-    // const room_id = String(currentChatRoom?.id);
     const room_id = String (currentChatRoom?.id);
 
     // 유저 정보 로드
@@ -145,9 +140,9 @@ const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({behavior: "smooth"});
 }
 
-// 메시지 전송 핸들러
-const sendMessage = async (messageContent) => {
-    const timestamp = Date.now();
+    // 메시지 전송 핸들러
+    const sendMessage = async (messageContent) => {
+        const timestamp = Date.now();
 
     try {
         if (selectedFile) {
@@ -156,7 +151,7 @@ const sendMessage = async (messageContent) => {
                 file: selectedFile,
                 room_id,
                 user_id: userInfo?.email,
-                nickname: userInfo?.name || "알 수 없는 사용자",
+                nickname: userInfo?.nickname || "알 수 없는 사용자",
                 targetType: 'CHAT',
                 timestamp,
             });
@@ -170,6 +165,7 @@ const sendMessage = async (messageContent) => {
                 originalFileName: uploadedFile.originalFileName,
                 room_id: currentChatRoom.id,
                 user_id: userInfo?.email,
+                nickname: userInfo?.nickname || "알 수 없는 사용자",
                 timestamp: timestamp,
                 isFile: true
         };
@@ -202,7 +198,7 @@ const sendMessage = async (messageContent) => {
                 message: messageContent,
                 room_id,
                 user_id: userInfo?.email,
-                nickname: userInfo?.name || "알 수 없는 사용자",
+                nickname: userInfo?.nickname || "알 수 없는 사용자",
                 timestamp: timestamp
             };
             // sendMessageAPI 호출 전후 로그 추가
@@ -275,6 +271,7 @@ const handleUploadClick = async () => {
             file: selectedFile,
             room_id: currentChatRoom.id,
             user_id: userInfo.email,
+            nickname: userInfo.nickname,
             targetType: 'CHAT',
         });
 
@@ -290,7 +287,6 @@ const handleUploadClick = async () => {
             originalFileName: uploadResponse.originalFileName,
             isFile: true
     };
-
         // 메시지 전송 (WebSocket + DynamoDB 저장)
         await sendMessageAPI(fileMessage);
         setSelectedFile(null); // 파일 선택 초기화
