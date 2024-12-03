@@ -154,6 +154,7 @@ functions:
           path: /{teamId}/settings/info
           method: put
           cors: true
+
   deleteTeam:
     handler: src/handlers/teamHandler.deleteTeam
     events:
@@ -161,6 +162,7 @@ functions:
           path: /{teamId}/settings
           method: delete
           cors: true
+
   updateTeamUsers:
     handler: src/handlers/teamUserHandler.updateTeamUsers
     events:
@@ -168,6 +170,7 @@ functions:
           path: /{teamId}/setting/users
           method: put
           cors: true
+
   searchBooks:
     handler: src/handlers/bookHandler.searchBooks
     events:
@@ -175,10 +178,11 @@ functions:
           path: /book/search
           method: get
           cors: true
+
   createStudyHandler:
     handler: src/handlers/studyHandler.createStudy
       events:
-        - http:
+          - http:
             path: /{teamId}/study/create
             method: post
             cors: true
