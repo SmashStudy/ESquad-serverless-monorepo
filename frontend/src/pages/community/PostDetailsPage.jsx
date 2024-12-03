@@ -24,6 +24,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
 import Tooltip from "@mui/material/Tooltip";
+import DOMPurify from "dompurify";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -507,12 +508,10 @@ const PostDetailsPage = () => {
           borderRadius: 2,
         }}
       >
-        <Typography
-          variant="body1"
-          sx={{ whiteSpace: "pre-line", fontSize: "1rem", lineHeight: 1.6 }}
-        >
-          {post.content}
-        </Typography>
+        <div
+          style={{ fontSize: "1rem", lineHeight: 1.6 }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+        />
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>
