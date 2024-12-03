@@ -244,7 +244,13 @@ useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
+  - serverless-prune-plugin
 
 package:
   exclude:
     - tests/**
+
+custom:
+  prune:
+    automatic: true
+    number: 3
