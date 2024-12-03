@@ -1,7 +1,8 @@
 import axios from 'axios';
-
 import { createResponse } from '../utils/responseHelper.mjs';
+import { BookService } from "../services/bookService.mjs";
 
+const bookService = new BookService();
 /**
  * 네이버 책 API를 사용하여 책 조회
  */
