@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {getStorageApi} from "../../../utils/apiConfig.js";
 
-const storageApi = getStorageApi();
+const storageApi = "https://api.esquad.click/local/files";
 const token = localStorage.getItem("jwtToken");
 
 export const fetchFiles = async (room_id) => {
@@ -20,7 +20,7 @@ export const fetchFiles = async (room_id) => {
             fileKey: file.fileKey,
             presignedUrl: file.presignedUrl,
             room_id,
-            user_id: file.user_id,
+            user_id: file.email,
             nickname: file.nickname,
             timestamp: file.createdAt || Date.now(),
             contentType: file.contentType,
@@ -60,7 +60,7 @@ export const uploadFile = async ({ file, room_id, user_id}) => {
                 metadata: {
                     targetId: room_id,
                     targetType: 'CHAT',
-                    user_id,
+                    user_id: file.email,
                     nickname: file.nickname,
                     fileSize: file.size,
                     extension: file.type.split('/').pop(),

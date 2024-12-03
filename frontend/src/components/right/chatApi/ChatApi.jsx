@@ -37,6 +37,7 @@ export const fetchMessageAPI = async (room_id) => {
 // 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
+        console.log(`messageData: ${JSON.stringify(messageData)}`);
         socket.current.send(JSON.stringify(messageData));
 
         // 파일 메시지 처리
@@ -53,7 +54,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
                     timestamp: messageData.timestamp,
-                    user_id: messageData.user_id,
+                    user_id: messageData.email,
                     nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,

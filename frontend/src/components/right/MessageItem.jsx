@@ -22,7 +22,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
     const [editedMessage, setEditedMessage] = useState(message.message);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const isCurrentUser = currentUser?.nickname === message.nickname;
+    const isCurrentUser = currentUser;
 
     useEffect(() => {
         if (isFileMessage && !message.presignedUrl) {
@@ -40,11 +40,11 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
         }
     }, [message.fileKey, message.presignedUrl, isFileMessage]);
 
-    const getInitials = (name) => {
-        return name ? name.split(" ").map((word) => word[0]).join("").toUpperCase() : "U";
+    const getInitials = (nickname) => {
+        return nickname ? nickname.split(" ").map((word) => word[0]).join("").toUpperCase() : "U";
     };
 
-    const getAvatarColor = (username) => {
+    const getAvatarColor = (nickname) => {
         const colors =
             ['#FF80AB', '#FF8A80', '#EA80FC', '#8C9EFF',
                 '#80D8FF', '#A7FFEB', '#CCFF90', '#FFD180',
@@ -52,7 +52,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
                 '#64b5f6', '#4fc3f7', '#4dd0e1', '#4db6ac',
                 '#81c784', '#aed581', '#dce775', '#fff176',
                 '#ffd54f', '#ffb74d', '#ff8a65', '#a1887f'];
-        const index = username ? username.charCodeAt(0) % colors.length : 0;
+        const index = nickname ? nickname.charCodeAt(0) % colors.length : 0;
         return colors[index];
     };
 
@@ -109,10 +109,10 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
             {/* 아바타 및 유저 정보 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '0.8rem' }}>
                 <span style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '0.3rem' }}>
-                    {message.nickname || "알 수 없는 사용자"}
+                    {currentUser}
                 </span>
-                <Avatar sx={{ bgcolor: getAvatarColor(message.username) }}>
-                    {getInitials(message.nickname)}
+                <Avatar sx={{ bgcolor: getAvatarColor(currentUser)}}>
+                    {getInitials(currentUser)}
                 </Avatar>
             </div>
 

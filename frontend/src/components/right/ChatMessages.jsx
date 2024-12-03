@@ -5,6 +5,7 @@ import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } fro
 import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
 import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
+import {fetchUserEmail} from "../../utils/storage/utilities.js";
 
 const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
@@ -18,53 +19,42 @@ function ChatMessages({currentChatRoom}) {
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const messageEndRef = useRef(null);
     const socketRef = useRef(null);
-    const [userInfo, setUserInfo] = useState(null);
-
     const room_id = String (currentChatRoom?.id);
+    const [email, setEmail] = useState('unknown');
+    const [error, setError] = useState(null);
+    const [nickname, setNickname] = useState('');
+
+    const [loading, setLoading] = useState(true)
 
     // 유저 정보 로드
     useEffect(() => {
-        const fetchUserInfo = async () => {
+        const fetchNickname = async () => {
+            setLoading(true);
+            setError('');
             try {
-                const token = localStorage.getItem("jwtToken");
-                if (!token) throw new Error("로그인이 필요합니다.");
-
-                const response = await axios.get(`${getUserApi()}/get-user-info`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setUserInfo(response.data); // 유저 정보 설정
-        } catch (err) {
-            console.error("유저 정보 가져오기 실패:", err);
-        }
-    };
-    fetchUserInfo();
-}, []);
-
-// websocket 연결 및 메시지 수신
-// useEffect(() => {
-//     if(currentChatRoom && room_id) {
-//         connectWebSocket(room_id);
-//     }
-// }, [currentChatRoom, room_id, userInfo]);
+                const response = await axios.get(`${getUserApi()}/get-nickname`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+                    },
+                });
+                setNickname(response.data.nickname);
+            } catch (err) {
+                setError('닉네임을 가져오는 중 오류가 발생했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUserEmail(setEmail);
+        fetchNickname();
+    }, [nickname]);
 
     useEffect(() => {
-        if (!currentChatRoom || !userInfo) {
-            console.log("WebSocket 연결 조건 불충족. userInfo:", userInfo, "currentChatRoom:", currentChatRoom);
-            return;
-        }
-
-        console.log("Connecting to WebSocket with Room ID:", currentChatRoom.id);
-
+        if (!currentChatRoom || !email) { return; }
         if (socketRef.current) {
-            console.log("Closing existing WebSocket connection...");
             socketRef.current.close(); // 기존 WebSocket 연결 닫기
         }
-
         connectWebSocket(currentChatRoom.id);
-    }, [currentChatRoom, userInfo]);
-
+    }, [currentChatRoom, email]);
 
 const sortMessages = (messages) => {
     return [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -91,14 +81,12 @@ const loadMessages = async (room_id) => {
 
 // 웹소켓 연결 함수
 const connectWebSocket = (room_id) => {
-
     const encodedRoomId = encodeURIComponent(room_id); // room_id를 인코딩
-    const encodedUserId = encodeURIComponent(userInfo.email); // email도 인코딩
+    const encodedUserId = encodeURIComponent(email); // email도 인코딩
 
     const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
     newSocket.onopen = () => {
-        console.log("websocket 연결됨")
         loadMessages(room_id);
     };
     newSocket.onmessage = (event) => {
@@ -150,8 +138,8 @@ const scrollToBottom = () => {
             const uploadedFile = await uploadFile({
                 file: selectedFile,
                 room_id,
-                user_id: userInfo?.email,
-                nickname: userInfo?.nickname || "알 수 없는 사용자",
+                user_id: email,
+                nickname: nickname,
                 targetType: 'CHAT',
                 timestamp,
             });
@@ -164,8 +152,8 @@ const scrollToBottom = () => {
                 contentType: uploadedFile.contentType,
                 originalFileName: uploadedFile.originalFileName,
                 room_id: currentChatRoom.id,
-                user_id: userInfo?.email,
-                nickname: userInfo?.nickname || "알 수 없는 사용자",
+                user_id: email,
+                nickname: nickname,
                 timestamp: timestamp,
                 isFile: true
         };
@@ -192,13 +180,12 @@ const scrollToBottom = () => {
             );
             setEditingMessage(null); // 수정 상태 초기화
         } else {
-            // 텍스트 메시지 로직
             const textMessage = {
                 action: "sendmessage",
                 message: messageContent,
                 room_id,
-                user_id: userInfo?.email,
-                nickname: userInfo?.nickname || "알 수 없는 사용자",
+                user_id: email,
+                nickname: nickname,
                 timestamp: timestamp
             };
             // sendMessageAPI 호출 전후 로그 추가
@@ -243,7 +230,7 @@ const deleteMessageHandler = async (message) => {
         // 파일 삭제 후 메시지 삭제 API 호출
         await deleteMessageAPI({
             room_id: message.room_id,
-            timestamp: Number(message.timestamp), // 타입 일치 확인
+            timestamp: Number(message.timestamp),
             message: message.message,
             fileKey: message.fileKey,
         });
@@ -270,8 +257,8 @@ const handleUploadClick = async () => {
         const uploadResponse = await uploadFile({
             file: selectedFile,
             room_id: currentChatRoom.id,
-            user_id: userInfo.email,
-            nickname: userInfo.nickname,
+            user_id: email,
+            nickname: nickname,
             targetType: 'CHAT',
         });
 
@@ -281,8 +268,8 @@ const handleUploadClick = async () => {
             id: uploadResponse.id,
             presignedUrl: uploadResponse.presignedUrl,
             room_id: currentChatRoom.id,
-            user_id: userInfo.email,
-            nickname: userInfo.nickname,
+            user_id: email,
+            nickname: nickname,
             contentType: uploadResponse.contentType,
             originalFileName: uploadResponse.originalFileName,
             isFile: true
@@ -297,12 +284,8 @@ const handleUploadClick = async () => {
 
 // 파일 다운로드 핸들러
 const handleDownloadFile = async (id, originalFileName) => {
-    try {
-        await downloadFile(id, originalFileName);
-    } catch (error) {
-        console.error("파일 다운로드 실패: ", error.message);
-    }
-};
+    try { await downloadFile(id, originalFileName); }
+    catch (error) { console.error("파일 다운로드 실패: ", error.message); } };
 
 const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
@@ -322,7 +305,7 @@ return (
         }}>
             <MessageList
                 messages={messages}
-                currentUser={userInfo}
+                currentUser={nickname}
                 onEditMessage={handleEditMessage}
                 onDeleteMessage={deleteMessageHandler}
                 onDownloadFile={handleDownloadFile}
