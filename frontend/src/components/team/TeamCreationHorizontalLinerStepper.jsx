@@ -1,333 +1,315 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TeamNameInput from './stepfunction/TeamNameInput.jsx';
+import ConfirmationStep from './stepfunction/ConfirmationStep.jsx';
+import TeamUserManagement from './stepfunction/TeamUserManagement.jsx';
 import {
-    useTheme,
     Box,
     Button,
     Typography,
     Stack,
-    InputLabel,
-    Input,
-    Chip,
-    TextField,
     Stepper,
     Step,
-    StepLabel,
+    StepLabel, useTheme,
 } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import CheckIcon from '@mui/icons-material/Check';
-import FaceIcon from '@mui/icons-material/Face';
-import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-// import { useUser } from '../form/UserContext.jsx';
-import {fetchTeam} from "../../hooks/fetchTeam.jsx";
+import { useNavigate } from 'react-router-dom';
+import {
+  checkTeamNameAvailability,
+  createTeam,
+  getUserEmail,
+} from '../../utils/TeamApi';
+import {useTeams} from "../../context/TeamContext.jsx"; // teamApi 호출
 
-const steps = ['스페이스명', '팀원 초대', '확인'];
+const steps = ['팀 이름', '팀원 초대', '확인', '이동'];
 
-function TeamNameInput({ teamName, handleInputChange, teamNameError }) {
-    return (
-        <Box sx={{ pt: 2, textAlign: 'center' }}>
-            <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>
-                스페이스명 커스터마이즈하기
-            </Typography>
-            <Typography sx={{ mt: 2, mb: 8, fontSize: 'large' }}>
-                개성있고 독특한 스페이스명으로 만들어보세요!
-            </Typography>
-            <InputLabel htmlFor="input-team-name" sx={{ mb: 1, textAlign: 'left', fontSize: 'medium' }}>
-                스페이스명
-            </InputLabel>
-            <Input
-                id="input-team-name"
-                placeholder="당신과 함께할 팀 명은 무엇인가요?"
-                aria-describedby="component-helper-text"
-                fullWidth
-                required
-                value={teamName}
-                onChange={handleInputChange}
-            />
-            {teamNameError && (
-                <Typography color="error" sx={{ my: 2 }}>
-                    {teamNameError}
-                </Typography>
-            )}
-        </Box>
-    );
-}
-
-function CrewManagement({ teamCrew, newCrew, handleNewCrewChange, searchCrew, searchError, removeTeamMember }) {
-    return (
-        <Box sx={{ pt: 2 }}>
-            <Typography sx={{ mt: 4, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>크루 초대하기</Typography>
-            <Typography sx={{ mt: 2, mb: 5, fontSize: 'large' }}>동행할 크루를 초대하여 함께 성장해요!</Typography>
-            <Typography sx={{ mb: 2, fontSize: 'small', color: 'red' }}>( 크루는 본인을 제외하여 3명 이상, 11명 이하로 꾸려주세요 )</Typography>
-
-            <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                <TextField
-                    id="input-new-crew"
-                    value={newCrew}
-                    placeholder="아이디를 입력하세요"
-                    onChange={handleNewCrewChange}
-                    disabled={teamCrew.length >= 12}
-                    fullWidth
-                />
-                <Button
-                    variant="text"
-                    onClick={searchCrew}
-                    size="large"
-                    endIcon={<PersonSearchIcon />}
-                    disabled={teamCrew.length >= 12}
-                >
-                    검색
-                </Button>
-            </Stack>
-
-            {searchError && (
-                <Typography color="error" sx={{ my: 2 }}>
-                    {searchError}
-                </Typography>
-            )}
-
-            <Stack spacing={{ xs: 1, sm: 2 }}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {teamCrew.map((crew, index) => (
-                        <Box
-                            key={index}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                width: 'calc(50% - 8px)',
-                                maxWidth: '500px',
-                                px: 2,
-                                border: '1px solid lightgrey',
-                                borderRadius: '8px',
-                            }}
-                        >
-                            <Typography sx={{ width: '80%', textAlign: 'left' }}>{crew.username}</Typography>
-                            <Button color="error" onClick={() => removeTeamMember(crew)}>
-                                삭제
-                            </Button>
-                        </Box>
-                    ))}
-                </Box>
-            </Stack>
-        </Box>
-    );
-}
-
-function ConfirmationStep({ teamName, teamCrew }) {
-    return (
-        <Box sx={{ pt: 2 }}>
-            <Typography sx={{ mt: 2, mb: 1, fontSize: 'x-large', fontWeight: 'bolder' }}>마지막으로 확인해주세요</Typography>
-            <Typography sx={{ mt: 2, mb: 8, fontSize: 'large' }}>스페이스명과 크루원들이 맞는지 확인하세요.</Typography>
-
-            <Stack spacing={{ xs: 1, sm: 2 }} sx={{ alignItems: 'center', justifyContent: 'space-evenly' }}>
-                <Box sx={{ display: 'flex' }}>
-                    <Typography sx={{ mx: 2, fontSize: 'large', fontWeight: 'bold' }}>스페이스명 :</Typography>
-                    <Typography sx={{ fontSize: 'large', fontWeight: 'bold' }}>{teamName}</Typography>
-                </Box>
-                <Typography sx={{ mx: 2, fontSize: 'large', fontWeight: 'bold' }}>크루 :</Typography>
-                <Box
-                    sx={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        maxWidth: '70%',
-                        listStyle: 'none',
-                        p: 0.5,
-                        m: 0,
-                    }}
-                    component="ul"
-                >
-                    {teamCrew.map((crew, index) => (
-                        <Chip
-                            key={index}
-                            sx={{ fontSize: 'small', mb: 1, mr: 1 }}
-                            icon={<FaceIcon />}
-                            label={crew.username}
-                            variant="outlined"
-                        />
-                    ))}
-                </Box>
-            </Stack>
-        </Box>
-    );
-}
-
-const TeamCreationHorizontalLinerStepper = ({ onCancel, updateTeams }) => {
+const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
     const theme = useTheme();
+    const navigate = useNavigate();
+
     const [activeStep, setActiveStep] = useState(0);
     const [teamName, setTeamName] = useState('');
-    const [teamCrew, setTeamCrew] = useState([]);
-    const [newCrew, setNewCrew] = useState('');
+    const [teamUsers, setTeamUsers] = useState([]);
+    const [newTeamUser, setnewTeamUser] = useState('');
     const [searchError, setSearchError] = useState('');
     const [teamNameError, setTeamNameError] = useState('');
     const [loading, setLoading] = useState(false);
-    // const { userInfo } = useUser(); // 유저 정보
-    const userInfo = { id: 28, username: 'esquadback'}      // 유저 더미 데이터
-
-    const updateTeamCrew = () => {
-        setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
-    }
+    const [teamId, setTeamId] = useState('');
+    const [error, setError] = useState('');
+    const { updateTeams } = useTeams();
 
     useEffect(() => {
-        // Add the current user as the first crew member when the component is mounted
-        if (userInfo && teamCrew.length === 0) {
-            // setTeamCrew([{ id: userInfo.id, username: userInfo.username, role: 'manager' }]);
-            updateTeamCrew();
+        let isMounted = true;
+        const fetchEmail = async () => {
+            try {
+                setLoading(true);
+                const email = await getUserEmail();
+                if (isMounted) {
+                    console.log(`Fetched email: ${email}`);
+                    setTeamUsers([email]); // Trigger a state update
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError('이메일을 가져오는 중 오류가 발생했습니다.');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+        fetchEmail();
+        return () => {
+            isMounted = false; // Cleanup
+        };
+    }, []);
+
+    const searchUser = async () => {
+        if (!validatenewTeamUser(newTeamUser)) return ;
+
+        try {
+          setTeamUsers((prevUsers) => [...prevUsers, newTeamUser]);
+          setnewTeamUser('');
+          setSearchError('');
+
+        } catch (error) {
+          console.error('Error searching user:', error);
+          setSearchError('유저 초대 중 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
         }
-    }, [userInfo]);
-
-    const handleBack = () => setActiveStep((prev) => prev - 1);
-
-    const handleNext = async () => {
-        if (activeStep === 0) {
-            const isValidTeamName = await validateTeamName();
-            if (!isValidTeamName) return;
-        }
-        if (activeStep === 1 && (teamCrew.length < 4 || teamCrew.length > 12)) return;
-        if (activeStep === steps.length - 1) {
-            await handleCreateTeam();
-        } else {
-            setActiveStep((prev) => prev + 1);
-        }
     };
 
-    const validateTeamName = async () => {
-        return true;
+    const removeTeamUser= (removeUser) => {
+      setTeamUsers(teamUsers.filter((teamUser) => teamUser !== removeUser));
     };
-
-    const searchCrew = async () => {
-        addTeamCrew({id: 34, username: "tlinel542"});
-    };
-
-    const validateNewCrew = (newCrew) => {
-        if (teamCrew.length > 12) {
-            setSearchError('팀원은 12명을 초과할 수 없습니다');
-            return false;
-        }
-        if (teamCrew.some((crew) => crew.username.toUpperCase() === newCrew.toUpperCase())) {
-            setSearchError('이미 추가한 유저입니다');
-            return false;
-        }
-        return true;
-    };
-
-    const addTeamCrew = (user) => {
-        setTeamCrew([...teamCrew, user]);
-        setNewCrew('');
-        setSearchError('');
-    };
-
-    const removeTeamMember = (member) => {
-        setTeamCrew(teamCrew.filter((tm) => tm.username !== member.username));
-    };
-
-    const getTeams = () => {
-        fetchTeam()
-            .then((response) => {
-                console.log(response);
-                updateTeams(response);
-            }).catch((error) => {
-            console.log(error);
-        });
-    }
-
 
     const handleCreateTeam = async () => {
-
+    const teamForm = {
+      teamName: teamName,
+      description: '',
+      userIds: teamUsers,
     };
 
+    try {
+      setLoading(true);
+      console.log('생성예정 팀: ', JSON.stringify(teamForm));
+      const newTeam = await createTeam(teamForm);
+      console.log(`newTeam: ${JSON.stringify(newTeam)}`);
+      updateTeams(newTeam);
+      setTeamId(newTeam.PK);
+      return true;
+    } catch (error) {
+      console.error('Error creating team:', error);
+      setTeamNameError('팀 생성에 실패했습니다. 다시 시도해주세요.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+    };
 
-    const handleReset = () => {
-        setActiveStep(0);
-        setTeamName('');
-        setTeamCrew([]);
-        setNewCrew('');
+    const handleBack = () => setActiveStep((prev) => prev - 1);
+    const handleNext = async () => {
+    if (activeStep === 0) {
+      const isValidTeamName = await validateTeamName();
+      if (!isValidTeamName) return;
+    }
+    if (activeStep === 1) {
+      if (teamUsers.length > 12) {
+        setSearchError('팀 구성원은 최대 12명입니다.');
+        return;
+      }
+    }
+    if (activeStep === 2) {
+      const isTeamCreated = await handleCreateTeam();
+      if (!isTeamCreated) return; // 팀 생성 실패 시 중단
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleMove = () => {
+    if (!teamId) {
+      console.error('팀 ID가 설정되지 않았습니다. 이동을 중단합니다.');
+      alert('팀 ID가 설정되지 않았습니다. 팀을 다시 생성해 주세요.');
+      return;
+    }
+    handleTab(1);
+
+    onCancel();
+    navigate(`/teams/${encodeURIComponent(teamId)}`);
+    }
+
+    // const handle
+    const validateTeamName = async () => {
+
+    if (!teamName.trim()) {
+        setTeamNameError('팀 이름을 입력해주세요.');
+        return false;
+    }
+
+    try {
+        setLoading(true);
         setTeamNameError('');
-        setSearchError('');
+
+        const { isAvailable, message } = await checkTeamNameAvailability(teamName);
+
+        if (!isAvailable) {
+          setTeamNameError(message);
+          setTeamName('');
+          return false;
+        }
+        return true;
+    } catch (error) {
+        console.error('Error validate team:', error);
+        setTeamNameError('팀 이름이 잘못되었습니다.. 다시 시도해주세요.');
+        setTeamName('');
+        return false;
+    } finally {
         setLoading(false);
+    }
+    };
+
+    const validatenewTeamUser = (newTeamUser) => {
+    if (!newTeamUser.trim()) {
+        setSearchError('유저 ID를 입력해주세요');
+        return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Gmail 형식 검증
+    if (!emailRegex.test(newTeamUser)) {
+      setSearchError(' 이메일 주소로 초대할 수 있습니다.');
+      return false;
+    }
+
+    if (teamUsers.includes(newTeamUser)) {
+      setSearchError('이미 초대된 유저입니다.');
+      return false;
+    }
+
+    setSearchError('');
+    return true;
     };
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-                maxWidth: '70vw',
-                height: '80vh',
-                mx: 'auto',
-                my: 'auto',
-                py: 2,
-            }}
-        >
-            {/* Action Buttons */}
-            <Box sx={{ width: '100%' }}>
-                <Stepper activeStep={activeStep}>
-                    {steps.map((label, index) => (
-                        <Step key={label} completed={false}>
-                            <StepLabel>{label}</StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-                {activeStep === steps.length ? (
-                    <React.Fragment>
-                        <Typography sx={{ mt: 2, mb: 1 }}>{teamName} 을 위한 공간이 제공되었습니다!</Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                            <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleReset}>닫기</Button>
-                        </Box>
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        <Stack spacing={2} sx={{ alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
-                            {activeStep === 0 && (
-                                <TeamNameInput
-                                    teamName={teamName}
-                                    handleInputChange={(e) => setTeamName(e.target.value)}
-                                    teamNameError={teamNameError}
-                                />
-                            )}
-                            {activeStep === 1 && (
-                                <CrewManagement
-                                    teamCrew={teamCrew}
-                                    newCrew={newCrew}
-                                    handleNewCrewChange={(e) => setNewCrew(e.target.value)}
-                                    searchCrew={searchCrew}
-                                    searchError={searchError}
-                                    removeTeamMember={removeTeamMember}
-                                />
-                            )}
-                            {activeStep === 2 && <ConfirmationStep teamName={teamName} teamCrew={teamCrew} />}
-
-                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                <Button
-                                    color="inherit"
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    size="large"
-                                    sx={{ mr: 1 }}
-                                    startIcon={<NavigateBeforeIcon />}
-                                >
-                                    이전
-                                </Button>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button
-                                    onClick={handleNext}
-                                    disabled={activeStep === 0 && !teamName.trim()}
-                                    size="large"
-                                    endIcon={activeStep === steps.length - 1 ? <CheckIcon /> : <NavigateNextIcon />}
-                                >
-                                    {activeStep === steps.length - 1 ? (loading ? '생성 중...' : '생성') : '다음'}
-                                </Button>
-                            </Box>
-                        </Stack>
-                    </React.Fragment>
-                )}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        maxWidth: '70vw',
+        maxHeight: '80vh',
+        height: '80vh',
+        mx: 'auto',
+        my: 'auto',
+        py: 2,
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <Box sx={{ width: '100%',height: 'calc(100% - 20px)',}}>
+      {/* <Box> */}
+        <Stepper activeStep={activeStep}>
+          {steps.map((label) => (
+            <Step key={label} completed={false}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        {activeStep === steps.length - 1 ?(
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography variant="h6"> {teamName} 팀이 생성되었습니다! </Typography>
+            <Box sx={{ mt: 3 }}>
+              <Button onClick={handleMove} variant="contained" color="primary">
+                팀 페이지로 이동
+              </Button>
+              <Button onClick={()=>onCancel()} sx={{ ml: 2 }}>
+                닫기
+              </Button>
             </Box>
+          </Box>
+          ):(
+            <Stack
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+                justifyItems: 'center',
+                justifyContent: 'center',
+                maxWidth: '80vw',
+                padding:0,
+                height: 'calc(100% - 30px)', // 중앙 영역의 높이를 조절하여 Stepper와 페이징 버튼 사이의 균형 맞추기
+                // overflowY: 'auto', // 중앙 UI 스크롤 가능
+              }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start', // 위쪽 빈 공간 없애기
+                  width: '90%',
+                  height: '90%',
+                  pd: 1, // 패딩을 줄여서 여백을 최소화
+                  py: 2,
+                  boxSizing: 'border-box',
+                }}
+              >
+            {activeStep === 0 && (
+              <TeamNameInput
+                teamName={teamName}
+                handleInputChange={(e) => setTeamName(e.target.value)}
+                teamNameError={teamNameError}
+              />
+            )}
+            {activeStep === 1 && (
+              <TeamUserManagement
+                teamUsers={teamUsers}
+                newTeamUser={newTeamUser}
+                handlenewTeamUserChange={(e) => setnewTeamUser(e.target.value)}
+                searchUser={searchUser}
+                searchError={searchError}
+                removeTeamUser={removeTeamUser}
+                makerEmail={teamUsers[0]}
+              />
+            )}
+            {activeStep === 2 && <ConfirmationStep teamName={teamName} teamUsers={teamUsers} />}
+            </Box>
+
+          </Stack>
+        )}
+                {/* 페이징 */}
+                <Box sx={{
+          width: '100%',
+          position: 'absolute',
+          marginTop:'0px',
+          bottom: 0,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',  // 중앙 정렬
+          alignItems: 'center',
+          paddingBottom:0,
+          mt: 10,
+          pd: 2
+            }}>
+          <Button
+            color="inherit"
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            size="large"
+            sx={{ mr: 1 }}
+            startIcon={<NavigateBeforeIcon />}
+          > 이전 </Button>
+
+          <Button
+            onClick={handleNext}
+            disabled={activeStep === 0 && !teamName.trim()}
+            size="large"
+            endIcon={activeStep === steps.length - 2? <CheckIcon /> : <NavigateNextIcon />}
+          > {activeStep === steps.length - 2 ? (loading ? '생성 중...' : '생성') : '다음'} </Button>
         </Box>
+      </Box>
+    </Box>
     );
 };
 
