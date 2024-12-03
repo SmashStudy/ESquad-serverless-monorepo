@@ -9,6 +9,7 @@ provider:
     TEAM_TABLE: ${env:TEAM_TABLE}
     CLIENT_ID: ${env:CLIENT_ID}
     CLIENT_SECRET: ${env:CLIENT_SECRET}
+    ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
   iam:
     role:
       statements:
@@ -65,10 +66,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-#              NonKeyAttributes:
-#                - teamID
-#                - PK
-#                - inviteState
           - IndexName: PK-ItemType-Index
             KeySchema:
               - AttributeName: PK
@@ -77,9 +74,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-#              NonKeyAttributes:
-#                - SK
-#                - inviteState
           - IndexName: TeamName-Index
             KeySchema:
               - AttributeName: teamName
@@ -98,7 +92,7 @@ functions:
           method: get
           cors:
             origins:
-              - "*"
+              - ${process.env.ALLOWED_ORIGIN}
             headers:
               - Content-Type
               - Authorization
@@ -111,7 +105,7 @@ functions:
           method: post
           cors:
             origins:
-              - "*"
+              - ${process.env.ALLOWED_ORIGIN}
             headers:   # 클라이언트에서 허용되는 헤더를 지정
               - Content-Type
               - Authorization
@@ -124,7 +118,7 @@ functions:
           method: get
           cors:
             origins:
-              - "*"
+              - ${process.env.ALLOWED_ORIGIN}
             headers:
               - Content-Type
               - Authorization
