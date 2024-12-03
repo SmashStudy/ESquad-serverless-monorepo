@@ -7,6 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
+import { getCommunityApi } from "../../utils/apiConfig";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -62,10 +63,15 @@ const PostListPage = ({ isSmallScreen }) => {
         if (filterTab === "모집완료") params.recruitStatus = "true";
       }
 
-      const response = await axios.get(
-        `https://api.esquad.click/api/community/${boardType}`,
-        { params }
-      );
+      const url = `${getCommunityApi()}/${boardType}`; // 동적 API 경로 설정
+      const response = await axios.get(url, { params });
+
+      const items = response.data.items || [];
+
+      const updatedItems = items.map((item) => ({
+        ...item,
+        comments: item.comments || [],
+      }));
 
       setPosts(response.data.items || []);
       const newLastEvaluatedKeys = [...lastEvaluatedKeys];
@@ -274,11 +280,13 @@ const PostListPage = ({ isSmallScreen }) => {
         </Button>
       </Box>
 
-      {/* Posts List */}
+      {/* 게시글 목록 */}
       <List sx={{ width: "100%", pr: 2 }}>
         {posts.map((post) => (
           <Link
-            to={`/community/${boardType}/questions/${post.postId}`}
+            to={`/community/${boardType}/${
+              post.postId
+            }?createdAt=${encodeURIComponent(post.createdAt)}`}
             key={post.postId}
             style={{ textDecoration: "none", color: "inherit" }}
           >
@@ -346,10 +354,11 @@ const PostListPage = ({ isSmallScreen }) => {
                 variant="body2"
                 sx={{ color: theme.palette.grey[700], mb: 1 }}
               >
-                {post.content.substring(0, 100)}...
+                {post.content.substring(0, 100)}
               </Typography>
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                {post.tags.length > 0 ? (
+                {post.tags &&
+                  post.tags.length > 0 &&
                   post.tags.map((tag, idx) => (
                     <Chip
                       key={`${post.postId}-${idx}`}
@@ -361,12 +370,7 @@ const PostListPage = ({ isSmallScreen }) => {
                         borderColor: theme.palette.primary.main,
                       }}
                     />
-                  ))
-                ) : (
-                  <Typography variant="caption" color="text.secondary">
-                    태그 없음
-                  </Typography>
-                )}
+                  ))}
               </Box>
 
               <Box
@@ -379,7 +383,7 @@ const PostListPage = ({ isSmallScreen }) => {
               >
                 {/* 작성자와 작성일 */}
                 <Typography variant="caption" color="text.secondary">
-                  {post.writer?.name || "익명"} ·{" "}
+                  {post.writer?.nickname || "익명"} ·{" "}
                   {new Date(post.createdAt).toLocaleString()}
                 </Typography>
 
@@ -398,7 +402,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     👁 {post.viewCount || 0}
                   </Typography>
                   <Typography variant="caption">
-                    💬 {post.comments?.length || 0}
+                    💬 {post.commentCount || 0}
                   </Typography>
                 </Box>
               </Box>

@@ -1,5 +1,8 @@
 import axios from 'axios';
+import { createResponse } from '../utils/responseHelper.mjs';
+import { BookService } from "../services/bookService.mjs";
 
+const bookService = new BookService();
 /**
  * 네이버 책 API를 사용하여 책 조회
  */
@@ -17,7 +20,7 @@ const searchBooksToQuery = async (query) => {
     try {
         const response = await axios.get(apiUrl, {
             params: {
-                display: 30,
+                display: 100,
                 start: 1,
                 sort: 'sim',
             },
@@ -53,26 +56,24 @@ const mapToBookList = (responseData) => {
  */
 export const searchBooks = async (event) => {
     const query = event.queryStringParameters?.query;
+    console.log(`Received query: ${query}`); // 쿼리 로그 추가
 
     if (!query) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Query parameter is required' }),
-        };
+        console.warn('Query parameter is missing');
+        return createResponse(400, { error: 'Query parameter is required' });
     }
 
     try {
+        console.log('Calling Naver API');
         const response = await searchBooksToQuery(query);
+        console.log('Naver API response:', response);
+
         const books = mapToBookList(response);
-        return {
-            statusCode: 200,
-            body: JSON.stringify(books),
-        };
+        console.log('Mapped books:', books);
+
+        return createResponse(200, books);
     } catch (error) {
-        console.error('Error fetching books:', error.message);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Failed to fetch books' }),
-        };
+        console.error('Error occurred:', error.message);
+        return createResponse(500, { error: 'Internal server error' });
     }
 };

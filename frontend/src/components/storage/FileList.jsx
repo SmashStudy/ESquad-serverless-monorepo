@@ -11,13 +11,13 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
-
+import {formatFileSize} from "../../utils/fileFormatUtils.js";
 const FileList = ({
   files,
   email,
   onFileDownload,
   onFileDelete,
-  formatFileSize
+    theme
 }) => {
   return (
       <List>
@@ -94,7 +94,7 @@ const FileList = ({
                           업로더:
                         </Typography>
                         <Typography variant="body2" color="textPrimary">
-                          {file.nickname}
+                          {file.userNickname}
                         </Typography>
                       </Box>
                       <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -115,26 +115,40 @@ const FileList = ({
                           {formatFileSize(file.fileSize)}
                         </Typography>
                       </Box>
+                      <Box sx={{display: 'flex', alignItems: 'center'}}>
+                        <Typography variant="body2" color="textSecondary"
+                                    sx={{mr: 1}}>
+                          다운로드 수:
+                        </Typography>
+                        <Typography variant="body2" color="textPrimary">
+                          {file.downloadCount || "0"}
+                        </Typography>
+                      </Box>
                     </Box>
                     <Box sx={{display: 'flex', gap: 1}}>
+                      <Box>
                       <IconButton
                           edge="end"
                           aria-label="download"
+                          sx ={{ color:theme.palette.success.main }}
                           onClick={() => onFileDownload(file.fileKey,
                               file.originalFileName)}
                       >
                         <DownloadIcon/>
                       </IconButton>
+                      </Box>
+                      <Box>
                       {file.userEmail === email && (
                           <IconButton
                               edge="end"
                               aria-label="delete"
                               onClick={() => onFileDelete(file.fileKey, file.userEmail)}
-                              sx={{ display: file.userEmail === email ? 'block' : 'none' }}
+                              sx={{ display: file.userEmail === email ? 'block' : 'none', color:theme.palette.warning.main }}
                           >
                             <DeleteIcon/>
                           </IconButton>
                       )}
+                      </Box>
                     </Box>
                   </Box>
                 </ListItem>
@@ -154,16 +168,16 @@ FileList.propTypes = {
         fileKey: PropTypes.string.isRequired,
         originalFileName: PropTypes.string.isRequired,
         extension: PropTypes.string.isRequired,
-        nickname: PropTypes.string.isRequired,
+        userNickname: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
         fileSize: PropTypes.number.isRequired,
+        downloadCount: PropTypes.number.isRequired,
         userEmail: PropTypes.string.isRequired,
       })
   ).isRequired,
   email: PropTypes.string.isRequired,
   onFileDownload: PropTypes.func.isRequired,
   onFileDelete: PropTypes.func.isRequired,
-  formatFileSize: PropTypes.func.isRequired,
 };
 
 export default FileList;

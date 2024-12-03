@@ -1,6 +1,7 @@
 import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocumentClient, DeleteCommand} from '@aws-sdk/lib-dynamodb';
-import {createResponse} from '../util/responseHelper.mjs'
+import {createResponse} from '../utils/responseHelper.mjs'
+import {requestPresignedUrl} from "../utils/s3Utils.mjs";
 
 const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
@@ -12,12 +13,13 @@ export const handler = async (event) => {
   let {fileKey} = event.pathParameters;
 
   try {
-    // 인코딩 여부에 따라 디코딩 시도
     fileKey = decodeURIComponent(fileKey);
   } catch (error) {
-    // 이미 디코딩된 상태로 들어온 경우 아무 작업 안 함
     console.log("File name did not require decoding:", fileKey);
   }
+
+
+  let presignedUrl;
 
   try {
     const deleteParams = {
@@ -27,8 +29,22 @@ export const handler = async (event) => {
 
     await dynamoDb.send(new DeleteCommand(deleteParams));
 
+    const presignedResponse = await requestPresignedUrl({
+      body: JSON.stringify({
+        action: 'deleteObject',
+        fileKey
+      })
+    });
+
+    if (presignedResponse.error) {
+      return createResponse(400, { error: presignedResponse.error });
+    }
+
+    const responseData = JSON.parse(presignedResponse.body);
+    presignedUrl = responseData.presignedUrl;
+
     return createResponse(200,
-        {message: `Metadata for ${fileKey} deleted successfully`});
+        { presignedUrl });
   } catch (error) {
     return createResponse(500,
         {error: `Failed to delete metadata: ${error.message}`});

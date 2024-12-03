@@ -50,8 +50,8 @@ const MeetingJoinDetails = () => {
           <ModalHeader title={`Meeting ID: ${meetingId}`} />
           <ModalBody>
             <Card
-              title="Unable to join meeting"
-              description="There was an issue in joining this meeting. Check your connectivity and try again."
+              title="회의에 참여할 수 없습니다"
+              description="이 회의에 참여하는 데 문제가 있었습니다. 연결 상태를 확인한 후 다시 시도하세요."
               smallText={error}
             />
           </ModalBody>

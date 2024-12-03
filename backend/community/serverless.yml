@@ -7,18 +7,7 @@ provider:
   environment:
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
-  httpApi:
-    cors:
-      allowedOrigins:
-        - "*"
-      allowedHeaders:
-        - Content-Type
-        - Authorization
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
   iam:
     role:
       statements:
@@ -44,37 +33,90 @@ functions:
   createPost:
     handler: service/createPost.handler
     events:
-      - httpApi:
-          path: /{boardType}/new
+      - http:
+          path: /{boardType}
           method: POST
+          cors: true
 
   getPost:
     handler: service/getPost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: GET
+          cors: true
 
   listPosts:
     handler: service/listPosts.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}
           method: GET
+          cors: true
 
   updatePost:
     handler: service/updatePost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: PUT
+          cors: true
 
   deletePost:
     handler: service/deletePost.handler
     events:
-      - httpApi:
+      - http:
           path: /{boardType}/{postId}
           method: DELETE
+          cors: true
+
+  createComment:
+    handler: service/createComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: POST
+          cors: true
+
+  listComments:
+    handler: service/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: GET
+          cors: true
+
+  getComment:
+    handler: service/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: GET
+          cors: true
+
+  updateComment:
+    handler: service/updateComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: PUT
+          cors: true
+
+  deleteComment:
+    handler: service/deleteComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: DELETE
+          cors: true
+
+  likePost:
+    handler: service/likePost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/like
+          method: POST
+          cors: true
 
 resources:
   Resources:
@@ -126,6 +168,8 @@ resources:
               ProjectionType: ALL
         SSESpecification:
           SSEEnabled: true
+
+useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin

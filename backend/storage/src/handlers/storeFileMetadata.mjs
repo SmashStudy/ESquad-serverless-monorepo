@@ -1,6 +1,6 @@
 import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocumentClient, PutCommand} from '@aws-sdk/lib-dynamodb';
-import {createResponse} from '../util/responseHelper.mjs'
+import {createResponse} from '../utils/responseHelper.mjs'
 
 const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
 const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);

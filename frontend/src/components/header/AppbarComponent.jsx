@@ -1,59 +1,46 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
-import {
-  alpha,
-  useTheme,
-  styled,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  Avatar,
-  Typography,
-  Badge,
-  useMediaQuery,
-  InputBase,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  ListItemAvatar, ListItemButton,
-} from "@mui/material";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import {
+  alpha,
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  InputBase,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Typography,
+  styled,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import {
+  fetchAll,
+  fetchAllSaved,
+  markAllAsRead,
+  markAsSave,
+  releaseSaved,
+} from "../../hooks/notificationAPI.js";
+import useNotiWebSocket from "../../hooks/useNotiWebSocket.js";
 import TeamCreationDialog from "../team/TeamCreationDialog.jsx";
-import axios from 'axios';
-import {getUserApi} from "../../utils/apiConfig.js";
-import { useTeams } from "../../context/TeamContext.jsx";
-
-function decodeJWT(token) {
-  try {
-    const base64Payload = token.split(".")[1];
-    const base64 = base64Payload.replace(/-/g, "+").replace(/_/g, "/");
-    const payload = JSON.parse(
-      decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      )
-    );
-    return payload;
-  } catch (error) {
-    console.error("Failed to decode JWT token", error);
-    return null;
-  }
-}
+import NotificationsMenu from "./NotificationMenu.jsx";
+import { getUserApi } from "../../utils/apiConfig.js";
+import { decodeJWT } from "../../utils/decodeJWT.js";
+import formatTimeAgo from "../../utils/formatTimeAgo.js";
+import { useTeams } from "../../context/TeamContext";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -96,108 +83,107 @@ const AppBarComponent = ({
   // teams,
   toggleChatDrawer,
 }) => {
+  const theme = useTheme();
   const { teams, selectedTeam, updateTeams, changeSelectedTeam } = useTeams();
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState('');
-  const [error, setError] = useState('');
-  const handleLogout = () => {
-    navigate("/logout");
-  };
-
-  const fetchNickname = async () => {
-    try {
-        const response = await axios.get(`${getUserApi()}/get-nickname`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-            },
-        });
-        setNickname(response.data.nickname);
-    } catch (err) {
-        console.error("닉네임 가져오기 오류:", err);
-        setError('닉네임을 가져오는 중 오류가 발생했습니다.');
-    }
-};
-
-// 컴포넌트 로드 시 닉네임 가져오기
-useEffect(() => {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-        navigate('/google'); // 토큰이 없으면 로그인 페이지로 이동
-    } else {
-        fetchNickname();
-    }
-}, [navigate]);
-
-  const [userName, setUserName] = useState("로딩 중...");
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  useEffect(() => {
-    const fetchToken = async () => {
-      await delay(100); // 딜레이 안 달아두면 localstorage에 jwtToken 적재 되기도전에 useEffect 돌아가서 token null 뜸
-      const token = localStorage.getItem("jwtToken");
-      if (token) {
-        const decodedToken = decodeJWT(token);
-        if (decodedToken) {
-          setUserName(decodedToken.name || "Name");
-        }
-      }
-    };
-
-    fetchToken();
-  }, []);
-
-  const theme = useTheme();
-  const [showSearchBar, setShowSearchBar] = useState(null);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
   const [teamAnchorEl, setTeamAnchorEl] = useState(null);
+  const [showSearchBar, setShowSearchBar] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null);
-  const [notificationsAnchorEl, setNotificationsAnchorEl] = useState(null);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Brunch this weekend?",
-      content: "I'll be in your neighborhood doing errands this…",
-      avatar: "/static/images/avatar/1.jpg",
-    },
-    {
-      id: 2,
-      title: "Meeting Reminder",
-      content: "Don't forget about the meeting tomorrow at 10 AM.",
-      avatar: "/static/images/avatar/2.jpg",
-    },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [unReadCount, setUnReadCount] = useState(0);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
+
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isVerySmallScreen = useMediaQuery("(max-width: 30vw)");
 
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
+  const fetchNickname = async () => {
+    try {
+      const response = await axios.get(`${getUserApi()}/get-nickname`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
+      setUser((prev) => ({
+        ...prev,
+        nickname: response.data.nickname,
+      }));
+    } catch (err) {
+      console.error("닉네임 가져오기 오류:", err);
+      setError("닉네임을 가져오는 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 컴포넌트 로드 시 닉네임 가져오기
+  useEffect(() => {
+    const fetchTokenAndData = async () => {
+      try {
+        await delay(100); // JWT 토큰 저장 딜레이
+        const token = localStorage.getItem("jwtToken");
+
+        if (token) {
+          const decodedToken = decodeJWT(token);
+          if (decodedToken) {
+            // 사용자 정보를 먼저 업데이트
+            setUser({
+              username: decodedToken.name || "Name",
+              email: decodedToken.email,
+            });
+
+            // 닉네임 데이터 가져오기
+            await fetchNickname();
+
+            // 모든 데이터가 준비되었음을 표시
+            setIsUserLoaded(true);
+          }
+        }
+      } catch (err) {
+        console.error("토큰 처리 오류:", err);
+        setError("사용자 정보를 처리하는 중 오류가 발생했습니다.");
+      }
+    };
+
+    fetchTokenAndData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    alert("로그아웃 되었습니다. 다음에 또 만나요!");
+    navigate("/login");
+  };
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const onMessageReceived = (message) => {
+    if (message.unReadCount) {
+      setUnReadCount(message.unReadCount);
+    }
+
+    if (message.studyNotification) {
+      setUnReadCount((prevCount) => prevCount + 1);
+      setNotifications((prev) => [message.studyNotification, ...prev]);
+    }
+  };
+  const { connectToWebSocket } = useNotiWebSocket({
+    user,
+    onMessageReceived,
+  });
+
+  useEffect(() => {
+    if (isUserLoaded && user?.email) {
+      connectToWebSocket();
+    }
+  }, [isUserLoaded, user]);
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
     setTeamAnchorEl(event.currentTarget);
   };
   const handleTeamMenuClose = () => {
     setTeamAnchorEl(null);
-  };
-
-  // Handle notifications menu open/close
-  const handleNotificationsClick = (event) => {
-    setNotificationsAnchorEl(event.currentTarget);
-  };
-  const handleNotificationsClose = () => {
-    setNotificationsAnchorEl(null);
-  };
-
-  // Handle deleting a single notification
-  const handleDeleteNotification = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
-    );
-  };
-
-  // Handle deleting all notifications
-  const handleDeleteAllNotifications = () => {
-    setNotifications([]);
   };
 
   // Handle account menu open/close
@@ -431,10 +417,9 @@ useEffect(() => {
                   }}
                 >
                   <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                    {nickname ? nickname.charAt(0).toUpperCase() : '유'}
-                    </Avatar>
-                  {/*<Typography variant="body1">{userInfo ? userInfo.nickname : "유저 이름"}</Typography>*/}
-                  <Typography variant="body1">{nickname}</Typography>
+                    {user?.nickname?.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Typography variant="body1">{user?.nickname}</Typography>
                 </IconButton>
               </Box>
               <Menu
@@ -463,11 +448,19 @@ useEffect(() => {
                 <MenuItem onClick={handleAccountClose}>고객센터</MenuItem>
                 <MenuItem onClick={handleAccountClose}>의견 보내기</MenuItem>
               </Menu>
-              <IconButton color="inherit" onClick={handleNotificationsClick}>
-                <Badge badgeContent={notifications.length} color="error">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
+              {/* Notification Button */}
+              <NotificationsMenu
+                theme={theme}
+                user={user}
+                fetchAll={fetchAll}
+                fetchAllSaved={fetchAllSaved}
+                markAllAsRead={markAllAsRead}
+                markAsSave={markAsSave}
+                releaseSaved={releaseSaved}
+                formatTimeAgo={formatTimeAgo}
+                unReadCount={unReadCount}
+                setUnReadCount={setUnReadCount}
+              />
               {/* chatting sidebar*/}
 
               <IconButton
@@ -481,108 +474,6 @@ useEffect(() => {
               >
                 <ChatIcon fontSize="medium" />
               </IconButton>
-              <Menu
-                anchorEl={notificationsAnchorEl}
-                open={Boolean(notificationsAnchorEl)}
-                onClose={handleNotificationsClose}
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-              >
-                {notifications.length > 0 && (
-                  <Box
-                    sx={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <Button
-                      onClick={handleDeleteAllNotifications}
-                      sx={{
-                        width: "50%",
-                        borderRadius: 0,
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                        "&:hover": {
-                          backgroundColor: alpha(
-                            theme.palette.primary.main,
-                            0.2
-                          ),
-                        },
-                      }}
-                    >
-                      모든 알림 삭제
-                    </Button>
-                    <Button
-                      onClick={handleNotificationsClose}
-                      sx={{
-                        width: "50%",
-                        borderRadius: 0,
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                        "&:hover": {
-                          backgroundColor: alpha(
-                            theme.palette.primary.main,
-                            0.2
-                          ),
-                        },
-                      }}
-                    >
-                      모든 알림 확인
-                    </Button>
-                  </Box>
-                )}
-                <List sx={{ width: 360 }}>
-                  {notifications.length === 0 ? (
-                    <ListItem>
-                      <ListItemText primary="알림이 없습니다." />
-                    </ListItem>
-                  ) : (
-                    notifications.map((notification) => (
-                      <ListItem
-                        key={notification.id}
-                        alignItems="flex-start"
-                        sx={{
-                          "&:hover": {
-                            cursor: "pointer",
-                            backgroundColor: alpha(
-                              theme.palette.common.black,
-                              0.1
-                            ),
-                          },
-                        }}
-                      >
-                        <ListItemAvatar>
-                          <Avatar
-                            alt={notification.title}
-                            src={notification.avatar}
-                          />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={notification.title}
-                          secondary={
-                            <React.Fragment>
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                sx={{
-                                  color: "text.primary",
-                                  display: "inline",
-                                }}
-                              >
-                                Ali Connors
-                              </Typography>
-                              {` — ${notification.content}`}
-                            </React.Fragment>
-                          }
-                        />
-                        <IconButton
-                          edge="end"
-                          onClick={() =>
-                            handleDeleteNotification(notification.id)
-                          }
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItem>
-                    ))
-                  )}
-                </List>
-              </Menu>
             </>
           )}
         </Box>

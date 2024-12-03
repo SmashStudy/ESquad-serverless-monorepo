@@ -1,4 +1,5 @@
 import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
@@ -9,7 +10,7 @@ export const handler = async (event) => {
     const validBoardTypes = ["general", "questions", "team-recruit"];
 
     if (!validBoardTypes.includes(boardType)) {
-      return generateResponse(400, { message: "Invalid boardType" });
+      return createResponse(400, { message: "Invalid boardType" });
     }
 
     const {
@@ -62,27 +63,18 @@ export const handler = async (event) => {
     const data = await ddbClient.send(new QueryCommand(params));
     const posts = formatPosts(data.Items);
 
-    return generateResponse(200, {
+    return createResponse(200, {
       items: posts,
       lastEvaluatedKey: data.LastEvaluatedKey,
     });
   } catch (error) {
     console.error("게시글 목록 조회 실패:", error);
-    return generateResponse(500, {
+    return createResponse(500, {
       message: "Internal server error",
       error: error.message,
     });
   }
 };
-
-const generateResponse = (statusCode, body) => ({
-  statusCode,
-  headers: {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  },
-  body: JSON.stringify(body),
-});
 
 const parseQueryStringParameters = (queryStringParameters = {}) => ({
   limit: queryStringParameters.limit
@@ -108,7 +100,17 @@ const formatPosts = (items) => {
       viewCount: parseInt(item.viewCount.N, 10),
       likeCount: parseInt(item.likeCount.N, 10),
       tags: item.tags?.SS || [],
+      commentCount: item.comments ? item.comments.L.length : 0, // 댓글 수 추가
     };
+
+    // 작성자 정보 추가
+    if (item.writer && item.writer.M) {
+      post.writer = {
+        name: item.writer.M.name?.S || "익명",
+        nickname: item.writer.M.nickname?.S || "익명",
+        email: item.writer.M.email?.S || "",
+      };
+    }
 
     if (item.boardType.S === "questions") {
       post.resolved = item.resolved?.S === "true";

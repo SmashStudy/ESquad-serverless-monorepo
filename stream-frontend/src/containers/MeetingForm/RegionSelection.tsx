@@ -58,7 +58,7 @@ const RegionSelection: React.FC<Props> = ({ setRegion, region }) => {
         setRegion(e.target.value);
       }}
       value={region}
-      label="Meeting region"
+      label="호스트 지역"
     />
   );
 };

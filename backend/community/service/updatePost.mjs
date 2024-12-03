@@ -1,4 +1,5 @@
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { createResponse } from "../util/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
@@ -28,22 +29,16 @@ export const handler = async (event) => {
     const { title, content, resolved, tags } = JSON.parse(event.body);
 
     if (!postId || !createdAt) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: "Missing required parameters: postId or createdAt",
-        }),
-      };
+      return createResponse(400, {
+        message: "Missing required parameters: postId or createdAt",
+      });
     }
 
     if (!title && !content && !tags && resolved === undefined) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message:
-            "At least title, content, or tags must be provided for update.",
-        }),
-      };
+      return createResponse(400, {
+        message:
+          "At least title, content, or tags must be provided for update.",
+      });
     }
 
     const updateExpressionParts = [];
@@ -68,15 +63,31 @@ export const handler = async (event) => {
       expressionAttributeNames["#resolved"] = "resolved";
     }
     if (tags !== undefined) {
-      updateExpressionParts.push("#tags = :tags");
-      expressionAttributeValues[":tags"] = { SS: tags || [] };
-      expressionAttributeNames["#tags"] = "tags";
+      if (tags.length > 0) {
+        updateExpressionParts.push("#tags = :tags");
+        expressionAttributeValues[":tags"] = { SS: tags };
+        expressionAttributeNames["#tags"] = "tags";
+      } else {
+        updateExpressionParts.push("REMOVE #tags");
+        expressionAttributeNames["#tags"] = "tags";
+      }
     }
 
     updateExpressionParts.push("#updatedAt = :updatedAt");
     expressionAttributeValues[":updatedAt"] = { S: new Date().toISOString() };
 
-    const updateExpression = "set " + updateExpressionParts.join(", ");
+    const updateExpression =
+      "SET " +
+      updateExpressionParts
+        .filter((part) => !part.startsWith("REMOVE"))
+        .join(", ");
+    const removeExpression = updateExpressionParts
+      .filter((part) => part.startsWith("REMOVE"))
+      .join(", ");
+
+    const finalUpdateExpression = removeExpression
+      ? `${updateExpression} ${removeExpression}`
+      : updateExpression;
 
     const params = {
       TableName: process.env.DYNAMODB_TABLE,
@@ -84,7 +95,7 @@ export const handler = async (event) => {
         PK: { S: `POST#${postId}` },
         SK: { S: createdAt },
       },
-      UpdateExpression: updateExpression,
+      UpdateExpression: finalUpdateExpression,
       ExpressionAttributeNames: expressionAttributeNames,
       ExpressionAttributeValues: expressionAttributeValues,
       ReturnValues: "ALL_NEW",
@@ -97,21 +108,15 @@ export const handler = async (event) => {
     // 변환된 데이터 반환
     const updatedPost = convertDynamoDBItem(data.Attributes);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "Post updated successfully",
-        updatedPost,
-      }),
-    };
+    return createResponse(200, {
+      message: "Post updated successfully",
+      updatedPost,
+    });
   } catch (error) {
     console.error("Error updating post:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Internal server error",
-        error: error.message,
-      }),
-    };
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
