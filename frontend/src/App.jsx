@@ -26,6 +26,8 @@ import AdminRoute from "./components/google/AdminRoute.jsx";
 import UnauthorizedPage from "./components/google/UnauthorizedPage.jsx";
 import ConfirmPassword from "./components/user/ConfirmPassword.jsx";
 import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx"
+import { decodeJWT } from "./utils/decodeJWT.js";
+
 
 
 const theme = createTheme({
@@ -54,14 +56,56 @@ const theme = createTheme({
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken"); // 로컬 스토리지에서 JWT 토큰 확인
-    if (token) {
-      setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
-    } 
-    setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
-  }, []); // 컴포넌트가 처음 렌더링될 때만 실행
+    const checkTokenValidity = () => {
+      const token = localStorage.getItem("jwtToken"); // 로컬 스토리지에서 JWT 토큰 가져오기
+      if (!token) {
+        setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
+        return;
+      }
+  
+      try {
+        // decodeJWT를 사용하여 토큰 디코딩
+        const decoded = decodeJWT(token);
+  
+        if (!decoded) {
+          throw new Error("유효하지 않은 JWT 토큰입니다.");
+        }
+  
+        const now = Date.now() / 1000; // 현재 시간 (초 단위)
+  
+        if (decoded.exp && decoded.exp < now) {
+          // 만료된 토큰인 경우
+          console.log("토큰이 만료되었습니다.");
+          localStorage.removeItem("jwtToken"); // 만료된 토큰 삭제
+          setIsLoggedIn(false); // 로그인 상태 해제
+        } else {
+          // 유효한 토큰인 경우
+          setIsLoggedIn(true); // 로그인 상태 유지
+        }
+      } catch (error) {
+        console.error("토큰 유효성 확인 중 오류 발생:", error.message);
+        setIsLoggedIn(false); // 오류 발생 시 로그인 상태 해제
+      }
+    };
+  
+    checkTokenValidity(); // 컴포넌트 로드 시 토큰 유효성 확인
+  
+    // 주기적으로 토큰 유효성 확인 (예: 5분마다)
+    const interval = setInterval(() => {
+      checkTokenValidity();
+    }, 5 * 60 * 1000); // 5분마다 실행
+  
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 타이머 정리
+  }, []);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("jwtToken"); // 로컬 스토리지에서 JWT 토큰 확인
+  //   if (token) {
+  //     setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
+  //   } 
+  //   setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
+  // }, []); // 컴포넌트가 처음 렌더링될 때만 실행
 
   return (
     <ThemeProvider theme={theme}>
