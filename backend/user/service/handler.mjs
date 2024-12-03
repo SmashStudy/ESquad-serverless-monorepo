@@ -1,63 +1,115 @@
 import { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
-import { v4 as uuidv4 } from 'uuid';
+import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from 'jsonwebtoken';
 import { createResponse } from '../util/responseHelper.mjs';
 
 
 const dynamoDb = new DynamoDBClient({ region: 'us-east-1' });
+const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.REGION });
 
-// 사용자 정보를 저장하는 함수
 export const saveUserToDynamoDB = async (event) => {
   try {
     const userAttributes = event.request.userAttributes;
 
     if (!userAttributes.email) {
-      throw new Error('사용자 속성에 이메일이 없습니다');
+      throw new Error("사용자 속성에 이메일이 없습니다.");
     }
 
     const email = userAttributes.email;
-    const nickname = userAttributes.nickname || `${email.split('@')[0]}`; // 기본 닉네임 설정
+    const name = userAttributes.name || "No Name";
+    const nickname = userAttributes.nickname || `${email.split("@")[0]}`;
 
+    console.log(`Processing user with email: ${email}`);
+
+    // DynamoDB에 사용자 정보 저장
+    console.log(`Saving user ${email} to DynamoDB.`);
     const params = {
-      TableName: process.env.USER_TABLE_NAME || 'esquad-table-user-dev',
+      TableName: process.env.USER_TABLE_NAME || "esquad-table-user-dev",
       Item: {
         email: { S: email },
-        name: { S: userAttributes.name || `${userAttributes.given_name || ''} ${userAttributes.family_name || ''}`.trim() },
+        name: { S: name },
         nickname: { S: nickname },
+        role: { S: "user" }, // 기본 역할 설정
+        entryPoint: { SS: ["*"] },
         createdAt: { S: new Date().toISOString() },
       },
     };
 
     const command = new PutItemCommand(params);
     await dynamoDb.send(command);
+    console.log(`User ${email} successfully saved to DynamoDB.`);
 
-    console.log('사용자가 DynamoDB에 저장되었습니다:', params.Item);
+    // 사용자 그룹에 추가
+    try {
+      console.log(`Adding user ${email} to Cognito group.`);
+      await addUserToCognitoGroupByEmail(email, "user");
+    } catch (groupError) {
+      console.error(`Failed to add user ${email} to Cognito group:`, groupError);
+    }
 
-    return createResponse(200, { message: '사용자가 성공적으로 저장되었습니다' });
+    return event;
   } catch (error) {
-    console.error('DynamoDB에 사용자 저장 중 오류 발생:', error);
-    return createResponse(500, { message: '사용자 저장 중 오류 발생', error: error.message });
+    console.error("Error saving user to DynamoDB or adding to group:", error);
+    throw error;
   }
 };
+
+// 이메일로 사용자를 검색하고 그룹에 추가하는 함수
+const addUserToCognitoGroupByEmail = async (email, groupName) => {
+  try {
+    console.log(`Searching for user with email: ${email}`);
+    const getUserParams = {
+      UserPoolId: process.env.COGNITO_USER_POOL_ID, // 사용자 풀 ID
+      Filter: `email = "${email}"`,
+    };
+
+    const command = new ListUsersCommand(getUserParams);
+    const { Users } = await cognitoClient.send(command);
+
+    if (!Users || Users.length === 0) {
+      console.warn(`No user found in Cognito with email: ${email}`);
+      return;
+    }
+
+    // 첫 번째 사용자의 Username 가져오기
+    const username = Users[0].Username;
+    console.log(`Found Cognito username for ${email}: ${username}`);
+
+    // 그룹에 사용자 추가
+    console.log(`Adding user ${username} to group: ${groupName}`);
+    const addGroupCommand = new AdminAddUserToGroupCommand({
+      UserPoolId: process.env.COGNITO_USER_POOL_ID,
+      Username: username, // Username은 Cognito 사용자 ID임
+      GroupName: groupName,
+    });
+
+    await cognitoClient.send(addGroupCommand);
+    console.log(`User ${username} successfully added to group ${groupName}`);
+  } catch (error) {
+    console.error(`Error adding user with email ${email} to group ${groupName}:`, error);
+    throw error;
+  }
+};
+
 
 // 닉네임 가져오기 함수
 export const getUserNickname = async (event) => {
   try {
     if (!event.headers.Authorization) {
-      return createResponse(400, { error: 'Authorization 헤더가 없습니다' });
+      throw new Error('Authorization 헤더가 없습니다');
     }
 
     const authHeader = event.headers.Authorization;
     const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
     if (!token) {
-      return createResponse(400, { error: 'JWT 토큰이 Authorization 헤더에 없습니다' });
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
     }
 
     const decoded = jwt.decode(token);
 
     if (!decoded || !decoded.email) {
-      return createResponse(400, { error: 'JWT 토큰에 email 속성이 없습니다' });
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
     }
 
     const email = String(decoded.email);
@@ -74,24 +126,24 @@ export const getUserNickname = async (event) => {
     const user = await dynamoDb.send(command);
 
     if (!user.Item) {
-      return createResponse(404, { error: '사용자를 찾을 수 없습니다' });
+      throw new Error('사용자를 찾을 수 없습니다');
     }
 
     const nickname = user.Item.nickname ? user.Item.nickname.S : null;
 
     if (!nickname) {
-      return createResponse(400, { error: '사용자 닉네임이 없습니다' });
+      throw new Error('사용자 닉네임이 없습니다');
     }
 
-    return createResponse(200, { nickname });
+    return createResponse(200, {nickname});
   } catch (error) {
     console.error('닉네임 가져오기 중 오류 발생:', error);
-    return createResponse(500, { message: '닉네임 가져오기 중 오류 발생', error: error.message });
+
+    return createResponse(500, { message: '닉네임 가져오기 중 오류 발생', error: error.message })
   }
 };
 
-// 환경 변수 반환 함수
-export const myEnvironments = async () => {
+export const myEnvironments = async (event) => {
   try {
     const envKeys = [
       'VITE_COGNITO_CLIENT_ID',
@@ -101,23 +153,40 @@ export const myEnvironments = async () => {
       'VITE_COGNITO_SCOPE',
       'VITE_COGNITO_RESPONSE_TYPE',
     ];
-
+    
     const envVariables = {};
     envKeys.forEach((key) => {
       if (process.env[key]) {
         envVariables[key] = process.env[key];
       }
     });
-
-    return createResponse(200, envVariables);
+    
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+      body: JSON.stringify(envVariables),
+    };
   } catch (error) {
     console.error('환경 변수 반환 중 오류 발생:', error);
-    return createResponse(500, { message: '환경 변수 반환 중 오류 발생', error: error.message });
+    return {
+      statusCode: 500,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+      body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
+    };
   }
 };
 
-// Authorizer 함수
-export const authorizer = async (event) => {
+export const authorizer = async (event, context) => {
   console.log('Authorization event:', event);
   return {
     principalId: 'user',
@@ -134,24 +203,23 @@ export const authorizer = async (event) => {
   };
 };
 
-// 닉네임 업데이트 함수
 export const updateUserNickname = async (event) => {
   try {
     if (!event.headers.Authorization) {
-      return createResponse(400, { error: 'Authorization 헤더가 없습니다' });
+      throw new Error('Authorization 헤더가 없습니다');
     }
 
     const authHeader = event.headers.Authorization;
     const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
     if (!token) {
-      return createResponse(400, { error: 'JWT 토큰이 Authorization 헤더에 없습니다' });
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
     }
 
     const decoded = jwt.decode(token);
 
     if (!decoded || !decoded.email) {
-      return createResponse(400, { error: 'JWT 토큰에 email 속성이 없습니다' });
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
     }
 
     const email = String(decoded.email);
@@ -159,13 +227,17 @@ export const updateUserNickname = async (event) => {
 
     const body = JSON.parse(event.body);
     if (!body || !body.nickname) {
-      return createResponse(400, { error: 'nickname이 요청 본문에 없습니다' });
+      throw new Error('nickname이 요청 본문에 없습니다');
     }
 
     const newNickname = String(body.nickname).trim();
 
+    if (newNickname.length === 0) {
+      throw new Error('nickname이 비어있습니다');
+    }
+
     if (newNickname.length < 2 || newNickname.length > 10) {
-      return createResponse(400, { error: '닉네임은 2자 이상, 10자 이하여야 합니다' });
+      throw new Error('닉네임은 2자 이상, 10자 이하여야 합니다');
     }
 
     const scanParams = {
@@ -179,7 +251,7 @@ export const updateUserNickname = async (event) => {
     const scanCommand = new ScanCommand(scanParams);
     const scanResult = await dynamoDb.send(scanCommand);
     if (scanResult.Count > 0) {
-      return createResponse(400, { error: '이미 사용 중인 닉네임입니다' });
+      throw new Error('이미 사용 중인 닉네임입니다');
     }
 
     const params = {
@@ -199,7 +271,7 @@ export const updateUserNickname = async (event) => {
 
     console.log('업데이트 결과:', result);
 
-    return createResponse(200, { message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname });
+    return createResponse(200,{ message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname });
   } catch (error) {
     console.error('닉네임 업데이트 중 오류 발생:', error);
     return createResponse(500, { message: '닉네임 업데이트 중 오류 발생', error: error.message });
@@ -254,21 +326,21 @@ export const getUserInfoByToken = async (event) => {
   try {
     // Authorization 헤더 확인
     if (!event.headers.Authorization) {
-      return createResponse(400, { error: 'Authorization 헤더가 없습니다' });
+      throw new Error('Authorization 헤더가 없습니다');
     }
 
     const authHeader = event.headers.Authorization;
     const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
     if (!token) {
-      return createResponse(400, { error: 'JWT 토큰이 Authorization 헤더에 없습니다' });
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
     }
 
     // 토큰 디코딩
     const decoded = jwt.decode(token);
 
     if (!decoded || !decoded.email) {
-      return createResponse(400, { error: 'JWT 토큰에 email 속성이 없습니다' });
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
     }
 
     const email = String(decoded.email);
@@ -286,7 +358,7 @@ export const getUserInfoByToken = async (event) => {
     const result = await dynamoDb.send(command);
 
     if (!result.Item) {
-      return createResponse(404, { error: '해당 이메일로 사용자를 찾을 수 없습니다' });
+      throw new Error('해당 이메일로 사용자를 찾을 수 없습니다');
     }
 
     // 결과를 객체로 변환
@@ -310,25 +382,25 @@ export const getUserInfoByToken = async (event) => {
 export const getEmailFromToken = async (event) => {
   try {
     if (!event.headers.Authorization) {
-      return createResponse(400, { error: 'Authorization 헤더가 없습니다' });
+      throw new Error('Authorization 헤더가 없습니다');
     }
 
     const authHeader = event.headers.Authorization;
     const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
     if (!token) {
-      return createResponse(400, { error: 'JWT 토큰이 Authorization 헤더에 없습니다' });
+      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
     }
 
     const decoded = jwt.decode(token);
 
     if (!decoded || !decoded.email) {
-      return createResponse(400, { error: 'JWT 토큰에 email 속성이 없습니다' });
+      throw new Error('JWT 토큰에 email 속성이 없습니다');
     }
 
     const email = String(decoded.email);
 
-    return createResponse(200, { email });
+    return createResponse(200, {email})
   } catch (error) {
     console.error('JWT에서 이메일 가져오기 중 오류 발생:', error);
     return createResponse(500, { message: 'JWT에서 이메일 가져오기 중 오류 발생', error: error.message });

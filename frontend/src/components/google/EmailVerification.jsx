@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Alert, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const EmailVerification = () => {
   const [verificationCode, setVerificationCode] = useState("");
@@ -19,7 +20,7 @@ const EmailVerification = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/confirm`, {
+      const response = await fetch(`${getUserApi()}/confirm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
