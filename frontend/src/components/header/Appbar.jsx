@@ -357,7 +357,10 @@ const Appbar = ({
               >
                 <List>
                   <ListItemButton
-                    onClick={handleCreateTeamButtonClick}
+                    onClick={() => {
+                      handleCreateTeamButtonClick();
+                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
+                    }}
                     sx={{
                       "&:hover": { cursor: "pointer", fontSize: "1.2rem" },
                     }}
@@ -385,7 +388,10 @@ const Appbar = ({
                                   style={{ textDecoration: "none", color: "inherit" }}
                               >
                                 <ListItemButton
-                                  onClick={() => handleSelectedTeam(team.PK)}
+                                    onClick={() => {
+                                      handleSelectedTeam(team.PK); // selectedTeam 업데이트
+                                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
+                                    }}
                                   sx={{
                                     "&:hover": {
                                       cursor: "pointer",
