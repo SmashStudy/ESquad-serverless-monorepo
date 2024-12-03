@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Alert, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {getUserApi} from "../../utils/apiConfig.js";
+import { keyframes } from "@mui/system";
 
 const EmailVerification = () => {
   const [verificationCode, setVerificationCode] = useState("");
@@ -35,6 +36,7 @@ const EmailVerification = () => {
       }
 
       setSuccess("이메일 인증이 완료되었습니다!");
+      localStorage.removeItem("email");
       setTimeout(() => navigate("/"), 2000); // 2초 후 홈으로 이동
     } catch (error) {
       console.error("인증 오류:", error);
@@ -42,8 +44,23 @@ const EmailVerification = () => {
     }
   };
 
+  const verticalMove = keyframes`
+  0%, 100% {
+    transform: translateY(0); // 원래 위치
+  }
+  50% {
+    transform: translateY(-50px); // 위로 50px 이동
+  }`;
+
   return (
-    <Grid container sx={{ height: "100vh" }}>
+    <Grid
+      container
+      sx={{
+        height: "100vh",
+        backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)", // 전체 배경
+      }}
+    >
+      {/* 왼쪽 섹션 */}
       <Grid
         item
         xs={12}
@@ -52,7 +69,6 @@ const EmailVerification = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "grey.100",
           position: "relative",
         }}
       >
@@ -62,7 +78,7 @@ const EmailVerification = () => {
             height: 240,
             backgroundImage: "linear-gradient(to top right, #7e57c2, #ec407a)",
             borderRadius: "50%",
-            animation: "bounce 2s infinite",
+            animation: `${verticalMove} 2s infinite ease-in-out`,
           }}
         />
         <Box
@@ -71,11 +87,11 @@ const EmailVerification = () => {
             bottom: 0,
             width: "100%",
             height: "50%",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            backdropFilter: "blur(10px)",
           }}
         />
       </Grid>
+
+      {/* 오른쪽 섹션 */}
       <Grid
         item
         xs={12}
@@ -84,7 +100,6 @@ const EmailVerification = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "grey.100",
           padding: 4,
         }}
       >
