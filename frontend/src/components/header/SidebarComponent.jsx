@@ -21,7 +21,7 @@ import AbcIcon from "@mui/icons-material/Abc";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const SidebarList = ({ items, drawerOpen, sidebarOpen, selectedSection, onSectionClick }) => {
   const theme = useTheme();
@@ -152,30 +152,41 @@ const SidebarComponent = ({
               },
             }}
           >
-            <IconButton
-              color="inherit"
-              sx={{
-                "&:hover": {
-                  backgroundColor: alpha(theme.palette.primary.main, 0),
-                },
-                gap: 3,
-              }}
-            >
-              <Avatar
-                alt="Team Profile"
-                src="/src/assets/user-avatar.png"
-                sx={{
-                  transition: "width 0.3s ease",
-                  width: 46,
-                  height: 46,
-                }}
-              />
-              {sidebarOpen && (
-                <Typography variant="text" sx={{ mb: 2, fontWeight: "bolder" }}>
-                  {selectedTeam?.teamName}
-                </Typography>
-              )}
-            </IconButton>
+              <Link
+                  to={selectedTeam ? `/teams/${encodeURIComponent(selectedTeam?.PK)}/main` : "#"}
+                  style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <IconButton
+                  color="inherit"
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: alpha(theme.palette.primary.main, 0),
+                    },
+                    gap: 3,
+                  }}
+                >
+                  <Avatar
+                    alt="Team Profile"
+                    src="/src/assets/user-avatar.png"
+                    sx={{
+                      transition: "width 0.3s ease",
+                      width: 46,
+                      height: 46,
+                    }}
+                  />
+                  {sidebarOpen && (
+                    <Typography variant="h6" sx={{
+                        fontWeight: "bolder",
+                        whiteSpace: "nowrap", // 텍스트가 길어서 부모 요소 안의 가로폭을 넘어가더라도 자동으로 줄바꿈이 일어나지 않게 처리
+                        overflow: "hidden",     // overflow 숨김처리
+                        textOverflow: "ellipsis", // overflowed 된 텍스트 ellipsis 처리
+                        maxWidth: "120px", // Set a max width for truncation
+                    }}>
+                      {selectedTeam?.teamName}
+                    </Typography>
+                  )}
+                </IconButton>
+              </Link>
           </Box>
           <Divider sx={{ borderBottom: "1px solid #ddd" }} />
 

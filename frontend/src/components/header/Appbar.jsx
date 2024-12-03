@@ -392,7 +392,7 @@ const Appbar = ({
                         {isLoading ? <Loading /> : (
                           teams.map((team, index) => (
                               <Link
-                                  to={`/teams/${encodeURIComponent(team.PK)}`}
+                                  to={`/teams/${encodeURIComponent(team.PK)}/main`}
                                   key={team.PK}
                                   style={{ textDecoration: "none", color: "inherit" }}
                               >

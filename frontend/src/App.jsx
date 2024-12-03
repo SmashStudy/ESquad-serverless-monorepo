@@ -160,7 +160,8 @@ function App() {
                 <Route path="community/team-recruit" element={<PostListPage />} />
 
                 {/* team */}
-                <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
+                <Route path="teams/:teamId" >
+                    <Route path="main" element={<TeamMainPage />} />
                     <Route path="manage/users" element={<ManageUserPage />} />
                     <Route path="manage/settings" element={<ManageTeamPage />} />
                     <Route path="study" element={<StudyListPage />} />
