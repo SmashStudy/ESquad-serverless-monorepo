@@ -115,28 +115,15 @@ const SidebarComponent = ({
   ];
 
   const studyItems = [
-    {
-      text: "스터디",
-      icon: <AbcIcon />,
-      link: `/teams/${selectedTeam?.id}/study`,
-    },
-    {
-      text: "도서 검색",
-      icon: <MenuBookIcon />,
-      link: `/teams/${selectedTeam?.id}/book/search`,
-    },
-    {
-      text: "질문",
-      icon: <QuizIcon />,
-      link: `/teams/${selectedTeam?.id}/questions`,
-    },
-  ];
+    { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
+    { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search` },
+    { text: '질문', icon: <QuizIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions` },
+];
 
-  const manageItems = [
-    { text: "크루", icon: <PeopleIcon />, link: "/manage/crew" },
-    { text: "설정", icon: <SettingsIcon />, link: "/manage/settings" },
-  ];
-
+const manageItems = [
+  { text: '크루', icon: <PeopleIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/users` },
+  { text: '설정', icon: <SettingsIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/settings` },
+];
   const dangerItems = [
     { text: "나가기", icon: <LogoutIcon />, link: "/logout" },
   ];
