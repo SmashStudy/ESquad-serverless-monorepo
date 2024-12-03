@@ -7,6 +7,7 @@ import {useTeams} from "../../context/TeamContext.jsx";
 import {
     getTeamProfiles,
 } from '../../utils/team/TeamApi.jsx';
+import Loading from "../../components/custom/Loading.jsx";
 
 const TeamMainPage = () => {
     const { selectedTeam, handleTab , updateTeams} = useTeams();
@@ -16,8 +17,8 @@ const TeamMainPage = () => {
 
     const fetchTeamData = async () => {
         try {
+            setLoading(true);
             const teamProfile = await getTeamProfiles(teamId);
-            console.log(`teamProfile: ${teamProfile}`);
             setTeamData(teamProfile);
         } catch (error) {
             console.error('팀 데이터를 불러오는 중 오류 발생:', error);
@@ -41,9 +42,12 @@ const TeamMainPage = () => {
                 position: 'relative',
             }}
         >
-            <h1>{teamData?.teamName}</h1>
-            <Outlet context={{selectedTeam, handleTab, updateTeams}}/>
-
+            {loading ? <Loading /> : (
+                <>
+                    <h1>{teamData?.teamName}</h1>
+                    <Outlet context={{selectedTeam, handleTab, updateTeams}}/>
+                </>
+            )}
         </Box>
     );
 };

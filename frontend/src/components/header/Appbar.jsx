@@ -41,6 +41,7 @@ import { getUserApi } from "../../utils/apiConfig.js";
 import { decodeJWT } from "../../utils/decodeJWT.js";
 import formatTimeAgo from "../../utils/formatTimeAgo.js";
 import { useTeams } from "../../context/TeamContext";
+import Loading from "../custom/Loading.jsx";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -84,6 +85,7 @@ const Appbar = ({
   const {teams, updateTeams} = useTeams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [teamAnchorEl, setTeamAnchorEl] = useState(null);
   const [showSearchBar, setShowSearchBar] = useState(null);
@@ -122,6 +124,7 @@ const Appbar = ({
 
   useEffect(() => {
     const fetchTokenAndData = async () => {
+      setIsLoading(true);
       try {
         const token = localStorage.getItem("jwtToken");
 
@@ -137,14 +140,16 @@ const Appbar = ({
         }
       } catch (err) {
         console.error("토큰 처리 오류:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchTokenAndData();
   }, []);
 
 
   const fetchNickname = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${getUserApi()}/get-nickname`, {
         headers: {
@@ -158,12 +163,15 @@ const Appbar = ({
     } catch (err) {
       console.error("닉네임 가져오기 오류:", err);
       setError("닉네임을 가져오는 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // 컴포넌트 로드 시 닉네임 가져오기
   useEffect(() => {
     const fetchTokenAndData = async () => {
+      setIsLoading(true);
       try {
         await delay(100); // JWT 토큰 저장 딜레이
         const token = localStorage.getItem("jwtToken");
@@ -187,9 +195,10 @@ const Appbar = ({
       } catch (err) {
         console.error("토큰 처리 오류:", err);
         setError("사용자 정보를 처리하는 중 오류가 발생했습니다.");
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchTokenAndData();
   }, []);
 
@@ -380,7 +389,8 @@ const Appbar = ({
                       </ListItem>
                   ) : (
                       <>
-                          {teams.map((team, index) => (
+                        {isLoading ? <Loading /> : (
+                          teams.map((team, index) => (
                               <Link
                                   to={`/teams/${encodeURIComponent(team.PK)}`}
                                   key={team.PK}
@@ -405,7 +415,8 @@ const Appbar = ({
                                     />
                                 </ListItemButton>
                               </Link>
-                          ))}
+                          ))
+                        )}
                       </>
                   )}
                 </List>
