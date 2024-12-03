@@ -5,7 +5,7 @@ import {
   
   // Cognito 클라이언트 생성
   const client = new CognitoIdentityProviderClient({
-    region: process.env.AWS_REGION, // AWS 리전 설정
+    region: process.env.REGION, // AWS 리전 설정
   });
   
   export const handler = async (event) => {
