@@ -25,15 +25,15 @@ export const handler = async (event) => {
 
     // 성공 응답
     return createResponse(200, {
-      message: "User successfully confirmed",
+      message: "사용자가 성공적으로 확인되었습니다",
       response,
     });
   } catch (error) {
-    console.error("Confirm signup error:", error);
+    console.error("회원가입 확인 중 오류:", error);
 
     // 에러 응답
     return createResponse(500, {
-      message: "Error confirming signup",
+      message: "회원가입 확인 중 오류가 발생했습니다",
       error: error.message,
     });
   }

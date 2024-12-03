@@ -14,7 +14,7 @@ export const handler = async (event) => {
 
     if (!email || !confirmationCode || !newPassword) {
       return createCredentialResponse(400, {
-        message: "Missing required fields: email, confirmationCode, and newPassword are required.",
+        message: "필수 필드가 누락되었습니다: 이메일, 인증 코드 및 새 비밀번호가 필요합니다.",
       });
     }
 
@@ -29,13 +29,13 @@ export const handler = async (event) => {
     await client.send(command);
 
     return createCredentialResponse(200, {
-      message: "Password has been reset successfully",
+      message: "비밀번호가 성공적으로 재설정되었습니다",
     });
   } catch (error) {
-    console.error("Confirm password reset error:", error);
+    console.error("비밀번호 재설정 확인 중 오류:", error);
 
     return createCredentialResponse(400, {
-      message: "Failed to reset password",
+      message: "비밀번호 재설정에 실패했습니다",
       error: error.message,
     });
   }
