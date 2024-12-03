@@ -12,9 +12,7 @@ const TeamApi = axios.create({
 
 // 팀 ID 및 이름 가져오기
 export const getTeamIdsAndNames = async () => {
-  console.log('getTeamIdsAndNames 처리 시작...')
   const response = await TeamApi.get("/get");
-  console.log(`response: ${JSON.stringify(response)}`);
   return response.data.body || []; // team IDs
 };
 
@@ -23,7 +21,6 @@ export const getTeamProfiles = async (teamIds) => {
   const profiles = await Promise.all(
     teamIds.map(async (id) => {
       const response = await TeamApi.get(`/${encodeURIComponent(id)}`);
-      console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
       const profile = response.data.body;
       return typeof profile === "string" ? JSON.parse(profile) : profile;
     })
