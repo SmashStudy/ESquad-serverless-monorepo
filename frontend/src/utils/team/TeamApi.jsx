@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getTeamApi, getUserApi } from "./apiConfig.js";
+import { getTeamApi, getUserApi } from "../apiConfig.js";
 
 // Axios 인스턴스 생성
 const TeamApi = axios.create({

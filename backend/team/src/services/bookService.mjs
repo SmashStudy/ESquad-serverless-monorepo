@@ -1,6 +1,5 @@
-import { PutCommand } from "@aws-sdk/client-dynamodb";
 import { dynamoDb, TEAM_TABLE } from "../utils/dynamoClient.mjs";
-
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 export class BookService {
   async saveBook(bookDto) {
     const command = new PutCommand({

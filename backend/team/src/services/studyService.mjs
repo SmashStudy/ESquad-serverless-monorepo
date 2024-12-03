@@ -1,6 +1,6 @@
-import { QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoDb, TEAM_TABLE } from "../utils/dynamoClient.mjs";
 import { v4 as uuidv4 } from "uuid";
+import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 export class StudyService {
     async createStudy(teamId, bookId, studyData) {
