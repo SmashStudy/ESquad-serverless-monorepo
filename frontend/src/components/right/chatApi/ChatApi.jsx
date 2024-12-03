@@ -1,10 +1,13 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
+import {fetchUserEmail} from "../../../utils/storage/utilities.js";
 
-const apiUrl = getChatApi();
+const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
+const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({
     baseURL: apiUrl,
+    headers: { Authorization: `Bearer ${token}` }
 });
 
 // 팀 목록 가져오기
@@ -34,6 +37,7 @@ export const fetchMessageAPI = async (room_id) => {
 // 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
+        console.log(`messageData: ${JSON.stringify(messageData)}`);
         socket.current.send(JSON.stringify(messageData));
 
         // 파일 메시지 처리
@@ -50,7 +54,8 @@ export const sendMessageAPI = async (socket, messageData) => {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
                     timestamp: messageData.timestamp,
-                    user_id: messageData.user_id,
+                    user_id: messageData.email,
+                    nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,

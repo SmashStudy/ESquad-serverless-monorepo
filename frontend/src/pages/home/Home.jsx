@@ -15,13 +15,8 @@ const Home = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [teams, setTeams] = useState([
-        // { "teamName": "none" },
-        { "id": 21, "teamName": "문법존" },
-        { "id": 28, "teamName": "몬다니" },
-        { "id": 24, "teamName": "문법존2" },
-        { "id": 22, "teamName": "몬다ㅇㅇㅇㅇㅇ니2" },
-        { "id": 23, "teamName": "문ㅈㄷㅈㄷㅈㄷㅈㄷ법존3" },
-        { "id": 41, "teamName": "몬다니4" },
+        { "PK": "TEAM#b30c2602-834f-4ff6-8fac-b1534338f633", "teamName": "삐삐삐" },
+        { "PK": "TEAM#df4cfa2f-3043-4c91-bf89-0a701c8fd874", "teamName": "삐루빼로" },
     ]);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px
