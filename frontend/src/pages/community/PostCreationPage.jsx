@@ -12,6 +12,7 @@ import { useTheme } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
+import QuillEditor from "../../utils/QuillEditor";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
@@ -77,17 +78,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setIsDraft(false); // 드래프트 상태 초기화
   };
   const renderTabContent = () => {
-    const studyTemplate = `[스터디 모집 내용 예시]
-• 스터디 주제 :
-• 스터디 목표 :
-• 예상 스터디 일정(횟수) :
-• 예상 커리큘럼 간략히 :
-• 예상 모집인원 :
-• 스터디 소개와 개설 이유 :
-• 스터디 관련 주의사항 :
-• 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등.) :
-`;
-
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -204,50 +194,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
-          {activeTab === "스터디" ? (
-            <TextField
-              defaultValue={studyTemplate}
-              onChange={(e) => {
-                setContent(e.target.value);
-                setIsDraft(true);
-              }}
-              multiline
-              minRows={15}
-              variant="standard"
-              InputProps={{
-                disableUnderline: true,
-              }}
-              sx={{
-                width: "100%",
-                p: 2,
-                backgroundColor: "#f9f9f9",
-                border: "1px solid #ccc",
-                borderRadius: 1,
-                outline: "none",
-              }}
-            />
-          ) : (
-            <InputBase
-              placeholder={
-                activeTab === "질문"
-                  ? " - 학습 관련 질문을 남겨주세요. 상세히 작성하면 더 좋아요! \n - 서로 예의를 지키며 존중하는 게시판을 만들어주세요!"
-                  : "자유롭게 글을 적으세요!"
-              }
-              value={content}
-              onChange={(e) => {
-                setContent(e.target.value);
-                setIsDraft(true);
-              }}
-              multiline
-              minRows={15}
-              sx={{
-                width: "100%",
-                p: 2,
-                border: "1px solid #ccc",
-                borderRadius: 1,
-              }}
-            />
-          )}
+          <QuillEditor
+            value={content || ""}
+            onChange={(value) => {
+              setContent(value);
+              setIsDraft(true);
+            }}
+            placeholder="내용을 입력하세요."
+          />
         </Box>
       </>
     );
