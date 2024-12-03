@@ -1,7 +1,6 @@
 import React from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "./CustomQuill.css"; // CSS 파일 추가
 
 const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
   return (
