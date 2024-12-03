@@ -3,7 +3,7 @@ import {
   SignUpCommand,
   AdminAddUserToGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, PutItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -36,6 +36,21 @@ export const handler = async (event) => {
     // 검증 및 기본값 설정
     const validatedName = name || "No Name"; // 기본 이름
     const validatedNickname = nickname || email.split("@")[0]; // 기본 닉네임
+
+    // 닉네임 중복 체크
+    const isNicknameTaken = await checkNicknameDuplicate(validatedNickname);
+    if (isNicknameTaken) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({
+          message: "Nickname is already taken. Please choose another one.",
+        }),
+      };
+    }
 
     // Cognito SignUp
     const signUpCommand = new SignUpCommand({
@@ -87,6 +102,27 @@ export const handler = async (event) => {
         error: error.message,
       }),
     };
+  }
+};
+
+// 닉네임 중복 체크 함수
+const checkNicknameDuplicate = async (nickname) => {
+  try {
+    const params = {
+      TableName: process.env.USER_TABLE_NAME || "esquad-table-user-local",
+      FilterExpression: "nickname = :nickname",
+      ExpressionAttributeValues: {
+        ":nickname": { S: nickname },
+      },
+    };
+
+    const command = new ScanCommand(params);
+    const response = await dynamoDb.send(command);
+
+    return response.Count > 0; // 중복된 닉네임이 있으면 true 반환
+  } catch (error) {
+    console.error("Error checking nickname duplicate:", error);
+    throw error;
   }
 };
 

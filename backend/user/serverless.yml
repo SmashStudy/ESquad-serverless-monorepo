@@ -35,6 +35,14 @@ provider:
 
 functions:
 
+  manageuserstatus:
+    handler: service/manageuserstatus.handler
+    events:
+      - http:
+          path: admin/status
+          method: POST
+          cors: true
+
   grouprole:
     handler: service/grouprole.handler
     events:
