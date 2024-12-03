@@ -22,7 +22,7 @@ provider:
             - cognito-idp:AdminAddUserToGroup
             - cognito-idp:AdminGetUser
             - "cognito-idp:ListUsers"
-            - cognito-idp:*
+            
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         

@@ -2,6 +2,7 @@ import {
   CognitoIdentityProviderClient,
   ListUsersCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
+import { createResponse } from "../util/responseHelper.mjs"; // createResponse 함수 가져오기
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -11,15 +12,7 @@ export const handler = async (event) => {
   try {
     // OPTIONS 요청 처리 (CORS Preflight)
     if (event.httpMethod === "OPTIONS") {
-      return {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*", // 필요한 경우 특정 도메인만 허용 가능
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Authorization, Content-Type",
-        },
-        body: JSON.stringify({ message: "CORS preflight check passed" }),
-      };
+      return createResponse(200, { message: "CORS preflight check passed" });
     }
 
     // 사용자 풀 ID 가져오기
@@ -51,28 +44,14 @@ export const handler = async (event) => {
     const totalUsers = users.length;
 
     // 응답 데이터 반환
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Authorization, Content-Type",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-      },
-      body: JSON.stringify({
-        totalUsers,
-        users,
-      }),
-    };
+    return createResponse(200, { totalUsers, users });
   } catch (error) {
     console.error("Error fetching users:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Authorization, Content-Type",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-      },
-      body: JSON.stringify({ message: "Error fetching user data", error: error.message }),
-    };
+
+    // 에러 응답
+    return createResponse(500, {
+      message: "Error fetching user data",
+      error: error.message,
+    });
   }
 };

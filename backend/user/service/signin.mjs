@@ -2,29 +2,16 @@ import {
   CognitoIdentityProviderClient,
   InitiateAuthCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
-import {createResponse} from '../util/responseHelper.mjs'
+import { createCredentialResponse } from "../util/responseHelper.mjs";
 
 const client = new CognitoIdentityProviderClient({
   region: process.env.REGION,
 });
 
-// CORS 설정
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*", // 필요한 경우 특정 Origin을 설정
-  "Access-Control-Allow-Credentials": true,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
-};
-
 export const handler = async (event) => {
   // OPTIONS 요청 처리 (CORS preflight)
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers: corsHeaders,
-      body: "",
-    };
+    return createCredentialResponse(200, ""); // OPTIONS 요청에 대한 빈 응답
   }
 
   try {
@@ -55,55 +42,38 @@ export const handler = async (event) => {
     const { AccessToken, IdToken, RefreshToken } =
       response.AuthenticationResult;
 
-    return {
-      statusCode: 200,
-      headers: {
-        ...corsHeaders,
-      },
-      body: JSON.stringify({
-        message: "Login successful",
-        accessToken: AccessToken,
-        idToken: IdToken,
-        refreshToken: RefreshToken,
-      }),
-    };
+    return createCredentialResponse(200, {
+      message: "Login successful",
+      accessToken: AccessToken,
+      idToken: IdToken,
+      refreshToken: RefreshToken,
+    });
   } catch (error) {
     console.error("Signin error:", error);
 
     // 오류 처리
     if (error.name === "UserNotConfirmedException") {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          error: "User is not confirmed. Please confirm your email first.",
-        }),
-      };
+      return createCredentialResponse(400, {
+        error: "User is not confirmed. Please confirm your email first.",
+      });
     } else if (error.name === "NotAuthorizedException") {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          error: "Invalid email or password. Please try again.",
-        }),
-      };
+      return createCredentialResponse(400, {
+        error: "Invalid email or password. Please try again.",
+      });
+    } else if (error.name === "UserNotEnabledException") {
+      // 비활성화된 계정 처리
+      return createCredentialResponse(403, {
+        error: "Your account is disabled. Please contact support for assistance.",
+      });
     } else if (error.name === "InvalidParameterException") {
-      return {
-        statusCode: 400,
-        headers: corsHeaders,
-        body: JSON.stringify({
-          error: "Invalid parameters. Please check your input.",
-        }),
-      };
+      return createCredentialResponse(400, {
+        error: "Invalid parameters. Please check your input.",
+      });
     }
 
     // 일반적인 오류 처리
-    return {
-      statusCode: 500,
-      headers: corsHeaders,
-      body: JSON.stringify({
-        error: "An unexpected error occurred.",
-      }),
-    };
+    return createCredentialResponse(500, {
+      error: "An unexpected error occurred.",
+    });
   }
 };

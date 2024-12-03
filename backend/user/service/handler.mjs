@@ -1,6 +1,5 @@
 import { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { createResponse } from '../util/responseHelper.mjs';
 
@@ -32,8 +31,6 @@ export const saveUserToDynamoDB = async (event) => {
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할 설정
         entryPoint: { SS: ["*"] },
-        lastLogin: { S: new Date().toISOString() },
-        lastLogout: { S: "" },
         createdAt: { S: new Date().toISOString() },
       },
     };

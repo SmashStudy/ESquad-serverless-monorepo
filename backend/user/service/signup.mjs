@@ -4,6 +4,7 @@ import {
   AdminAddUserToGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 import { DynamoDBClient, PutItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { createCredentialResponse } from "../util/responseHelper.mjs"; // createResponse 사용
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -27,7 +28,7 @@ export const handler = async (event) => {
       await addUserToCognitoGroup(email, "user");
 
       // Cognito에서 예상하는 반환 값
-      return event; // 반드시 event를 반환해야 함
+      return createCredentialResponse(200, event); // 반드시 event를 반환해야 함
     }
 
     // 일반 요청 처리 (예: API Gateway 호출)
@@ -40,16 +41,9 @@ export const handler = async (event) => {
     // 닉네임 중복 체크
     const isNicknameTaken = await checkNicknameDuplicate(validatedNickname);
     if (isNicknameTaken) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          message: "Nickname is already taken. Please choose another one.",
-        }),
-      };
+      return createCredentialResponse(400, {
+        message: "Nickname is already taken. Please choose another one.",
+      });
     }
 
     // Cognito SignUp
@@ -74,34 +68,20 @@ export const handler = async (event) => {
     await addUserToCognitoGroup(email, "user");
 
     // 성공 응답
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        message: "User successfully signed up, stored in DynamoDB, and added to Cognito group",
-        cognitoResponse,
-      }),
-    };
+    return createCredentialResponse(200, {
+      message: "User successfully signed up, stored in DynamoDB, and added to Cognito group",
+      cognitoResponse,
+    });
   } catch (error) {
     console.error("Signup error:", error);
     // Cognito 트리거에서 오류 반환
     if (event.request?.userAttributes) {
       throw new Error("PostConfirmation failed: " + error.message);
     }
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        message: "Error during signup process",
-        error: error.message,
-      }),
-    };
+    return createCredentialResponse(500, {
+      message: "Error during signup process",
+      error: error.message,
+    });
   }
 };
 
@@ -137,8 +117,6 @@ const saveUserToDynamoDB = async (email, name, nickname) => {
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할: user
         entryPoint: { SS: ["*"] }, // 기본 엔트리 포인트
-        lastLogin: { S: new Date().toISOString() }, // 로그인 시간 초기화
-        lastLogout: { S: "" }, // 로그아웃 시간 초기화
         createdAt: { S: new Date().toISOString() }, // 생성 시간
       },
     };

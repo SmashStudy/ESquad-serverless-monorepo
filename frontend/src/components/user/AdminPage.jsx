@@ -15,10 +15,13 @@ import {
   CircularProgress,
   IconButton,
   Chip,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SortIcon from "@mui/icons-material/Sort";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import { getUserApi } from "../../utils/apiConfig";
 
 const AdminPage = () => {
@@ -29,31 +32,32 @@ const AdminPage = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${getUserApi()}/admin`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-
-        const data = await response.json();
-        setUsers(data.users);
-        setTotalUsers(data.totalUsers);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${getUserApi()}/admin`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const data = await response.json();
+      setUsers(data.users);
+      setTotalUsers(data.totalUsers);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setLoading(false);
+    }
+  };
 
   const handleSearch = () => {
     const filteredUsers = users.filter((user) =>
@@ -64,32 +68,6 @@ const AdminPage = () => {
 
   const handleReset = () => {
     setSearchTerm("");
-    setLoading(true);
-    setUsers([]);
-    setTotalUsers(0);
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${getUserApi()}/admin`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-
-        const data = await response.json();
-        setUsers(data.users);
-        setTotalUsers(data.totalUsers);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   };
 
@@ -100,9 +78,9 @@ const AdminPage = () => {
     }
 
     const sortedUsers = [...users].sort((a, b) => {
-      if (key === "lastLogin") {
-        const dateA = new Date(a.lastLogin);
-        const dateB = new Date(b.lastLogin);
+      if (key === "lastLogin" || key === "creationDate") {
+        const dateA = new Date(a[key]);
+        const dateB = new Date(b[key]);
         return direction === "asc" ? dateA - dateB : dateB - dateA;
       }
       if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
@@ -114,28 +92,68 @@ const AdminPage = () => {
     setSortConfig({ key, direction });
   };
 
+  const handleStatusChange = async (email, action) => {
+    try {
+      const response = await fetch(`${getUserApi()}/admin/status`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, action }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user status");
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+      fetchUsers(); // 상태 변경 후 사용자 목록 갱신
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
+
   if (loading) {
     return (
-      <Container>
-        <CircularProgress style={{ marginTop: "20px" }} />
+      <Container style={{ textAlign: "center", marginTop: "20%" }}>
+        <CircularProgress style={{ marginBottom: "20px" }} />
+        <Typography variant="h6">사용자 정보를 불러오는 중입니다...</Typography>
       </Container>
     );
   }
 
   return (
-    <Container style={{ marginTop: "20px" }}>
+    <Container style={{ marginTop: "40px" }}>
       {/* 제목 */}
       <Typography
-        variant="h3"
+        variant="h4"
         gutterBottom
         style={{
-          fontWeight: "bold",
-          color: "#1976d2",
+          fontWeight: "initial",
+          color: "black",
           textAlign: "center",
-          marginBottom: "20px",
+          marginBottom: "30px",
+          textTransform: "uppercase",
+          letterSpacing: "1.5px",
         }}
       >
         관리자 페이지
+      </Typography>
+
+      {/* 총 사용자 수 */}
+      <Typography
+        variant="subtitle1"
+        gutterBottom
+        style={{
+          fontSize: "16px",
+          fontWeight: "bold",
+          textAlign: "center",
+          color: "#444",
+          marginBottom: "20px",
+        }}
+      >
+        총 사용자: <span style={{ color: "#1976d2" }}>{totalUsers}명</span>
       </Typography>
 
       {/* 검색 및 초기화 */}
@@ -154,32 +172,31 @@ const AdminPage = () => {
           style={{ flex: 1, marginRight: "10px" }}
         />
         <IconButton onClick={handleSearch} color="primary">
-          <SearchIcon />
+          <Tooltip title="검색">
+            <SearchIcon />
+          </Tooltip>
         </IconButton>
         <Button
           variant="outlined"
           startIcon={<RefreshIcon />}
           onClick={handleReset}
+          style={{
+            borderColor: "#1976d2",
+            color: "#1976d2",
+          }}
         >
           초기화
         </Button>
       </Box>
 
-      {/* 총 사용자 수 */}
-      <Typography
-        variant="subtitle1"
-        gutterBottom
-        style={{ fontSize: "16px", color: "#555" }}
-      >
-        총 사용자: <strong>{totalUsers}명</strong>
-      </Typography>
-
       {/* 사용자 목록 테이블 */}
       <TableContainer
         component={Paper}
         style={{
-          maxHeight: "600px", // 테이블의 최대 높이 설정
-          overflowY: "auto", // 스크롤 추가
+          maxHeight: "600px",
+          overflowY: "auto",
+          borderRadius: "10px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Table stickyHeader>
@@ -191,8 +208,14 @@ const AdminPage = () => {
               <TableCell onClick={() => handleSort("accountStatus")} style={{ cursor: "pointer" }}>
                 <strong>계정 상태</strong> <SortIcon />
               </TableCell>
+              <TableCell onClick={() => handleSort("creationDate")} style={{ cursor: "pointer" }}>
+                <strong>가입 일자</strong> <SortIcon />
+              </TableCell>
               <TableCell onClick={() => handleSort("lastLogin")} style={{ cursor: "pointer" }}>
-                <strong>마지막 로그인</strong> <SortIcon />
+                <strong>마지막 업데이트</strong> <SortIcon />
+              </TableCell>
+              <TableCell>
+                <strong>작업</strong>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -212,9 +235,40 @@ const AdminPage = () => {
                   />
                 </TableCell>
                 <TableCell>
+                  {user.creationDate
+                    ? new Date(user.creationDate).toLocaleString()
+                    : "기록 없음"}
+                </TableCell>
+                <TableCell>
                   {user.lastLogin
                     ? new Date(user.lastLogin).toLocaleString()
                     : "기록 없음"}
+                </TableCell>
+                {/* 활성화/비활성화 버튼 */}
+                <TableCell>
+                  {user.accountStatus === "활성화됨" ? (
+                    <Tooltip title="비활성화">
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<RemoveCircleIcon />}
+                        onClick={() => handleStatusChange(user.email, "disable")}
+                      >
+                        비활성화
+                      </Button>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="활성화">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<PersonAddAltIcon />}
+                        onClick={() => handleStatusChange(user.email, "enable")}
+                      >
+                        활성화
+                      </Button>
+                    </Tooltip>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

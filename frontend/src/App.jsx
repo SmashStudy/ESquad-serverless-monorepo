@@ -96,6 +96,7 @@ function App() {
             <Route path="/user/profile/category" element={<UserStorageUsage />} />
             <Route path="/user/profile/nickname" element={<Nickname />} />
             <Route path="/user/profile/layout" element={<Layout />} />
+            
             {/* admin */}
             <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
 

@@ -45,6 +45,9 @@ const SignUp = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.message && data.message.includes("Nickname is already taken")) {
+          throw new Error("이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.");
+        }
         throw new Error(data.error || "회원가입에 실패했습니다.");
       }
 

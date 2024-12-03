@@ -1,17 +1,13 @@
 import jwt from "jsonwebtoken";
+import { createResponse } from "../util/responseHelper.mjs"; // createResponse 함수 가져오기
 
 export const handler = async (event) => {
   try {
     const token = event.headers.Authorization?.split(" ")[1];
     if (!token) {
-      return {
-        statusCode: 401,
-        headers: {
-          "Access-Control-Allow-Origin": "*", // 모든 도메인 허용
-          "Access-Control-Allow-Headers": "Authorization, Content-Type", // 필요한 헤더
-        },
-        body: JSON.stringify({ message: "Unauthorized: No token provided" }),
-      };
+      return createResponse(401, {
+        message: "Unauthorized: No token provided",
+      });
     }
 
     // JWT 디코딩 (검증 생략 - 선택적으로 추가 가능)
@@ -26,23 +22,13 @@ export const handler = async (event) => {
       role = "user";
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*", // 모든 도메인 허용
-        "Access-Control-Allow-Headers": "Authorization, Content-Type", // 필요한 헤더
-      },
-      body: JSON.stringify({ role }),
-    };
+    return createResponse(200, { role });
   } catch (error) {
     console.error("Error decoding token:", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*", // 모든 도메인 허용
-        "Access-Control-Allow-Headers": "Authorization, Content-Type", // 필요한 헤더
-      },
-      body: JSON.stringify({ message: "Internal server error", error: error.message }),
-    };
+
+    return createResponse(500, {
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };

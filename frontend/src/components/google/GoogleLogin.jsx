@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { initializeCognitoConfig, getCognitoConfig } from "./Config.js";
 import { getUserApi } from "../../utils/apiConfig.js";
 import { keyframes } from "@mui/system";
+import useKonamiCode from "./EasterEgg.jsx"
 
 
 const Login = () => {
@@ -180,8 +181,14 @@ const Login = () => {
     transform: translateY(-50px); // 위로 50px 이동
   }`;
 
+  const [isFlying, setIsFlying] = useState(false);
+    useKonamiCode(() => {
+    setIsFlying(true);
+    setTimeout(() => setIsFlying(false), 10000); // 10초 후 원상복구
+  });
+
   return (
-    <Grid container sx={{ height: "100vh", backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)", }}>
+    <Grid container sx={{ height: "100vh", backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)", }} className={isFlying? "flying" : ""}>
       {/* Left Section */}
       <Grid
         item
