@@ -1,10 +1,11 @@
 // studyHandler.mjs
 
 import { StudyService } from "../services/studyService.mjs";
+import {createResponse} from "../utils/responseHelper.mjs";
 
 const studyService = new StudyService();
 
-export const createStudyHandler = async (event) => {
+export const createStudy = async (event) => {
     try {
         const { bookDto, teamId, studyInfo } = JSON.parse(event.body);
         const bookId = await bookService.saveBook(bookDto);

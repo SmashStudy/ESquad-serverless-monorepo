@@ -11,10 +11,10 @@ export const checkTeamName = async (event) => {
     try {
         const teamName = decodeURIComponent(event.pathParameters?.teamName);
         if (!teamName) {
-            return createResponse(400, { error: 'Missing or invalid team name' });
+            return createResponse(400, { error: '잘못된 팀명입니다!' });
         }
         const isAvailable = await TeamService.checkTeamName(teamName);
-        return createResponse(200,  { isAvailable, message: isAvailable ? 'Team name is available' : 'Team name already exists' });
+        return createResponse(200,  { isAvailable, message: isAvailable ? '사용가능한 이름입니다' : '사용할 수 없는 팀명입니다' });
     } catch (error) {
         console.error('Error checking team name:', error);
         return createResponse(500, { error: `Error checking team name  ${error.message}` });
