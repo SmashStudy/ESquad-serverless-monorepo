@@ -72,6 +72,7 @@ const ChatInput = ({
                 backgroundColor: '#f9fafb',
                 borderRadius: '12px',
                 boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+                marginBottom: "20px"
             }}
         >
             {/* 파일 업로드 진행 상태 */}

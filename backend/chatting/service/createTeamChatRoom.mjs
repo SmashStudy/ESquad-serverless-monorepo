@@ -115,7 +115,6 @@ const handleStreamEvent = async (event) => {
                 timestamp,
                 crew_users: crewUsers,
                 teamName,
-                message: `Welcome to chat room, ${teamName}`,
             };
             await saveMessageToTable(messageData);
 

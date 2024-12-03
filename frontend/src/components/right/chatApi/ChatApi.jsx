@@ -1,5 +1,6 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
+import {fetchUserEmail} from "../../../utils/storage/utilities.js";
 
 const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
 const token = localStorage.getItem("jwtToken");
@@ -26,7 +27,6 @@ export const fetchMessageAPI = async (room_id) => {
         const response = await apiClient.get(`/read`, {
             params: {room_id}
         });
-        return response.data;
     } catch (error) {
         console.log("메시지 불러오기 실패 : ", error.message);
         throw error;
@@ -53,6 +53,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                     message: messageData.message,
                     timestamp: messageData.timestamp,
                     user_id: messageData.user_id,
+                    nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
                     presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,
