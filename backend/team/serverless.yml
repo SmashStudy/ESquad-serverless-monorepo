@@ -175,13 +175,13 @@ functions:
           path: /book/search
           method: get
           cors: true
-    createStudyHandler:
-      handler: src/handlers/studyHandler.createStudy
-      events:
-          - http:
-            path: /{teamId}/study/create
-            method: post
-            cors: true
+  createStudy:
+    handler: src/handlers/studyHandler.createStudy
+    events:
+        - http:
+          path: /{teamId}/study/create
+          method: post
+          cors: true
 
 useDotenv: true
 
