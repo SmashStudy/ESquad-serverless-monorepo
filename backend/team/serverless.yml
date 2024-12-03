@@ -108,7 +108,13 @@ functions:
       - http:
           path: /create
           method: post
-          cors: true
+          cors:
+            origins:
+              - "*"
+            headers:   # 클라이언트에서 허용되는 헤더를 지정
+              - Content-Type
+              - Authorization
+              - X-Requested-With
   checkTeamName:
     handler: src/handlers/teamHandler.checkTeamName
     events:
