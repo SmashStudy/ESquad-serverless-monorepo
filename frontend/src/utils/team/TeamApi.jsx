@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getTeamApi, getUserApi } from "./apiConfig.js";
+import { getTeamApi, getUserApi } from "../apiConfig.js";
 
 // Axios 인스턴스 생성
 const TeamApi = axios.create({
@@ -12,9 +12,7 @@ const TeamApi = axios.create({
 
 // 팀 ID 및 이름 가져오기
 export const getTeamIdsAndNames = async () => {
-  console.log('getTeamIdsAndNames 처리 시작...')
   const response = await TeamApi.get("/get");
-  console.log(`response: ${JSON.stringify(response)}`);
   return response.data.body || []; // team IDs
 };
 

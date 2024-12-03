@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getTeamApi } from './apiConfig';
+import { getTeamApi } from '../apiConfig';
 
 // 공통 헤더 설정
 const getAuthHeaders = () => ({

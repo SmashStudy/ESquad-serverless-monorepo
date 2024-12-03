@@ -17,7 +17,7 @@ import {
     checkTeamNameAvailability,
     updateTeamInfo,
     deleteTeam,
-} from '../../utils/TeamApi';
+} from '../../utils/team/TeamApi.jsx';
 
 const ManageTeamPage = () => {
   const { selectedTeam, updateSelectedTeam, handleTab, updateTeams } = useOutletContext();
