@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Typography, Grid, TextField, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {getUserApi} from "../../utils/apiConfig.js";
+import { keyframes } from "@mui/system";
 
 const API_URL = "https://jg3x4yqtfb.execute-api.us-east-1.amazonaws.com/local";
 
@@ -44,6 +45,9 @@ const SignUp = () => {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.message && data.message.includes("Nickname is already taken")) {
+          throw new Error("이미 사용 중인 닉네임입니다. 다른 닉네임을 선택해주세요.");
+        }
         throw new Error(data.error || "회원가입에 실패했습니다.");
       }
 
@@ -65,7 +69,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await fetch(`${API_URL}/confirm`, {
+      const response = await fetch(`${getUserApi()}/confirm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,8 +95,23 @@ const SignUp = () => {
     }
   };
 
+  const verticalMove = keyframes`
+  0%, 100% {
+    transform: translateY(0); // 원래 위치
+  }
+  50% {
+    transform: translateY(-50px); // 위로 50px 이동
+  }`;
+
   return (
-    <Grid container sx={{ height: "100vh" }}>
+    <Grid
+      container
+      sx={{
+        height: "100vh",
+        backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)", // 전체 배경
+      }}
+    >
+      {/* 왼쪽 섹션 */}
       <Grid
         item
         xs={12}
@@ -101,7 +120,6 @@ const SignUp = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "grey.100",
           position: "relative",
         }}
       >
@@ -111,7 +129,7 @@ const SignUp = () => {
             height: 240,
             backgroundImage: "linear-gradient(to top right, #7e57c2, #ec407a)",
             borderRadius: "50%",
-            animation: "bounce 2s infinite",
+            animation: `${verticalMove} 2s infinite ease-in-out`,
           }}
         />
         <Box
@@ -120,11 +138,11 @@ const SignUp = () => {
             bottom: 0,
             width: "100%",
             height: "50%",
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            backdropFilter: "blur(10px)",
           }}
         />
       </Grid>
+
+      {/* 오른쪽 섹션 */}
       <Grid
         item
         xs={12}
@@ -133,7 +151,6 @@ const SignUp = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "grey.100",
           padding: 4,
         }}
       >
@@ -150,6 +167,7 @@ const SignUp = () => {
             textAlign: "center",
           }}
         >
+          {/* 회원가입 또는 인증 로직 */}
           {isVerificationStep ? (
             <>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
