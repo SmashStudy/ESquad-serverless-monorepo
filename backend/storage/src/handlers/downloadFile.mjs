@@ -1,15 +1,11 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { createResponse } from '../utils/responseHelper.mjs';
-import { requestPresignedUrl } from '../utils/s3Utils.mjs'; // Presigned URL 생성 함수
-
-const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
-const TABLE_NAME = process.env.METADATA_TABLE;
+import {UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {createResponse} from '../utils/responseHelper.mjs';
+import {requestPresignedUrl} from '../utils/s3Utils.mjs'; // Presigned URL 생성 함수
+import {METADATA_TABLE, dynamoDb} from "../utils/dynamoUtil.mjs";
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
-  let { fileKey } = event.pathParameters;
+  let {fileKey} = event.pathParameters;
 
   try {
     fileKey = decodeURIComponent(fileKey);
@@ -28,7 +24,7 @@ export const handler = async (event) => {
     });
 
     if (presignedResponse.error) {
-      return createResponse(400, { error: presignedResponse.error });
+      return createResponse(400, {error: presignedResponse.error});
     }
 
     // `createResponse`로부터 실제 `presignedUrl`을 추출
@@ -37,8 +33,8 @@ export const handler = async (event) => {
 
     // 다운로드 횟수 업데이트
     const updateParams = {
-      TableName: TABLE_NAME,
-      Key: { fileKey },
+      TableName: METADATA_TABLE,
+      Key: {fileKey},
       UpdateExpression: 'SET downloadCount = if_not_exists(downloadCount, :start) + :incr',
       ExpressionAttributeValues: {
         ':start': 0,
@@ -48,10 +44,11 @@ export const handler = async (event) => {
     };
     await dynamoDb.send(new UpdateCommand(updateParams));
 
-    return createResponse(200, { presignedUrl });
+    return createResponse(200, {presignedUrl});
 
   } catch (error) {
     console.error('Error during file download:', error);
-    return createResponse(500, { error: `Error during file download: ${error.message}` });
+    return createResponse(500,
+        {error: `Error during file download: ${error.message}`});
   }
 };

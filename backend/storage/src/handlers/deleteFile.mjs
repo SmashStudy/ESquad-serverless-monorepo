@@ -1,11 +1,7 @@
-import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
-import {DynamoDBDocumentClient, DeleteCommand} from '@aws-sdk/lib-dynamodb';
+import {DeleteCommand} from '@aws-sdk/lib-dynamodb';
 import {createResponse} from '../utils/responseHelper.mjs'
 import {requestPresignedUrl} from "../utils/s3Utils.mjs";
-
-const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
-const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
-const TABLE_NAME = process.env.METADATA_TABLE;
+import {METADATA_TABLE, dynamoDb} from "../utils/dynamoUtil.mjs";
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
@@ -18,12 +14,11 @@ export const handler = async (event) => {
     console.log("File name did not require decoding:", fileKey);
   }
 
-
   let presignedUrl;
 
   try {
     const deleteParams = {
-      TableName: TABLE_NAME,
+      TableName: METADATA_TABLE,
       Key: {fileKey: fileKey},
     };
 
@@ -37,14 +32,14 @@ export const handler = async (event) => {
     });
 
     if (presignedResponse.error) {
-      return createResponse(400, { error: presignedResponse.error });
+      return createResponse(400, {error: presignedResponse.error});
     }
 
     const responseData = JSON.parse(presignedResponse.body);
     presignedUrl = responseData.presignedUrl;
 
     return createResponse(200,
-        { presignedUrl });
+        {presignedUrl});
   } catch (error) {
     return createResponse(500,
         {error: `Failed to delete metadata: ${error.message}`});
