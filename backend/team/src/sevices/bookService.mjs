@@ -1,17 +1,19 @@
-import { PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { PutCommand } from "@aws-sdk/client-dynamodb";
 import { dynamoDb, TEAM_TABLE } from "../utils/dynamoClient.mjs";
 
 export class BookService {
   async saveBook(bookDto) {
-    const command = new PutItemCommand({
+    const command = new PutCommand({
       TableName: TEAM_TABLE,
       Item: {
-            PK: `BOOK#${bookDto.id}`,
-            SK: `BOOK#${bookDto.id}`,
+            PK: `BOOK#${bookDto.isbn}`,
+            SK: `BOOK#${bookDto.isbn}`,
             itemType:"Book",
             title: bookDto.title,
-            author: bookDto.author,
+            authors: bookDto.authors,
             publisher: bookDto.publisher,
+            publishedDate: bookDto.publishedDate,
+            imgPath: bookDto.imgPath,
             isbn: bookDto.isbn
         }
     });
