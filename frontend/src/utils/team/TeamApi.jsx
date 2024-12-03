@@ -12,9 +12,7 @@ const TeamApi = axios.create({
 
 // 팀 ID 및 이름 가져오기
 export const getTeamIdsAndNames = async () => {
-  console.log('getTeamIdsAndNames 처리 시작...')
   const response = await TeamApi.get("/get");
-  console.log(`response: ${JSON.stringify(response)}`);
   return response.data.body || []; // team IDs
 };
 

@@ -47,7 +47,6 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
                 setLoading(true);
                 const email = await getUserEmail();
                 if (isMounted) {
-                    console.log(`Fetched email: ${email}`);
                     setTeamUsers([email]); // Trigger a state update
                 }
             } catch (err) {
@@ -95,9 +94,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
 
     try {
       setLoading(true);
-      console.log('생성예정 팀: ', JSON.stringify(teamForm));
       const newTeam = await createTeam(teamForm);
-      console.log(`newTeam: ${JSON.stringify(newTeam)}`);
       updateTeams(newTeam);
       setTeamId(newTeam.PK);
       return true;

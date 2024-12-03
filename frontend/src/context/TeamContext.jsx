@@ -12,7 +12,6 @@ const TeamsProvider = ({ children }) => {
     const fetchTeams = useCallback(async () => {
         try {
             const teamProfiles = await getTeamIdsAndNames();
-            console.log(`getTeamIdsAndNames: ${JSON.stringify(teamProfiles)}`);
             setTeams(teamProfiles);
         } catch (error) {
             console.error("Error fetching teams:", error);
