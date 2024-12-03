@@ -4,42 +4,37 @@ import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 export class StudyService {
     async createStudy(teamId, bookId, studyData) {
+        const decodedTeamId = decodeURIComponent(teamId);
         const studyPageId = `STUDY#${uuidv4()}`;
         const now = new Date().toISOString();
         const {studyInfo, studyUserIds} = studyData;
 
-        const teamUsers = await this.getTeamUsers(teamId);
-        const invalidUsers = studyUserIds.filter((userId) => !teamUsers.includes(userId));
-
-        if (invalidUsers.length > 0) {
-            console.error(`Invalid users detected: ${invalidUsers.join(", ")}`);
+        const teamUsers = await this.getTeamUsers(decodedTeamId);
+        const invalidUserIds = studyUserIds.filter((userId) => !teamUsers.includes(userId));
+        console.log("Invalid users:", invalidUserIds);
+        if (invalidUserIds.length > 0) {
+            console.error(
+                "Invalid users detected:",
+                JSON.stringify({ decodedTeamId, studyUserIds, teamUsers, invalidUserIds }, null, 2)
+            );
             throw new Error("InvalidUsersException");
-        }
-
+        }    
 
         const item = {
-            PK: `TEAM#${teamId}`,
+            PK: studyPageId,
             SK: studyPageId,
             itemType: "StudyPage",
-            teamId,
+            teamId: decodedTeamId,
             bookId,
             createdAt: now,
             updatedAt: now,
             ...studyInfo,
         };
-
-        const command = new PutCommand({
-            TableName: TEAM_TABLE,
-            Item: item,
-        });
-
         try {
-            await dynamoDb.send(command);
+            await dynamoDb.send(new PutCommand({ TableName: TEAM_TABLE, Item: item, }));
             console.log(`Study page created with ID: ${studyPageId}`);
 
-            const getRoleAndState = (index) => ({
-                role: index === 0 ? 'Manager' : 'Member'
-            });
+            const getRoleAndState = (index) => ({ role: index === 0 ? 'Manager' : 'Member' });
             
             const memberPromises = studyUserIds.map(async (studyUserId, index) => {
                 const { role } = getRoleAndState(index);
@@ -47,45 +42,45 @@ export class StudyService {
                     return await dynamoDb.send(new PutCommand({
                         TableName: TEAM_TABLE,
                         Item: {
-                            PK: `TEAM#${teamId}`,
-                            SK: `USER#${studyUserId}`,
+                            PK: `${decodedTeamId}`,
+                            SK: `${studyUserId}`,
                             itemType: 'StudyUser',
                             role,
                             createdAt: now,
                         },
                     }));
                 } catch (error) {
-                    console.error(`Error adding user ${studyUserId} to team ${teamId}:`, error);
+                    console.error(`Error adding user ${studyUserId} to team ${decodedTeamId}:`, error);
+                    return { userId: studyUserId, error };
                 }
             });
     
             const results = await Promise.all(memberPromises);
             const failedUsers = results.filter((result) => result?.error);
 
-            if (failedUsers.length) {
-                console.warn("Some users failed to be added:", failedUsers);
-            }
+            if (failedUsers.length > 0) { console.warn("Some users failed to be added:", failedUsers); }
 
             return item;
         } catch (error) {
-        console.error("Failed to create study page:", error);
-        throw new Error("StudyCreateException");
+            console.error("Failed to create study page:", error);
+            throw new Error("StudyCreateException");
         }
     }
     
     async getTeamUsers(teamId) {
         const params = {
             TableName: TEAM_TABLE,
-            KeyConditionExpression: "PK = :teamId AND begins_with(SK, :userPrefix)",
+            IndexName: 'PK-ItemType-Index',
+            KeyConditionExpression: 'PK = :pk AND itemType = :itemType',
             ExpressionAttributeValues: {
-                ":teamId": `TEAM#${teamId}`,
-                ":userPrefix": "USER#",
-            },
+                ':pk': teamId,
+                ':itemType': 'TeamUser'
+            }
         };
 
         try {
             const { Items } = await dynamoDb.send(new QueryCommand(params));
-            return Items.map((item) => item.SK.split("#")[1]); // USER#ID에서 ID 추출
+            return Items.map((item) => item.SK);
         } catch (error) {
             console.error("Failed to fetch team users:", error);
             throw new Error("TeamUserFetchException");
