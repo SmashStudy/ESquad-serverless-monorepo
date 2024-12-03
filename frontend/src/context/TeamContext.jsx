@@ -15,7 +15,7 @@ const TeamsProvider = ({ children }) => {
         setLoading(true);
         try {
             // 토큰이 로컬 스토리지에 저장되도록 500ms wait
-            await delay(500);
+            await delay(1000);
             const teamProfiles = await getTeamIdsAndNames();
             setTeams(() => teamProfiles);
         } catch (error) {
