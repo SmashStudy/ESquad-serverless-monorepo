@@ -27,10 +27,10 @@ const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
         "image",
       ]}
       style={{
-        height: "400px",
+        height: "450px",
         width: "100%",
         backgroundColor: "#fff",
-        padding: "10px", // 내부 패딩 추가
+        padding: "0px", // 내부 패딩 추가
         border: "none", // 내부 테두리 제거
       }}
     />

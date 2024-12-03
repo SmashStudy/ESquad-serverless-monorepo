@@ -127,8 +127,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
             display: "flex",
             flexDirection: "column",
             gap: 1,
-            px: 1,
-            mb: 3,
+            px: 0,
+            mb: 1,
           }}
         >
           <InputBase
@@ -160,7 +160,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
             flexDirection: "column",
             gap: 1,
             mb: 1,
-            px: 1,
+            px: 0,
           }}
         >
           <Typography variant="h8" sx={{ px: 1 }}>
@@ -312,7 +312,12 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       {renderTabContent()}
 
       <Box
-        sx={{ display: "flex", justifyContent: "space-between", mt: 3, px: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          px: 0,
+          pt: 7,
+        }}
       >
         <Button
           variant="contained"
