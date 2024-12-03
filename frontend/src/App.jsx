@@ -20,7 +20,6 @@ import GoogleLogout from './components/google/GoogleLogout.jsx';
 import UserProfile from './components/user/UserProfile.jsx';
 import ManageUserPage from './pages/team/ManageUserPage.jsx';
 import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
-import Category from './components/user/UserCategory.jsx';
 import Nickname from './components/user/UserNickname.jsx'
 import Layout from './components/user/Layout.jsx';
 

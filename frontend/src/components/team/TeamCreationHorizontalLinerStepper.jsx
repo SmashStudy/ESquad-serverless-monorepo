@@ -20,7 +20,8 @@ import {
   checkTeamNameAvailability,
   createTeam,
   getUserEmail,
-} from '../../utils/TeamApi'; // teamApi 호출
+} from '../../utils/TeamApi';
+import {useTeams} from "../../context/TeamContext.jsx"; // teamApi 호출
 
 const steps = ['팀 이름', '팀원 초대', '확인', '이동'];
 
@@ -37,6 +38,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
     const [loading, setLoading] = useState(false);
     const [teamId, setTeamId] = useState('');
     const [error, setError] = useState('');
+    const { updateTeams } = useTeams();
 
     useEffect(() => {
     const fetchEmail = async () => {

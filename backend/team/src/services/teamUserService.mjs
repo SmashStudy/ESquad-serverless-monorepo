@@ -14,57 +14,64 @@ export const getTeams = async (userEmail) => {
         IndexName: 'SK-ItemType-Index',
         KeyConditionExpression: 'SK = :sk and itemType = :itemType',
         ExpressionAttributeValues: {
-            ':sk': { S: userEmail },
-            ':itemType': { S: 'TeamUser' }
+            ':sk': userEmail,
+            ':itemType': 'TeamUser'
         },
         ProjectionExpression: 'PK, inviteState, itemType', // 필요 항목만 조회
     };
     const result = await dynamoDb.send(new QueryCommand(params));
+    console.log(`result: ${JSON.stringify(result)}`);
 
-    // 2. inviteState = 'complete' and itemType = 'TeamUser' 행 PK만 필터
-    const filteredItems = result.Items.filter(
-        (item) =>
-            item.inviteState?.S === 'complete'
-    );
+    let sortedTeams = null;
 
-    // 3. teamName 조회
-    const teamDetails = await Promise.all(
-        filteredItems.map(async (item) => {
-            const teamPK = item.PK.S;
+    if(result.Items.length > 0) {
+        // 2. inviteState = 'complete' and itemType = 'TeamUser' 행 PK만 필터
+        const filteredItems = result.Items.filter(
+            (item) =>
+                item.inviteState === 'complete'
+        );
 
-            // teamName 조회 쿼리
-            const teamParams = {
-                TableName: TEAM_TABLE,
-                KeyConditionExpression: 'PK = :pk',
-                FilterExpression: 'itemType = :itemType',
-                ExpressionAttributeValues: {
-                    ':pk': { S: teamPK },
-                    ':itemType': { S: 'Team' },
-                },
-                ProjectionExpression: 'teamName, createdAt',
-            };
+        if(filteredItems.length > 0) {
+            // 3. teamName 조회
+            const teamDetails = await Promise.all(
+                filteredItems.map(async (item) => {
+                    console.log(`item: ${JSON.stringify(item)}`);
+                    const teamPK = item.PK;
 
-            const teamResult = await dynamoDb.send(new QueryCommand(teamParams));
-            if (teamResult.Items.length > 0) {
-                const team = teamResult.Items[0];
-                return {
-                    PK: teamPK,
-                    teamName: team.teamName.S,
-                    createdAt: team.createdAt.S,
-                };
-            }
-            return null; // Return null if no teamName found
-        })
-    );
+                    // teamName 조회 쿼리
+                    const teamParams = {
+                        TableName: TEAM_TABLE,
+                        KeyConditionExpression: 'PK = :pk',
+                        FilterExpression: 'itemType = :itemType',
+                        ExpressionAttributeValues: {
+                            ':pk': teamPK,
+                            ':itemType': 'Team',
+                        },
+                        ProjectionExpression: 'teamName, createdAt',
+                    };
 
-    // 4. 내림차순 정렬
-    const sortedTeams = teamDetails
-        .filter((team) => team !== null) // Remove null entries
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by createdAt
+                    const teamResult = await dynamoDb.send(new QueryCommand(teamParams));
+                    if (teamResult.Items.length > 0) {
+                        const team = teamResult.Items[0];
+                        return {
+                            PK: teamPK,
+                            teamName: team.teamName,
+                            createdAt: team.createdAt,
+                        };
+                    }
+                    return null; // Return null if no teamName found
+                })
+            );
 
+            // 4. 내림차순 정렬
+            sortedTeams = teamDetails
+                .filter((team) => team !== null) // Remove null entries
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by createdAt
+        }
+    }
     // Print results
     console.log('Teams:', sortedTeams);
-    return sortedTeams; // Return sorted teams
+    return sortedTeams;
 };
 
 /**
