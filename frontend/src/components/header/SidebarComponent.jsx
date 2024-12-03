@@ -94,11 +94,9 @@ const SidebarComponent = ({
   drawerOpen,
   sidebarOpen,
   handleDrawerClose,
-  selectedTab,
-  selectedTeam,
+  selectedTab, selectedTeam, onTeamSelect
 }) => {
   const theme = useTheme();
-  const [selectedItem, setSelectedItem] = useState(null);
 
   const communityItems = [
     { text: "질문 및 답변", icon: <QuizIcon />, link: "/community/questions" },
@@ -135,8 +133,6 @@ const manageItems = [
           items={communityItems}
           drawerOpen={drawerOpen}
           sidebarOpen={sidebarOpen}
-          selectedItem={selectedItem} // 현재 선택된 아이템 전달
-          setSelectedItem={setSelectedItem} // 선택 상태 업데이트 함수 전달
         />
       ) : (
         <Box>
@@ -192,8 +188,6 @@ const manageItems = [
             items={studyItems}
             drawerOpen={drawerOpen}
             sidebarOpen={sidebarOpen}
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
           />
           <Divider sx={{ borderBottom: "1px solid #ddd" }} />
 
@@ -209,8 +203,6 @@ const manageItems = [
             items={manageItems}
             drawerOpen={drawerOpen}
             sidebarOpen={sidebarOpen}
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
           />
           <Divider sx={{ borderBottom: "1px solid #ddd" }} />
 
@@ -231,8 +223,6 @@ const manageItems = [
             items={dangerItems}
             drawerOpen={drawerOpen}
             sidebarOpen={sidebarOpen}
-            selectedItem={selectedItem}
-            setSelectedItem={setSelectedItem}
           />
         </Box>
       )}

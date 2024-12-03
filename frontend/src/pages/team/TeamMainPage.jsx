@@ -9,14 +9,13 @@ import {
 } from '../../utils/team/TeamApi.jsx';
 
 const TeamMainPage = () => {
-    const { selectedTeam, updateSelectedTeam, handleTab , updateTeams} = useTeams();
+    const { selectedTeam, handleTab , updateTeams} = useTeams();
     const {teamId} = useParams();
     const [teamData, setTeamData] = useState(null);
     const [loading, setLoading] = useState(true);
 
     const fetchTeamData = async () => {
         try {
-            
             const teamProfile = await getTeamProfiles(teamId);
             console.log(`teamProfile: ${teamProfile}`);
             setTeamData(teamProfile);
@@ -28,29 +27,24 @@ const TeamMainPage = () => {
     };
 
     useEffect(() => {
-        if (selectedTeam?.PK) fetchTeamData();
-      }, [selectedTeam]);
-
-    useEffect(() => {
         fetchTeamData();
-    }, []);
+      }, [teamId]);
     
-
     return (
-            <Box
-                sx={{
-                    mb: 2,
-                    height: '100%',
-                    width: '100%',
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                    position: 'relative',
-                }}
-            >   
-                <h1>{teamData?.teamName}</h1>
-                <Outlet context={{selectedTeam, updateSelectedTeam, handleTab, updateTeams}}/>
+        <Box
+            sx={{
+                mb: 2,
+                height: '100%',
+                width: '100%',
+                overflowX: 'auto',
+                overflowY: 'auto',
+                position: 'relative',
+            }}
+        >
+            <h1>{teamData?.teamName}</h1>
+            <Outlet context={{selectedTeam, handleTab, updateTeams}}/>
 
-            </Box>
+        </Box>
     );
 };
 
