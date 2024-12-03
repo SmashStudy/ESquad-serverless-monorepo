@@ -7,14 +7,12 @@ import {
   InputBase,
   Chip,
   TextField,
-  IconButton,
 } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { Autocomplete } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
+import QuillEditor from "../../utils/QuillEditor";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const theme = useTheme();
@@ -29,7 +27,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
-  const [file, setFile] = useState(null);
 
   // 유저 정보 가져오기
   useEffect(() => {
@@ -78,21 +75,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setTitle(""); // 제목 초기화
     setContent(""); // 내용 초기화
     setTags([]); // 태그 초기화
-    setFile(null); // 첨부 파일 초기화
     setIsDraft(false); // 드래프트 상태 초기화
   };
   const renderTabContent = () => {
-    const studyTemplate = `[스터디 모집 내용 예시]
-• 스터디 주제 :
-• 스터디 목표 :
-• 예상 스터디 일정(횟수) :
-• 예상 커리큘럼 간략히 :
-• 예상 모집인원 :
-• 스터디 소개와 개설 이유 :
-• 스터디 관련 주의사항 :
-• 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등.) :
-`;
-
     const handleTagKeyDown = (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
@@ -142,8 +127,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
             display: "flex",
             flexDirection: "column",
             gap: 1,
-            px: 1,
-            mb: 3,
+            px: 0,
+            mb: 1,
           }}
         >
           <InputBase
@@ -169,7 +154,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            mb: 1,
+            px: 0,
+          }}
+        >
           <Typography variant="h8" sx={{ px: 1 }}>
             태그를 설정하세요 (최대 10개)
           </Typography>
@@ -202,73 +195,39 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
                 onKeyDown={handleTagKeyDown}
-                sx={{ width: "100%", p: 1 }}
+                sx={{
+                  width: "100%",
+                  p: 1,
+                  "& .MuiInput-underline:before": {
+                    borderBottom: "1px solid #ccc",
+                  },
+                  "& .MuiInput-underline:after": {
+                    borderBottom: "none", //
+                  },
+                  "&:hover .MuiInput-underline:before": {
+                    borderBottom: "1px solid #ccc",
+                  },
+                  "& .Mui-focused .MuiInput-underline:after": {
+                    borderBottom: "none",
+                  },
+                }}
               />
             )}
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
-          {activeTab === "스터디" ? (
-            <TextField
-              defaultValue={studyTemplate}
-              onChange={(e) => {
-                setContent(e.target.value);
-                setIsDraft(true);
-              }}
-              multiline
-              minRows={15}
-              variant="standard"
-              InputProps={{
-                disableUnderline: true,
-              }}
-              sx={{
-                width: "100%",
-                p: 2,
-                backgroundColor: "#f9f9f9",
-                border: "1px solid #ccc",
-                borderRadius: 1,
-                outline: "none",
-              }}
-            />
-          ) : (
-            <InputBase
-              placeholder={
-                activeTab === "질문"
-                  ? " - 학습 관련 질문을 남겨주세요. 상세히 작성하면 더 좋아요! \n - 서로 예의를 지키며 존중하는 게시판을 만들어주세요!"
-                  : "자유롭게 글을 적으세요!"
-              }
-              value={content}
-              onChange={(e) => {
-                setContent(e.target.value);
-                setIsDraft(true);
-              }}
-              multiline
-              minRows={15}
-              sx={{
-                width: "100%",
-                p: 2,
-                border: "1px solid #ccc",
-                borderRadius: 1,
-              }}
-            />
-          )}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 0 }}>
+          <QuillEditor
+            value={content || ""}
+            onChange={(value) => {
+              setContent(value);
+              setIsDraft(true);
+            }}
+            placeholder="내용을 입력하세요."
+          />
         </Box>
       </>
     );
-  };
-
-  const handleFileUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setIsDraft(true);
-    }
-  };
-
-  const handleFileDelete = () => {
-    setFile(null);
-    setIsDraft(true);
   };
 
   const handleSubmit = async () => {
@@ -316,8 +275,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 2,
-        maxWidth: "650px",
+        gap: 1,
+        maxWidth: "700px",
         height: "80vh",
         mx: "auto",
         my: "auto",
@@ -352,30 +311,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
 
       {renderTabContent()}
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
-        <Button
-          variant="contained"
-          component="label"
-          startIcon={<AttachFileIcon />}
-          sx={{ backgroundColor: theme.palette.primary.main, color: "#fff" }}
-        >
-          파일 첨부
-          <input type="file" hidden onChange={handleFileUpload} />
-        </Button>
-        {file && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2">{`${file.name} (${(
-              file.size / 1024
-            ).toFixed(2)} KB)`}</Typography>
-            <IconButton onClick={handleFileDelete} size="small">
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        )}
-      </Box>
-
       <Box
-        sx={{ display: "flex", justifyContent: "space-between", mt: 3, px: 1 }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          px: 0,
+          pt: 7,
+        }}
       >
         <Button
           variant="contained"

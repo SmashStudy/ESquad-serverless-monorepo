@@ -23,7 +23,7 @@ export const handler = async (event) => {
     const { email, password } = JSON.parse(event.body);
 
     if (!email || !password) {
-      throw new Error("Missing required fields: email and password.");
+      throw new Error("필수 필드가 누락되었습니다: 이메일과 비밀번호를 입력해주세요.");
     }
 
     // Cognito InitiateAuthCommand 실행
@@ -54,20 +54,20 @@ export const handler = async (event) => {
     // 오류 처리
     if (error.name === "UserNotConfirmedException") {
       return createCredentialResponse(400, {
-        error: "User is not confirmed. Please confirm your email first.",
+        error: "사용자가 확인되지 않았습니다. 먼저 이메일을 확인해주세요.",
       });
     } else if (error.name === "NotAuthorizedException") {
       return createCredentialResponse(400, {
-        error: "Invalid email or password. Please try again.",
+        error: "이메일 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.",
       });
     } else if (error.name === "UserNotEnabledException") {
       // 비활성화된 계정 처리
       return createCredentialResponse(403, {
-        error: "Your account is disabled. Please contact support for assistance.",
+        error: "계정이 비활성화되었습니다. 지원팀에 문의해주세요.",
       });
     } else if (error.name === "InvalidParameterException") {
       return createCredentialResponse(400, {
-        error: "Invalid parameters. Please check your input.",
+        error: "유효하지 않은 입력입니다. 입력 값을 확인해주세요.",
       });
     }
 

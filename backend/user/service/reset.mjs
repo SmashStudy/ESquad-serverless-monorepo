@@ -13,7 +13,7 @@ export const handler = async (event) => {
     const { email } = JSON.parse(event.body);
 
     if (!email) {
-      throw new Error("Email is required");
+      throw new Error("이메일이 필요합니다.");
     }
 
     const params = {
@@ -25,7 +25,7 @@ export const handler = async (event) => {
     await client.send(command);
 
     return createResponse(200, {
-      message: "Password reset code sent to email",
+      message: "비밀번호 재설정 코드가 이메일로 전송되었습니다",
     });
   } catch (error) {
     console.error("Password reset request error:", error);
