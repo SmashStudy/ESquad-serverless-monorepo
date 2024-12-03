@@ -23,7 +23,6 @@ import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
-import logoImage from "../../assets/esquad-logo-nbk.png";
 import Tooltip from "@mui/material/Tooltip";
 
 const PostDetailsPage = () => {
@@ -43,7 +42,7 @@ const PostDetailsPage = () => {
   const [isCommentsLoading, setIsCommentsLoading] = useState(true); // 댓글 로딩 상태 추가
 
   const menuOpen = Boolean(menuAnchorEl);
-  const fetchRef = useRef(false); // 중복 호출 방지 플래그
+  const fetchRef = useRef(false);
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
@@ -106,11 +105,10 @@ const PostDetailsPage = () => {
     }
   }, [boardType, postId, createdAt, currentUser]);
 
-  // 댓글 가져오기
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        setIsCommentsLoading(true); // 댓글 로딩 시작
+        setIsCommentsLoading(true);
         const response = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}/comments`,
           { params: { createdAt } }
@@ -122,7 +120,7 @@ const PostDetailsPage = () => {
       } catch (error) {
         console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
       } finally {
-        setIsCommentsLoading(false); // 댓글 로딩 완료
+        setIsCommentsLoading(false);
       }
     };
 
@@ -194,11 +192,10 @@ const PostDetailsPage = () => {
       const token = localStorage.getItem("jwtToken");
 
       if (editingCommentId) {
-        // 댓글 수정
         const updatedComment = {
           content: commentContent,
-          commentId: editingCommentId, // **commentId를 포함해야 합니다.**
-          userEmail: currentUser.email, // 작성자의 이메일 추가
+          commentId: editingCommentId,
+          userEmail: currentUser.email,
         };
 
         await axios.put(
@@ -227,7 +224,6 @@ const PostDetailsPage = () => {
 
         setEditingCommentId(null);
       } else {
-        // 댓글 추가
         const newComment = {
           content: commentContent,
           writer: {
@@ -248,11 +244,11 @@ const PostDetailsPage = () => {
             params: { createdAt },
           }
         );
-        setCommentAlertOpen(true); // 댓글 등록 알림 열기
+        setCommentAlertOpen(true);
       }
 
-      setCommentContent(""); // 댓글 입력 초기화
-      await fetchComments(); // 댓글 목록 새로고침
+      setCommentContent("");
+      await fetchComments();
     } catch (error) {
       console.error("댓글 처리 중 오류 발생:", error);
       alert("댓글 등록/수정에 실패했습니다.");
@@ -261,7 +257,7 @@ const PostDetailsPage = () => {
 
   const handleCancelComment = () => {
     setCommentContent("");
-    setEditingCommentId(null); // 수정 모드 취소
+    setEditingCommentId(null);
   };
 
   const handleEditComment = (comment) => {
@@ -273,7 +269,6 @@ const PostDetailsPage = () => {
     try {
       const token = localStorage.getItem("jwtToken");
 
-      // 댓글 삭제 요청 시 필요한 데이터를 쿼리 매개변수로 전달
       await axios.delete(
         `${getCommunityApi()}/${boardType}/${postId}/comments/${commentId}`,
         {
@@ -282,7 +277,7 @@ const PostDetailsPage = () => {
           },
           params: {
             createdAt,
-            userEmail: currentUser.email, // 쿼리 매개변수로 사용자 이메일 전달
+            userEmail: currentUser.email,
           },
         }
       );
@@ -291,8 +286,8 @@ const PostDetailsPage = () => {
         prevComments.filter((comment) => comment.id !== commentId)
       );
 
-      setDeleteCommentAlertOpen(true); // 댓글 삭제 알림 열기
-      await fetchComments(); // 댓글 목록 새로고침
+      setDeleteCommentAlertOpen(true);
+      await fetchComments();
     } catch (error) {
       console.error("댓글 삭제 중 오류 발생:", error);
       alert("댓글 삭제에 실패했습니다.");
