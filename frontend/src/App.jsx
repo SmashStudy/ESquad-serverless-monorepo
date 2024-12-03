@@ -51,7 +51,7 @@ const theme = createTheme({
         },
         background: {
             default: '#ffffff', // Background color
-            gray: '#e0dddd',
+            paper: '#ffffff',
         },
     },
     typography: {

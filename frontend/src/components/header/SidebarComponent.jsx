@@ -147,7 +147,7 @@ const SidebarComponent = ({
               py: 2,
               pl: sidebarOpen ? 1 : 0,
               "&:hover": {
-                backgroundColor: alpha(theme.palette.background.gray, 0.3),
+                backgroundColor: alpha(theme.palette.background.paper, 0.3),
                 cursor: "pointer",
               },
             }}
