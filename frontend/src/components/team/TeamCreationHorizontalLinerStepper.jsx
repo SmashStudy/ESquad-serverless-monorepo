@@ -41,21 +41,29 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
     const { updateTeams } = useTeams();
 
     useEffect(() => {
-    const fetchEmail = async () => {
-      try {
-        setLoading(true);
-        const email = await getUserEmail();
-        console(`userEmail: ${email}`);
-        setTeamUsers(() => [email]);
-        alert(`teamUsers: ${JSON.stringify(teamUsers)}`);
-      } catch (err) {
-        setError('이메일을 가져오는 중 오류가 발생했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEmail();
-
+        let isMounted = true;
+        const fetchEmail = async () => {
+            try {
+                setLoading(true);
+                const email = await getUserEmail();
+                if (isMounted) {
+                    console.log(`Fetched email: ${email}`);
+                    setTeamUsers([email]); // Trigger a state update
+                }
+            } catch (err) {
+                if (isMounted) {
+                    setError('이메일을 가져오는 중 오류가 발생했습니다.');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+        fetchEmail();
+        return () => {
+            isMounted = false; // Cleanup
+        };
     }, []);
 
     const searchUser = async () => {
@@ -81,7 +89,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
     const handleCreateTeam = async () => {
     const teamForm = {
       teamName: teamName,
-      description: '이 팀은 React와 Serverless 프로젝트를 위한 공간입니다.',
+      description: '',
       userIds: teamUsers,
     };
 
@@ -89,6 +97,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
       setLoading(true);
       console.log('생성예정 팀: ', JSON.stringify(teamForm));
       const newTeam = await createTeam(teamForm);
+      console.log(`newTeam: ${JSON.stringify(newTeam)}`);
       updateTeams(newTeam);
       setTeamId(newTeam.PK);
       return true;
