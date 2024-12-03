@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useTheme, styled } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import { searchBooks } from 'C:/DEV/workspace/GitHub/ESquad-serverless-monorepo/frontend/src/utils/bookApi.js';
+import {searchBooks} from "../../../utils/bookApi.js";
 
 // 날짜 포맷 함수
 const formatDate = (dateStr) => {
