@@ -39,7 +39,7 @@ const PostDetailsPage = () => {
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [likedByUser, setLikedByUser] = useState(false);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(true); // 댓글 로딩 상태 추가
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
   const menuOpen = Boolean(menuAnchorEl);
   const fetchRef = useRef(false);
@@ -521,41 +521,22 @@ const PostDetailsPage = () => {
           {comments.length}
         </Box>
       </Typography>
-
-      {comments.length === 0 ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            mt: 4,
-          }}
-        >
-          <img
-            src={logoUrl}
-            alt="답변 대기 이미지"
-            style={{ width: "100px", height: "100px", marginBottom: "20px" }}
-          />
-          <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
-            답변을 기다리고 있는 질문이에요
-          </Typography>
-          <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
-            첫번째 답변을 남겨보세요!
-          </Typography>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            mb: 2,
-            flexDirection: "column",
-            height: 350,
-            overflow: "hidden",
-            overflowY: "scroll",
-          }}
-        >
-          {comments
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      <Box>
+        {isCommentsLoading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              my: 2,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : comments.length > 0 ? (
+          // 댓글이 있을 경우 렌더링
+          comments
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 최신 댓글이 위로 오도록 정렬
             .map((comment, index) => (
               <Paper
                 key={index}
@@ -597,9 +578,32 @@ const PostDetailsPage = () => {
                   </Box>
                 )}
               </Paper>
-            ))}
-        </Box>
-      )}
+            ))
+        ) : (
+          // 댓글이 없을 경우 "답변 대기" UI 표시
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              mt: 4,
+            }}
+          >
+            <img
+              src={logoUrl}
+              alt="답변 대기 이미지"
+              style={{ width: "100px", height: "100px", marginBottom: "20px" }}
+            />
+            <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
+              답변을 기다리고 있는 질문이에요
+            </Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+              첫번째 답변을 남겨보세요!
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
