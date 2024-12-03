@@ -25,8 +25,10 @@ import AdminPage from "./components/user/AdminPage.jsx";
 import AdminRoute from "./components/google/AdminRoute.jsx";
 import UnauthorizedPage from "./components/google/UnauthorizedPage.jsx";
 import ConfirmPassword from "./components/user/ConfirmPassword.jsx";
-import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx"
+import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx";
 import { decodeJWT } from "./utils/decodeJWT.js";
+import {UserNicknameProvider} from "./components/context/UserNicknameContext.jsx";
+import {UserEmailProvider} from "./components/context/UserEmailContext.jsx";
 
 
 
@@ -110,76 +112,80 @@ function App() {
   // }, []); // 컴포넌트가 처음 렌더링될 때만 실행
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
-          {!isLoggedIn && (
-            <Route path="*" element={<Navigate to="/login" />} />
-          )}
+    <UserNicknameProvider>
+      <UserEmailProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <Routes>
+              {/* 토큰이 없으면 Google Login으로 리다이렉트 */}
+              {!isLoggedIn && (
+                <Route path="*" element={<Navigate to="/login" />} />
+              )}
 
-          <Route path="/login" element={<GoogleLogin />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/logout" element={<GoogleLogout />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/confirm" element={<Confirm />} />
-          <Route path="/reset" element={<RequestPasswordReset />} />
-          <Route path="/confirm/password" element={<ConfirmPassword />} />
+              <Route path="/login" element={<GoogleLogin />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/logout" element={<GoogleLogout />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/confirm" element={<Confirm />} />
+              <Route path="/reset" element={<RequestPasswordReset />} />
+              <Route path="/confirm/password" element={<ConfirmPassword />} />
 
 
-          {/* 보호된 경로 */}
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            }
-          >
-            {/* user */}
-            <Route path="/user/profile" element={<UserProfile />} />
-            <Route path="/user/profile/category" element={<UserStorageUsage />} />
-            <Route path="/user/profile/nickname" element={<Nickname />} />
-            <Route path="/user/profile/layout" element={<Layout />} />
-            
-            {/* admin */}
-            <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
+              {/* 보호된 경로 */}
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                }
+              >
+                {/* user */}
+                <Route path="/user/profile" element={<UserProfile />} />
+                <Route path="/user/profile/category" element={<UserStorageUsage />} />
+                <Route path="/user/profile/nickname" element={<Nickname />} />
+                <Route path="/user/profile/layout" element={<Layout />} />
+                
+                {/* admin */}
+                <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
 
-            {/* 403 접근 금지 페이지 */}
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                {/* 403 접근 금지 페이지 */}
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-            {/* community */}
-            <Route path="community/questions" element={<PostListPage />} />
-            <Route
-              path="community/:boardType/:postId"
-              element={<PostDetailsPage />}
-            />
-            <Route path="community/general" element={<PostListPage />} />
-            <Route path="community/team-recruit" element={<PostListPage />} />
+                {/* community */}
+                <Route path="community/questions" element={<PostListPage />} />
+                <Route
+                  path="community/:boardType/:postId"
+                  element={<PostDetailsPage />}
+                />
+                <Route path="community/general" element={<PostListPage />} />
+                <Route path="community/team-recruit" element={<PostListPage />} />
 
-            {/* team */}
-            <Route path="teams/:teamId" element={<TeamMainPage />}>
-              {" "}
-              {/* 팀 분석 페이지 */}
-              <Route path="study" element={<StudyListPage />} />
-              <Route path="study/:studyId" element={<StudyDetailPage />} />
-              <Route path="book/search" element={<BookListPage />} />
-              <Route path="book/:bookId" element={<BookDetailPage />} />
-              <Route path="questions" element={<PostListPage />} />
-              <Route path="questions/:postId" element={<PostDetailsPage />} />
-            </Route>
-          </Route>
+                {/* team */}
+                <Route path="teams/:teamId" element={<TeamMainPage />}>
+                  {" "}
+                  {/* 팀 분석 페이지 */}
+                  <Route path="study" element={<StudyListPage />} />
+                  <Route path="study/:studyId" element={<StudyDetailPage />} />
+                  <Route path="book/search" element={<BookListPage />} />
+                  <Route path="book/:bookId" element={<BookDetailPage />} />
+                  <Route path="questions" element={<PostListPage />} />
+                  <Route path="questions/:postId" element={<PostDetailsPage />} />
+                </Route>
+              </Route>
 
-          <Route
-            path="*"
-            element={
-              isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+              <Route
+                path="*"
+                element={
+                  isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </ThemeProvider>
+      </UserEmailProvider>
+    </UserNicknameProvider>
   );
 }
 
