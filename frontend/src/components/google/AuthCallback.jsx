@@ -80,11 +80,11 @@ const AuthCallback = () => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '100vh',
-                    backgroundColor: '#f5f5f5',
+                    backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)",
                 }}
             >
                 <img
-                    src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-bk.png"
+                    src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
                     alt="Esquad Logo"
                     style={{ width: '120px', marginBottom: '20px' }}
                 />

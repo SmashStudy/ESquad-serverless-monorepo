@@ -178,11 +178,10 @@ const Login = () => {
   }
   50% {
     transform: translateY(-50px); // 위로 50px 이동
-  }
-`;
+  }`;
 
   return (
-    <Grid container sx={{ height: "100vh" }}>
+    <Grid container sx={{ height: "100vh", backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)", }}>
       {/* Left Section */}
       <Grid
         item
@@ -192,7 +191,6 @@ const Login = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "grey.100",
           padding: 4,
         }}
       >
@@ -361,26 +359,30 @@ const Login = () => {
 
       {/* Right Section */}
       <Grid
-  item
-  xs={12}
-  lg={6}
-  sx={{
-    display: { xs: "none", lg: "flex" },
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "grey.100",
-  }}
->
-  <Box
-    sx={{
-      width: 240,
-      height: 240,
-      backgroundImage: "linear-gradient(to top right, #7e57c2, #ec407a)",
-      borderRadius: "50%",
-      animation: `${verticalMove} 2s infinite ease-in-out`,
-    }}
-  />
-</Grid>
+        item
+        xs={12}
+        lg={6}
+        sx={{
+          display: { xs: "none", lg: "flex" },
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          sx={{
+            width: 240,
+            height: 240,
+            backgroundImage: "linear-gradient(to top right, #7e57c2, #ec407a)",
+            // #E2A9F3, #5858FA
+            borderRadius: "50%",
+            animation: `${verticalMove} 2s infinite ease-in-out`,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+        </Box>
+      </Grid>
     </Grid>
   );
 };
