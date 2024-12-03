@@ -13,14 +13,15 @@ plugins:
 
 custom:
   dotenv:
-    path: .env.dev
-    overwrite: true
+    - path: .env.dev
+      overwrite: true
 
 provider:
   name: aws
   runtime: nodejs20.x
   stage: ${opt:stage, 'dev'}  # --stage 옵션이 없으면 dev로 기본값 설정
   region: ${opt:region, 'us-east-1'}
+  versionFunctions: false
   iam:
     role:
       statements:
@@ -57,8 +58,48 @@ provider:
     region: ${self:provider.region}
     app: ${self:app}
     socket_api_gateway_id: !Ref WebsocketApi # WebSocket API ID 추가
-    MESSAGES_TABLE_NAME: esquad-chat-messages-${self:provider.stage}
+    MESSAGES_TABLE_NAME: esquad-chat-message-${self:provider.stage}
     USERLIST_TABLE_NAME: esquad-chat-userlist-${self:provider.stage}
+    TEAM_TABLE_NAME: esquad-team-${self:provider.stage}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+      Resource:
+        - !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebsocketApi}/*"
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE_NAME}
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE_NAME}/stream/*
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE_NAME}/index/*
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:MESSAGE_TABLE_NAME}
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:USERLIST_TABLE_NAME}
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:USERLIST_TABLE_NAME}/index/room_id-user_id-index
+    - Effect: Allow
+      Action:
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:DescribeStream
+        - dynamodb:ListStreams
+      Resource:
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE_NAME}/stream/*
+    - Effect: Allow
+      Action:
+        - logs:*
+        - ssm:*
+        - execute-api:*
+        - sqs:*
+      Resource:
+        - arn:aws:dynamodb:${env:CHATTING_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE_NAME}/stream/*
+
 #  deploymentBucket: # 배포에 사용할 S3 버킷 설정
 #    name: ${self:service}-deploy-${self:provider.stage}
 #    serverSideEncryption: AES256
@@ -162,16 +203,25 @@ functions:
       patterns:
         - service/sendMessage.mjs
         - lib/ddbUtil.mjs
-        - node_modules/**
+#        - node_modules/**
 
   # 팀정보 채팅 커넥트 함수
   createTeamChatRoom:
     handler: service/createTeamChatRoom.handler
     events:
       - http:
-          cors: true
           path: /team
-          method: post
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+              - X-Amz-Date
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false
+
       - stream:
           type: dynamodb
           arn: ${env:TEAM_TABLE_STREAM_ARN}
@@ -210,6 +260,7 @@ resources:
                   Resource: "*"
                 - Effect: Allow # DynamoDB 스트림 읽기 권한 추가
                   Action:
+                    - dynamodb:*
                     - dynamodb:GetRecords
                     - dynamodb:GetShardIterator
                     - dynamodb:DescribeStream
@@ -223,7 +274,7 @@ resources:
     chatappChatMessages: # 채팅 메시지 DynamoDB 테이블
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: esquad-chat-messages-${self:provider.stage}
+        TableName: esquad-chat-message-${self:provider.stage}
         AttributeDefinitions:
           - AttributeName: room_id
             AttributeType: S

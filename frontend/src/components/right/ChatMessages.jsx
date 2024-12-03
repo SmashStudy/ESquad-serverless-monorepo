@@ -3,12 +3,13 @@ import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
+import {getChatWebSocketApi} from "../../utils/apiConfig.js";
 
-const wsUrl = "wss://ws.api.esquad.click";
+const wsUrl = getChatWebSocketApi();
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
     const [messageInput, setMessageInput] = useState("");
     const [editingMessage, setEditingMessage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -16,6 +17,7 @@ function ChatMessages({currentChatRoom}) {
     const [previewUrl, setPreviewUrl] = useState("");
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const messageEndRef = useRef(null);
+    const socketRef = useRef(null);
 
     // 유저 더미 데이터
     const userInfo = { id: 28, username: "esquadback"}  // 더미 유저
@@ -28,9 +30,9 @@ function ChatMessages({currentChatRoom}) {
         if(currentChatRoom && room_id) {
             connectWebSocket(room_id);
         }
-        return () => {
-            if(socket) { socket.close(); }
-        }
+        // return () => {
+        //     if(socket) { socket.close(); }
+        // }
     }, [currentChatRoom, room_id]);
 
     const sortMessages = (messages) => {
@@ -59,25 +61,50 @@ function ChatMessages({currentChatRoom}) {
     // 웹소켓 연결 함수
     const connectWebSocket = (room_id) => {
         const newSocket = new WebSocket(`${wsUrl}?room_id=${room_id}&user_id=${user_id}`);
-        setSocket(newSocket);
 
         newSocket.onopen = () => {
+            console.log("websocket 연결됨")
             loadMessages(room_id);
         };
         newSocket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
+                handleIncomingMessage(data);
             } catch (error) {
                 console.error("Invalid JSON received: " + event.data);
             }
         };
         newSocket.onerror = (error) => {
             console.error("WebSocket 오류:", error);
+            socketRef.current = null;
         };
         newSocket.onclose = () => {
             console.error("WebSocket 연결 종료");
+            socketRef.current = null;
         }
+
+        socketRef.current = newSocket;
     }
+
+    const handleIncomingMessage = (data) => {
+        if (data.type === "newMessage") {
+            // 새로운 메시지 추가
+            setMessages((prev) => sortMessages([...prev, data]));
+        } else if (data.type === "updateMessage") {
+            // 메시지 수정
+            setMessages((prev) =>
+                prev.map((msg) =>
+                    msg.timestamp === data.timestamp ? { ...msg, ...data } : msg
+                )
+            );
+        } else if (data.type === "deleteMessage") {
+            // 메시지 삭제
+            setMessages((prev) => prev.filter((msg) => msg.timestamp !== data.timestamp));
+        } else {
+            console.warn("알 수 없는 메시지 유형:", data);
+        }
+        scrollToBottom(); // UI 스크롤 유지
+    };
 
     const scrollToBottom = () => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -111,7 +138,7 @@ function ChatMessages({currentChatRoom}) {
                     isFile: true
                 };
                 // 웹소켓으로 전송
-                await sendMessageAPI(socket, fileMessage);
+                await sendMessageAPI(socketRef, fileMessage);
 
                 // 메시지 상태 업데이트
                 setMessages((prevMessages) => [...prevMessages, fileMessage]);
@@ -140,10 +167,10 @@ function ChatMessages({currentChatRoom}) {
                     message: messageContent,
                     room_id,
                     user_id,
-                    timestamp,
+                    timestamp: timestamp
                 };
                 // sendMessageAPI 호출 전후 로그 추가
-                await sendMessageAPI(socket, textMessage);
+                await sendMessageAPI(socketRef, textMessage);
                 setMessages((prevMessages) => [...prevMessages, textMessage]);
             }
             setMessageInput(""); // 메시지 입력 초기화

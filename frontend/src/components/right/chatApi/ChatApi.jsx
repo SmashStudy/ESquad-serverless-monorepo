@@ -5,10 +5,18 @@ const apiUrl = getChatApi();
 
 const apiClient = axios.create({
     baseURL: apiUrl,
-    headers: {
-        "Content-Type": "application/json"
-    }
 });
+
+// 팀 목록 가져오기
+export const fetchTeamListAPI = async () => {
+    try{
+        const response = await apiClient.get(`/team`);
+        return response.data;
+    } catch (error) {
+      console.error("팀 목록 가져오기 실패: " , error.message);
+      throw error;
+    }
+}
 
 // 메시지 조회
 export const fetchMessageAPI = async (room_id) => {
@@ -26,7 +34,7 @@ export const fetchMessageAPI = async (room_id) => {
 // 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
-        socket.send(JSON.stringify(messageData));
+        socket.current.send(JSON.stringify(messageData));
 
         // 파일 메시지 처리
         if (messageData.fileKey) {

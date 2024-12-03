@@ -1,0 +1,30 @@
+{
+  "Records": [
+    {
+      "eventID": "1",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-east-1",
+      "dynamodb": {
+        "Keys": {
+          "PK": { "S": "TEAM#df4cfa2f-3043-4c91-bf89-0a701c8fd874" },
+          "SK": { "S": "TEAM#df4cfa2f-3043-4c91-bf89-0a701c8fd874" }
+        },
+        "NewImage": {
+          "PK": { "S": "TEAM#df4cfa2f-3043-4c91-bf89-0a701c8fd874" },
+          "SK": { "S": "TEAM#df4cfa2f-3043-4c91-bf89-0a701c8fd874" },
+          "teamName": { "S": "TEST_Team111" },
+          "itemType": { "S": "Team" },
+          "createdAt": { "S": "2024-12-02T02:49:36.065Z" },
+          "description": { "S": "설명1" },
+          "updatedAt": { "S": "2024-12-02T02:49:36.065Z" }
+        },
+        "StreamViewType": "NEW_AND_OLD_IMAGES",
+        "SequenceNumber": "111",
+        "SizeBytes": 112
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-east-1:430118855167:table/esquad-team-local/stream/2024-12-02T02:14:07.896"
+    }
+  ]
+}

@@ -58,3 +58,26 @@ button {
 		display: block; /* 사이드바가 숨겨져 있을 때 서랍을 열 수 있는 버튼 */
 	}
 }
+
+@keyframes fly {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(-100px, -50px) rotate(45deg);
+    }
+    50% {
+        transform: translate(100px, 50px) rotate(90deg);
+    }
+    75% {
+        transform: translate(-50px, 100px) rotate(135deg);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}
+
+.flying * {
+    animation: fly 5s infinite ease-in-out;
+    position: relative;
+}
