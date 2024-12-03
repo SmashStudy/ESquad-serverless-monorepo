@@ -46,6 +46,7 @@ const HomeContent = () => {
 
     const handleTeamSelect = (team) => setSelectedTeam(team);
 
+    alert(selectedTeam);
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
             <CssBaseline />
@@ -55,6 +56,7 @@ const HomeContent = () => {
                 handleSidebarToggle={handleSidebarToggle}
                 selectedTab={selectedTab}
                 onTabChange={handleTabChange}   // Appbar 탭 변경 : 0 / 1
+                changeSelectedTeam={setSelectedTeam}    // 유저가 선택한 팀 PK 설정 -> 사이드바에 뿌려주기 위함
                 toggleChatDrawer={toggleChatDrawer}
             />
 

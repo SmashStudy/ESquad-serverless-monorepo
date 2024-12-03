@@ -78,11 +78,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Appbar = ({
   handleSidebarToggle,
   selectedTab, onTabChange,
-  toggleChatDrawer,
+  toggleChatDrawer, changeSelectedTeam
 }) => {
   const theme = useTheme();
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const { teams, updateTeams } = useTeams();
+  const {teams, updateTeams} = useTeams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
@@ -231,10 +230,10 @@ const Appbar = ({
     setTeamAnchorEl(null);
   };
 
-  const handleSelectedTeam = useCallback((teamId) => {
-    setSelectedTeam(teamId);
+  const handleSelectedTeam = (teamId) => {
+    changeSelectedTeam((prev) => teamId);
     if(selectedTab === 0) onTabChange(1);
-  }, [selectedTeam]);
+  };
 
   // Handle account menu open/close
   const handleAccountClick = (event) => {
