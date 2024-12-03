@@ -19,8 +19,8 @@ export class BookService {
 
     try {
       await dynamoDb.send(command);
-      console.log(`Book with ID ${bookDto.id} saved successfully.`);
-      return bookDto.id;
+      console.log(`Book with ID ${bookDto.isbn} saved successfully.`);
+      return `BOOK#${bookDto.isbn}`;
     } catch (error) {
       console.error("Failed to save the book:", error);
       throw new Error("BookCreateException");
