@@ -2,6 +2,7 @@ import axios from 'axios';
 import {getStorageApi} from "../../../utils/apiConfig.js";
 
 const storageApi = getStorageApi();
+const token = localStorage.getItem("jwtToken");
 
 export const fetchFiles = async (room_id) => {
     try {
@@ -10,6 +11,7 @@ export const fetchFiles = async (room_id) => {
                 targetId: room_id,
                 targetType: 'CHAT',
             },
+            headers: { Authorization: `Bearer ${token}` }
         });
 
         const fileMessages = (response.data.items || []).map((file) => ({
@@ -42,10 +44,13 @@ export const uploadFile = async ({ file, room_id, user_id}) => {
                 fileKey: `files/${uniqueFileName}`,
                 contentType: file.type,
             },
-            { headers: { 'Content-Type': 'application/json' } }
+            { headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+            }}
         );
         await axios.put(presignedResponse.data.presignedUrl, file, {
-            headers: { 'Content-Type': file.type },
+            headers: { 'Content-Type': file.type, Authorization: `Bearer ${token}`} ,
         });
         const metadataResponse = await axios.post(
             `${storageApi}/store-metadata`,
@@ -63,7 +68,7 @@ export const uploadFile = async ({ file, room_id, user_id}) => {
                     createdAt: timestamp,
                 },
             },
-            {headers: {'Content-Type': 'application/json'}}
+            {headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}}
         );
         const { fileKey, originalFileName, storedFileName, contentType, fileSize } = metadataResponse.data.data;
 
@@ -86,7 +91,7 @@ export const deleteFile = async (fileKey) => {
         const presignedResponse = await axios.post(
             `${storageApi}/presigned-url`,
             { action: 'deleteObject', fileKey: fileKey },
-            { headers: { 'Content-Type': 'application/json' } }
+            { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } }
         );
 
         await axios.delete(presignedResponse.data.presignedUrl);
@@ -101,7 +106,7 @@ export const downloadFile = async (fileKey, originalFileName) => {
         const presignedResponse = await axios.post(
             `${storageApi}/presigned-url`,
         { action: 'getObject', fileKey: fileKey },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } }
     );
 
         const downloadResponse = await axios.get(

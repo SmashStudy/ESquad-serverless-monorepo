@@ -14,7 +14,7 @@ const WEBSOCKET_ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 export const handler = async (event) => {
@@ -128,7 +128,7 @@ const handleStreamEvent = async (event) => {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Headers": "Content-Type,Authorization",
         },
         body: JSON.stringify({ message: "Messages sent successfully" }),
     };

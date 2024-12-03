@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import ChatMessages from './ChatMessages.jsx';
 import {fetchTeamListAPI} from "./chatApi/ChatApi.jsx";
+import {getUserApi} from "../../utils/apiConfig.js";
 
 const ChatWindow = () => {
     const theme = useTheme();
@@ -10,30 +11,48 @@ const ChatWindow = () => {
     const [currentChatRoom, setCurrentChatRoom] = useState(null); // 현재 선택된 채팅방
     const [isLoading, setIsLoading] = useState(true); // 로딩 상태
     const [error, setError] = useState(null); // 에러 상태
+    const [userInfo, setUserInfo] = useState(null);
 
     // 팀 데이터 가져오는 함수
     const fetchTeams = async () => {
         try {
             setIsLoading(true);
-            setError(null);
-
-            const teamData = await fetchTeamListAPI(); // API 호출
+            const teamData = await fetchTeamListAPI();
             setTeams(teamData);
-            setCurrentChatRoom(teamData[0] || null); // 첫 번째 팀을 기본값으로 설정
+            setCurrentChatRoom(teamData[0] || null); // 첫 번째 팀 선택
         } catch (error) {
-            console.error("팀 목록 가져오기 실패:", error.message);
-            setError("팀 데이터를 불러오는 중 오류가 발생했습니다.");
+            console.error('팀 목록 가져오기 실패:', error.message);
+            setError('팀 데이터를 불러오는 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);
         }
     };
 
+    const fetchUserInfo = async () => {
+        try {
+            const userData = await getUserApi(); // 사용자 정보 API 호출
+            setUserInfo(userData);
+        } catch (error) {
+            console.error('사용자 정보 가져오기 실패:', error.message);
+        }
+    };
+
     useEffect(() => {
+        const fetchTeams = async () => {
+            setTeams([
+                { id: "team1", teamName: "삐삐삐" },
+                { id: "team2", teamName: "삐루삐로" },
+            ]);
+            setCurrentChatRoom({ id: "team1", teamName: "삐삐삐" });
+        };
+
         fetchTeams();
     }, []);
 
     const handleChatRoomSelect = (room) => {
-        setCurrentChatRoom(room);
+        if (room.id !== currentChatRoom?.id) {
+            setCurrentChatRoom(room);
+        }
     };
 
     return (
@@ -117,7 +136,7 @@ const ChatWindow = () => {
                         }}
                     >
                         {currentChatRoom ? (
-                            <ChatMessages currentChatRoom={currentChatRoom} />
+                            <ChatMessages currentChatRoom={currentChatRoom} userInfo={userInfo} />
                         ) : (
                             <Typography variant="h6" color={theme.palette.text.secondary}>
                                 채팅방을 선택해주세요.
