@@ -1,17 +1,16 @@
 import axios from 'axios';
-import { createResponse } from '../utils/responseHelper.mjs';
-import { BookService } from "../services/bookService.mjs";
 
-const bookService = new BookService();
+import { createResponse } from '../utils/responseHelper.mjs';
+
 /**
  * 네이버 책 API를 사용하여 책 조회
  */
 const searchBooksToQuery = async (query) => {
     const apiUrl = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(query)}`;
-    
+
     const clientId = process.env.CLIENT_ID;
     const clientSecret = process.env.CLIENT_SECRET;
-    
+
     if (!clientId || !clientSecret) {
         console.error("Error: CLIENT_ID 또는 CLIENT_SECRET이 설정되지 않았습니다.");
         throw new Error("Missing API credentials");
