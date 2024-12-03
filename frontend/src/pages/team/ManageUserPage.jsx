@@ -9,7 +9,7 @@ import {
     checkTeamRole,
     addTeamMember,
     deleteTeamMember,
-  } from '../../utils/TeamApi';
+  } from '../../utils/team/TeamApi.jsx';
 
 const ManageUserPage = () => {
     const { selectedTeam } = useOutletContext();
