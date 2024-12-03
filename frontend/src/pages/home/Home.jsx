@@ -44,8 +44,6 @@ const HomeContent = () => {
         if(tabIndex !== 1) setSelectedTeam(null);   // 커뮤니티 선택 시 선택 팀 초기화
     }
 
-    const handleTeamSelect = (team) => setSelectedTeam(team);
-
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
             <CssBaseline />
@@ -87,7 +85,6 @@ const HomeContent = () => {
                     handleDrawerClose={handleDrawerClose}
                     selectedTab={selectedTab}
                     selectedTeam={selectedTeam}
-                    onTeamSelect={handleTeamSelect}
                 />
 
                 {/* Home Content Area - Sidebar 제외한 나머지 body 영역 */}
