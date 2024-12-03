@@ -84,7 +84,7 @@ const AppBarComponent = ({
   toggleChatDrawer,
 }) => {
   const theme = useTheme();
-  const { teams, selectedTeam, updateTeams, changeSelectedTeam } = useTeams();
+  const { teams, selectedTeam, updateTeams, updateSelectedTeam } = useTeams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
@@ -374,9 +374,9 @@ const AppBarComponent = ({
                   ) : (
                       <>
                           {teams.map((team, index) => (
-                              <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                              <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={team.PK}>
                                 <ListItemButton
-                                  onClick={() => changeSelectedTeam(index)}
+                                  onClick={() => updateSelectedTeam(team.PK)}
                                   sx={{
                                     "&:hover": {
                                       cursor: "pointer",

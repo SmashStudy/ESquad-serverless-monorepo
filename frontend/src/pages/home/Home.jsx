@@ -20,7 +20,7 @@ const HomeContent = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const {
-        teams, selectedTeam, fetchTeams, updateSelectedTeam, updateTeams,
+        teams, selectedTeam, updateSelectedTeam, updateTeams,
   } = useTeams();
 
   const toggleChatDrawer = () => {
@@ -43,16 +43,16 @@ const HomeContent = () => {
   }
 
   // 목록에서 선택된 팀
-  const changeSelectedTeam = (i) => {
-    const newSelectedTeam = teams[i];
-    if (!newSelectedTeam) {
-      console.warn('선택된 팀이 존재하지 않습니다.');
-      return;
-    }
-
-    updateSelectedTeam(newSelectedTeam);
-    handleTab(1);
-  };
+  // const changeSelectedTeam = (i) => {
+  //   const newSelectedTeam = teams[i];
+  //   if (!newSelectedTeam) {
+  //     console.warn('선택된 팀이 존재하지 않습니다.');
+  //     return;
+  //   }
+  //
+  //   updateSelectedTeam(newSelectedTeam);
+  //   handleTab(1);
+  // };
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
@@ -119,7 +119,8 @@ const HomeContent = () => {
               height: isMediumScreen ? '60%' : '100%',
             }}
           >
-            <Outlet context={{ selectedTeam, updateSelectedTeam, handleTab, updateTeams }}/>
+            {/*<Outlet context={{ selectedTeam, updateSelectedTeam, handleTab, updateTeams }}/>*/}
+              <Outlet/>
           </Box>
 
           {/* Right Section - Chat Area */}

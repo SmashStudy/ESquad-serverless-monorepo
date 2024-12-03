@@ -33,14 +33,14 @@ const TeamsProvider = ({ children }) => {
                 : [updatedTeam, ...prevTeams];;
         });
 
-        if (selectedTeam?.PK === updatedTeam.PK) {
-            setSelectedTeam(updatedTeam);
-        }
+        // if (selectedTeam?.PK === updatedTeam.PK) {
+        //     setSelectedTeam(updatedTeam);
+        // }
     }, [selectedTeam]);
 
     const updateSelectedTeam = useCallback((updatedTeam) => {
         setSelectedTeam(updatedTeam);
-    }, []);
+    }, [selectedTeam]);
 
     // Provider 가 마운트될 때 자동 team fetch
     useEffect(() => {

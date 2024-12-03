@@ -17,16 +17,12 @@ export const getTeamIdsAndNames = async () => {
 };
 
 // 팀 프로필 가져오기
-export const getTeamProfiles = async (teamIds) => {
-  const profiles = await Promise.all(
-    teamIds.map(async (id) => {
-      const response = await TeamApi.get(`/${encodeURIComponent(id)}`);
-      console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
-      const profile = response.data.body;
-      return typeof profile === "string" ? JSON.parse(profile) : profile;
-    })
-  );
-  return profiles||[];
+export const getTeamProfiles = async (teamId) => {
+  const response = await TeamApi.get(`/${encodeURIComponent(teamId)}`);
+  console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
+  return response.data.body;
+  // return typeof profile === "string" ? JSON.parse(profile) : profile;
+  // return profiles||[];
 };
 
 // 모든 팀 데이터 가져오기

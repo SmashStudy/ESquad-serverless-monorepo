@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import TeamNameInput from './stepfunction/TeamNameInput.jsx';
 import ConfirmationStep from './stepfunction/ConfirmationStep.jsx';
 import TeamUserManagement from './stepfunction/TeamUserManagement.jsx';
