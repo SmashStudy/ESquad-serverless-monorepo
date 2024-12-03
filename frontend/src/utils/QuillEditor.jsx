@@ -5,9 +5,9 @@ import "react-quill/dist/quill.snow.css";
 const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
   return (
     <ReactQuill
-      value={value || ""} // value가 null이나 undefined일 경우 빈 문자열로 대체
+      value={value || ""} // null이나 undefined를 방지
       onChange={(content) => onChange(content)} // 변경된 내용 전달
-      placeholder={placeholder} // 플레이스홀더
+      placeholder={placeholder}
       modules={{
         toolbar: [
           ["bold", "italic", "underline", "strike"], // 텍스트 포맷 옵션
@@ -27,10 +27,11 @@ const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
         "image",
       ]}
       style={{
-        height: "300px",
+        height: "400px",
+        width: "100%",
         backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
+        padding: "10px", // 내부 패딩 추가
+        border: "none", // 내부 테두리 제거
       }}
     />
   );

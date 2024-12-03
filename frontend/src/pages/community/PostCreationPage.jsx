@@ -187,13 +187,28 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 variant="standard"
                 placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
                 onKeyDown={handleTagKeyDown}
-                sx={{ width: "100%", p: 1 }}
+                sx={{
+                  width: "100%",
+                  p: 1,
+                  "& .MuiInput-underline:before": {
+                    borderBottom: "1px solid #ccc",
+                  },
+                  "& .MuiInput-underline:after": {
+                    borderBottom: "none", //
+                  },
+                  "&:hover .MuiInput-underline:before": {
+                    borderBottom: "1px solid #ccc",
+                  },
+                  "& .Mui-focused .MuiInput-underline:after": {
+                    borderBottom: "none",
+                  },
+                }}
               />
             )}
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, px: 0 }}>
           <QuillEditor
             value={content || ""}
             onChange={(value) => {
