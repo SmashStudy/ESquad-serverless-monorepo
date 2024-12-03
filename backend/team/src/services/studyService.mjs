@@ -1,7 +1,7 @@
-import { QueryCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoDb, TEAM_TABLE } from "../utils/dynamoClient.mjs";
 import { v4 as uuidv4 } from "uuid";
 
+const { QueryCommand, PutCommand } = dynamoDb;
 export class StudyService {
     async createStudy(teamId, bookId, studyData) {
         const studyPageId = `STUDY#${uuidv4()}`;
