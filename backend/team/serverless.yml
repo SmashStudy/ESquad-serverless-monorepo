@@ -96,7 +96,7 @@ functions:
             headers:
               - Content-Type
               - Authorization
-              - X-Requested-With
+
   createTeam:
     handler: src/handlers/teamHandler.createTeam
     events:
@@ -109,7 +109,7 @@ functions:
             headers:   # 클라이언트에서 허용되는 헤더를 지정
               - Content-Type
               - Authorization
-              - X-Requested-With
+
   checkTeamName:
     handler: src/handlers/teamHandler.checkTeamName
     events:
@@ -122,7 +122,6 @@ functions:
             headers:
               - Content-Type
               - Authorization
-              - X-Requested-With
 
   getTeamProfile:
     handler: src/handlers/teamHandler.getTeamProfile
@@ -162,6 +161,7 @@ functions:
           path: /{teamId}/settings
           method: delete
           cors: true
+
   updateTeamUsers:
     handler: src/handlers/teamUserHandler.updateTeamUsers
     events:
@@ -169,6 +169,7 @@ functions:
           path: /{teamId}/setting/users
           method: put
           cors: true
+
   searchBooks:
     handler: src/handlers/bookHandler.searchBooks
     events:
@@ -176,6 +177,7 @@ functions:
           path: /book/search
           method: get
           cors: true
+
   createStudy:
     handler: src/handlers/studyHandler.createStudy
     events:
