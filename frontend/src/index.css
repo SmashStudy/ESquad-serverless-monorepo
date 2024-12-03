@@ -5,7 +5,7 @@ body {
 	flex-direction: column; /* Avoid conflicting with child flex settings */
 	min-height: 100vh;
 	box-sizing: border-box; /* Ensure padding is included in total width/height calculations */
-	background-color: #f0f0f0; /* MUI 테마와 동일한 배경색 */
+	background-color: #ffffff; /* MUI 테마와 동일한 배경색 */
 	font-family: 'AppleSDGothicNeo', 'Noto Sans KR', sans-serif; /* 글로벌 폰트 설정 */
 }
 

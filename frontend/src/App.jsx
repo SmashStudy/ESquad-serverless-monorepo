@@ -50,8 +50,7 @@ const theme = createTheme({
             main: '#f51738',
         },
         background: {
-            default: '#F0F0F0', // Background color
-            paper: '#FFFFFF', // Sub color for cards
+            default: '#ffffff', // Background color
             gray: '#e0dddd',
         },
     },
