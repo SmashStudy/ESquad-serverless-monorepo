@@ -12,8 +12,16 @@ import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
 import UserStorageUsage from "./components/user/UserStorageUsage";
-import SignUp from './components/google/SignUp.jsx';
-import Confirm from './components/google/EmailVerification.jsx'
+import Nickname from "./components/user/UserNickname.jsx";
+import Layout from "./components/user/Layout.jsx";
+import SignUp from "./components/google/SignUp.jsx";
+import Confirm from "./components/google/EmailVerification.jsx"
+import PrivateRoute from "./components/user/PrivateRoute.jsx";
+import AdminPage from "./components/user/AdminPage.jsx";
+import AdminRoute from "./components/google/AdminRoute.jsx";
+import UnauthorizedPage from "./components/google/UnauthorizedPage.jsx";
+import ConfirmPassword from "./components/user/ConfirmPassword.jsx";
+import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx"
 import GoogleLogin from './components/google/GoogleLogin.jsx';
 import AuthCallback from './components/google/AuthCallback.jsx';
 import GoogleLogout from './components/google/GoogleLogout.jsx';
@@ -58,9 +66,8 @@ function App() {
     const token = localStorage.getItem("jwtToken"); // 로컬 스토리지에서 JWT 토큰 확인
     if (token) {
       setIsLoggedIn(true); // 토큰이 있으면 로그인 상태로 설정
-    } else {
-      setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
     }
+    setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
   }, []); // 컴포넌트가 처음 렌더링될 때만 실행
 
   return (
@@ -78,13 +85,30 @@ function App() {
           <Route path="/logout" element={<GoogleLogout />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/confirm" element={<Confirm />} />
+          <Route path="/reset" element={<RequestPasswordReset />} />
+          <Route path="/confirm/password" element={<ConfirmPassword />} />
 
-          <Route path="/" element={<Home />}>
+
+          {/* 보호된 경로 */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          >
             {/* user */}
             <Route path="/user/profile" element={<UserProfile />} />
             <Route path="/user/profile/category" element={<UserStorageUsage />} />
             <Route path="/user/profile/nickname" element={<Nickname />} />
             <Route path="/user/profile/layout" element={<Layout />} />
+
+            {/* admin */}
+            <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
+
+            {/* 403 접근 금지 페이지 */}
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* community */}
             <Route path="community/questions" element={<PostListPage />} />
