@@ -8,7 +8,7 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import { getCommunityApi } from "../../utils/apiConfig";
-import {useTeams} from "../../context/TeamContext.jsx";
+import { useTeams } from "../../context/TeamContext.jsx";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -116,7 +116,6 @@ const PostListPage = ({ isSmallScreen }) => {
     fetchPosts(true); // 새로 데이터 fetch
   };
 
-  alert(JSON.stringify(teams));
   return (
     <Box sx={{ mb: 2, height: "100%", width: "100%", overflow: "auto" }}>
       {/* Filters and Search */}
