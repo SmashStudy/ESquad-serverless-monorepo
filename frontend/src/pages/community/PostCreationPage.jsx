@@ -7,12 +7,9 @@ import {
   InputBase,
   Chip,
   TextField,
-  IconButton,
 } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { Autocomplete } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 
@@ -29,7 +26,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
-  const [file, setFile] = useState(null);
 
   // 유저 정보 가져오기
   useEffect(() => {
@@ -78,7 +74,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setTitle(""); // 제목 초기화
     setContent(""); // 내용 초기화
     setTags([]); // 태그 초기화
-    setFile(null); // 첨부 파일 초기화
     setIsDraft(false); // 드래프트 상태 초기화
   };
   const renderTabContent = () => {
@@ -258,19 +253,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     );
   };
 
-  const handleFileUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setIsDraft(true);
-    }
-  };
-
-  const handleFileDelete = () => {
-    setFile(null);
-    setIsDraft(true);
-  };
-
   const handleSubmit = async () => {
     if (!title.trim()) {
       alert("제목을 입력해주세요.");
@@ -351,28 +333,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       </Box>
 
       {renderTabContent()}
-
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
-        <Button
-          variant="contained"
-          component="label"
-          startIcon={<AttachFileIcon />}
-          sx={{ backgroundColor: theme.palette.primary.main, color: "#fff" }}
-        >
-          파일 첨부
-          <input type="file" hidden onChange={handleFileUpload} />
-        </Button>
-        {file && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2">{`${file.name} (${(
-              file.size / 1024
-            ).toFixed(2)} KB)`}</Typography>
-            <IconButton onClick={handleFileDelete} size="small">
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        )}
-      </Box>
 
       <Box
         sx={{ display: "flex", justifyContent: "space-between", mt: 3, px: 1 }}
