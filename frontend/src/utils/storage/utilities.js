@@ -6,6 +6,19 @@ import {getMimeType} from "./getMimeType.js";
 const storageApi = getStorageApi();
 const userApi = getUserApi();
 
+export const fetchPreview = async (fileKey, setPreviewUrl) => {
+  if (fileKey) {
+    try {
+      const response = await axios.get(
+          `${storageApi}/${encodeURIComponent(fileKey)}`);
+      const url = response.data.presignedUrl
+      setPreviewUrl(url);
+    } catch (error) {
+      console.error("미리보기 presigned URL 요청 실패:", error);
+    }
+  }
+};
+
 export const fetchFiles = async (targetId, targetType, limit = 5,
     currentPage = 1,
     lastEvaluatedKeys = null, setUploadedFiles = () => {
@@ -105,7 +118,8 @@ export const handleFileUpload = async (
           userEmail: email,
           userNickname: nickname,
           fileSize: selectedFile.size,
-          contentType: getMimeType(selectedFile.name),
+          contentType: selectedFile ? selectedFile.type : getMimeType(
+              selectedFile.name),
           actualType: selectedFile.type,
           createdAt: getFormattedDate(),
         },

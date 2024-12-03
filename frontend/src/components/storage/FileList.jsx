@@ -1,24 +1,38 @@
-import React from 'react';
+import React, {memo, useState} from 'react';
 import {
   List,
   ListItem,
   Box,
   Typography,
   IconButton,
-  ListItemIcon
+  ListItemIcon, Dialog, DialogContent
 } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PropTypes from 'prop-types';
 import {formatFileSize} from "../../utils/fileFormatUtils.js";
-const FileList = ({
+import FilePreview from "./FilePreview.jsx";
+import ImageIcon from '@mui/icons-material/Image';
+
+const FileList = memo(({
   files,
   email,
   onFileDownload,
   onFileDelete,
-    theme
+  theme
 }) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewFileKey, setPreviewFileKey] = useState(null); // 클릭된 파일 키 저장
+
+  const handlePreviewOpen = (fileKey) => {
+    setPreviewFileKey(fileKey);
+    setIsPreviewOpen(true);
+  };
+  const handlePreviewClose = () => {
+    setPreviewFileKey(null);
+    setIsPreviewOpen(false);
+  };
   return (
       <List>
         {files && files.length > 0 ? (
@@ -59,6 +73,31 @@ const FileList = ({
                       >
                         {file.originalFileName}
                       </Typography>
+                      {file.contentType?.startsWith("image/") && (
+                          <Typography
+                              variant="body2"
+                              color="primary"
+                              sx={{
+                                marginLeft: "8px",
+                                cursor: "pointer",
+                                marginTop: "4px"
+                              }}
+                              onClick={() => handlePreviewOpen(file.fileKey)}
+                          >
+                            <ImageIcon/>
+                          </Typography>
+                      )
+                      }
+                      {file.fileKey === previewFileKey && (
+                          <Dialog open={isPreviewOpen}
+                                  onClose={handlePreviewClose}>
+                            <DialogContent>
+                              <FilePreview
+                                  fileKey={file.fileKey}
+                              />
+                            </DialogContent>
+                          </Dialog>
+                      )}
                     </Box>
                   </Box>
 
@@ -127,27 +166,32 @@ const FileList = ({
                     </Box>
                     <Box sx={{display: 'flex', gap: 1}}>
                       <Box>
-                      <IconButton
-                          edge="end"
-                          aria-label="download"
-                          sx ={{ color:theme.palette.success.main }}
-                          onClick={() => onFileDownload(file.fileKey,
-                              file.originalFileName)}
-                      >
-                        <DownloadIcon/>
-                      </IconButton>
+                        <IconButton
+                            edge="end"
+                            aria-label="download"
+                            sx={{color: theme.palette.success.main}}
+                            onClick={() => onFileDownload(file.fileKey,
+                                file.originalFileName)}
+                        >
+                          <DownloadIcon/>
+                        </IconButton>
                       </Box>
                       <Box>
-                      {file.userEmail === email && (
-                          <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={() => onFileDelete(file.fileKey, file.userEmail)}
-                              sx={{ display: file.userEmail === email ? 'block' : 'none', color:theme.palette.warning.main }}
-                          >
-                            <DeleteIcon/>
-                          </IconButton>
-                      )}
+                        {file.userEmail === email && (
+                            <IconButton
+                                edge="end"
+                                aria-label="delete"
+                                onClick={() => onFileDelete(file.fileKey,
+                                    file.userEmail)}
+                                sx={{
+                                  display: file.userEmail === email ? 'block'
+                                      : 'none',
+                                  color: theme.palette.warning.main
+                                }}
+                            >
+                              <DeleteIcon/>
+                            </IconButton>
+                        )}
                       </Box>
                     </Box>
                   </Box>
@@ -160,7 +204,7 @@ const FileList = ({
         )}
       </List>
   );
-};
+});
 
 FileList.propTypes = {
   files: PropTypes.arrayOf(
