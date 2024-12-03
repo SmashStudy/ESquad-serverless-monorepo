@@ -52,7 +52,9 @@ export const createTeam = async ({ teamName, description, userIds }) => {
 
     const getRoleAndState = (index) => ({
         role: index === 0 ? 'Manager' : 'Member',
-        inviteState: index === 0 ? 'complete' : 'processing',
+        inviteState: 'complete',
+        // inviteState: index === 0 ? 'complete' : 'processing',
+
     });
 
     const memberPromises = userIds.map(async (userId, index) => {

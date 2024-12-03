@@ -71,6 +71,55 @@ const AuthCallback = () => {
 
         initializeAuthCallback();
     }, [location, navigate]);
+    if (loading) {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
+                    backgroundImage: "linear-gradient(to top right, #E2A9F3, #5858FA)",
+                }}
+            >
+                <img
+                    src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
+                    alt="Esquad Logo"
+                    style={{ width: '120px', marginBottom: '20px' }}
+                />
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <div
+                        style={{
+                            width: '40px',
+                            height: '40px',
+                            border: '4px solid #ddd',
+                            borderTop: '4px solid #6200ee',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                        }}
+                    />
+                </div>
+                <p style={{ marginTop: '20px', color: '#555', fontSize: '16px' }}>
+                    인증 중입니다. 잠시만 기다려 주세요...
+                </p>
+                <style>
+                    {`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}
+                </style>
+            </div>
+        );
+    }
 
     return null; // 모든 처리가 끝나면 아무것도 렌더링하지 않음
 };

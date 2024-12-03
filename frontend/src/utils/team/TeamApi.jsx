@@ -7,7 +7,6 @@ const TeamApi = axios.create({
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-    'X-Requested-With': 'XMLHttpRequest',
   },
 });
 
@@ -77,7 +76,8 @@ export const createTeam = async (teamData) => {
 // 이메일 가져오기
 export const getUserEmail = async () => {
   const response = await TeamApi.get(`${getUserApi()}/get-email`);
-  return response.data.body; // 사용자 이메일 반환
+  console.log(`getUserEmail: ${JSON.stringify(response.data)}`);
+  return response.data.email; // 사용자 이메일 반환
 };
 
 // 팀원 목록 가져오기

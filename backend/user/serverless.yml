@@ -5,6 +5,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: ${env:REGION}
+
   iam:
     role:
       statements:
@@ -16,18 +17,44 @@ provider:
             - dynamodb:Scan
           Resource:
             - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminGetUser
+            - "cognito-idp:ListUsers"
+          Resource:
+            - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
+        
   environment:
     COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
     COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
     CALLBACK_URLS: ${env:CALLBACK_URLS}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    REGION: ${env:REGION}
+
 functions:
 
-  authCallback:
-    handler: service/authcallback.handler
+  manageuserstatus:
+    handler: service/manageuserstatus.handler
     events:
       - http:
-          path: auth/callback
+          path: admin/status
+          method: POST
+          cors: true
+
+  grouprole:
+    handler: service/grouprole.handler
+    events:
+      - http:
+          path: role
+          method: get
+          cors: true
+    
+  admingetuser:
+    handler: service/admingetuser.handler
+    events:
+      - http:
+          path: admin
           method: get
           cors: true
 
@@ -60,6 +87,22 @@ functions:
     events:
       - http:
           path: confirm
+          method: post
+          cors: true
+
+  confirmPassword:
+    handler: service/confirmpassword.handler
+    events:
+      - http:
+          path: confirm/password
+          method: post
+          cors: true
+
+  reset:
+    handler: service/reset.handler
+    events:
+      - http:
+          path: reset
           method: post
           cors: true
 
@@ -236,6 +279,8 @@ resources:
           - AttributeName: email
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
 
     GoogleIdentityProvider:
       Type: AWS::Cognito::UserPoolIdentityProvider

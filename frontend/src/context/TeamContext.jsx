@@ -20,11 +20,16 @@ const TeamsProvider = ({ children }) => {
     }, []);
 
     const updateTeams = useCallback((updatedTeam) => {
-        setTeams((prevTeams) =>
-            prevTeams.map((team) =>
-                team.PK === updatedTeam.PK ? updatedTeam : team
-            )
-        );
+        setTeams((prevTeams) => {
+            const teamExists = prevTeams.some((team) => team.PK === updatedTeam.PK);
+
+            return teamExists
+                ? prevTeams.map((team) =>
+                    team.PK === updatedTeam.PK ? updatedTeam : team
+                )
+                : [updatedTeam, ...prevTeams];;
+        });
+
         if (selectedTeam?.PK === updatedTeam.PK) {
             setSelectedTeam(updatedTeam);
         }
