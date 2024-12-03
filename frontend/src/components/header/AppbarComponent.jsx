@@ -21,9 +21,9 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  Typography,
   styled,
   Toolbar,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -40,6 +40,7 @@ import NotificationsMenu from "./NotificationMenu.jsx";
 import { getUserApi } from "../../utils/apiConfig.js";
 import { decodeJWT } from "../../utils/decodeJWT.js";
 import formatTimeAgo from "../../utils/formatTimeAgo.js";
+import { useTeams } from "../../context/TeamContext";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -76,14 +77,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const AppBarComponent = ({
   handleSidebarToggle,
-  handleTab,
   selectedTab,
-  updateSelectedTeam,
-  updateTeams,
-  teams,
+  handleTab,
+  // updateTeams,
+  // teams,
   toggleChatDrawer,
 }) => {
   const theme = useTheme();
+  const { teams, selectedTeam, updateTeams, changeSelectedTeam } = useTeams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
@@ -213,7 +214,6 @@ const AppBarComponent = ({
       setNotifications((prev) => [message.studyNotification, ...prev]);
     }
   };
-
   const { connectToWebSocket } = useNotiWebSocket({
     user,
     onMessageReceived,
@@ -224,7 +224,6 @@ const AppBarComponent = ({
       connectToWebSocket();
     }
   }, [isUserLoaded, user]);
-
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
     setTeamAnchorEl(event.currentTarget);
@@ -239,11 +238,6 @@ const AppBarComponent = ({
   };
   const handleAccountClose = () => {
     setAccountAnchorEl(null);
-  };
-
-  // 사용자의 팀탭에서 팀 선택
-  const handleSelectedTeam = (i) => {
-    updateSelectedTeam(i);
   };
 
   // Handle create team dialog open/close
@@ -367,48 +361,42 @@ const AppBarComponent = ({
 
                   {/* Team Creation Modal */}
                   <TeamCreationDialog
-                    open={isTeamCreationModalOpen}
-                    onClose={handleCloseCreateTeamModal}
+                      open={isTeamCreationModalOpen}
+                      onClose={handleCloseCreateTeamModal}
+                      handleTab={handleTab}
+
                   />
 
                   {teams == null ? (
-                    <ListItem>
-                      <ListItemText primary="팀이 없습니다." />
-                    </ListItem>
+                      <ListItem>
+                          <ListItemText primary="팀이 없습니다." />
+                      </ListItem>
                   ) : (
-                    <>
-                      {teams.map((team, index) => (
-                        <Link
-                          to={`/teams/${team.id}`}
-                          className={`menu-team${index}`}
-                          key={index}
-                        >
-                          <ListItemButton
-                            onClick={() => updateSelectedTeam(index)}
-                            sx={{
-                              "&:hover": {
-                                cursor: "pointer",
-                                fontSize: "1.4rem",
-                              },
-                            }}
-                          >
-                            <ListItemIcon>
-                              <Avatar
-                                alt="Team Avatar"
-                                src="/src/assets/user-avatar.png"
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={team?.teamName} />
-                          </ListItemButton>
-                        </Link>
-                      ))}
-                    </>
+                      <>
+                          {teams.map((team, index) => (
+                              <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                                <ListItemButton
+                                  onClick={() => changeSelectedTeam(index)}
+                                  sx={{
+                                    "&:hover": {
+                                      cursor: "pointer",
+                                      fontSize: "1.4rem",
+                                    },
+                                  }}>
+                                    <ListItemIcon>
+                                      <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                                    </ListItemIcon>
+                                    <ListItemText primary={team?.teamName} />
+                                </ListItemButton>
+                              </Link>
+                          ))}
+                      </>
                   )}
                 </List>
-              </Menu>
-            </Box>
-          )}
+            </Menu>
         </Box>
+    )}
+</Box>
 
         <Box sx={{ display: "flex", alignItems: "center", flex: 4 }}>
           {/* 3:4:3 Ratio */}
@@ -538,6 +526,7 @@ const AppBarComponent = ({
                 setUnReadCount={setUnReadCount}
               />
               {/* chatting sidebar*/}
+
               <IconButton
                 color="inherit"
                 onClick={toggleChatDrawer}
