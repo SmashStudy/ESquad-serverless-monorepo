@@ -79,6 +79,8 @@ function App() {
           console.log("토큰이 만료되었습니다.");
           localStorage.removeItem("jwtToken"); // 만료된 토큰 삭제
           setIsLoggedIn(false); // 로그인 상태 해제
+          alert("세션이 만료되었습니다. 로그인 페이지로 이동합니다.");
+          window.location.href = "/login";
         } else {
           // 유효한 토큰인 경우
           setIsLoggedIn(true); // 로그인 상태 유지
