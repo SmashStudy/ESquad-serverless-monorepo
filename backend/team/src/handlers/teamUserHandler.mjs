@@ -15,7 +15,7 @@ export const getTeams = async (event) => {
         const decoded = decodeToken(event.headers);
         const userEmail = decoded?.email;
         const sortedTeams = await TeamUserService.getTeams(userEmail);
-        return createResponse(200, { message: 'User to Team List successfully', data: sortedTeams });
+        return createResponse(200, { message: 'User to Team List successfully', body: sortedTeams });
     } catch (error) {
         console.error('Error retrieving teams:', error);
         return createResponse(500, { error: `Error retrieving teams ${error.message}` });
@@ -31,7 +31,7 @@ export const checkTeamUserRole = async (event) => {
         const userEmail = decoded?.email;
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         await TeamUserService.checkTeamUserRole(teamId, userEmail);
-        return createResponse(200, { message: 'User to role successfully', data: userEmail });
+        return createResponse(200, { message: 'User to role successfully', body: userEmail });
     } catch (error) {
         console.error('Error checking role:', error);
         return createResponse(500, { error: error.message });
@@ -46,7 +46,7 @@ export const getTeamUsersProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const teamUsersProfile = await TeamUserService.getTeamUsersProfile(teamId);
-        return createResponse(200, { message: 'Team to User successfully', data: teamUsersProfile });
+        return createResponse(200, { message: 'Team to User successfully', body: teamUsersProfile });
     } catch (error) {
         console.error('Error retrieving crew profile:', error);
         return createResponse(500, { error: `Error retrieving crew profile: ${error.message}` });

@@ -45,7 +45,9 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
       try {
         setLoading(true);
         const email = await getUserEmail();
-        setTeamUsers([email]);
+        console(`userEmail: ${email}`);
+        setTeamUsers(() => [email]);
+        alert(`teamUsers: ${JSON.stringify(teamUsers)}`);
       } catch (err) {
         setError('이메일을 가져오는 중 오류가 발생했습니다.');
       } finally {
@@ -53,22 +55,23 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
       }
     };
     fetchEmail();
+
     }, []);
 
     const searchUser = async () => {
-    if (!validatenewTeamUser(newTeamUser)) return ;
+        if (!validatenewTeamUser(newTeamUser)) return ;
 
-    try {
-      setTeamUsers((prevUsers) => [...prevUsers, newTeamUser]);
-      setnewTeamUser('');
-      setSearchError('');
+        try {
+          setTeamUsers((prevUsers) => [...prevUsers, newTeamUser]);
+          setnewTeamUser('');
+          setSearchError('');
 
-    } catch (error) {
-      console.error('Error searching user:', error);
-      setSearchError('유저 초대 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
+        } catch (error) {
+          console.error('Error searching user:', error);
+          setSearchError('유저 초대 중 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
+        }
     };
 
     const removeTeamUser= (removeUser) => {

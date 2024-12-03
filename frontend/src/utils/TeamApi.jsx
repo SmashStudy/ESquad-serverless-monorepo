@@ -7,6 +7,7 @@ const TeamApi = axios.create({
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+    'X-Requested-With': 'XMLHttpRequest',
   },
 });
 
@@ -14,6 +15,7 @@ const TeamApi = axios.create({
 export const getTeamIdsAndNames = async () => {
   console.log('getTeamIdsAndNames 처리 시작...')
   const response = await TeamApi.get("/get");
+  console.log(`response: ${JSON.stringify(response)}`);
   return response.data.body || []; // team IDs
 };
 
@@ -22,7 +24,6 @@ export const getTeamProfiles = async (teamIds) => {
   const profiles = await Promise.all(
     teamIds.map(async (id) => {
       const response = await TeamApi.get(`/${encodeURIComponent(id)}`);
-      console.log(`getTeamProfiles: ${JSON.stringify(response)}`);
       console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
       const profile = response.data.body;
       return typeof profile === "string" ? JSON.parse(profile) : profile;
@@ -44,7 +45,7 @@ export const getTeamProfiles = async (teamIds) => {
 // 팀 역할 확인
 export const checkTeamRole = async (teamId) => {
   const response = await TeamApi.get(`/${encodeURIComponent(teamId)}/role`);
-  return response.data.data; // 팀 역할 정보 반환
+  return response.data.body; // 팀 역할 정보 반환
 };
 
 // 팀 이름 중복 확인
@@ -59,7 +60,7 @@ export const updateTeamInfo = async (teamId, teamData) => {
     `/${encodeURIComponent(teamId)}/settings/info`,
     teamData
   );
-  return response.data.data; // 업데이트된 팀 데이터 반환
+  return response.data.body; // 업데이트된 팀 데이터 반환
 };
 
 // 팀 삭제
@@ -70,24 +71,19 @@ export const deleteTeam = async (teamId) => {
 // 팀 생성
 export const createTeam = async (teamData) => {
   const response = await TeamApi.post('/create', teamData);
-  return JSON.parse(response.data.data); // 생성된 팀 정보 반환
+  return JSON.parse(response.data.body); // 생성된 팀 정보 반환
 };
 
 // 이메일 가져오기
 export const getUserEmail = async () => {
-  const response = await axios.get(`${getUserApi()}/get-email`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-    },
-  });
-  return response.data.email; // 사용자 이메일 반환
+  const response = await TeamApi.get(`${getUserApi()}/get-email`);
+  return response.data.body; // 사용자 이메일 반환
 };
 
 // 팀원 목록 가져오기
 export const fetchTeamUsers = async (teamId) => {
   const response = await TeamApi.get(`/${encodeURIComponent(teamId)}/user`);
-  return response.data.data; // 팀원 데이터 반환
+  return response.data.body; // 팀원 데이터 반환
 };
 
 // 팀원 추가
