@@ -366,8 +366,12 @@ const PostListPage = ({ isSmallScreen }) => {
                     alignItems: "center",
                   }}
                 >
-                  {hasImage && <ImageIcon sx={{ fontSize: "BIG", mr: 2 }} />}
-                  {plainText.substring(0, 100)}
+                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: plainText.substring(0, 100), // HTML을 안전하게 렌더링
+                    }}
+                  />
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
                   {post.tags &&

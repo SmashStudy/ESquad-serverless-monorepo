@@ -25,6 +25,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
 import Tooltip from "@mui/material/Tooltip";
 import DOMPurify from "dompurify";
+import he from "he"; // npm install he
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -510,7 +511,9 @@ const PostDetailsPage = () => {
       >
         <div
           style={{ fontSize: "1rem", lineHeight: 1.6 }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(he.decode(post.content)), // HTML 엔터티 디코딩 후 렌더링
+          }}
         />
       </Paper>
 
