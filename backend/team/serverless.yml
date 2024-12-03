@@ -180,7 +180,7 @@ functions:
       events:
         - http:
             path: /{teamId}/study/create
-            method: get
+            method: post
             cors: true
 
 useDotenv: true
