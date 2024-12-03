@@ -169,7 +169,7 @@ export const handleFileDelete = async (fileKey, userEmail, email,
   try {
     setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
     const presignedResponse = await axios.delete(
-        `${storageApi}/${encodeURIComponent(fileKey)}`);
+        `${storageApi}/${encodeURIComponent(fileKey)}`, {headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}});
     await axios.delete(presignedResponse.data.presignedUrl);
     setUploadedFiles(
         (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
@@ -191,7 +191,8 @@ export const handleFileDownload = async (fileKey, originalFileName,
     const presignedResponse = await axios.patch(
         `${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
           updateType: 'incrementDownloadCount'
-        });
+        },{headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}}
+        );
 
     const presignedUrl = presignedResponse.data.presignedUrl;
     const downloadResponse = await axios.get(presignedUrl, {
