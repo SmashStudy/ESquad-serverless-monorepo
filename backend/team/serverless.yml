@@ -184,7 +184,7 @@ functions:
   createStudy:
     handler: src/handlers/studyHandler.createStudy
     events:
-        - http:
+      - http:
           path: /{teamId}/study/create
           method: post
           cors: true
