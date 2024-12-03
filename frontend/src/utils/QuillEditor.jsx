@@ -1,39 +1,47 @@
 import React from "react";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import "./CustomQuill.css"; // CSS 파일 추가
 
 const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
   return (
-    <ReactQuill
-      value={value || ""} // null이나 undefined를 방지
-      onChange={(content) => onChange(content)} // 변경된 내용 전달
-      placeholder={placeholder}
-      modules={{
-        toolbar: [
-          ["bold", "italic", "underline", "strike"], // 텍스트 포맷 옵션
-          [{ list: "ordered" }, { list: "bullet" }], // 리스트 옵션
-          ["link", "image"], // 링크 및 이미지 삽입
-          ["clean"], // 서식 제거
-        ],
-      }}
-      formats={[
-        "bold",
-        "italic",
-        "underline",
-        "strike",
-        "list",
-        "bullet",
-        "link",
-        "image",
-      ]}
-      style={{
-        height: "450px",
-        width: "100%",
-        backgroundColor: "#fff",
-        padding: "0px", // 내부 패딩 추가
-        border: "none", // 내부 테두리 제거
-      }}
-    />
+    <div>
+      <ReactQuill
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        modules={{
+          toolbar: [
+            ["bold", "italic", "strike"], // 텍스트 포맷 옵션
+            ["link"], // 링크 삽입
+            [{ color: [] }], // 텍스트 색상 선택기
+            ["blockquote"], // 인용구
+            ["code-block"], // 코드 블록
+            ["image"], // 이미지 삽입
+            [{ header: [1, 2, 3, false] }], // 헤더 1, 2, 3
+            [{ list: "ordered" }, { list: "bullet" }], // 번호 목록, 글머리 기호
+            ["clean"], // 서식 제거
+          ],
+        }}
+        formats={[
+          "bold",
+          "italic",
+          "strike",
+          "link",
+          "color",
+          "blockquote",
+          "code-block",
+          "image",
+          "header",
+          "list",
+        ]}
+        style={{
+          height: "450px",
+          width: "100%",
+          backgroundColor: "#fff",
+        }}
+      />
+    </div>
   );
 };
 
