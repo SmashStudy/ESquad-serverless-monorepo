@@ -11,7 +11,7 @@ body {
 
 /* 추가적인 전역 스타일 정의 */
 h1, h2, h3 {
-	color: #8A2BE2; /* MUI 테마의 primary 색상 */
+	color: #000000; /* MUI 테마의 primary 색상 */
 }
 
 button {
@@ -21,11 +21,11 @@ button {
 /* General styles for scrollbars */
 ::-webkit-scrollbar {
 	width: 12px; /* Width of the scrollbar */
-	height: 5px;  /* Height of the scrollbar */
+	height: 8px;  /* Height of the scrollbar */
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: #cccace; /* Home color for the scrollbar handle */
+	background-color: #bb9bda; /* Home color for the scrollbar handle */
 	border-radius: 4px;
 }
 
