@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState, useCallback, useEffect} from 'react';
-import {getTeamIdsAndNames} from "../utils/TeamApi.jsx";
+import {getTeamIdsAndNames} from "../utils/team/TeamApi.jsx";
 
 const TeamsContext = createContext();
 

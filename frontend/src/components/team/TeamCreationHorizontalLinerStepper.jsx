@@ -20,7 +20,7 @@ import {
   checkTeamNameAvailability,
   createTeam,
   getUserEmail,
-} from '../../utils/TeamApi';
+} from '../../utils/team/TeamApi.jsx';
 import {useTeams} from "../../context/TeamContext.jsx"; // teamApi 호출
 
 const steps = ['팀 이름', '팀원 초대', '확인', '이동'];
