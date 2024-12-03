@@ -8,13 +8,17 @@ export const useTeams = () => useContext(TeamsContext);
 const TeamsProvider = ({ children }) => {
     const [teams, setTeams] = useState([]);
     const [selectedTeam, setSelectedTeam] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const fetchTeams = useCallback(async () => {
+        setLoading(true);
         try {
             const teamProfiles = await getTeamIdsAndNames();
             setTeams(teamProfiles);
         } catch (error) {
             console.error("Error fetching teams:", error);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -51,6 +55,7 @@ const TeamsProvider = ({ children }) => {
                 fetchTeams,
                 updateTeams,
                 updateSelectedTeam,
+                loading,
             }}
         >
             {children}
