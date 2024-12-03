@@ -8,7 +8,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags = [] } = body; // tags 기본값 빈 배열로 해서 태그 없어도 게시글 생성됨
+    const { title, content, writer, book, tags = [], images = [] } = body;
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -23,7 +23,7 @@ export const handler = async (event) => {
     const postId = uuidv4();
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
-    const likedUsers = []; // 빈 배열로 초기화
+    const likedUsers = [];
 
     const item = {
       PK: { S: `POST#${postId}` },
@@ -49,14 +49,24 @@ export const handler = async (event) => {
           }
         : { NULL: true },
       ...(tags.length > 0 && { tags: { SS: tags } }),
+      ...(images.length > 0 && {
+        images: {
+          L: images.map((image) => ({
+            M: {
+              key: { S: image.key },
+              url: { S: image.url },
+            },
+          })),
+        },
+      }), // 이미지 리스트 추가
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
-      ...(likedUsers.length > 0 && { likedUsers: { SS: likedUsers } }), // 빈 likedUsers 방지
+      ...(likedUsers.length > 0 && { likedUsers: { SS: likedUsers } }),
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
-      comments: { L: [] }, // 빈 리스트로 초기화
+      comments: { L: [] },
     };
 
     const command = new PutItemCommand({
