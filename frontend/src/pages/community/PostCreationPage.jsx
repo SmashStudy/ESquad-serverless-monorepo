@@ -154,7 +154,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           />
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+            mb: 1,
+            px: 1,
+          }}
+        >
           <Typography variant="h8" sx={{ px: 1 }}>
             태그를 설정하세요 (최대 10개)
           </Typography>
@@ -267,8 +275,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 2,
-        maxWidth: "650px",
+        gap: 1,
+        maxWidth: "700px",
         height: "80vh",
         mx: "auto",
         my: "auto",
