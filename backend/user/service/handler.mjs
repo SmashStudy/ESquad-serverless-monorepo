@@ -135,26 +135,11 @@ export const getUserNickname = async (event) => {
       throw new Error('사용자 닉네임이 없습니다');
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ nickname }),
-    };
+    return createResponse(200, {nickname});
   } catch (error) {
     console.error('닉네임 가져오기 중 오류 발생:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ message: '닉네임 가져오기 중 오류 발생', error: error.message }),
-    };
+
+    return createResponse(500, { message: '닉네임 가져오기 중 오류 발생', error: error.message })
   }
 };
 
@@ -286,26 +271,10 @@ export const updateUserNickname = async (event) => {
 
     console.log('업데이트 결과:', result);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname }),
-    };
+    return createResponse(200,{ message: '닉네임이 성공적으로 업데이트되었습니다', nickname: newNickname });
   } catch (error) {
     console.error('닉네임 업데이트 중 오류 발생:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ message: '닉네임 업데이트 중 오류 발생', error: error.message }),
-    };
+    return createResponse(500, { message: '닉네임 업데이트 중 오류 발생', error: error.message });
   }
 };
 
@@ -402,26 +371,10 @@ export const getUserInfoByToken = async (event) => {
 
     console.log('해당 이메일의 사용자 정보:', user);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify(user),
-    };
+    return createResponse(200, user);
   } catch (error) {
     console.error('토큰에서 이메일로 사용자 정보 가져오기 중 오류 발생:', error.message, '\nStack:', error.stack);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*', // 모든 Origin 허용
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ message: '토큰에서 이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message }),
-    };
+    return createResponse(500, { message: '토큰에서 이메일로 사용자 정보 가져오기 중 오류 발생', error: error.message });
   }
 };
 
@@ -447,25 +400,9 @@ export const getEmailFromToken = async (event) => {
 
     const email = String(decoded.email);
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ email }),
-    };
+    return createResponse(200, {email})
   } catch (error) {
     console.error('JWT에서 이메일 가져오기 중 오류 발생:', error);
-    return {
-      statusCode: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
-      body: JSON.stringify({ message: 'JWT에서 이메일 가져오기 중 오류 발생', error: error.message }),
-    };
+    return createResponse(500, { message: 'JWT에서 이메일 가져오기 중 오류 발생', error: error.message });
   }
 };
