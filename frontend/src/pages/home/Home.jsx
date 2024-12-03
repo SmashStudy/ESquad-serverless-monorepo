@@ -46,7 +46,6 @@ const HomeContent = () => {
 
     const handleTeamSelect = (team) => setSelectedTeam(team);
 
-    alert(selectedTeam);
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
             <CssBaseline />

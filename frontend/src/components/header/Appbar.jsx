@@ -230,8 +230,8 @@ const Appbar = ({
     setTeamAnchorEl(null);
   };
 
-  const handleSelectedTeam = (teamId) => {
-    changeSelectedTeam((prev) => teamId);
+  const handleSelectedTeam = (team) => {
+    changeSelectedTeam((prev) => team);
     if(selectedTab === 0) onTabChange(1);
   };
 
@@ -388,7 +388,7 @@ const Appbar = ({
                               >
                                 <ListItemButton
                                     onClick={() => {
-                                      handleSelectedTeam(team.PK); // selectedTeam 업데이트
+                                      handleSelectedTeam(team); // selectedTeam 업데이트
                                       handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
                                     }}
                                   sx={{
