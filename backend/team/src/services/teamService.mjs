@@ -87,8 +87,10 @@ export const getTeamProfile = async (teamId) => {
     const params = {
         TableName: TEAM_TABLE,
         Key: { PK: teamId, SK: teamId }
+        // Key: { PK: teamId }
     };
     const result = await dynamoDb.send(new GetCommand(params));
+    console.log(`result: ${JSON.stringify(result)}`);
     if (!result.Item) throw new Error('Team not found');
     return result.Item;
 };
