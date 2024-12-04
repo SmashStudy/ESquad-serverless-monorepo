@@ -23,8 +23,9 @@ import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PostEditDialog from "../../components/content/community/PostEditDialog";
-import logoImage from "../../assets/esquad-logo-nbk.png";
 import Tooltip from "@mui/material/Tooltip";
+import DOMPurify from "dompurify";
+import he from "he"; // npm install he
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -40,10 +41,10 @@ const PostDetailsPage = () => {
   const [deleteCommentAlertOpen, setDeleteCommentAlertOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [likedByUser, setLikedByUser] = useState(false);
-  const [isCommentsLoading, setIsCommentsLoading] = useState(true); // 댓글 로딩 상태 추가
+  const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
   const menuOpen = Boolean(menuAnchorEl);
-  const fetchRef = useRef(false); // 중복 호출 방지 플래그
+  const fetchRef = useRef(false);
 
   const createdAt = new URLSearchParams(window.location.search).get(
     "createdAt"
@@ -101,16 +102,15 @@ const PostDetailsPage = () => {
       }
     };
 
-    if (boardType && postId && createdAt) {
+    if (boardType && postId && createdAt && currentUser) {
       fetchPostAndIncrementView();
     }
   }, [boardType, postId, createdAt, currentUser]);
 
-  // 댓글 가져오기
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        setIsCommentsLoading(true); // 댓글 로딩 시작
+        setIsCommentsLoading(true);
         const response = await axios.get(
           `${getCommunityApi()}/${boardType}/${postId}/comments`,
           { params: { createdAt } }
@@ -122,7 +122,7 @@ const PostDetailsPage = () => {
       } catch (error) {
         console.error("댓글 데이터를 불러오는 중 오류 발생:", error);
       } finally {
-        setIsCommentsLoading(false); // 댓글 로딩 완료
+        setIsCommentsLoading(false);
       }
     };
 
@@ -194,11 +194,10 @@ const PostDetailsPage = () => {
       const token = localStorage.getItem("jwtToken");
 
       if (editingCommentId) {
-        // 댓글 수정
         const updatedComment = {
           content: commentContent,
-          commentId: editingCommentId, // **commentId를 포함해야 합니다.**
-          userEmail: currentUser.email, // 작성자의 이메일 추가
+          commentId: editingCommentId,
+          userEmail: currentUser.email,
         };
 
         await axios.put(
@@ -227,7 +226,6 @@ const PostDetailsPage = () => {
 
         setEditingCommentId(null);
       } else {
-        // 댓글 추가
         const newComment = {
           content: commentContent,
           writer: {
@@ -248,11 +246,11 @@ const PostDetailsPage = () => {
             params: { createdAt },
           }
         );
-        setCommentAlertOpen(true); // 댓글 등록 알림 열기
+        setCommentAlertOpen(true);
       }
 
-      setCommentContent(""); // 댓글 입력 초기화
-      await fetchComments(); // 댓글 목록 새로고침
+      setCommentContent("");
+      await fetchComments();
     } catch (error) {
       console.error("댓글 처리 중 오류 발생:", error);
       alert("댓글 등록/수정에 실패했습니다.");
@@ -261,7 +259,7 @@ const PostDetailsPage = () => {
 
   const handleCancelComment = () => {
     setCommentContent("");
-    setEditingCommentId(null); // 수정 모드 취소
+    setEditingCommentId(null);
   };
 
   const handleEditComment = (comment) => {
@@ -273,7 +271,6 @@ const PostDetailsPage = () => {
     try {
       const token = localStorage.getItem("jwtToken");
 
-      // 댓글 삭제 요청 시 필요한 데이터를 쿼리 매개변수로 전달
       await axios.delete(
         `${getCommunityApi()}/${boardType}/${postId}/comments/${commentId}`,
         {
@@ -282,7 +279,7 @@ const PostDetailsPage = () => {
           },
           params: {
             createdAt,
-            userEmail: currentUser.email, // 쿼리 매개변수로 사용자 이메일 전달
+            userEmail: currentUser.email,
           },
         }
       );
@@ -291,8 +288,8 @@ const PostDetailsPage = () => {
         prevComments.filter((comment) => comment.id !== commentId)
       );
 
-      setDeleteCommentAlertOpen(true); // 댓글 삭제 알림 열기
-      await fetchComments(); // 댓글 목록 새로고침
+      setDeleteCommentAlertOpen(true);
+      await fetchComments();
     } catch (error) {
       console.error("댓글 삭제 중 오류 발생:", error);
       alert("댓글 삭제에 실패했습니다.");
@@ -327,7 +324,7 @@ const PostDetailsPage = () => {
       if (response.status === 200) {
         setPost((prevPost) => ({
           ...prevPost,
-          likeCount: response.data.updatedAttributes.likeCount,
+          likeCount: response.data.updatedAttributes?.likeCount || 0,
         }));
         setLikedByUser(!likedByUser);
       }
@@ -512,12 +509,12 @@ const PostDetailsPage = () => {
           borderRadius: 2,
         }}
       >
-        <Typography
-          variant="body1"
-          sx={{ whiteSpace: "pre-line", fontSize: "1rem", lineHeight: 1.6 }}
-        >
-          {post.content}
-        </Typography>
+        <div
+          style={{ fontSize: "1rem", lineHeight: 1.6 }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(he.decode(post.content)), // HTML 엔터티 디코딩 후 렌더링
+          }}
+        />
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>
@@ -526,41 +523,22 @@ const PostDetailsPage = () => {
           {comments.length}
         </Box>
       </Typography>
-
-      {comments.length === 0 ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            mt: 4,
-          }}
-        >
-          <img
-            src={logoUrl}
-            alt="답변 대기 이미지"
-            style={{ width: "100px", height: "100px", marginBottom: "20px" }}
-          />
-          <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
-            답변을 기다리고 있는 질문이에요
-          </Typography>
-          <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
-            첫번째 답변을 남겨보세요!
-          </Typography>
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            mb: 2,
-            flexDirection: "column",
-            height: 350,
-            overflow: "hidden",
-            overflowY: "scroll",
-          }}
-        >
-          {comments
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      <Box>
+        {isCommentsLoading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              my: 2,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : comments.length > 0 ? (
+          // 댓글이 있을 경우 렌더링
+          comments
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 최신 댓글이 위로 오도록 정렬
             .map((comment, index) => (
               <Paper
                 key={index}
@@ -602,9 +580,32 @@ const PostDetailsPage = () => {
                   </Box>
                 )}
               </Paper>
-            ))}
-        </Box>
-      )}
+            ))
+        ) : (
+          // 댓글이 없을 경우 "답변 대기" UI 표시
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              mt: 4,
+            }}
+          >
+            <img
+              src={logoUrl}
+              alt="답변 대기 이미지"
+              style={{ width: "100px", height: "100px", marginBottom: "20px" }}
+            />
+            <Typography variant="body1" sx={{ color: "text.primary", mb: 1 }}>
+              답변을 기다리고 있는 질문이에요
+            </Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary", mb: 4 }}>
+              첫번째 답변을 남겨보세요!
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         <TextField
