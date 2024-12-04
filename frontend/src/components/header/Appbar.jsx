@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -41,6 +41,7 @@ import { getUserApi } from "../../utils/apiConfig.js";
 import { decodeJWT } from "../../utils/decodeJWT.js";
 import formatTimeAgo from "../../utils/formatTimeAgo.js";
 import { useTeams } from "../../context/TeamContext";
+import Loading from "../custom/Loading.jsx";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -75,18 +76,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const AppBarComponent = ({
+const Appbar = ({
   handleSidebarToggle,
-  selectedTab,
-  handleTab,
-  // updateTeams,
-  // teams,
-  toggleChatDrawer,
+  selectedTab, onTabChange,
+  toggleChatDrawer, changeSelectedTeam
 }) => {
   const theme = useTheme();
-  const { teams, selectedTeam, updateTeams, changeSelectedTeam } = useTeams();
+  const {teams, updateTeams} = useTeams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [teamAnchorEl, setTeamAnchorEl] = useState(null);
   const [showSearchBar, setShowSearchBar] = useState(null);
@@ -125,6 +124,7 @@ const AppBarComponent = ({
 
   useEffect(() => {
     const fetchTokenAndData = async () => {
+      setIsLoading(true);
       try {
         const token = localStorage.getItem("jwtToken");
 
@@ -140,14 +140,16 @@ const AppBarComponent = ({
         }
       } catch (err) {
         console.error("토큰 처리 오류:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchTokenAndData();
   }, []);
 
 
   const fetchNickname = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(`${getUserApi()}/get-nickname`, {
         headers: {
@@ -161,12 +163,15 @@ const AppBarComponent = ({
     } catch (err) {
       console.error("닉네임 가져오기 오류:", err);
       setError("닉네임을 가져오는 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // 컴포넌트 로드 시 닉네임 가져오기
   useEffect(() => {
     const fetchTokenAndData = async () => {
+      setIsLoading(true);
       try {
         await delay(100); // JWT 토큰 저장 딜레이
         const token = localStorage.getItem("jwtToken");
@@ -190,9 +195,10 @@ const AppBarComponent = ({
       } catch (err) {
         console.error("토큰 처리 오류:", err);
         setError("사용자 정보를 처리하는 중 오류가 발생했습니다.");
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchTokenAndData();
   }, []);
 
@@ -224,12 +230,18 @@ const AppBarComponent = ({
       connectToWebSocket();
     }
   }, [isUserLoaded, user]);
+
   // Handle team menu open/close
   const handleTeamMenuClick = (event) => {
     setTeamAnchorEl(event.currentTarget);
   };
   const handleTeamMenuClose = () => {
     setTeamAnchorEl(null);
+  };
+
+  const handleSelectedTeam = (team) => {
+    changeSelectedTeam((prev) => team);
+    if(selectedTab === 0) onTabChange(1);
   };
 
   // Handle account menu open/close
@@ -294,20 +306,20 @@ const AppBarComponent = ({
                 activeclassname="nav-community"
               >
                 <Button
-                  variant="text"
-                  size="large"
-                  onClick={() => handleTab(0)}
-                  sx={{
-                    cursor: "pointer",
-                    fontSize: isSmallScreen ? "small" : "medium",
-                    backgroundColor:
-                      selectedTab === 0
-                        ? alpha(theme.palette.primary.main, 0.2)
-                        : "transparent",
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                    },
-                  }}
+                    variant="text"
+                    size="large"
+                    onClick={() => onTabChange(0)}
+                    sx={{
+                      cursor: "pointer",
+                      fontSize: isSmallScreen ? "small" : "medium",
+                      backgroundColor:
+                        selectedTab === 0
+                          ? alpha(theme.palette.primary.main, 0.2)
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                      },
+                    }}
                 >
                   커뮤니티
                 </Button>
@@ -346,14 +358,18 @@ const AppBarComponent = ({
                   "aria-labelledby": "teamTab-button",
                 }}
                 sx={{
-                  transition: "width 1s ease",
+                      transition: "width 1s ease",
+                      maxHeight: "40vh",
+                      overflowY: "auto",
                 }}
               >
                 <List>
                   <ListItemButton
-                    onClick={handleCreateTeamButtonClick}
+                    onClick={() => {
+                      handleCreateTeamButtonClick();
+                    }}
                     sx={{
-                      "&:hover": { cursor: "pointer", fontSize: "1.4rem" },
+                      "&:hover": { cursor: "pointer", fontSize: "1.2rem" },
                     }}
                   >
                     <ListItemText primary="새로운 팀 생성" />
@@ -363,33 +379,43 @@ const AppBarComponent = ({
                   <TeamCreationDialog
                       open={isTeamCreationModalOpen}
                       onClose={handleCloseCreateTeamModal}
-                      handleTab={handleTab}
-
+                      handleTab={onTabChange}
                   />
 
-                  {teams == null ? (
+                  {teams.length === 0 ? (
                       <ListItem>
                           <ListItemText primary="팀이 없습니다." />
                       </ListItem>
                   ) : (
                       <>
-                          {teams.map((team, index) => (
-                              <Link to={`/teams/${encodeURIComponent(team.PK)}`} key={index}>
+                        {isLoading ? <Loading /> : (
+                          teams.map((team, index) => (
+                              <Link
+                                  to={`/teams/${encodeURIComponent(team.PK)}/main`}
+                                  key={team.PK}
+                                  style={{ textDecoration: "none", color: "inherit" }}
+                              >
                                 <ListItemButton
-                                  onClick={() => changeSelectedTeam(index)}
+                                    onClick={() => {
+                                      handleSelectedTeam(team); // selectedTeam 업데이트
+                                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
+                                    }}
                                   sx={{
                                     "&:hover": {
                                       cursor: "pointer",
-                                      fontSize: "1.4rem",
+                                      fontSize: "1.2rem",
                                     },
                                   }}>
                                     <ListItemIcon>
                                       <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
                                     </ListItemIcon>
-                                    <ListItemText primary={team?.teamName} />
+                                    <ListItemText
+                                        primary={team?.teamName.length > 7 ? `${team?.teamName.slice(0, 7)}...` : team?.teamName} // Truncate teamName to 7 characters
+                                    />
                                 </ListItemButton>
                               </Link>
-                          ))}
+                          ))
+                        )}
                       </>
                   )}
                 </List>
@@ -491,9 +517,9 @@ const AppBarComponent = ({
                       </Typography>
                     </MenuItem>
                   </Link>
-                
+
                 {role === "admin" && (
-                  
+
                     <Link to="/admin" style={{
                       textDecoration: "none", // 밑줄 제거
                       color: "black", // 글자 색을 검정으로 설정
@@ -558,4 +584,4 @@ const AppBarComponent = ({
   );
 };
 
-export default AppBarComponent;
+export default Appbar;

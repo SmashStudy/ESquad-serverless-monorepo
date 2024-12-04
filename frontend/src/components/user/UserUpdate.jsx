@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from "/src/components/form/UserContext.jsx";
 import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
-import { TextField, Button, Container, Typography, Grid, Box, Alert, CircularProgress } from '@mui/material';
+import {TextField, Button, Container, Typography, Grid, Box, Alert, CircularProgress, useTheme} from '@mui/material';
 
 const UserUpdate = () => {
+    const { theme } = useTheme();
     const { userInfo, refetch } = useUser();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -53,7 +54,7 @@ const UserUpdate = () => {
 
     return (
         <Container maxWidth="sm">
-            <Box sx={{ mt: 8, p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
+            <Box sx={{ mt: 8, p: 4, borderRadius: 2, boxShadow: 3, backgroundColor: theme.palette.background.default }}>
                 <Typography variant="h4" component="h1" gutterBottom align="center">
                     회원정보 수정
                 </Typography>

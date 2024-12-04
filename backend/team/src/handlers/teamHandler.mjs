@@ -44,7 +44,7 @@ export const getTeamProfile = async (event) => {
     try {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const teamProfile = await TeamService.getTeamProfile(teamId);
-        return createResponse(200, { message: 'Team search successfully', body: JSON.stringify(teamProfile)});
+        return createResponse(200, { message: 'Team search successfully', body: teamProfile});
     } catch (error) {
         console.error('Error retrieving team profile:', error);
         return createResponse(500, { error: `Error retrieving team profile ${error.message}` });
