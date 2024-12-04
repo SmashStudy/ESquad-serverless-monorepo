@@ -6,7 +6,7 @@ import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFi
 import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
-
+import Loading from "../custom/Loading.jsx";
 const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
@@ -50,6 +50,7 @@ function ChatMessages({currentChatRoom}) {
 
     useEffect(() => {
         if (!currentChatRoom || !email) { return; }
+        setLoading(true);
         if (socketRef.current) {
             socketRef.current.close(); // 기존 WebSocket 연결 닫기
         }
@@ -87,6 +88,7 @@ const connectWebSocket = (room_id) => {
     const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
     newSocket.onopen = () => {
+        console.log("연결됨");
         loadMessages(room_id);
     };
     newSocket.onmessage = (event) => {
@@ -157,6 +159,8 @@ const scrollToBottom = () => {
                 timestamp: timestamp,
                 isFile: true
         };
+            console.log("fileMessage : ", fileMessage);
+
             // 웹소켓으로 전송
             await sendMessageAPI(socketRef, fileMessage);
             // 메시지 상태 업데이트
@@ -188,6 +192,8 @@ const scrollToBottom = () => {
                 nickname: nickname,
                 timestamp: timestamp
             };
+            console.log("textMessage: " , textMessage);
+
             // sendMessageAPI 호출 전후 로그 추가
             await sendMessageAPI(socketRef, textMessage);
             setMessages((prevMessages) => [...prevMessages, textMessage]);
@@ -249,6 +255,7 @@ useEffect(() => {
     scrollToBottom();
 },[messages]);
 
+if (loading) { return <Loading />;}
 
 // 파일 업로드 핸들러
 const handleUploadClick = async () => {
@@ -344,7 +351,7 @@ return (
             style={{ display: 'none' }}
             onChange={(e) => setSelectedFile(e.target.files[0])}
         />
-    </div>
-);
+        </div>
+    );
 }
 export default ChatMessages;

@@ -2,7 +2,7 @@ import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 import {fetchUserEmail} from "../../../utils/storage/utilities.js";
 
-const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
+const apiUrl = getChatApi();
 const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({
@@ -38,8 +38,8 @@ export const fetchMessageAPI = async (room_id) => {
 export const sendMessageAPI = async (socket, messageData) => {
     try {
         console.log(`messageData: ${JSON.stringify(messageData)}`);
-        socket.current.send(JSON.stringify(messageData));
 
+        socket.current.send(JSON.stringify(messageData));
         // 파일 메시지 처리
         if (messageData.fileKey) {
             // 파일 메타데이터 확인
