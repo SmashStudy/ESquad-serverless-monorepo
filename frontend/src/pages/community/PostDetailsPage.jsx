@@ -461,21 +461,33 @@ const PostDetailsPage = () => {
       >
         <Box>
           <Typography variant="body2">
+            {post.recruitStatus && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "green",
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  mb: 1,
+                }}
+              >
+                ✔ 모집완료
+              </Typography>
+            )}
             {post.resolved && (
-              <>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: "primary.main",
-                    display: "flex",
-                    alignItems: "center",
-                    fontWeight: "bold",
-                    mb: 1,
-                  }}
-                >
-                  ✔ 해결된 질문
-                </Typography>
-              </>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "primary.main",
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  mb: 1,
+                }}
+              >
+                ✔ 해결된 질문
+              </Typography>
             )}
             {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
             {post.updatedAt &&
