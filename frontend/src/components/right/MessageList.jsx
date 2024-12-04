@@ -1,7 +1,7 @@
 import React from 'react';
 import MessageItem from "./MessageItem.jsx";
 
-const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDownloadFile, onDeleteFile }) => {
+const MessageList = ({ messages, currentUser, onEditMessage, onDeleteMessage, onDownloadFile, onDeleteFile }) => {
     return (
         <div className="message-list">
             {messages.map((msg, index) => {
@@ -10,8 +10,7 @@ const MessageList = ({ messages, username, onEditMessage, onDeleteMessage, onDow
                     <MessageItem
                         key={key}
                         message={msg}
-                        user_id={msg.user_id}
-                        currentUsername={username}
+                        currentUser={currentUser}
                         onEditMessage={onEditMessage}
                         onDeleteMessage={onDeleteMessage}
                         onDownloadFile={onDownloadFile}
