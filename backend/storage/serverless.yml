@@ -217,7 +217,7 @@ resources:
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
-                - '*'
+                - ${env:ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
               AllowedMethods:
@@ -249,15 +249,10 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${env:QUILL_S3_BUCKET}
-        PublicAccessBlockConfiguration:
-          BlockPublicAcls: false
-          BlockPublicPolicy: false
-          IgnorePublicAcls: false
-          RestrictPublicBuckets: false
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
-                - '*'
+                - ${env:ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
               AllowedMethods:
