@@ -18,7 +18,7 @@ import BookDescription from "./BookDescription"; // 추가한 컴포넌트 임�
 const BookDetailPage = () => {
     const theme = useTheme();
     const location = useLocation();
-    const book = location.state.book; // 현재 책 데이터
+    const book = location.state?.book; // 현재 책 데이터
     const params = useParams();
     const [isStudyModalOpen, setIsStudyModalOpen] = useState(false);
 
@@ -64,14 +64,14 @@ const BookDetailPage = () => {
                         alt={book.maintitle}
                         sx={{
                             width: "100%",
-                            maxWidth: "100%", // 이미지가 부모 크기를 벗어나지 않도록
+                            maxWidth: "100%",
                             height: "auto",
                             maxHeight: "600px",
-                            objectFit: "contain", // 이미지가 영역을 벗어나지 않도록
+                            objectFit: "contain",
                             borderRadius: theme.spacing(1),
                             boxShadow: theme.shadows[2],
                             border: "1px solid #ddd",
-                            transition: "all 0.3s ease", // 크기 변경 시 애니메이션
+                            transition: "all 0.3s ease",
                         }}
                     />
                 </Grid>
