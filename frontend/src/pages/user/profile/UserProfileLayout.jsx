@@ -9,9 +9,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import {getUserApi} from "../../utils/apiConfig.js";
+import {getUserApi} from "../../../utils/apiConfig.js";
 
-const Layout = ({ children }) => {
+const UserProfileLayout = ({ children }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [userInfo, setUserInfo] = useState(null);
@@ -166,4 +166,4 @@ const Layout = ({ children }) => {
 
 };
 
-export default Layout;
+export default UserProfileLayout;

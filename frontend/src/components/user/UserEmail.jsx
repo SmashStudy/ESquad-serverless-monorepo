@@ -3,7 +3,7 @@ import {getUserApi} from "../../utils/apiConfig.js";
 // Lambda 함수의 API Gateway 엔드포인트 URL
 const API_URL = `${getUserApi()}/get-user`;
 
-export const UserByEmail = async (email) => {
+export const UserEmail = async (email) => {
   try {
     // 이메일 유효성 검사
     if (!email || typeof email !== 'string' || !email.includes('@')) {

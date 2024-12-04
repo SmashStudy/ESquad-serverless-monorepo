@@ -7,10 +7,10 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import { getUserApi } from "../../utils/apiConfig";
+import { getUserApi } from "../../../utils/apiConfig.js";
 
 
-const ConfirmPassword = () => {
+const UserPasswordReset = () => {
   const [email, setEmail] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -121,4 +121,4 @@ const ConfirmPassword = () => {
   );
 };
 
-export default ConfirmPassword;
+export default UserPasswordReset;

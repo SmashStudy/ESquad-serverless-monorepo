@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Typography, Grid, TextField, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import { initializeCognitoConfig, getCognitoConfig } from "./Config.js";
-import { getUserApi } from "../../utils/apiConfig.js";
+import { initializeCognitoConfig, getCognitoConfig } from "../../../utils/user/Config.js";
+import { getUserApi } from "../../../utils/apiConfig.js";
 import { keyframes } from "@mui/system";
-import useKonamiCode from "./EasterEgg.jsx"
+import useKonamiCode from "../../../components/custom/EasterEgg.jsx"
 
 
 const Login = () => {
@@ -82,7 +82,7 @@ const Login = () => {
       if (!response.ok) {
         if (data.error === "User is not confirmed. Please confirm your email first.") {
           localStorage.setItem("email", email);
-          navigate("/confirm");
+          navigate("/email/verification");
           return;
         }
         throw new Error(data.error || "로그인에 실패했습니다.");

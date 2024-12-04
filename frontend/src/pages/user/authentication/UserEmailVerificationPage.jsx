@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, TextField, Alert, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {getUserApi} from "../../utils/apiConfig.js";
+import {getUserApi} from "../../../utils/apiConfig.js";
 import { keyframes } from "@mui/system";
 
-const EmailVerification = () => {
+const UserEmailVerification = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -151,4 +151,4 @@ const EmailVerification = () => {
   );
 };
 
-export default EmailVerification;
+export default UserEmailVerification;
