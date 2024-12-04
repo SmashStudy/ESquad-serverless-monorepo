@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogContent } from '@mui/material';
 import TeamCreationHorizontalLinerStepper from "./TeamCreationHorizontalLinerStepper.jsx";
 
-const TeamCreationDialog = ({ open, onClose, teams, updateTeams}) => {
+const TeamCreationDialog = ({ open, onClose, handleTab}) => {
 
     return (
         <Dialog open={open}
@@ -13,8 +13,7 @@ const TeamCreationDialog = ({ open, onClose, teams, updateTeams}) => {
             <DialogContent>
                 <TeamCreationHorizontalLinerStepper
                     onCancel={onClose}
-                    teams={teams}
-                    updateTeams={updateTeams}
+                    handleTab={handleTab}
                 />
             </DialogContent>
         </Dialog>

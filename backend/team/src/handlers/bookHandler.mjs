@@ -7,10 +7,10 @@ import { createResponse } from '../utils/responseHelper.mjs';
  */
 const searchBooksToQuery = async (query) => {
     const apiUrl = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(query)}`;
-    
+
     const clientId = process.env.CLIENT_ID;
     const clientSecret = process.env.CLIENT_SECRET;
-    
+
     if (!clientId || !clientSecret) {
         console.error("Error: CLIENT_ID 또는 CLIENT_SECRET이 설정되지 않았습니다.");
         throw new Error("Missing API credentials");

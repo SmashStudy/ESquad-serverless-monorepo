@@ -1,4 +1,5 @@
 service: team-service
+frameworkVersion: '^3.15.0'
 
 provider:
   name: aws
@@ -8,11 +9,13 @@ provider:
     TEAM_TABLE: ${env:TEAM_TABLE}
     CLIENT_ID: ${env:CLIENT_ID}
     CLIENT_SECRET: ${env:CLIENT_SECRET}
+    ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
   iam:
     role:
       statements:
         - Effect: Allow
-          Action: 
+          Action:
+            - dynamodb:Put
             - dynamodb:PutItem
             - dynamodb:GetItem
             - dynamodb:UpdateItem
@@ -22,11 +25,11 @@ provider:
             - dynamodb:BatchWriteItem
             - dynamodb:DeleteItem
             - lambda:InvokeFunction
-          Resource: 
+          Resource:
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamName-Index # teamName 중복 찾기
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/StudyName-Index # studyName 중복 찾기
-            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-ItemType-Index # USER로 teamID, studyID 찾을 때 
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-ItemType-Index # USER로 teamID, studyID 찾을 때
             - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/PK-ItemType-Index # teamID, studyID로 USER 찾을 때
 
       managedPolicies:
@@ -62,11 +65,7 @@ resources:
               - AttributeName: itemType
                 KeyType: RANGE
             Projection:
-              ProjectionType: INCLUDE
-              NonKeyAttributes:
-                - teamID
-                - PK
-                - inviteState
+              ProjectionType: ALL
           - IndexName: PK-ItemType-Index
             KeySchema:
               - AttributeName: PK
@@ -74,10 +73,7 @@ resources:
               - AttributeName: itemType
                 KeyType: RANGE
             Projection:
-              ProjectionType: INCLUDE
-              NonKeyAttributes:
-                - SK
-                - inviteState
+              ProjectionType: ALL
           - IndexName: TeamName-Index
             KeySchema:
               - AttributeName: teamName
@@ -94,22 +90,37 @@ functions:
       - http:
           path: /get
           method: get
-          cors: true
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
   createTeam:
     handler: src/handlers/teamHandler.createTeam
     events:
       - http:
           path: /create
           method: post
-          cors: true   
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:   # 클라이언트에서 허용되는 헤더를 지정
+              - Content-Type
+              - Authorization
   checkTeamName:
     handler: src/handlers/teamHandler.checkTeamName
     events:
       - http:
           path: /check-name/{teamName}
           method: get
-          cors: true
-  
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
+
   getTeamProfile:
     handler: src/handlers/teamHandler.getTeamProfile
     events:
@@ -117,7 +128,7 @@ functions:
           path: /{teamId}
           method: get
           cors: true
-  
+
   checkTeamUserRole:
     handler: src/handlers/teamUserHandler.checkTeamUserRole
     events:
@@ -133,7 +144,7 @@ functions:
           path: /{teamId}/user
           method: get
           cors: true
-      
+
   updateTeam:
     handler: src/handlers/teamHandler.updateTeam
     events:
@@ -162,20 +173,27 @@ functions:
           path: /book/search
           method: get
           cors: true
+  createStudy:
+    handler: src/handlers/studyHandler.createStudy
+    events:
+      - http:
+          path: /{teamId}/study/create
+          method: post
+          cors: true
 
 useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
 
-package:
-  exclude:
-    - package-lock.json
-    - .env.dev
-    - .env.local
-    - .env.prod
-  include:
-    - package.json
-    - src/utils/**
-    - src/handlers/**
-    - src/services/**
+#package:
+#  exclude:
+#    - package-lock.json
+#    - .env.dev
+#    - .env.local
+#    - .env.prod
+#  include:
+#    - package.json
+#    - src/utils/**
+#    - src/handlers/**
+#    - src/services/**
