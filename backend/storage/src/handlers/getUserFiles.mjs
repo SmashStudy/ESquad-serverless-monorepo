@@ -1,10 +1,6 @@
-import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
-import {DynamoDBDocumentClient, QueryCommand} from '@aws-sdk/lib-dynamodb';
+import {QueryCommand} from '@aws-sdk/lib-dynamodb';
 import {createResponse} from '../utils/responseHelper.mjs'
-
-const dynamoDbClient = new DynamoDBClient({region: process.env.AWS_REGION});
-const dynamoDb = DynamoDBDocumentClient.from(dynamoDbClient);
-const TABLE_NAME = process.env.METADATA_TABLE;
+import {METADATA_TABLE, dynamoDb} from "../utils/dynamoUtil.mjs";
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
@@ -23,7 +19,7 @@ export const handler = async (event) => {
   }
 
   const params = {
-    TableName: TABLE_NAME,
+    TableName: METADATA_TABLE,
     IndexName: 'UserUsageIndex',
     KeyConditionExpression: 'userEmail = :userEmail',
     ExpressionAttributeValues: {
