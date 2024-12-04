@@ -71,9 +71,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
 
     const handleDeleteClick = async () => {
         try {
-            if (isFileMessage && message.fileKey) {
-                await deleteFile(message.fileKey);
-            }
+
             // 파일 삭제 이후 메시지 삭제 핸들러 호출
             onDeleteMessage(message);
         } catch (error) {

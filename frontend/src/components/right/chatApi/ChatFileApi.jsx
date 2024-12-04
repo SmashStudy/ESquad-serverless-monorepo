@@ -73,15 +73,14 @@ export const uploadFile = async ({ file, room_id, user_id, nickname,targetType})
 
 export const deleteFile = async (fileKey) => {
     try {
+        console.log(fileKey)
         const presignedResponse = await axios.delete(
             `${storageApi}/${encodeURIComponent(fileKey)}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("jwtToken")}`
                 }
             });
-
         await axios.delete(presignedResponse.data.presignedUrl);
-        await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
     } catch (error) {
         console.error('파일 삭제 실패:', error.message);
     }
