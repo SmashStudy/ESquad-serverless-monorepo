@@ -50,9 +50,8 @@ const theme = createTheme({
             main: '#f51738',
         },
         background: {
-            default: '#F0F0F0', // Background color
-            paper: '#FFFFFF', // Sub color for cards
-            gray: '#e0dddd',
+            default: '#ffffff', // Background color
+            paper: '#ffffff',
         },
     },
     typography: {
@@ -161,7 +160,8 @@ function App() {
                 <Route path="community/team-recruit" element={<PostListPage />} />
 
                 {/* team */}
-                <Route path="teams/:teamId" element={<TeamMainPage />}>    {/* 팀 분석 페이지 */}
+                <Route path="teams/:teamId" >
+                    <Route path="main" element={<TeamMainPage />} />
                     <Route path="manage/users" element={<ManageUserPage />} />
                     <Route path="manage/settings" element={<ManageTeamPage />} />
                     <Route path="study" element={<StudyListPage />} />
