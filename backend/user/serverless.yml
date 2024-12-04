@@ -22,6 +22,8 @@ provider:
             - cognito-idp:AdminAddUserToGroup
             - cognito-idp:AdminGetUser
             - "cognito-idp:ListUsers"
+            - cognito-idp:AdminEnableUser 
+            - cognito-idp:AdminDisableUser
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         
@@ -35,7 +37,7 @@ provider:
 functions:
 
   manageuserstatus:
-    handler: service/manageuserstatus.handler
+    handler: src/manageuserstatus.handler
     events:
       - http:
           path: admin/status
@@ -43,7 +45,7 @@ functions:
           cors: true
 
   grouprole:
-    handler: service/grouprole.handler
+    handler: src/grouprole.handler
     events:
       - http:
           path: role
@@ -51,7 +53,7 @@ functions:
           cors: true
     
   admingetuser:
-    handler: service/admingetuser.handler
+    handler: src/admingetuser.handler
     events:
       - http:
           path: admin
@@ -59,7 +61,7 @@ functions:
           cors: true
 
   signup:
-    handler: service/signup.handler
+    handler: src/signup.handler
     events:
       - http:
           path: signup
@@ -67,7 +69,7 @@ functions:
           cors: true # CORS 활성화
 
   signin:
-    handler: service/signin.handler
+    handler: src/signin.handler
     events:
       - http:
           path: signin
@@ -75,7 +77,7 @@ functions:
           cors: true
   
   signout:
-    handler: service/signout.handler # Lambda 핸들러 파일 경로
+    handler: src/signout.handler # Lambda 핸들러 파일 경로
     events:
       - http:
           path: signout
@@ -83,7 +85,7 @@ functions:
           cors: true
 
   confirm:
-    handler: service/confirm.handler
+    handler: src/confirmsignup.handler
     events:
       - http:
           path: confirm
@@ -91,7 +93,7 @@ functions:
           cors: true
 
   confirmPassword:
-    handler: service/confirmpassword.handler
+    handler: src/confirmpassword.handler
     events:
       - http:
           path: confirm/password
@@ -99,7 +101,7 @@ functions:
           cors: true
 
   reset:
-    handler: service/reset.handler
+    handler: src/resetpassword.handler
     events:
       - http:
           path: reset
@@ -107,17 +109,17 @@ functions:
           cors: true
 
   authorizer:
-    handler: service/handler.authorizer
+    handler: src/handler.authorizer
     events:
       - http:
           path: authorize
           method: post
 
   saveUserToDynamoDB:
-    handler: service/handler.saveUserToDynamoDB
+    handler: src/handler.saveUserToDynamoDB
 
   updateUserNickname:
-    handler: service/handler.updateUserNickname
+    handler: src/handler.updateUserNickname
     events:
       - http:
           path: update-nickname
@@ -125,7 +127,7 @@ functions:
           cors: true
 
   getUserNickname:
-    handler: service/handler.getUserNickname
+    handler: src/handler.getUserNickname
     events:
       - http:
           path: get-nickname
@@ -140,15 +142,15 @@ functions:
               - GET
   
   myEnvironments:
-    handler: service/handler.myEnvironments
+    handler: src/handler.myEnvironments
     events:
       - http:
-          path: /environments
+          path: environments
           method: get
           cors: true
   
   getUserByEmail:
-    handler: service/handler.getUserByEmail
+    handler: src/handler.getUserByEmail
     events:
       - http:
           path: get-user
@@ -163,7 +165,7 @@ functions:
               - GET
   
   getUserInfoByToken:
-    handler: service/handler.getUserInfoByToken
+    handler: src/handler.getUserInfoByToken
     events:
       - http:
           path: get-user-info
@@ -178,7 +180,7 @@ functions:
               - GET
 
   getEmailFromToken:
-    handler: service/handler.getEmailFromToken
+    handler: src/handler.getEmailFromToken
     events:
       - http:
           path: get-email

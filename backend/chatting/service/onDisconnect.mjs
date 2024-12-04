@@ -38,7 +38,7 @@ export const handler = async (event) => {
       headers: {
         "Access-Control-Allow-Origin": "*", // 모든 출처 허용
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
       body: JSON.stringify({ message: "Disconnected successfully" }),
     };

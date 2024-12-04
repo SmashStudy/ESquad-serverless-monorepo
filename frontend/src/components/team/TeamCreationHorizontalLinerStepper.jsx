@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import TeamNameInput from './stepfunction/TeamNameInput.jsx';
 import ConfirmationStep from './stepfunction/ConfirmationStep.jsx';
 import TeamUserManagement from './stepfunction/TeamUserManagement.jsx';
@@ -25,7 +24,7 @@ import {useTeams} from "../../context/TeamContext.jsx"; // teamApi 호출
 
 const steps = ['팀 이름', '팀원 초대', '확인', '이동'];
 
-const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
+const TeamCreationHorizontalLinerStepper = ({ onCancel, onTabChange}) => {
     const theme = useTheme();
     const navigate = useNavigate();
 
@@ -133,7 +132,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, handleTab}) => {
       alert('팀 ID가 설정되지 않았습니다. 팀을 다시 생성해 주세요.');
       return;
     }
-    handleTab(1);
+    onTabChange(1);
 
     onCancel();
     navigate(`/teams/${encodeURIComponent(teamId)}`);

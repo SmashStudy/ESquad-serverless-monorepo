@@ -1,14 +1,16 @@
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 import { createResponse } from "../util/responseHelper.mjs";
 
+const s3Client = new S3Client({ region: process.env.REGION });
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags = [] } = body; // tags 기본값 빈 배열로 해서 태그 없어도 게시글 생성됨
+    const { title, content, writer, book, tags = [] } = body;
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -23,14 +25,37 @@ export const handler = async (event) => {
     const postId = uuidv4();
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
-    const likedUsers = []; // 빈 배열로 초기화
+
+    const base64Images = [];
+    const updatedContent = content.replace(
+      /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
+      (match, type, data) => {
+        const key = `uploads/${uuidv4()}.png`;
+        base64Images.push({ key, data });
+        return `<img src="https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}"`;
+      }
+    );
+
+    console.log("Extracted Base64 Images:", base64Images);
+
+    for (const image of base64Images) {
+      const buffer = Buffer.from(image.data, "base64");
+      const params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: image.key,
+        Body: buffer,
+        ContentType: "image/png",
+      };
+      await s3Client.send(new PutObjectCommand(params));
+      console.log(`Image uploaded to S3: ${image.key}`);
+    }
 
     const item = {
       PK: { S: `POST#${postId}` },
       SK: { S: createdAt },
       boardType: { S: boardType },
       title: { S: title },
-      content: { S: content },
+      content: { S: updatedContent },
       writer: {
         M: {
           name: { S: writer.name },
@@ -53,10 +78,9 @@ export const handler = async (event) => {
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
-      ...(likedUsers.length > 0 && { likedUsers: { SS: likedUsers } }), // 빈 likedUsers 방지
       ...(boardType === "questions" && { resolved: { S: "false" } }),
       ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
-      comments: { L: [] }, // 빈 리스트로 초기화
+      comments: { L: [] },
     };
 
     const command = new PutItemCommand({

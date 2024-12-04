@@ -7,8 +7,9 @@ import { Link, useLocation } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
+import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
-import {useTeams} from "../../context/TeamContext.jsx";
+import { useTeams } from "../../context/TeamContext.jsx";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -116,7 +117,6 @@ const PostListPage = ({ isSmallScreen }) => {
     fetchPosts(true); // 새로 데이터 fetch
   };
 
-  alert(JSON.stringify(teams));
   return (
     <Box sx={{ mb: 2, height: "100%", width: "100%", overflow: "auto" }}>
       {/* Filters and Search */}
@@ -238,7 +238,6 @@ const PostListPage = ({ isSmallScreen }) => {
           </Box>
         </Box>
       </Box>
-
       {/* Sort Buttons */}
       <Box
         sx={{
@@ -282,138 +281,161 @@ const PostListPage = ({ isSmallScreen }) => {
           <CreateIcon sx={{ fontSize: 20, marginRight: 1 }} /> 글쓰기
         </Button>
       </Box>
-
       {/* 게시글 목록 */}
       <List sx={{ width: "100%", pr: 2 }}>
-        {posts.map((post) => (
-          <Link
-            to={`/community/${boardType}/${
-              post.postId
-            }?createdAt=${encodeURIComponent(post.createdAt)}`}
-            key={post.postId}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
-            <Box
-              sx={{
-                mb: 2,
-                borderBottom: "1px solid #ddd",
-                px: 2,
-                py: 2,
-                backgroundColor: "#f9f6ff",
-                "&:hover": {
-                  backgroundColor: alpha(theme.palette.primary.light, 0.1),
-                  cursor: "pointer",
-                },
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                {boardType === "questions" && (
-                  <Chip
-                    label={post.resolved ? "해결됨" : "미해결"}
-                    sx={{
-                      mr: 2,
-                      borderRadius: "16px",
-                      fontWeight: "bold",
-                      color: post.resolved ? "#FFFFFF" : "#FFFFFF",
-                      backgroundColor: post.resolved
-                        ? theme.palette.primary.main
-                        : "#CED4DA",
-                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                      height: "30px",
-                      minWidth: "60px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  />
-                )}
-                {boardType === "team-recruit" && (
-                  <Chip
-                    label={post.recruitStatus ? "모집완료" : "모집중"}
-                    sx={{
-                      mr: 2,
-                      borderRadius: "16px",
-                      fontWeight: "bold",
-                      color: post.recruitStatus ? "#fff" : "#fff",
-                      backgroundColor: post.recruitStatus
-                        ? "#CED4DA"
-                        : theme.palette.primary.main,
-                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                      height: "30px",
-                      minWidth: "60px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  />
-                )}
-                <Typography variant="body1" fontWeight="bold">
-                  {post.title}
-                </Typography>
-              </Box>
-              <Typography
-                variant="body2"
-                sx={{ color: theme.palette.grey[700], mb: 1 }}
-              >
-                {post.content.substring(0, 100)}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                {post.tags &&
-                  post.tags.length > 0 &&
-                  post.tags.map((tag, idx) => (
-                    <Chip
-                      key={`${post.postId}-${idx}`}
-                      label={tag}
-                      variant="outlined"
-                      sx={{
-                        borderRadius: "16px",
-                        color: theme.palette.primary.main,
-                        borderColor: theme.palette.primary.main,
-                      }}
-                    />
-                  ))}
-              </Box>
+        {posts.map((post) => {
+          const hasImage = /<img[^>]*src=["']([^"']+)["'][^>]*>/.test(
+            post.content
+          );
+          const plainText = post.content.replace(/<[^>]+>/g, "");
 
+          return (
+            <Link
+              to={`/community/${boardType}/${
+                post.postId
+              }?createdAt=${encodeURIComponent(post.createdAt)}`}
+              key={post.postId}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
               <Box
                 sx={{
+                  mb: 2,
+                  borderBottom: "1px solid #ddd",
+                  px: 2,
+                  py: 2,
+                  backgroundColor: "#f9f6ff",
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.primary.light, 0.1),
+                    cursor: "pointer",
+                  },
                   display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mt: 1,
+                  flexDirection: "column",
                 }}
               >
-                {/* 작성자와 작성일 */}
-                <Typography variant="caption" color="text.secondary">
-                  {post.writer?.nickname || "익명"} ·{" "}
-                  {new Date(post.createdAt).toLocaleString()}
-                </Typography>
-
-                {/* 좋아요, 조회수, 댓글 */}
-                <Box
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                  {boardType === "questions" && (
+                    <Chip
+                      label={post.resolved ? "해결됨" : "미해결"}
+                      sx={{
+                        mr: 2,
+                        borderRadius: "16px",
+                        fontWeight: "bold",
+                        color: post.resolved ? "#FFFFFF" : "#FFFFFF",
+                        backgroundColor: post.resolved
+                          ? theme.palette.primary.main
+                          : "#CED4DA",
+                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                        height: "30px",
+                        minWidth: "60px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    />
+                  )}
+                  {boardType === "team-recruit" && (
+                    <Chip
+                      label={post.recruitStatus ? "모집완료" : "모집중"}
+                      sx={{
+                        mr: 2,
+                        borderRadius: "16px",
+                        fontWeight: "bold",
+                        color: post.recruitStatus ? "#fff" : "#fff",
+                        backgroundColor: post.recruitStatus
+                          ? "#CED4DA"
+                          : theme.palette.primary.main,
+                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                        height: "30px",
+                        minWidth: "60px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    />
+                  )}
+                  <Typography variant="body1" fontWeight="bold">
+                    {post.title}
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="body2"
                   sx={{
+                    color: theme.palette.grey[700],
+                    mb: 1,
                     display: "flex",
-                    gap: 2,
                     alignItems: "center",
                   }}
                 >
-                  <Typography variant="caption">
-                    👍 {post.likeCount || 0}
+                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: plainText.substring(0, 100),
+                    }}
+                  />
+                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 0,
+                    minHeight: "40px",
+                  }}
+                >
+                  {post.tags &&
+                    post.tags.length > 0 &&
+                    post.tags.map((tag, idx) => (
+                      <Chip
+                        key={`${post.postId}-${idx}`}
+                        label={tag}
+                        variant="outlined"
+                        sx={{
+                          borderRadius: "16px",
+                          color: theme.palette.primary.main,
+                          borderColor: theme.palette.primary.main,
+                        }}
+                      />
+                    ))}
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 1,
+                  }}
+                >
+                  {/* 작성자와 작성일 */}
+                  <Typography variant="caption" color="text.secondary">
+                    {post.writer?.nickname || "익명"} ·{" "}
+                    {new Date(post.createdAt).toLocaleString()}
                   </Typography>
-                  <Typography variant="caption">
-                    👁 {post.viewCount || 0}
-                  </Typography>
-                  <Typography variant="caption">
-                    💬 {post.commentCount || 0}
-                  </Typography>
+
+                  {/* 좋아요, 조회수, 댓글 */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="caption">
+                      👍 {post.likeCount || 0}
+                    </Typography>
+                    <Typography variant="caption">
+                      👁 {post.viewCount || 0}
+                    </Typography>
+                    <Typography variant="caption">
+                      💬 {post.commentCount || 0}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </List>
-
       {/* Pagination */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Button
@@ -430,7 +452,6 @@ const PostListPage = ({ isSmallScreen }) => {
           다음
         </Button>
       </Box>
-
       <PostCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}
