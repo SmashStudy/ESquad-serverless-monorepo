@@ -1,20 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import ChatWindow from './ChatWindow.jsx';
-// import {createTeamChatRoom} from "./chatApi/ChatApi.jsx";
+import ChatMessages from "./ChatMessages.jsx";
 
-export default function ChatDrawer({ isOpen, toggleDrawer }) {
+export default function ChatDrawer({ isOpen, toggleDrawer, selectedTeam }) {
     const handleDrawerClose = () => {
-        if (toggleDrawer) {
-            toggleDrawer(false); // Drawer를 닫음
-        }
+        if (toggleDrawer) { toggleDrawer(false); }
     };
 
     const handleDrawerOpen = () => {
-        if (toggleDrawer) {
-            toggleDrawer(true); // Drawer를 염
-        }
+        if (toggleDrawer) { toggleDrawer(true);}
     };
 
     return (
@@ -33,7 +28,11 @@ export default function ChatDrawer({ isOpen, toggleDrawer }) {
                         overflow: 'hidden',
                     }}
                 >
-                    <ChatWindow />
+                    {selectedTeam ? (
+                        <ChatMessages currentChatRoom={{ id: selectedTeam.PK, teamName: selectedTeam.teamName }} />
+                    ) : (
+                        <div style={{ padding: '16px' }}>채팅방을 선택해주세요.</div>
+                    )}
                 </Box>
             </SwipeableDrawer>
         </div>

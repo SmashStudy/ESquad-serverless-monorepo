@@ -33,6 +33,7 @@ const ChatWindow = () => {
     }, []);
 
     const handleChatRoomSelect = (room) => {
+        if (currentChatRoom?.id === room.id) return;
         setCurrentChatRoom(room);
     };
 
