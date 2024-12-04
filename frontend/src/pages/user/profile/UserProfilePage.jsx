@@ -18,7 +18,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import Layout from './Layout';
+import Layout from './UserProfileLayout';
 import timeGridPlugin from '@fullcalendar/timegrid'; // 시간대 플러그인 추가
 
 

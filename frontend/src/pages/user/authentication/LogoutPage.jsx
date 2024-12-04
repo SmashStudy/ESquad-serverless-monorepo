@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { initializeCognitoConfig, getCognitoConfig } from './Config.js';
+import { initializeCognitoConfig, getCognitoConfig } from '../../../utils/user/Config.js';
 
-const GoogleLogout = () => {
+const Logout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // 로딩 상태 관리
 
@@ -37,4 +37,4 @@ const GoogleLogout = () => {
   return null; // 모든 처리가 끝나면 컴포넌트 렌더링 없음
 };
 
-export default GoogleLogout;
+export default Logout;

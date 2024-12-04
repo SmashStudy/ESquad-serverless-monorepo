@@ -11,26 +11,26 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
-import UserStorageUsage from "./components/user/UserStorageUsage";
-import Nickname from "./components/user/UserNickname.jsx";
-import Layout from "./components/user/Layout.jsx";
-import SignUp from "./components/google/SignUp.jsx";
-import Confirm from "./components/google/EmailVerification.jsx"
-import PrivateRoute from "./components/user/PrivateRoute.jsx";
-import AdminPage from "./components/user/AdminPage.jsx";
-import AdminRoute from "./components/google/AdminRoute.jsx";
-import UnauthorizedPage from "./components/google/UnauthorizedPage.jsx";
-import ConfirmPassword from "./components/user/ConfirmPassword.jsx";
-import RequestPasswordReset from "./components/user/RequestPasswordReset.jsx";
-import GoogleLogin from './components/google/GoogleLogin.jsx';
-import AuthCallback from './components/google/AuthCallback.jsx';
-import GoogleLogout from './components/google/GoogleLogout.jsx';
-import UserProfile from './components/user/UserProfile.jsx';
+import UserStorageUsage from "./pages/user/profile/UserStorageUsagePage.jsx";
+import UserProfileNickname from "./pages/user/profile/UserProfileNicknamePage.jsx";
+import UserProfileLayout from "./pages/user/profile/UserProfileLayout.jsx";
+import SignUp from "./pages/user/authentication/SignUpPage.jsx";
+import UserEmailVerification from "./pages/user/authentication/UserEmailVerificationPage.jsx"
+import PrivateRoute from "./components/routes/PrivateRoute.jsx";
+import AdminPage from "./pages/user/admin/AdminPage.jsx";
+import AdminRoute from "./components/routes/AdminRoute.jsx";
+import UnauthorizedPage from "./pages/user/admin/UnauthorizedPage.jsx";
+import UserPasswordReset from "./pages/user/authentication/UserPasswordResetPage.jsx";
+import UserConfirmPassword from "./pages/user/authentication/UserConfirmPasswordPage.jsx";
+import Login from './pages/user/authentication/LoginPage.jsx';
+import AuthCallback from './auth/AuthCallback.jsx';
+import Logout from './pages/user/authentication/LogoutPage.jsx';
+import UserProfile from './pages/user/profile/UserProfilePage.jsx';
 import ManageUserPage from './pages/team/ManageUserPage.jsx';
 import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
 import { decodeJWT } from "./utils/decodeJWT.js";
-import {UserNicknameProvider} from "./components/context/UserNicknameContext.jsx";
-import {UserEmailProvider} from "./components/context/UserEmailContext.jsx";
+import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
+import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
 
 const theme = createTheme({
@@ -120,13 +120,13 @@ function App() {
                 <Route path="*" element={<Navigate to="/login" />} />
               )}
 
-              <Route path="/login" element={<GoogleLogin />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/logout" element={<GoogleLogout />} />
+              <Route path="/logout" element={<Logout />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/confirm" element={<Confirm />} />
-              <Route path="/reset" element={<RequestPasswordReset />} />
-              <Route path="/confirm/password" element={<ConfirmPassword />} />
+              <Route path="/email/verification" element={<UserEmailVerification />} />
+              <Route path="/confirm/password" element={<UserConfirmPassword />} />
+              <Route path="/confirm/password/reset" element={<UserPasswordReset />} />
 
 
               {/* 보호된 경로 */}
@@ -141,8 +141,8 @@ function App() {
                 {/* user */}
                 <Route path="/user/profile" element={<UserProfile />} />
                 <Route path="/user/profile/category" element={<UserStorageUsage />} />
-                <Route path="/user/profile/nickname" element={<Nickname />} />
-                <Route path="/user/profile/layout" element={<Layout />} />
+                <Route path="/user/profile/nickname" element={<UserProfileNickname />} />
+                <Route path="/user/profile/layout" element={<UserProfileLayout />} />
 
                 {/* admin */}
                 <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
