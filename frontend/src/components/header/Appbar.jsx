@@ -367,7 +367,6 @@ const Appbar = ({
                   <ListItemButton
                     onClick={() => {
                       handleCreateTeamButtonClick();
-                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
                     }}
                     sx={{
                       "&:hover": { cursor: "pointer", fontSize: "1.2rem" },
