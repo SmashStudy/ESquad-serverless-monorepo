@@ -169,7 +169,11 @@ export const handleFileDelete = async (fileKey, userEmail, email,
   try {
     setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
     const presignedResponse = await axios.delete(
-        `${storageApi}/${encodeURIComponent(fileKey)}`, {headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}});
+        `${storageApi}/${encodeURIComponent(fileKey)}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`
+          }
+        });
     await axios.delete(presignedResponse.data.presignedUrl);
     setUploadedFiles(
         (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
@@ -191,8 +195,9 @@ export const handleFileDownload = async (fileKey, originalFileName,
     const presignedResponse = await axios.patch(
         `${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
           updateType: 'incrementDownloadCount'
-        },{headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}}
-        );
+        },
+        {headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}}
+    );
 
     const presignedUrl = presignedResponse.data.presignedUrl;
     const downloadResponse = await axios.get(presignedUrl, {
@@ -231,5 +236,44 @@ export const handleFileDownload = async (fileKey, originalFileName,
   } catch (error) {
     setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});
     console.error('Failed to download file:', error);
+  }
+};
+
+export const handleQuillImageUpload = async (file,setQuillUrl) => {
+  if (!file) {
+    return;
+  }
+
+  try {
+    // Presigned URL 요청
+    const response = await axios.post(
+        `${storageApi}/presigned-url`,
+        {
+          fileName: file.name,
+          fileType: file.type,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+    );
+    const {uploadUrl, imageUrl} = response.data;
+
+    if (!uploadUrl || !imageUrl) {
+      throw new Error("Presigned URL 또는 이미지 URL 생성 실패");
+    }
+
+    // S3에 파일 업로드
+    await axios.put(uploadUrl, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    // Quill에 사용할 URL 설정
+    setQuillUrl(imageUrl);
+  } catch (error) {
+    console.error("Quill 이미지 업로드 실패:", error);
   }
 };

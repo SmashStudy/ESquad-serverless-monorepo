@@ -245,74 +245,44 @@ resources:
                 - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
 #    for Quill
-QuillImageBucket:
-  Type: AWS::S3::Bucket
-  Properties:
-    BucketName: ${env:QUILL_S3_BUCKET}
-    CorsConfiguration:
-      CorsRules:
-        - AllowedOrigins:
-            - '*'
-          AllowedHeaders:
-            - '*'
-          AllowedMethods:
-            - GET
-            - PUT
-            - POST
-            - DELETE
-          MaxAge: 3000
-    VersioningConfiguration:
-      Status: Enabled
+    QuillImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:QUILL_S3_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+              MaxAge: 3000
+        VersioningConfiguration:
+          Status: Enabled
 
-  QuillImageBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref QuillImageBucket
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal: '*'
-            Action:
-              - s3:GetObject
-              - s3:PutObject
-            Resource:
-              - !Sub '${QuillImageBucket.Arn}/*'
+    QuillImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref QuillImageBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !Sub '${QuillImageBucket.Arn}/*'
 
-  # CloudFront 연결 (새 버킷 전용)
-  QuillCloudFrontDistribution:
-    Type: AWS::CloudFront::Distribution
-    Properties:
-      DistributionConfig:
-        Enabled: true
-        DefaultCacheBehavior:
-          TargetOriginId: QuillS3Origin
-          ViewerProtocolPolicy: redirect-to-https
-          AllowedMethods:
-            - GET
-            - HEAD
-          CachedMethods:
-            - GET
-            - HEAD
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
-          MinTTL: 0
-          DefaultTTL: 3600
-          MaxTTL: 86400
-        Origins:
-          - DomainName: !GetAtt QuillImageBucket.DomainName
-            Id: QuillS3Origin
-            S3OriginConfig:
-              OriginAccessIdentity: !Ref QuillCloudFrontOriginAccessIdentity
-        ViewerCertificate:
-          CloudFrontDefaultCertificate: true
-
-  QuillCloudFrontOriginAccessIdentity:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: Access QuillImageBucket from CloudFront
 
 # plugin setting
 
