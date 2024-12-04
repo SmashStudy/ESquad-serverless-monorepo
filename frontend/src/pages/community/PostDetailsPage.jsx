@@ -26,6 +26,8 @@ import PostEditDialog from "../../components/content/community/PostEditDialog";
 import Tooltip from "@mui/material/Tooltip";
 import DOMPurify from "dompurify";
 import he from "he"; // npm install he
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -432,7 +434,7 @@ const PostDetailsPage = () => {
       </Box>
 
       {/* 태그 표시 */}
-      <Box sx={{ mt: 1, mb: 1 }}>
+      <Box sx={{ mt: 2, mb: 2 }}>
         {post.tags && post.tags.length > 0 && (
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
             {post.tags.map((tag, index) => (
@@ -453,7 +455,7 @@ const PostDetailsPage = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 2,
+          mb: 1,
           color: "text.secondary",
         }}
       >
@@ -468,6 +470,7 @@ const PostDetailsPage = () => {
                     display: "flex",
                     alignItems: "center",
                     fontWeight: "bold",
+                    mb: 1,
                   }}
                 >
                   ✔ 해결된 질문
@@ -503,17 +506,29 @@ const PostDetailsPage = () => {
           </Typography>
         </Typography>
       </Box>
-
-      <Button
-        startIcon={<ThumbUpIcon />}
-        onClick={handleLikePost}
+      <Box
         sx={{
-          color: likedByUser ? "primary.main" : "text.secondary",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          mb: 1,
         }}
       >
-        {post.likeCount}
-      </Button>
-      <Divider sx={{ marginBottom: 3 }} />
+        <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
+          <IconButton
+            onClick={handleLikePost}
+            sx={{
+              color: likedByUser ? "red" : "gray",
+              padding: "9px",
+            }}
+          >
+            {likedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </Tooltip>
+        <Typography variant="body2" sx={{ marginLeft: "0px" }}>
+          {post.likeCount}
+        </Typography>
+      </Box>
 
       <Paper
         elevation={2}
