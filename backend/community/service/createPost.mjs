@@ -26,12 +26,11 @@ export const handler = async (event) => {
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 
-    // Extract Base64 images from content and replace with S3 URLs
     const base64Images = [];
     const updatedContent = content.replace(
       /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
       (match, type, data) => {
-        const key = `uploads/${uuidv4()}.png`; // Use UUID for unique file name
+        const key = `uploads/${uuidv4()}.png`;
         base64Images.push({ key, data });
         return `<img src="https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}"`;
       }
@@ -39,26 +38,24 @@ export const handler = async (event) => {
 
     console.log("Extracted Base64 Images:", base64Images);
 
-    // Upload Base64 images to S3
     for (const image of base64Images) {
       const buffer = Buffer.from(image.data, "base64");
       const params = {
         Bucket: process.env.S3_BUCKET,
         Key: image.key,
         Body: buffer,
-        ContentType: "image/png", // Default to PNG
+        ContentType: "image/png",
       };
       await s3Client.send(new PutObjectCommand(params));
       console.log(`Image uploaded to S3: ${image.key}`);
     }
 
-    // Prepare DynamoDB Item
     const item = {
       PK: { S: `POST#${postId}` },
       SK: { S: createdAt },
       boardType: { S: boardType },
       title: { S: title },
-      content: { S: updatedContent }, // Updated content with S3 URLs
+      content: { S: updatedContent },
       writer: {
         M: {
           name: { S: writer.name },
