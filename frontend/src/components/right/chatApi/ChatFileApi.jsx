@@ -73,45 +73,16 @@ export const uploadFile = async ({ file, room_id, user_id, nickname,targetType})
 
 export const deleteFile = async (fileKey) => {
     try {
-        const presignedResponse = await axios.post(
-            `${storageApi}/presigned-url`,
-            { action: 'deleteObject', fileKey: fileKey },
-            { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } }
-        );
+        const presignedResponse = await axios.delete(
+            `${storageApi}/${encodeURIComponent(fileKey)}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("jwtToken")}`
+                }
+            });
 
         await axios.delete(presignedResponse.data.presignedUrl);
         await axios.delete(`${storageApi}/${encodeURIComponent(fileKey)}`);
     } catch (error) {
         console.error('파일 삭제 실패:', error.message);
-    }
-};
-
-export const downloadFile = async (fileKey, originalFileName) => {
-    try {
-        const presignedResponse = await axios.post(
-            `${storageApi}/presigned-url`,
-        { action: 'getObject', fileKey: fileKey },
-        { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } }
-    );
-
-        const downloadResponse = await axios.get(
-            presignedResponse.data.presignedUrl,
-            { responseType: 'blob' }
-        );
-
-        const blob = new Blob([downloadResponse.data], {
-            type: downloadResponse.headers['content-type'],
-        });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = originalFileName || fileKey;
-        document.body.appendChild(link);
-        link.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-    } catch (error) {
-        console.error('파일 다운로드 실패:', error.message);
-        throw error;
     }
 };

@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { getPresignedUrl } from "../chatApi/ChatUtils.jsx";
+import {fetchPreview} from "../../../utils/storage/utilities.js";
 
 const FilePreviewComponent = ({ fileKey, contentType }) => {
     const [previewUrl, setPreviewUrl] = useState(null);
 
     useEffect(() => {
-        const fetchPreview = async () => {
+        const fetchPreviewUrl = async () => {
             if (fileKey) {
                 try {
-                    const url = await getPresignedUrl(fileKey);
-                    setPreviewUrl(url);
+                    await fetchPreview(fileKey, setPreviewUrl);
                 } catch (error) {
-                    console.error("미리보기 presigned URL 요청 실패:", error);
+                    console.error("미리보기 URL 요청 실패:", error);
                 }
             }
         };
-        fetchPreview();
+        fetchPreviewUrl();
     }, [fileKey]);
 
     // 파일 미리보기가 이미지인 경우

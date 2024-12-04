@@ -9,13 +9,14 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { pink } from '@mui/material/colors';
 import { useMediaQuery, useTheme } from '@mui/material';
-import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
-import {deleteFile, downloadFile} from "./chatApi/ChatFileApi.jsx";
+import {fetchPreview, handleFileDownload} from "../../utils/storage/utilities.js";
+import {deleteFile} from "./chatApi/ChatFileApi.jsx";
 import { getPresignedUrl} from "./chatApi/ChatUtils.jsx";
+import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
 
 const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) => {
     const theme = useTheme();
-    const isFileMessage = message.fileKey && message.contentType && message.presignedUrl;
+    const isFileMessage = message.fileKey && message.contentType;
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const [previewUrl, setPreviewUrl] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -83,7 +84,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
     const handleDownloadFile = async () => {
         try {
             if (message.fileKey)
-            await downloadFile(message.fileKey, message.originalFileName);
+            await handleFileDownload(message.fileKey, message.originalFileName);
         } catch (error) {
             console.error("파일 다운로드 실패:", error.message);
         }
@@ -133,7 +134,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
                     ) : (
                         <>
                             {isFileMessage ? (
-                                <FilePreviewComponent fileKey={message.fileKey} contentType={message.contentType} presignedUrl={message.presignedUrl} />
+                                <FilePreviewComponent fileKey={message.fileKey} contentType={message.contentType}/>
                             ) : (
                                 <span style={{ marginBottom: '0.5rem', color: '#333' }}>{message.message}</span>
                             )}

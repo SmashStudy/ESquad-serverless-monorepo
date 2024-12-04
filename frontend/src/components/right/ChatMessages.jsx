@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
-import {uploadFile, downloadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
+import {uploadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
 import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
