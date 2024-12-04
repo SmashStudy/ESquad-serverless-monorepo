@@ -26,9 +26,8 @@ import LinearProgressWithLabel from "../../../components/custom/CustomMui.jsx";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
-  const study = location.state.study;
+  const study = location.state?.study;
   const theme = useTheme();
-  const {studyId} = useParams();
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -47,8 +46,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchFiles(
-        studyId,
+    if (study) {
+      fetchFiles(
+        study.PK,
         'STUDY_PAGE',
         5,
         currentPage,
@@ -60,8 +60,9 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
         setSnackbar,
         setIsLoading
     );
+    }
     fetchUserEmail(setEmail);
-  }, [studyId, currentPage]);
+  }, [currentPage, study]);
 
   const handleSnackbarClose = () => {
     setSnackbar({...snackbar, open: false});
@@ -84,43 +85,57 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   };
 
   return (
+    <Box
+      sx={{
+        display: 'flex',
+        border: '1px solid',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        mb: 3,
+        p: 2,
+        gap: 2,
+        height: '100%',
+        position:'relative'
+      }}
+    >
+      {/* Image */}
       <Box
-          sx={{
-            border: '1px solid',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            mb: 3,
-            p: 2,
-            gap: 2
-          }}
+        sx={{
+          width: '100%',
+          height: '20vh',
+          minHeight:'20vh',
+          overflowY: 'auto',
+          top: 0,
+          left: 0,
+        }}
       >
-        <Box sx={{width: '100%', height: '20vh', overflowY: 'auto'}}>
-          <Box
-              component="img"
-              src={
-                  study.bookImage ||
-                  'https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg'
-              }
-              alt={study.title}
-              sx={{width: '100%', objectFit: 'contain', mb: 2}}
-          />
-        </Box>
-        <Divider sx={{borderBottom: '1px solid #ddd'}}/>
-        <SnackbarAlert
-            open={snackbar.open}
-            message={snackbar.message}
-            severity={snackbar.severity}
-            onClose={handleSnackbarClose}
+        <Box
+          component="img"
+          src={
+            study?.imgPath ||
+            'https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg'
+          }
+          alt={study?.studyName}
+          sx={{ width: '100%', objectFit: 'contain',}}
         />
-        <Box sx={{my: 4}}>
-          <Typography variant="h5" fontWeight="bold" gutterBottom>
-            {study.title}
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-            {study.members}
-          </Typography>
-        </Box>
+      </Box>
+      
+      {/* study Info */}
+      <Box sx={{ 
+        width: '100%',
+        padding: '16px',
+        top: 0
+        }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          {study?.studyName || 'Loading...'}
+        </Typography>
+      </Box>
+      
+      {/* file */}
+      <Box sx={{ 
+        width: '100%',
+        padding: '16px',
+        }}>
         <Accordion>
           <AccordionSummary
               expandIcon={<ExpandMoreIcon/>}
@@ -163,6 +178,12 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                 }
                 isUploading={isUploading}
             />
+
+            {selectedFile !== null && (
+                <FilePreviewBeforeUpload
+                    file={selectedFile}
+                />
+            )}
 
             {downloadProgress && (
                 <Box sx={{ my: 2,  alignItems: 'center' }}>
@@ -240,6 +261,15 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
           </AccordionDetails>
         </Accordion>
       </Box>
+           
+      {/* Warning */}
+      <SnackbarAlert
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleSnackbarClose}
+      />
+    </Box>
   );
 };
 
