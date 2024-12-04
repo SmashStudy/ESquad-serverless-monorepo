@@ -10,8 +10,8 @@ import {
   CircularProgress,
 } from '@mui/material';
 import axios from 'axios';
-import Layout from './Layout'; // Layout 컴포넌트 가져오기
-import {getUserApi} from "../../utils/apiConfig.js";
+import Layout from './UserProfileLayout.jsx'; // Layout 컴포넌트 가져오기
+import {getUserApi} from "../../../utils/apiConfig.js";
 
 const NicknameEditor = () => {
   const [nickname, setNickname] = useState('');

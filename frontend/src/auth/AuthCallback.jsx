@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { initializeCognitoConfig, getCognitoConfig } from './Config.js';
+import { initializeCognitoConfig, getCognitoConfig } from '../utils/user/Config.js';
 
 const AuthCallback = () => {
     const location = useLocation();

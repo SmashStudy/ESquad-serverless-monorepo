@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, Grid, TextField, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {getUserApi} from "../../utils/apiConfig.js";
+import {getUserApi} from "../../../utils/apiConfig.js";
 import { keyframes } from "@mui/system";
 
 const API_URL = "https://jg3x4yqtfb.execute-api.us-east-1.amazonaws.com/local";
