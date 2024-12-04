@@ -6,6 +6,19 @@ import {getMimeType} from "./getMimeType.js";
 const storageApi = getStorageApi();
 const userApi = getUserApi();
 
+export const fetchPreview = async (fileKey, setPreviewUrl) => {
+  if (fileKey) {
+    try {
+      const response = await axios.get(
+          `${storageApi}/${encodeURIComponent(fileKey)}`);
+      const url = response.data.presignedUrl
+      setPreviewUrl(url);
+    } catch (error) {
+      console.error("미리보기 presigned URL 요청 실패:", error);
+    }
+  }
+};
+
 export const fetchFiles = async (targetId, targetType, limit = 5,
     currentPage = 1,
     lastEvaluatedKeys = null, setUploadedFiles = () => {
@@ -105,7 +118,8 @@ export const handleFileUpload = async (
           userEmail: email,
           userNickname: nickname,
           fileSize: selectedFile.size,
-          contentType: getMimeType(selectedFile.name),
+          contentType: selectedFile ? selectedFile.type : getMimeType(
+              selectedFile.name),
           actualType: selectedFile.type,
           createdAt: getFormattedDate(),
         },
@@ -155,7 +169,11 @@ export const handleFileDelete = async (fileKey, userEmail, email,
   try {
     setSnackbar({severity: 'info', message: '파일 삭제 중...', open: true});
     const presignedResponse = await axios.delete(
-        `${storageApi}/${encodeURIComponent(fileKey)}`);
+        `${storageApi}/${encodeURIComponent(fileKey)}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`
+          }
+        });
     await axios.delete(presignedResponse.data.presignedUrl);
     setUploadedFiles(
         (prevFiles) => prevFiles.filter((file) => file.fileKey !== fileKey));
@@ -177,7 +195,9 @@ export const handleFileDownload = async (fileKey, originalFileName,
     const presignedResponse = await axios.patch(
         `${storageApi}/metadata/${encodeURIComponent(fileKey)}`, {
           updateType: 'incrementDownloadCount'
-        });
+        },
+        {headers: {Authorization: `Bearer ${localStorage.getItem("jwtToken")}`}}
+    );
 
     const presignedUrl = presignedResponse.data.presignedUrl;
     const downloadResponse = await axios.get(presignedUrl, {
@@ -216,5 +236,44 @@ export const handleFileDownload = async (fileKey, originalFileName,
   } catch (error) {
     setSnackbar({severity: 'error', message: '파일 다운로드 실패', open: true});
     console.error('Failed to download file:', error);
+  }
+};
+
+export const handleQuillImageUpload = async (file,setQuillUrl) => {
+  if (!file) {
+    return;
+  }
+
+  try {
+    // Presigned URL 요청
+    const response = await axios.post(
+        `${storageApi}/presigned-url`,
+        {
+          fileName: file.name,
+          fileType: file.type,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+    );
+    const {uploadUrl, imageUrl} = response.data;
+
+    if (!uploadUrl || !imageUrl) {
+      throw new Error("Presigned URL 또는 이미지 URL 생성 실패");
+    }
+
+    // S3에 파일 업로드
+    await axios.put(uploadUrl, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    // Quill에 사용할 URL 설정
+    setQuillUrl(imageUrl);
+  } catch (error) {
+    console.error("Quill 이미지 업로드 실패:", error);
   }
 };
