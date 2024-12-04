@@ -124,7 +124,7 @@ function App() {
                 <Route path="study" element={<StudyListPage />} />
                 <Route path="study/:studyId" element={<StudyDetailPage />} />
                 <Route path="book/search" element={<BookListPage />} />
-                <Route path="book/search/:bookId" element={<BookDetailPage />} />
+                <Route path="book/:bookId" element={<BookDetailPage />} />
                 <Route path="questions" element={<PostListPage />} />
                 <Route path="questions/:postId" element={<PostDetailsPage />} />
                 <Route path="questions/:postId/edit" element={<PostEditPage />} />
