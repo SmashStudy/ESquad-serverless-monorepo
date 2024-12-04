@@ -3,11 +3,10 @@ import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
-import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
+import {getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
-import {getFormattedDate} from "../../utils/fileFormatUtils.js";
 const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
@@ -87,7 +86,6 @@ function ChatMessages({currentChatRoom}) {
     const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
     newSocket.onopen = () => {
-        console.log(`${room_id} 채팅방 연결됨`);
         setLoading(false);
         loadMessages(room_id);
     };
@@ -106,27 +104,6 @@ function ChatMessages({currentChatRoom}) {
     }
     socketRef.current = newSocket;
 }
-
-// const handleIncomingMessage = (data) => {
-//     if (data.type === "sendMessage") {
-//         // 새로운 메시지 추가
-//         setMessages((prev) => sortMessages([...prev, data]));
-//     } else if (data.type === "updateMessage") {
-//         // 메시지 수정
-//         setMessages((prev) =>
-//             prev.map((msg) =>
-//                 msg.timestamp === data.timestamp ? { ...msg, ...data } : msg
-//             )
-//         );
-//     } else if (data.type === "deleteMessage") {
-//         // 메시지 삭제
-//         setMessages((prev) => prev.filter((msg) => msg.timestamp !== data.timestamp));
-//     } else {
-//         console.warn("알 수 없는 메시지 유형:", data);
-//     }
-//     scrollToBottom(); // UI 스크롤 유지
-// };
-
 const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({behavior: "smooth"});
 }
@@ -145,7 +122,6 @@ const scrollToBottom = () => {
                 nickname: nickname,
                 targetType: 'CHAT',
             });
-            console.log("------------- ",uploadResponse);
             const fileMessage = {
                 action: 'sendMessage',
                 message: `파일 업로드 완료: ${uploadResponse.originalFileName}`,
@@ -157,9 +133,7 @@ const scrollToBottom = () => {
                 nickname: nickname,
                 timestamp: timestamp,
                 isFile: true,
-        };
-            console.log("fileMessage : ", fileMessage);
-
+            };
             // 웹소켓으로 전송
             await sendMessageAPI(socketRef, fileMessage);
             // 메시지 상태 업데이트
@@ -191,7 +165,6 @@ const scrollToBottom = () => {
                 nickname: nickname,
                 timestamp: timestamp
             };
-            console.log("textMessage: " , textMessage);
             await sendMessageAPI(socketRef, textMessage);
             setMessages((prevMessages) => [...prevMessages, textMessage]);
         }

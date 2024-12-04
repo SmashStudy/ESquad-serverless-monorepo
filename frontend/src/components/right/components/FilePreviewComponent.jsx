@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getPresignedUrl } from "../chatApi/ChatUtils.jsx";
 import {fetchPreview} from "../../../utils/storage/utilities.js";
 
 const FilePreviewComponent = ({ fileKey, contentType }) => {

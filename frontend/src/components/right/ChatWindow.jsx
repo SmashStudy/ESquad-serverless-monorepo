@@ -18,10 +18,8 @@ const ChatWindow = () => {
             setError(null);
 
             const teamData = await fetchTeamListAPI(); // API 호출
-            console.log("Fetched Teams:", teamData); // 팀 데이터 로그 확인
             setTeams(teamData);
             setCurrentChatRoom(teamData[0] || null); // 첫 번째 팀을 기본값으로 설정
-            console.log("Default Chat Room:", teamData[0]); // 기본 채팅방 로그 확인
         } catch (error) {
             console.error("팀 목록 가져오기 실패:", error.message);
             setError("팀 데이터를 불러오는 중 오류가 발생했습니다.");

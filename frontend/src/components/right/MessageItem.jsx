@@ -9,8 +9,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { pink } from '@mui/material/colors';
 import { useMediaQuery, useTheme } from '@mui/material';
-import {fetchPreview, handleFileDownload} from "../../utils/storage/utilities.js";
-import {deleteFile} from "./chatApi/ChatFileApi.jsx";
+import { handleFileDownload} from "../../utils/storage/utilities.js";
 import { getPresignedUrl} from "./chatApi/ChatUtils.jsx";
 import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
 
