@@ -33,7 +33,7 @@ export const fetchFiles = async (room_id) => {
     }
 };
 
-export const uploadFile = async ({ file, room_id, user_id}) => {
+export const uploadFile = async ({ file, room_id}) => {
     const uniqueFileName = `${Date.now()}-${file.name}`;
     const timestamp = new Date().toISOString();
 
