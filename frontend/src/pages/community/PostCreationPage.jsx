@@ -313,7 +313,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 7,
+          pt: 8,
         }}
       >
         <Button
