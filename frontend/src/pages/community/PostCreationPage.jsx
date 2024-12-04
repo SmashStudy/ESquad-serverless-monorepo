@@ -245,11 +245,11 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       // Extract Base64 images from content
       const base64Images = [];
       const updatedContent = content.replace(
-        /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
+        /<img\s+src="data:image\/(png|jpeg|jpg);base64,([^"]+)"[^>]*>/g,
         (match, type, data) => {
           const fileName = `${Date.now()}.${type}`;
           base64Images.push({ fileName, data });
-          return `<img data-file="${fileName}" />`;
+          return `<img data-file="${fileName}" />`; // 완전히 닫힌 태그 반환
         }
       );
 
