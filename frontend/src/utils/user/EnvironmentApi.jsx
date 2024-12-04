@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { initializeCognitoConfig, getCognitoConfig } from './Config';
+import { initializeCognitoConfig, getCognitoConfig } from './Config.js';
 
 const Environment = () => {
   const [loading, setLoading] = useState(true);

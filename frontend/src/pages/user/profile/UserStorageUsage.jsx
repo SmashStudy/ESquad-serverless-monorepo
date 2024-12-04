@@ -12,15 +12,15 @@ import {AgGridReact} from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import * as echarts from 'echarts';
-import Layout from './Layout';
-import useUserEmail from "../../hooks/user/UseUserEmail.jsx";
-import {formatFileSize} from "../../utils/fileFormatUtils.js";
-import {getStorageApi} from "../../utils/apiConfig.js";
+import Layout from './UserProfileLayout.jsx';
+import useUserEmail from "../../../hooks/user/UseUserEmail.jsx";
+import {formatFileSize} from "../../../utils/fileFormatUtils.js";
+import {getStorageApi} from "../../../utils/apiConfig.js";
 import {
   handleFileDelete,
   handleFileDownload
-} from "../../utils/storage/utilities.js";
-import SnackbarAlert from "../storage/SnackBarAlert.jsx";
+} from "../../../utils/storage/utilities.js";
+import SnackbarAlert from "../../../components/storage/SnackBarAlert.jsx";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
 
