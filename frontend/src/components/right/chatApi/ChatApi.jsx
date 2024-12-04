@@ -37,6 +37,7 @@ export const fetchMessageAPI = async (room_id) => {
 // 메시지 전송
 export const sendMessageAPI = async (socket, messageData) => {
     try {
+
         console.log(`messageData: ${JSON.stringify(messageData)}`);
 
         socket.current.send(JSON.stringify(messageData));

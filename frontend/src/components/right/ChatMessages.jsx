@@ -50,45 +50,44 @@ function ChatMessages({currentChatRoom}) {
 
     useEffect(() => {
         if (!currentChatRoom || !email) { return; }
+        setMessages([]);
         setLoading(true);
-        if (socketRef.current) {
-            socketRef.current.close(); // 기존 WebSocket 연결 닫기
-        }
+        if (socketRef.current) { socketRef.current.close();}
         connectWebSocket(currentChatRoom.id);
     }, [currentChatRoom, email]);
 
-const sortMessages = (messages) => {
-    return [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-};
+    const sortMessages = (messages) => {
+        return [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    };
 
-// 메시지 불러오기
-const loadMessages = async (room_id) => {
-    try {
-        const fetchedMessages = await fetchMessageAPI(room_id);
-        const fetchedFiles = await fetchFiles(room_id);
+    // 메시지 불러오기
+    const loadMessages = async (room_id) => {
+        try {
+            const fetchedMessages = await fetchMessageAPI(room_id);
+            const fetchedFiles = await fetchFiles(room_id);
 
-        // 유효하지 않은 파일 메시지를 필터링
-        const combinedMessages = sortMessages([
-            ...(fetchedMessages || []).filter(msg => !(msg.fileKey && !msg.presignedUrl)),
-            ...(fetchedFiles || []).filter(file => file.fileKey && file.presignedUrl),
-        ]);
+            // 유효하지 않은 파일 메시지를 필터링
+            const combinedMessages = sortMessages([
+                ...(fetchedMessages || []).filter(msg => !(msg.fileKey && !msg.presignedUrl)),
+                ...(fetchedFiles || []).filter(file => file.fileKey && file.presignedUrl),
+            ]);
+            setMessages(combinedMessages);
+            scrollToBottom();
+        } catch (error) {
+            console.error("메시지 불러오기 실패:", error.message);
+        } finally { setLoading(false); }
+    };
 
-        setMessages(combinedMessages);
-        scrollToBottom();
-    } catch (error) {
-        console.error("메시지 불러오기 실패:", error.message);
-    }
-};
-
-// 웹소켓 연결 함수
-const connectWebSocket = (room_id) => {
+    // 웹소켓 연결 함수
+    const connectWebSocket = (room_id) => {
     const encodedRoomId = encodeURIComponent(room_id); // room_id를 인코딩
     const encodedUserId = encodeURIComponent(email); // email도 인코딩
 
     const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
     newSocket.onopen = () => {
-        console.log("연결됨");
+        console.log(`${room_id} 채팅방 연결됨`);
+        setLoading(false);
         loadMessages(room_id);
     };
     newSocket.onmessage = (event) => {
@@ -101,6 +100,7 @@ const connectWebSocket = (room_id) => {
     };
     newSocket.onclose = () => {
         console.error("WebSocket 연결 종료");
+        setTimeout(() => connectWebSocket(room_id), 3000);
         socketRef.current = null;
     }
     socketRef.current = newSocket;
@@ -193,8 +193,6 @@ const scrollToBottom = () => {
                 timestamp: timestamp
             };
             console.log("textMessage: " , textMessage);
-
-            // sendMessageAPI 호출 전후 로그 추가
             await sendMessageAPI(socketRef, textMessage);
             setMessages((prevMessages) => [...prevMessages, textMessage]);
         }
