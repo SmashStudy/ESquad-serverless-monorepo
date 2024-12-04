@@ -373,7 +373,15 @@ const PostListPage = ({ isSmallScreen }) => {
                     }}
                   />
                 </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 0,
+                    minHeight: "40px",
+                  }}
+                >
                   {post.tags &&
                     post.tags.length > 0 &&
                     post.tags.map((tag, idx) => (
