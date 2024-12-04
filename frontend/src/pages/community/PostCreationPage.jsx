@@ -175,18 +175,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const { key, ...restProps } = getTagProps({ index });
-                return (
-                  <Chip
-                    key={`tag-${index}`} // 명시적으로 key 설정
-                    variant="outlined"
-                    size="small"
-                    label={option}
-                    {...restProps} // 나머지 props 전달
-                  />
-                );
-              })
+              value.map((option, index) => (
+                <Chip
+                  key={`tag-${index}`}
+                  variant="outlined"
+                  size="small"
+                  label={option}
+                  {...getTagProps({ index })}
+                />
+              ))
             }
             renderInput={(params) => (
               <TextField
@@ -202,7 +199,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                     borderBottom: "1px solid #ccc",
                   },
                   "& .MuiInput-underline:after": {
-                    borderBottom: "none", //
+                    borderBottom: "none",
                   },
                   "&:hover .MuiInput-underline:before": {
                     borderBottom: "1px solid #ccc",
