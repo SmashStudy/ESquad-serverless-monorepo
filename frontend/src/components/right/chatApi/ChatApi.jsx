@@ -2,7 +2,7 @@ import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 import {fetchUserEmail} from "../../../utils/storage/utilities.js";
 
-const apiUrl = getChatApi();
+const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
 const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({
@@ -44,7 +44,7 @@ export const sendMessageAPI = async (socket, messageData) => {
         // 파일 메시지 처리
         if (messageData.fileKey) {
             // 파일 메타데이터 확인
-            if (!messageData.presignedUrl || !messageData.contentType || !messageData.fileKey) {
+            if (!messageData.contentType || !messageData.fileKey) {
                 console.error("파일 메타데이터 누락:", messageData);
                 return;
             }
@@ -55,10 +55,9 @@ export const sendMessageAPI = async (socket, messageData) => {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
                     timestamp: messageData.timestamp,
-                    user_id: messageData.email,
+                    user_id: messageData.user_id,
                     nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
-                    presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,
                     originalFileName: messageData.originalFileName,
                 });

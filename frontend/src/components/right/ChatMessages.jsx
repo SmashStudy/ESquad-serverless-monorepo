@@ -7,6 +7,7 @@ import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
+import {getFormattedDate} from "../../utils/fileFormatUtils.js";
 const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
@@ -68,8 +69,8 @@ function ChatMessages({currentChatRoom}) {
 
             // 유효하지 않은 파일 메시지를 필터링
             const combinedMessages = sortMessages([
-                ...(fetchedMessages || []).filter(msg => !(msg.fileKey && !msg.presignedUrl)),
-                ...(fetchedFiles || []).filter(file => file.fileKey && file.presignedUrl),
+                ...(fetchedMessages || []).filter(msg => !(msg.fileKey )),
+                ...(fetchedFiles || []).filter(file => file.fileKey ),
             ]);
             setMessages(combinedMessages);
             scrollToBottom();
@@ -93,7 +94,7 @@ function ChatMessages({currentChatRoom}) {
     newSocket.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            handleIncomingMessage(data);
+            // handleIncomingMessage(data);
         } catch (error) {
             console.error("Invalid JSON received: " + event.data);
         }
@@ -106,25 +107,25 @@ function ChatMessages({currentChatRoom}) {
     socketRef.current = newSocket;
 }
 
-const handleIncomingMessage = (data) => {
-    if (data.type === "newMessage") {
-        // 새로운 메시지 추가
-        setMessages((prev) => sortMessages([...prev, data]));
-    } else if (data.type === "updateMessage") {
-        // 메시지 수정
-        setMessages((prev) =>
-            prev.map((msg) =>
-                msg.timestamp === data.timestamp ? { ...msg, ...data } : msg
-            )
-        );
-    } else if (data.type === "deleteMessage") {
-        // 메시지 삭제
-        setMessages((prev) => prev.filter((msg) => msg.timestamp !== data.timestamp));
-    } else {
-        console.warn("알 수 없는 메시지 유형:", data);
-    }
-    scrollToBottom(); // UI 스크롤 유지
-};
+// const handleIncomingMessage = (data) => {
+//     if (data.type === "sendMessage") {
+//         // 새로운 메시지 추가
+//         setMessages((prev) => sortMessages([...prev, data]));
+//     } else if (data.type === "updateMessage") {
+//         // 메시지 수정
+//         setMessages((prev) =>
+//             prev.map((msg) =>
+//                 msg.timestamp === data.timestamp ? { ...msg, ...data } : msg
+//             )
+//         );
+//     } else if (data.type === "deleteMessage") {
+//         // 메시지 삭제
+//         setMessages((prev) => prev.filter((msg) => msg.timestamp !== data.timestamp));
+//     } else {
+//         console.warn("알 수 없는 메시지 유형:", data);
+//     }
+//     scrollToBottom(); // UI 스크롤 유지
+// };
 
 const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -134,30 +135,28 @@ const scrollToBottom = () => {
     const sendMessage = async (messageContent) => {
         const timestamp = Date.now();
 
-    try {
+        try {
         if (selectedFile) {
             // 파일 업로드 로직
-            const uploadedFile = await uploadFile({
+            const uploadResponse = await uploadFile({
                 file: selectedFile,
-                room_id,
+                room_id: currentChatRoom.id,
                 user_id: email,
                 nickname: nickname,
                 targetType: 'CHAT',
-                timestamp,
             });
-
+            console.log("------------- ",uploadResponse);
             const fileMessage = {
-                action: 'fileMessage',
-                message: `파일 업로드 완료: ${uploadedFile.originalFileName}`,
-                fileKey: uploadedFile.fileKey,
-                presignedUrl: uploadedFile.presignedUrl,
-                contentType: uploadedFile.contentType,
-                originalFileName: uploadedFile.originalFileName,
+                action: 'sendMessage',
+                message: `파일 업로드 완료: ${uploadResponse.originalFileName}`,
+                fileKey: uploadResponse.fileKey,
+                contentType: uploadResponse.contentType,
+                originalFileName: uploadResponse.originalFileName,
                 room_id: currentChatRoom.id,
                 user_id: email,
                 nickname: nickname,
                 timestamp: timestamp,
-                isFile: true
+                isFile: true,
         };
             console.log("fileMessage : ", fileMessage);
 
@@ -256,36 +255,35 @@ useEffect(() => {
 if (loading) { return <Loading />;}
 
 // 파일 업로드 핸들러
-const handleUploadClick = async () => {
-    if (!selectedFile || !currentChatRoom?.id) return;
-    try {
-        const uploadResponse = await uploadFile({
-            file: selectedFile,
-            room_id: currentChatRoom.id,
-            user_id: email,
-            nickname: nickname,
-            targetType: 'CHAT',
-        });
-
-        const fileMessage = {
-            action: 'sendMessage',
-            message: `파일 업로드 완료 : ${uploadResponse.originalFileName}`,
-            id: uploadResponse.id,
-            presignedUrl: uploadResponse.presignedUrl,
-            room_id: currentChatRoom.id,
-            user_id: email,
-            nickname: nickname,
-            contentType: uploadResponse.contentType,
-            originalFileName: uploadResponse.originalFileName,
-            isFile: true
-    };
-        // 메시지 전송 (WebSocket + DynamoDB 저장)
-        await sendMessageAPI(fileMessage);
-        setSelectedFile(null); // 파일 선택 초기화
-    } catch (error) {
-        console.error('파일 업로드 실패:', error.message);
-    }
-};
+// const handleUploadClick = async () => {
+//     if (!selectedFile || !currentChatRoom?.id) return;
+//     try {
+//         const uploadResponse = await uploadFile({
+//             file: selectedFile,
+//             room_id: currentChatRoom.id,
+//             user_id: email,
+//             nickname: nickname,
+//             targetType: 'CHAT',
+//         });
+//
+//         const fileMessage = {
+//             action: 'sendMessage',
+//             message: `파일 업로드 완료 : ${uploadResponse.originalFileName}`,
+//             id: uploadResponse.fileKey,
+//             room_id: currentChatRoom.id,
+//             user_id: email,
+//             nickname: nickname,
+//             contentType: uploadResponse.contentType,
+//             originalFileName: uploadResponse.originalFileName,
+//             isFile: true
+//     };
+//         // 메시지 전송 (WebSocket + DynamoDB 저장)
+//         await sendMessageAPI(fileMessage);
+//         setSelectedFile(null); // 파일 선택 초기화
+//     } catch (error) {
+//         console.error('파일 업로드 실패:', error.message);
+//     }
+// };
 
 // 파일 다운로드 핸들러
 const handleDownloadFile = async (id, originalFileName) => {
@@ -334,7 +332,7 @@ return (
                 handleSend={sendMessage}
                 editMessage={editingMessage?.timestamp}
                 onSaveMessage={onSaveMessage}
-                handleUploadClick={handleUploadClick}
+                // handleUploadClick={handleUploadClick}
                 selectedFile={selectedFile}
                 setSelectedFile={setSelectedFile}
                 isUploading={isUploading}

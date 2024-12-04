@@ -14,7 +14,6 @@ const ChatInput = ({
                        handleSend,
                        onSaveMessage,
                        editMessage,
-                       handleUploadClick,
                        handleRemoveFile,
                        selectedFile,
                        setSelectedFile,
@@ -23,31 +22,17 @@ const ChatInput = ({
                    }) => {
 
     const handleSendClick = () => {
-        if (editMessage) {
-            onSaveMessage();
-        } else {
-            handleSend(message);
-        }
+        if (editMessage) { onSaveMessage(); }
+        else { handleSend(message); }
     };
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
             setSelectedFile(file);
-            // 로컬 미리보기 URL 생성
+
             const previewUrl = URL.createObjectURL(file);
             setPreviewUrl(previewUrl);
-
-            // 파일 업로드를 트리거 (onUploadClick 호출 또는 사전 처리 로직 추가)
-            try {
-                const uploadedFile = await handleUploadClick(file); // 파일 업로드 수행
-                if (uploadedFile && uploadedFile.presignedUrl) {
-                    setPreviewUrl(uploadedFile.presignedUrl); // 업로드 성공 시 presignedUrl로 업데이트
-                }
-            } catch (error) {
-                console.error("파일 업로드 실패:", error.message);
-                setPreviewUrl(null); // 실패 시 초기화
-            }
         }
     };
 
