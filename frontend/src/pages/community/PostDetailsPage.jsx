@@ -432,7 +432,7 @@ const PostDetailsPage = () => {
       </Box>
 
       {/* 태그 표시 */}
-      <Box sx={{ mt: 1, mb: 2 }}>
+      <Box sx={{ mt: 1, mb: 1 }}>
         {post.tags && post.tags.length > 0 && (
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
             {post.tags.map((tag, index) => (
@@ -459,6 +459,21 @@ const PostDetailsPage = () => {
       >
         <Box>
           <Typography variant="body2">
+            {post.resolved && (
+              <>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ✔ 해결된 질문
+                </Typography>
+              </>
+            )}
             {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
             {post.updatedAt &&
               new Date(post.updatedAt).getTime() !==
