@@ -73,7 +73,6 @@ export const uploadFile = async ({ file, room_id, user_id, nickname,targetType})
 
 export const deleteFile = async (fileKey) => {
     try {
-        console.log(fileKey)
         const presignedResponse = await axios.delete(
             `${storageApi}/${encodeURIComponent(fileKey)}`, {
                 headers: {
