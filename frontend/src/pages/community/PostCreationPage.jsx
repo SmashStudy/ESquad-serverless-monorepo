@@ -242,14 +242,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     }
 
     try {
-      // Extract Base64 images from content
       const base64Images = [];
       const updatedContent = content.replace(
         /<img\s+src="data:image\/(png|jpeg|jpg);base64,([^"]+)"[^>]*>/g,
         (match, type, data) => {
           const fileName = `${Date.now()}.${type}`;
           base64Images.push({ fileName, data });
-          return `<img data-file="${fileName}" />`; // 완전히 닫힌 태그 반환
+          return `<img data-file="${fileName}" />`;
         }
       );
 
@@ -282,7 +281,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
 
       const uploadedImages = await Promise.all(imageUploadPromises);
 
-      // Replace placeholders with actual S3 URLs
       let finalContent = updatedContent;
       uploadedImages.forEach(({ fileName, imageUrl }) => {
         finalContent = finalContent.replace(

@@ -564,11 +564,11 @@ const PostDetailsPage = () => {
         <style>
           {`
       .content-container img {
-        max-width: 90%; /* 부모 컨테이너 너비에 맞춤 */
-        max-height: 1000px; /* 최대 높이 제한 */
-        height: auto; /* 비율 유지 */
-        display: block; /* inline 속성 제거 */
-        margin: 10px auto; /* 중앙 정렬 및 여백 추가 */
+        max-width: 90%; 
+        max-height: 1000px; 
+        height: auto; 
+        display: block; 
+        margin: 10px auto; 
       }
     `}
         </style>

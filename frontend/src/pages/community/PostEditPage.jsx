@@ -21,7 +21,6 @@ const PostEditPage = ({ onUpdate }) => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [error, setError] = useState(null);
-  
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -91,7 +90,7 @@ const PostEditPage = ({ onUpdate }) => {
       const updatedPost = {
         title,
         content,
-        tags, // 빈 배열인 경우에도 포함
+        tags,
       };
 
       await axios.put(
@@ -107,7 +106,6 @@ const PostEditPage = ({ onUpdate }) => {
 
       alert("게시글이 수정되었습니다.");
 
-      // 게시글이 수정된 후 부모 컴포넌트에 알리기 위해 onUpdate 콜백 호출
       if (onUpdate) {
         onUpdate(updatedPost);
       }
