@@ -552,11 +552,26 @@ const PostDetailsPage = () => {
         }}
       >
         <div
-          style={{ fontSize: "1rem", lineHeight: 1.6 }}
+          className="content-container"
+          style={{
+            fontSize: "1rem",
+            lineHeight: 1.6,
+          }}
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(he.decode(post.content)), // HTML 엔터티 디코딩 후 렌더링
+            __html: DOMPurify.sanitize(he.decode(post.content)),
           }}
         />
+        <style>
+          {`
+      .content-container img {
+        max-width: 90%; /* 부모 컨테이너 너비에 맞춤 */
+        max-height: 1000px; /* 최대 높이 제한 */
+        height: auto; /* 비율 유지 */
+        display: block; /* inline 속성 제거 */
+        margin: 10px auto; /* 중앙 정렬 및 여백 추가 */
+      }
+    `}
+        </style>
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>

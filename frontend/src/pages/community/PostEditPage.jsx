@@ -11,6 +11,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../utils/apiConfig";
+import ReactQuill from "react-quill";
 
 const PostEditPage = ({ onUpdate }) => {
   const { boardType, postId } = useParams();
@@ -20,6 +21,7 @@ const PostEditPage = ({ onUpdate }) => {
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     const fetchPostDetails = async () => {
