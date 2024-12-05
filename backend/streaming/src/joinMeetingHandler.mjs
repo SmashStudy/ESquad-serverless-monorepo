@@ -25,7 +25,7 @@ export const handler = async (event) => {
       meetingInfo = await createMeeting(title, region, ns_es);
     }
 
-    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName,  userEmail, teamId);
+    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName, userEmail, teamId);
 
     return {
       statusCode: 200,
