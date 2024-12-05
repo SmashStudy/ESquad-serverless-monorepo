@@ -2,7 +2,7 @@ import { chimeSDKMeetings } from './chimeMeetingsClient.mjs';
 import { putAttendee } from './putAttendee.mjs';
 import { uuid } from './uuidGenerator.mjs';
 
-export const createAttendee = async (title, meetingId, attendeeName,  userEmail, teamId) => {
+export const createAttendee = async (title, meetingId, attendeeName, userEmail, teamId) => {
   try {
     // 참가자 생성
     const attendeeInfo = await chimeSDKMeetings.createAttendee({
