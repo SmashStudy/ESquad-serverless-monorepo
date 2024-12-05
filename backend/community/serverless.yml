@@ -8,6 +8,7 @@ provider:
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    QUILL_S3: ${env:QUILL_S3}
   iam:
     role:
       statements:
@@ -22,12 +23,20 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
+
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
           Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - "arn:aws:s3:::${env:QUILL_S3}/uploads/*"
 
 functions:
   createPost:
