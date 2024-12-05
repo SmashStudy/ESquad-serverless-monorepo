@@ -38,8 +38,8 @@ export async function createMeetingAndAttendee(
   attendeeName: string,
   region: string,
   echoReductionCapability = false,
-  userEmail: string, // 추가된 인자
-  teamId: string // 추가된 인자
+  userEmail: string,
+  teamId: string
 ): Promise<MeetingResponse> {
   const body = {
     title: encodeURIComponent(title),
