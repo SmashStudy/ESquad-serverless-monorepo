@@ -323,8 +323,8 @@ package:
   include:
     - node_modules/**
     - backend/user/service/handler.mjs
-    - backend/user/service/authcallback.mjs
 useDotenv: true
+
 plugins:
   - serverless-dotenv-plugin
   - serverless-prune-plugin
