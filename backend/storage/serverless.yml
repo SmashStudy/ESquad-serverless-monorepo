@@ -23,6 +23,7 @@ provider:
         - dynamodb:Query
         - dynamodb:DeleteItem
         - dynamodb:UpdateItem
+        - dynamodb:Scan
         - s3:GetObject
         - s3:PutObject
         - s3:DeleteObject
@@ -50,6 +51,14 @@ functions:
     events:
       - http:
           path: /{fileKey}
+          method: get
+          cors: true
+
+  getAllFiles:
+    handler: src/handlers/getAllFiles.handler
+    events:
+      - http:
+          path: /admin/metadata
           method: get
           cors: true
 
@@ -124,6 +133,8 @@ resources:
             AttributeType: S
           - AttributeName: action
             AttributeType: S
+          - AttributeName: uploaderEmail
+            AttributeType: S
           - AttributeName: userEmail
             AttributeType: S
           - AttributeName: targetId
@@ -134,23 +145,25 @@ resources:
           - AttributeName: logId
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: ActionIndex
+          - IndexName: ActionIndex # 서비스 내에 파일 다운로드 삭제 로그 추적용 (어드민 전용)
             KeySchema:
               - AttributeName: action
                 KeyType: HASH
-              - AttributeName: createdAt
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: UserEmailIndex
+          - IndexName: uploaderEmailIndex # 유저가 삭제한 기록 추적용 필터로 Action -> DELETE
+            KeySchema:
+              - AttributeName: uploaderEmail
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: userEmailIndex # 유저의 다운로드 기록 추적용 필터로 Action -> DOWNLOAD
             KeySchema:
               - AttributeName: userEmail
                 KeyType: HASH
-              - AttributeName: createdAt
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: TargetIndex
+          - IndexName: TargetIndex # 공간 내의 기록 추적용 필터로 targetType
             KeySchema:
               - AttributeName: targetId
                 KeyType: HASH
@@ -271,7 +284,8 @@ resources:
         PolicyDocument:
           Statement:
             - Effect: Allow
-              Principal: '*'
+              Principal:
+                AWS: !GetAtt IamRoleLambdaExecution.Arn
               Action:
                 - s3:GetObject
                 - s3:PutObject
