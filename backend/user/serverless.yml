@@ -25,7 +25,6 @@ provider:
             - cognito-idp:AdminEnableUser 
             - cognito-idp:AdminDisableUser
             - cognito-idp:AdminListGroupsForUser
-            - cognito-idp:AdminListGroupsForUser
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         

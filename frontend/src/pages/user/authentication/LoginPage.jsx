@@ -99,20 +99,6 @@ const Login = () => {
       // const { accessToken, idToken } = data;
       // localStorage.setItem("jwtToken", idToken);
 
-      try {
-        const response = await axios.get(`${getUserApi()}/get-nickname`, {
-          withCredentials: true, 
-        });
-        setUser((prev) => ({
-          ...prev,
-          nickname: response.data.nickname,
-        }));
-      } catch (err) {
-        console.error("닉네임 가져오기 오류:", err);
-        setError("닉네임을 가져오는 중 오류가 발생했습니다.");
-      } finally {
-      }
-
       // window.location.href = "/";
     } catch (error) {
       console.error("로그인 오류:", error);
