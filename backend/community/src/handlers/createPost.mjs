@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const s3Client = new S3Client({ region: process.env.REGION });
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
@@ -30,9 +30,9 @@ export const handler = async (event) => {
     const updatedContent = content.replace(
       /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
       (match, type, data) => {
-        const key = `uploads/${uuidv4()}.png`;
-        base64Images.push({ key, data });
-        return `<img src="https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}"`;
+        const key = `uploads/${uuidv4()}.${type}`; 
+        base64Images.push({ key, data, type }); 
+        return `<img src="https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}" />`;
       }
     );
 
@@ -44,7 +44,7 @@ export const handler = async (event) => {
         Bucket: process.env.S3_BUCKET,
         Key: image.key,
         Body: buffer,
-        ContentType: "image/png",
+        ContentType: `image/${image.type}`, 
       };
       await s3Client.send(new PutObjectCommand(params));
       console.log(`Image uploaded to S3: ${image.key}`);

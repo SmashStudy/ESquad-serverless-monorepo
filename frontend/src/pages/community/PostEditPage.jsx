@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { getCommunityApi } from "../../utils/apiConfig";
+import { getCommunityApi, getStorageApi } from "../../utils/apiConfig";
 import ReactQuill from "react-quill";
 
 const PostEditPage = ({ onUpdate }) => {
@@ -87,11 +87,78 @@ const PostEditPage = ({ onUpdate }) => {
   const handleSaveChanges = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
+
+      // 기존 이미지 추출
+      const existingImages = [];
+      content.replace(/<img\s+src="https:\/\/[^\s"]+"/g, (match) => {
+        const url = match.match(/src="([^"]+)"/)[1];
+        existingImages.push(url);
+        return match;
+      });
+
+      const base64Images = [];
+      const updatedContent = content.replace(
+        /<img\s+src="data:image\/(png|jpeg|jpg);base64,([^"]+)"[^>]*>/g,
+        (match, type, data) => {
+          const fileName = `${Date.now()}.${type}`;
+          base64Images.push({ fileName, data });
+          return `<img data-file="${fileName}" />`;
+        }
+      );
+
+      const deleteImagePromises = existingImages.map(async (url) => {
+        const fileName = url.split("/").pop();
+        await axios.delete(`${getStorageApi()}/delete-image`, {
+          data: { fileName },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      });
+
+      const uploadImagePromises = base64Images.map(async (image) => {
+        const presignedUrlResponse = await axios.post(
+          `${getStorageApi()}/presigned-url`,
+          {
+            fileName: image.fileName,
+            fileType: `image/${image.fileName.split(".").pop()}`,
+          }
+        );
+
+        const { uploadURL, imageUrl } = presignedUrlResponse.data;
+        const binaryData = atob(image.data);
+        const arrayBuffer = new Uint8Array(binaryData.length);
+
+        for (let i = 0; i < binaryData.length; i++) {
+          arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+
+        await axios.put(uploadURL, arrayBuffer, {
+          headers: {
+            "Content-Type": `image/${image.fileName.split(".").pop()}`,
+          },
+        });
+
+        return { fileName: image.fileName, imageUrl };
+      });
+
+      const uploadedImages = await Promise.all(uploadImagePromises);
+
+      let finalContent = updatedContent;
+      uploadedImages.forEach(({ fileName, imageUrl }) => {
+        finalContent = finalContent.replace(
+          `<img data-file="${fileName}" />`,
+          `<img src="${imageUrl}" />`
+        );
+      });
+
       const updatedPost = {
         title,
-        content,
+        content: finalContent,
         tags,
       };
+
+      await Promise.all(deleteImagePromises);
 
       await axios.put(
         `${getCommunityApi()}/${boardType}/${postId}`,
@@ -110,7 +177,6 @@ const PostEditPage = ({ onUpdate }) => {
         onUpdate(updatedPost);
       }
 
-      // 게시글 상세 페이지로 이동
       navigate(`/community/${boardType}/${postId}`);
     } catch (error) {
       console.error("게시글 수정 중 오류 발생:", error);
@@ -205,15 +271,10 @@ const PostEditPage = ({ onUpdate }) => {
           />
         )}
       />
-      <TextField
-        label="내용"
-        variant="outlined"
-        fullWidth
-        multiline
-        rows={10}
-        margin="normal"
+      <ReactQuill
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={setContent}
+        style={{ height: "300px", marginBottom: "20px" }}
       />
       <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button variant="outlined" color="inherit" onClick={() => navigate(-1)}>
