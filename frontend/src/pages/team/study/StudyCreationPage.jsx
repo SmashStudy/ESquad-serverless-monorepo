@@ -14,35 +14,43 @@ import { useTheme } from '@mui/material';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
-const StudyCreationPage = ({ onCancel, selectedBook }) => {
-    const param = useParams();
-    const theme = useTheme();
-
+import { createStudy } from '../../../utils/team/studyApi.js';
+const AlertDayOptions = [
+    { label: "Monday", value: 0 },
+    { label: "Tuesday", value: 1 },
+    { label: "Wednesday", value: 2 },
+    { label: "Thursday", value: 3 },
+    { label: "Friday", value: 4 },
+    { label: "Saturday", value: 5 },
+    { label: "Sunday", value: 6 },
+];
+const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {   
+    const [loading, setLoading] = useState(false);
+    //studyName으로 추후 변경
     const [formData, setFormData] = useState({
-        studyPageName: "",
+        name: "",
         startDate: "",
         endDate: "",
         description: "",
     });
+    const teamId ="TEAM%230878b2df-9c94-46fb-b32c-2cab673cee90";    
 
+    //팀 유저 중 택 1
+    const userIds =  ["afeirhl223@gmail.com", "dbeb@naver.com"];
+    
     const [errorMessage, setErrorMessage] = useState("");
     const [reminds, setReminds] = useState([]);
-    const userIds = ["", ""]; // 사용자 ID 배열
-    const navigate = useNavigate(); // useNavigate 훅 사용
-    const handleChange = (field, value) => {
-        setFormData((prevState) => ({
-            ...prevState,
-            [field]: value,
-        }));
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const param = useParams();
+
+    const  handleChange = (field, value) => {
+        setFormData((prevState) => ({ ...prevState, [field]: value }));
     };
 
     const handleRemindChange = (index, field, value) => {
         const updatedReminds = [...reminds];
-        updatedReminds[index] = {
-            ...updatedReminds[index],
-            [field]: value,
-        };
+        updatedReminds[index] = { ...updatedReminds[index], [field]: value };
         setReminds(updatedReminds);
     };
 
@@ -51,19 +59,41 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 폼 제출 이벤트 방지
-
+        e.preventDefault();
+        await onCreate();
     };
 
-    const AlertDayOptions = [
-        { label: "Monday", value: 0 },
-        { label: "Tuesday", value: 1 },
-        { label: "Wednesday", value: 2 },
-        { label: "Thursday", value: 3 },
-        { label: "Friday", value: 4 },
-        { label: "Saturday", value: 5 },
-        { label: "Sunday", value: 6 },
-    ];
+    const onCreate = async () => {
+        setLoading(true);
+        try {
+            const bookDto = {
+                isbn: selectedBook.isbn,
+                title: selectedBook.maintitle,
+                authors: selectedBook.authors,
+                publisher: selectedBook.publisher,
+                publishedDate: selectedBook.publishedDate,
+                imgPath: selectedBook.imgPath
+            };
+            const studyData = {
+                studyInfo: formData,
+                studyUserIds: userIds,
+            };
+            
+            console.log(`${JSON.stringify(bookDto)}`);
+            console.log(`${JSON.stringify(studyData)}`);
+
+            const response = await createStudy(teamId, bookDto, studyData);
+            const { PK } = response.data || {};
+            if (!PK) throw new Error("스터디 생성에 실패했습니다.");
+            navigate(`/teams/${teamId}/study/${PK}`);
+        } catch (error) {
+            console.error("Error creating study:", error.message);
+            setErrorMessage(error.response?.data?.message||"스터디를 생성할 수 없습니다. 다시 시도해주세요.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <Box
@@ -101,9 +131,9 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                 {/* Book Info Column */}
                 <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        {selectedBook.subtitle}
+                        {selectedBook.maintitle}
                     </Typography>
-                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+                    <Typography variant="authors" color="textSecondary" gutterBottom>
                         {selectedBook.authors}
                     </Typography>
 
@@ -118,8 +148,8 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                         스터디 설정
                     </Typography>
                     <TextField
-                        value={formData.studyPageName}
-                        onChange={(e) => handleChange("studyPageName", e.target.value)}
+                        value={formData.name}
+                        onChange={(e) => handleChange("name", e.target.value)}
                         fullWidth
                         size='small'
                         label="스터디 페이지 이름을 작성해주세요"
@@ -219,7 +249,7 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                 <Button variant="contained" onClick={onCancel} sx={{ color: '#fff', backgroundColor: theme.palette.warning.main, px: 4 }}>
                     취소
                 </Button>
-                <Button type="submit" variant="contained" sx={{ backgroundColor: theme.palette.primary.main, color: '#fff', px: 4 }}>
+                <Button type="submit" onClick={onCreate} variant="contained" sx={{ backgroundColor: theme.palette.primary.main, color: '#fff', px: 4 }}>
                     생성
                 </Button>
             </Box>
