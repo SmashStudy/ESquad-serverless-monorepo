@@ -43,11 +43,11 @@ export async function createMeetingAndAttendee(
 ): Promise<MeetingResponse> {
   const body = {
     title: encodeURIComponent(title),
-    attendeeName: encodeURIComponent(attendeeName),
+    attendeeName: attendeeName,
     region: encodeURIComponent(region),
     ns_es: String(echoReductionCapability),
-    userEmail: encodeURIComponent(userEmail),
-    teamId: encodeURIComponent(teamId),
+    userEmail: userEmail,
+    teamId: teamId,
   };
 
   // API Gateway URL로 요청을 보냄
