@@ -51,6 +51,8 @@ resources:
             AttributeType: S
           - AttributeName: teamName
             AttributeType: S
+          - AttributeName: teamId
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -80,6 +82,14 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: KEYS_ONLY
+          - IndexName: TeamId-ItemType-Index
+            KeySchema:
+              - AttributeName: teamId
+                KeyType: HASH
+              - AttributeName: itemType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         StreamSpecification:
           StreamViewType: "NEW_AND_OLD_IMAGES"
 
@@ -152,6 +162,7 @@ functions:
           path: /{teamId}/settings/info
           method: put
           cors: true
+
   deleteTeam:
     handler: src/handlers/teamHandler.deleteTeam
     events:
@@ -159,6 +170,7 @@ functions:
           path: /{teamId}/settings
           method: delete
           cors: true
+
   updateTeamUsers:
     handler: src/handlers/teamUserHandler.updateTeamUsers
     events:
@@ -166,6 +178,7 @@ functions:
           path: /{teamId}/setting/users
           method: put
           cors: true
+
   searchBooks:
     handler: src/handlers/bookHandler.searchBooks
     events:
@@ -173,12 +186,35 @@ functions:
           path: /book/search
           method: get
           cors: true
+
   createStudy:
     handler: src/handlers/studyHandler.createStudy
     events:
       - http:
           path: /{teamId}/study/create
           method: post
+          cors: true
+
+  getStudyList:
+    handler: src/handlers/studyHandler.getStudyList
+    events: 
+      - http:
+          path: /{teamId}/study/get
+          method: get
+          origin:
+            origin: ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
+              - x-jwt-token         # JWT 토큰이 헤더로 전달될 수 있도록 설정
+            allowCredentials: true  # 인증 정보를 포함한 요청을 허용
+
+  getStudyInfo:
+    handler: src/handlers/studyHandler.getStudyInfo
+    events: 
+      - http:
+          path: /{teamId}/study/{studyId}
+          method: get
           cors: true
 
 useDotenv: true

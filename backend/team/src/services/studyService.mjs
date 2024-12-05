@@ -79,4 +79,24 @@ export class StudyService {
             throw new Error("TeamUserFetchException");
         }
     }
+    
+    async getStudyList(teamId) {
+        const params = {
+            TableName: TEAM_TABLE,
+            IndexName: 'TeamId-ItemType-Index',
+            KeyConditionExpression: 'teamId = :teamId AND itemType = :itemType',
+            ExpressionAttributeValues: {
+                ':teamId': decodeURIComponent(teamId),
+                ':itemType': 'Study'
+            }
+        };
+
+        try {
+            const { Items } = await dynamoDb.send(new QueryCommand(params));
+            return Items || [];
+        } catch (error) {
+            console.error("Failed to fetch study pages:", error);
+            throw new Error("StudyPageFetchException");
+        }
+    }
 }

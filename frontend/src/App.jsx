@@ -32,7 +32,6 @@ import { decodeJWT } from "./utils/decodeJWT.js";
 import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
 import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
-
 const theme = createTheme({
     palette: {
         info: {
@@ -152,10 +151,7 @@ function App() {
 
                 {/* community */}
                 <Route path="community/questions" element={<PostListPage />} />
-                <Route
-                  path="community/:boardType/:postId"
-                  element={<PostDetailsPage />}
-                />
+                <Route path="community/:boardType/:postId" element={<PostDetailsPage />} />
                 <Route path="community/general" element={<PostListPage />} />
                 <Route path="community/team-recruit" element={<PostListPage />} />
 
