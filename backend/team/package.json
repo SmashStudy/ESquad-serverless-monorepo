@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.705.0",
+    "@aws-sdk/lib-dynamodb": "^3.705.0",
     "asynckit": "^0.4.0",
     "axios": "^1.7.8",
     "combined-stream": "^1.0.8",
@@ -14,6 +16,7 @@
     "mime-types": "^2.1.35",
     "proxy-from-env": "^1.1.0",
     "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-plugin-include-dependencies": "^6.1.1",
     "uuid": "^11.0.3"
   },
   "scripts": {
