@@ -30,8 +30,9 @@ export const handler = async (event) => {
     const updatedContent = content.replace(
       /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
       (match, type, data) => {
-        const key = `uploads/${uuidv4()}.${type}`; 
-        base64Images.push({ key, data, type }); 
+        const extension = type === "jpeg" ? "jpg" : type;
+        const key = `uploads/${uuidv4()}.${extension}`;
+        base64Images.push({ key, data, contentType: `image/${type}` });
         return `<img src="https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}" />`;
       }
     );
@@ -44,7 +45,7 @@ export const handler = async (event) => {
         Bucket: process.env.S3_BUCKET,
         Key: image.key,
         Body: buffer,
-        ContentType: `image/${image.type}`, 
+        ContentType: image.contentType, 
       };
       await s3Client.send(new PutObjectCommand(params));
       console.log(`Image uploaded to S3: ${image.key}`);
