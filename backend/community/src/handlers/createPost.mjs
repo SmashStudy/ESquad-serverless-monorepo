@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const s3Client = new S3Client({ region: process.env.REGION });
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });

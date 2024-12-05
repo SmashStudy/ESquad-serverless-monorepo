@@ -4,7 +4,7 @@ import {
   GetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const s3Client = new S3Client({ region: process.env.REGION });
@@ -20,6 +20,7 @@ export const handler = async (event) => {
       });
     }
 
+    // 1. 게시글 조회
     const getItemParams = {
       TableName: process.env.DYNAMODB_TABLE,
       Key: {
@@ -28,8 +29,7 @@ export const handler = async (event) => {
       },
     };
 
-    const getItemCommand = new GetItemCommand(getItemParams);
-    const { Item } = await ddbClient.send(getItemCommand);
+    const { Item } = await ddbClient.send(new GetItemCommand(getItemParams));
 
     if (!Item) {
       return createResponse(404, {
@@ -37,6 +37,7 @@ export const handler = async (event) => {
       });
     }
 
+    // 2. content에서 이미지 URL 추출
     const content = Item.content?.S || "";
     const imageUrls = [];
     content.replace(/<img\s+src="https:\/\/[^\s"]+"/g, (match) => {
@@ -45,8 +46,14 @@ export const handler = async (event) => {
       return match;
     });
 
+    console.log("Extracted Image URLs:", imageUrls);
+
+    // 3. S3에서 이미지 삭제
     const deleteImagePromises = imageUrls.map((url) => {
-      const key = url.split("/").slice(-2).join("/");
+      const key = url.split("/").slice(-2).join("/"); // S3 키 추출
+      if (!process.env.S3_BUCKET) {
+        throw new Error("S3_BUCKET environment variable is not defined.");
+      }
       return s3Client.send(
         new DeleteObjectCommand({
           Bucket: process.env.S3_BUCKET,
@@ -57,6 +64,7 @@ export const handler = async (event) => {
 
     await Promise.all(deleteImagePromises);
 
+    // 4. DynamoDB에서 게시글 삭제
     const deleteParams = {
       TableName: process.env.DYNAMODB_TABLE,
       Key: {
@@ -64,8 +72,6 @@ export const handler = async (event) => {
         SK: { S: createdAt },
       },
     };
-
-    console.log("DynamoDB Delete Params:", deleteParams);
 
     await ddbClient.send(new DeleteItemCommand(deleteParams));
 

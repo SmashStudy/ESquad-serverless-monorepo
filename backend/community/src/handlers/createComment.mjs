@@ -1,6 +1,6 @@
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { v4 as uuidv4 } from "uuid";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
