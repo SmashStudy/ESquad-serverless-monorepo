@@ -164,13 +164,13 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-          - IndexName: uploaderEmailIndex # 유저가 삭제한 기록 추적용 필터로 Action -> DELETE
+          - IndexName: UploaderEmailIndex # 유저가 삭제한 기록 추적용 필터로 Action -> DELETE
             KeySchema:
               - AttributeName: uploaderEmail
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-          - IndexName: userEmailIndex # 유저의 다운로드 기록 추적용 필터로 Action -> DOWNLOAD
+          - IndexName: UserEmailIndex # 유저의 다운로드 기록 추적용 필터로 Action -> DOWNLOAD
             KeySchema:
               - AttributeName: userEmail
                 KeyType: HASH
