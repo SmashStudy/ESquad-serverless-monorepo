@@ -78,7 +78,7 @@ const MeetingForm: React.FC = () => {
     toggleMeetingJoinDeviceSelection,
   } = useAppState();
 
-  const [userEmail, setUserEmail] = useState<string>('hb1809@naver'); // 사용자 이메일 상태 추가
+  const [userEmail, setUserEmail] = useState<string>('test@naver.com'); // 사용자 이메일 더미 데이터
   const [teamId, setTeamId] = useState<string | null>(null); // 팀 ID 상태 추가
   const [meetingErr, setMeetingErr] = useState(false);
   const [nameErr, setNameErr] = useState(false);
@@ -87,44 +87,39 @@ const MeetingForm: React.FC = () => {
   const navigate = useNavigate();
   const browserBehavior = new DefaultBrowserBehavior();
 
-  // URL에서 파라미터 추출 (쿼리와 해시 모두)
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search); // 쿼리 파라미터 추출
-    const hash = window.location.hash.substring(1); // 해시(#) 제거
-    const hashParams = new URLSearchParams(hash); // 해시 파라미터 처리
+    // URL 전체에서 값을 추출
+    const url = window.location.href;
   
-    // teamId 추출 및 디코딩
-    const teamIdParam = queryParams.get("teamId");
-    const decodedTeamId = teamIdParam ? decodeURIComponent(teamIdParam) : null;
+    // 특정 키의 값을 추출하는 함수 (쿼리 및 해시 처리)
+    const extractValue = (key: string): string | null => {
+      const match = url.match(new RegExp(`[?&]${key}=([^&]*)`)); // 키에 해당하는 값을 추출
+      return match ? decodeURIComponent(match[1]).replace(/#/g, "") : null; // # 제거
+    };
   
-    // studyId는 해시에서 추출 후 # 제거
-    let studyId = hashParams.get("studyId");
-    if (studyId) {
-      studyId = decodeURIComponent(studyId).replace(/#/g, ""); // # 제거 후 디코딩
+    // teamId 추출 및 상태 설정
+    const teamIdParam = extractValue("teamId");
+    if (teamIdParam) {
+      setTeamId(teamIdParam); // 상태 설정
+      console.log("Extracted Team ID:", teamIdParam); // 디버깅용 로그
     }
   
-    // name 값 디코딩
-    const name = hashParams.get("name");
-    const decodedName = name ? decodeURIComponent(name) : null;
-  
-    // 상태 설정
-    if (decodedTeamId) {
-      setTeamId(decodedTeamId); // teamId 상태 설정
-      console.log("Decoded Team ID:", decodedTeamId); // 디버깅용 로그
+    // studyId 추출 및 상태 설정
+    const studyIdParam = extractValue("studyId");
+    if (studyIdParam) {
+      setMeetingId(studyIdParam); // 상태 설정
+      console.log("Extracted Study ID:", studyIdParam); // 디버깅용 로그
     }
   
-    if (studyId) {
-      setMeetingId(studyId); // studyId 설정
-      console.log("Clean Study ID:", studyId); // 디버깅용 로그
-    }
-  
-    if (decodedName) {
-      setLocalUserName(decodedName); // name 설정
-      console.log("Decoded Name:", decodedName); // 디버깅용 로그
+    // name 추출 및 상태 설정
+    const nameParam = extractValue("name");
+    if (nameParam) {
+      setLocalUserName(nameParam); // 상태 설정
+      console.log("Extracted Name:", nameParam); // 디버깅용 로그
     }
   }, [setMeetingId, setLocalUserName]);
-  
-  
+
+
 
   const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
