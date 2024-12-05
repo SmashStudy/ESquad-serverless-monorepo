@@ -61,7 +61,7 @@ const MeetingForm: React.FC = () => {
     priorityBasedPolicy,
     keepLastFrameWhenPaused,
     isWebAudioEnabled,
-    videoTransformCpuUtilization: videoTransformCpuUtilization,
+    videoTransformCpuUtilization,
     setJoinInfo,
     isEchoReductionEnabled,
     toggleEchoReduction,
@@ -77,6 +77,9 @@ const MeetingForm: React.FC = () => {
     skipDeviceSelection,
     toggleMeetingJoinDeviceSelection,
   } = useAppState();
+
+  const [userEmail, setUserEmail] = useState<string>('hb1809@naver'); // 사용자 이메일 상태 추가
+  const [teamId, setTeamId] = useState<string | null>(null); // 팀 ID 상태 추가
   const [meetingErr, setMeetingErr] = useState(false);
   const [nameErr, setNameErr] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,20 +87,44 @@ const MeetingForm: React.FC = () => {
   const navigate = useNavigate();
   const browserBehavior = new DefaultBrowserBehavior();
 
-  // URL에서 studyId와 name 추출
+  // URL에서 파라미터 추출 (쿼리와 해시 모두)
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const studyId = queryParams.get("studyId");
-    const name = queryParams.get("name");
-
+    const queryParams = new URLSearchParams(window.location.search); // 쿼리 파라미터 추출
+    const hash = window.location.hash.substring(1); // 해시(#) 제거
+    const hashParams = new URLSearchParams(hash); // 해시 파라미터 처리
+  
+    // teamId 추출 및 디코딩
+    const teamIdParam = queryParams.get("teamId");
+    const decodedTeamId = teamIdParam ? decodeURIComponent(teamIdParam) : null;
+  
+    // studyId는 해시에서 추출 후 # 제거
+    let studyId = hashParams.get("studyId");
     if (studyId) {
-      setMeetingId(studyId);
+      studyId = decodeURIComponent(studyId).replace(/#/g, ""); // # 제거 후 디코딩
     }
-
-    if (name) {
-      setLocalUserName(name);
+  
+    // name 값 디코딩
+    const name = hashParams.get("name");
+    const decodedName = name ? decodeURIComponent(name) : null;
+  
+    // 상태 설정
+    if (decodedTeamId) {
+      setTeamId(decodedTeamId); // teamId 상태 설정
+      console.log("Decoded Team ID:", decodedTeamId); // 디버깅용 로그
+    }
+  
+    if (studyId) {
+      setMeetingId(studyId); // studyId 설정
+      console.log("Clean Study ID:", studyId); // 디버깅용 로그
+    }
+  
+    if (decodedName) {
+      setLocalUserName(decodedName); // name 설정
+      console.log("Decoded Name:", decodedName); // 디버깅용 로그
     }
   }, [setMeetingId, setLocalUserName]);
+  
+  
 
   const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,6 +143,11 @@ const MeetingForm: React.FC = () => {
       return;
     }
 
+    if (!userEmail || !teamId) {
+      updateErrorMessage("사용자 이메일 또는 팀 ID가 누락되었습니다.");
+      return;
+    }
+
     setIsLoading(true);
     meetingManager.getAttendee = createGetAttendeeCallback(id);
 
@@ -124,7 +156,9 @@ const MeetingForm: React.FC = () => {
         id,
         attendeeName,
         region,
-        isEchoReductionEnabled
+        isEchoReductionEnabled,
+        userEmail,
+        teamId
       );
       setJoinInfo(JoinInfo);
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -170,6 +204,8 @@ const MeetingForm: React.FC = () => {
       }
     } catch (error) {
       updateErrorMessage((error as Error).message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -179,7 +215,7 @@ const MeetingForm: React.FC = () => {
   };
 
   return (
-    <form>
+    <form onSubmit={handleJoinMeeting}>
       <Heading tag="h1" level={4} css="margin-bottom: 1rem">
         회의 참여
       </Heading>
@@ -220,6 +256,22 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
+      {/* 사용자 이메일 입력 필드 추가 */}
+      <FormField
+        field={Input}
+        label="이메일"
+        value={userEmail}
+        fieldProps={{
+          name: "email",
+          placeholder: "이메일을 입력해주세요",
+        }}
+        errorText="올바른 이메일을 입력해주세요"
+        error={!userEmail}
+        onChange={(e: ChangeEvent<HTMLInputElement>): void => {
+          setUserEmail(e.target.value);
+        }}
+      />
+      {/* 팀 ID는 URL 파라미터에서 자동으로 설정되므로 입력 필드가 필요 없다면 생략 */}
       <RegionSelection setRegion={setRegion} region={region} />
       <FormField
         field={Checkbox}
