@@ -10,7 +10,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags = [] } = body;
+    const { title, content, writer, book, tags = [], teamId } = body;
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -18,7 +18,8 @@ export const handler = async (event) => {
       return createResponse(400, { message: "Invalid boardType" });
     }
 
-    if (!title || !content || !writer) {
+    if (!title || !content || !writer || !teamId) {
+      // teamId 필수 확인
       return createResponse(400, { message: "Missing required fields" });
     }
 
@@ -45,7 +46,7 @@ export const handler = async (event) => {
         Bucket: process.env.S3_BUCKET,
         Key: image.key,
         Body: buffer,
-        ContentType: image.contentType, 
+        ContentType: image.contentType,
       };
       await s3Client.send(new PutObjectCommand(params));
       console.log(`Image uploaded to S3: ${image.key}`);
@@ -64,6 +65,7 @@ export const handler = async (event) => {
           email: { S: writer.email },
         },
       },
+      teamId: { S: teamId },
       book: book
         ? {
             M: {
