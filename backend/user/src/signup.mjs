@@ -5,6 +5,8 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { DynamoDBClient, PutItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { createCredentialResponse } from "../util/responseHelper.mjs"; // createResponse 사용
+import { userRoutes } from "./route/userRoutes.mjs"
+
 
 const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.REGION,
@@ -116,7 +118,7 @@ const saveUserToDynamoDB = async (email, name, nickname) => {
         name: { S: name },
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할: user
-        entryPoint: { SS: ["*"] }, // 기본 엔트리 포인트
+        entryPoint: { SS: userRoutes }, // 기본 엔트리 포인트
         createdAt: { S: new Date().toISOString() }, // 생성 시간
       },
     };
