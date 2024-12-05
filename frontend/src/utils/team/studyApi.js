@@ -11,7 +11,13 @@ const studyApi = axios.create({
 });
 
 // 스터디 생성
-export const createTeam = async (teamId, bookDto, studyData) => {
+export const createStudy = async (teamId, bookDto, studyData) => {
   const response = await studyApi.post(`${teamId}/study/create`, bookDto, studyData);
-  return JSON.parse(response.data.body); // 생성된 팀 정보 반환
+  return JSON.parse(response.data.body)
+};
+
+// 스터디 목록 조회
+export const getStudyList = async (teamId) => {
+  const response = await studyApi.get(`${teamId}/study/get`);
+  return response.data; 
 };
