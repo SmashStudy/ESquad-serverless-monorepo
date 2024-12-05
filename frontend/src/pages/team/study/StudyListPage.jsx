@@ -15,6 +15,7 @@ import SearchComponent from "../../../components/team/SearchComponent.jsx";
 import LiveStreamWindow from "../../stream/LiveStreamWindow.jsx";
 import { getStudyList } from "../../../utils/team/studyApi.js";
 import { format } from "date-fns";
+import {useUser} from "../../../context/UserNicknameContext.jsx";
 
 const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   const theme = useTheme();
@@ -177,13 +178,11 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                   </Typography>
                 </CardContent>
                   <CardActions sx={{ justifyContent: "flex-end" }}>
-                      {userInfo && (
-                          <LiveStreamWindow
-                              teamId = {params.teamId}
-                              studyId={study.id}
-                              nickname={userInfo.nickname}
-                          />
-                      )}
+                      <LiveStreamWindow
+                          teamId = {params.teamId}
+                          studyId={study.id}
+                          nickname={nickname}
+                      />
                   </CardActions>
               </Card>
             </Grid2>
