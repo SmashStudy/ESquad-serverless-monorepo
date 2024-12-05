@@ -80,6 +80,7 @@ const MeetingForm: React.FC = () => {
 
   const [userEmail, setUserEmail] = useState<string>('test@naver.com'); // 사용자 이메일 더미 데이터
   const [teamId, setTeamId] = useState<string | null>(null); // 팀 ID 상태 추가
+  //const [status, setStatus] = useState<string>("false");
   const [meetingErr, setMeetingErr] = useState(false);
   const [nameErr, setNameErr] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -147,13 +148,17 @@ const MeetingForm: React.FC = () => {
     meetingManager.getAttendee = createGetAttendeeCallback(id);
 
     try {
+
+      const status = "true";
+
       const { JoinInfo } = await createMeetingAndAttendee(
         id,
         attendeeName,
         region,
         isEchoReductionEnabled,
         userEmail,
-        teamId
+        teamId,
+        status
       );
       setJoinInfo(JoinInfo);
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
