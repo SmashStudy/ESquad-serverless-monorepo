@@ -90,14 +90,42 @@ function ChatMessages({currentChatRoom}) {
         setLoading(false);
         loadMessages(room_id);
     };
-    newSocket.onmessage = (event) => {
-        try {
-            const data = JSON.parse(event.data);
-            // handleIncomingMessage(data);
-        } catch (error) {
-            console.error("Invalid JSON received: " + event.data);
-        }
-    };
+        newSocket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+
+                // 수신한 이벤트에 따라 상태를 업데이트
+                switch (data.action) {
+                    case 'sendMessage':
+                        setMessages((prevMessages) => [...prevMessages, data]);
+                        break;
+
+                    case 'updateMessage':
+                        setMessages((prevMessages) =>
+                            prevMessages.map((message) =>
+                                message.timestamp === data.timestamp
+                                    ? { ...message, ...data }
+                                    : message
+                            )
+                        );
+                        break;
+                    case 'deleteMessage':
+                        setMessages((prevMessages) =>
+                            prevMessages.filter(
+                                (message) => message.timestamp !== data.timestamp
+                            )
+                        );
+                        break;
+
+                    default:
+                        console.warn("Unknown action received:", data.action);
+                }
+                scrollToBottom(); // 새 메시지가 추가되었을 때 스크롤 이동
+            } catch (error) {
+                console.error("Invalid JSON received:", event.data);
+            }
+        };
+
     newSocket.onclose = () => {
         console.error("WebSocket 연결 종료");
         setTimeout(() => connectWebSocket(room_id), 3000);
@@ -143,6 +171,7 @@ const scrollToBottom = () => {
         } else if (editingMessage) {
             // 메시지 수정 로직
             const updatedMessage = {
+                action: 'updateMessage',
                 ...editingMessage,
                 message: messageContent,
             };
@@ -200,9 +229,7 @@ const onSaveMessage = async () => {
 const deleteMessageHandler = async (message) => {
     try {
         // 파일 삭제가 필요한 경우
-        if (message.fileKey) {
-            await deleteFile(message.fileKey);
-        }
+        if (message.fileKey) { await deleteFile(message.fileKey); }
 
         // 파일 삭제 후 메시지 삭제 API 호출
         await deleteMessageAPI({
@@ -211,6 +238,12 @@ const deleteMessageHandler = async (message) => {
             message: message.message,
             fileKey: message.fileKey,
         });
+        const deleteAction = {
+            action: 'deleteMessage',
+            room_id: message.room_id,
+            timestamp: Number(message.timestamp),
+        }
+        socketRef.current?.send(JSON.stringify(deleteAction));
         // 로컬 상태에서 메시지 제거
         setMessages((prevMessages) =>
             prevMessages.filter(
