@@ -104,6 +104,22 @@ functions:
           method: get
           cors: true
 
+  getUserDeleteLogs:
+    handler: src/handlers/getUserDeleteLogs.handler
+    events:
+      - http:
+          path: /get-user-delete-logs
+          method: post
+          cors: true
+
+  getUserDownloadLogs:
+    handler: src/handlers/getUserDownloadLogs.handler
+    events:
+      - http:
+          path: /get-user-download-logs
+          method: post
+          cors: true
+
   # Quill 전용
   generatePresignedUrlForQuill:
     handler: src/handlers/generatePresignedUrlForQuill.handler
@@ -275,6 +291,12 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${env:QUILL_S3_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
@@ -297,8 +319,7 @@ resources:
         PolicyDocument:
           Statement:
             - Effect: Allow
-              Principal:
-                AWS: !GetAtt IamRoleLambdaExecution.Arn
+              Principal: '*'
               Action:
                 - s3:GetObject
                 - s3:PutObject
