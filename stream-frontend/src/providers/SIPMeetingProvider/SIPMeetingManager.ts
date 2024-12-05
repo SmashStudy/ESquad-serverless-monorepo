@@ -22,7 +22,8 @@ export class SIPMeetingManager {
         this.region,
         false, // echoReductionCapability
         "",    // userEmail (null 대신 빈 문자열)
-        ""     // teamId (null 대신 빈 문자열)
+        "",     // teamId (null 대신 빈 문자열)
+        "",
       );
       const joinToken = this.meetingData.JoinInfo.Attendee.JoinToken;
       return `sip:${AMAZON_CHIME_VOICE_CONNECTOR_PHONE_NUMDER}@${voiceConnectorId};transport=tls;X-joinToken=${joinToken}`;
