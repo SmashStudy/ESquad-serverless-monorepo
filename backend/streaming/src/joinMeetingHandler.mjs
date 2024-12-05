@@ -10,7 +10,7 @@ export const handler = async (event) => {
   }
 
   try {
-    const { title, attendeeName, region = 'us-east-1', ns_es } = JSON.parse(event.body);
+    const { title, attendeeName, region = 'us-east-1', ns_es, userEmail, teamId } = JSON.parse(event.body);
     
     if (!title || !attendeeName) {
       return {
@@ -25,7 +25,7 @@ export const handler = async (event) => {
       meetingInfo = await createMeeting(title, region, ns_es);
     }
 
-    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName);
+    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName,  userEmail, teamId);
 
     return {
       statusCode: 200,

@@ -28,6 +28,9 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   const [selectedFilter, setSelectedFilter] = useState("전체");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // 사용자 정보를 저장할 상태 추가
+  const { nickname } = useUser();
+
   useEffect(() => {
     const fetchStudyList = async () => {
       try {
@@ -173,9 +176,15 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                     {format(new Date(study.startDate), "yyyy-MM-dd")} ~ {format(new Date(study.endDate), "yyyy-MM-dd")}
                   </Typography>
                 </CardContent>
-                <CardActions sx={{ justifyContent: "flex-end" }}>
-                  <LiveStreamWindow nickname="익명" studyId={study.PK} />
-                </CardActions>
+                  <CardActions sx={{ justifyContent: "flex-end" }}>
+                      {userInfo && (
+                          <LiveStreamWindow
+                              teamId = {params.teamId}
+                              studyId={study.id}
+                              nickname={userInfo.nickname}
+                          />
+                      )}
+                  </CardActions>
               </Card>
             </Grid2>
           ))}

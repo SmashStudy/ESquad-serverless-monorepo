@@ -2,7 +2,7 @@ import { chimeSDKMeetings } from './chimeMeetingsClient.mjs';
 import { putAttendee } from './putAttendee.mjs';
 import { uuid } from './uuidGenerator.mjs';
 
-export const createAttendee = async (title, meetingId, attendeeName) => {
+export const createAttendee = async (title, meetingId, attendeeName,  userEmail, teamId) => {
   try {
     // 참가자 생성
     const attendeeInfo = await chimeSDKMeetings.createAttendee({
@@ -11,7 +11,7 @@ export const createAttendee = async (title, meetingId, attendeeName) => {
     });
 
     // 참석자 정보 저장
-    await putAttendee(title, attendeeInfo.Attendee.AttendeeId, attendeeName);
+    await putAttendee(title, attendeeInfo.Attendee.AttendeeId, attendeeName, userEmail, teamId);
     
     return attendeeInfo;
   } catch (error) {

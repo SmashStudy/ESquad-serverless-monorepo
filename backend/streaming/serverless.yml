@@ -12,6 +12,10 @@ provider:
       Ref: Meetings  # Meetings DynamoDB 테이블 참조
     ATTENDEES_TABLE_NAME:
       Ref: Attendees  # Attendees DynamoDB 테이블 참조
+    PARTICIPANT_USAGE_TABLE_NAME:
+      Ref: ParticipantUsageTracking  # 참여자 사용량 추적 테이블 참조
+    MEETING_ROOM_USAGE_TABLE_NAME:
+      Ref: MeetingRoomUsageTracking  # 스트리밍 회의실 사용 추적 테이블 참조
     SQS_QUEUE_ARN:
       Fn::GetAtt:
         - MeetingNotificationsQueue
@@ -32,6 +36,8 @@ provider:
             - "dynamodb:PutItem"
             - "dynamodb:GetItem"
             - "dynamodb:UpdateItem"
+            - "dynamodb:Query"
+            - "dynamodb:Scan"
           Resource:
             - Fn::GetAtt:
                 - Meetings
@@ -39,6 +45,12 @@ provider:
             - Fn::GetAtt:
                 - Attendees
                 - Arn  # Attendees 테이블 접근 권한
+            - Fn::GetAtt:
+                - ParticipantUsageTracking
+                - Arn  # 참여자 사용량 추적 테이블 접근 권한
+            - Fn::GetAtt:
+                - MeetingRoomUsageTracking
+                - Arn  # 스트리밍 회의실 사용 추적 테이블 접근 권한
         - Effect: "Allow"
           Action:
             - "kms:Decrypt"
@@ -163,6 +175,49 @@ resources:
           - AttributeName: 'attendeeId'
             KeyType: HASH  # 기본 키 설정
         BillingMode: PAY_PER_REQUEST
+
+    ParticipantUsageTracking:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'esquad-streaming-participant-usage-${self:provider.stage}'  # 참여자 사용량 추적 테이블
+        AttributeDefinitions:
+          - AttributeName: 'userEmail'
+            AttributeType: 'S'
+          - AttributeName: 'start_At'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'userEmail'
+            KeyType: HASH  # 파티션 키
+          - AttributeName: 'start_At'
+            KeyType: RANGE  # 정렬 키
+        BillingMode: PAY_PER_REQUEST
+        # 추가 속성은 DynamoDB 아이템에 동적으로 추가됨
+
+    MeetingRoomUsageTracking:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'esquad-streaming-meeting-room-usage-${self:provider.stage}'  # 스트리밍 회의실 사용 추적 테이블
+        AttributeDefinitions:
+          - AttributeName: 'title'
+            AttributeType: 'S'
+          - AttributeName: 'start_At'
+            AttributeType: 'S'
+          - AttributeName: 'status'
+            AttributeType: 'S'  # Global Secondary Index를 위한 속성 정의
+        KeySchema:
+          - AttributeName: 'title'
+            KeyType: HASH  # 파티션 키
+          - AttributeName: 'start_At'
+            KeyType: RANGE  # 정렬 키
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: 'StatusIndex'
+            KeySchema:
+              - AttributeName: 'status'
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        # TimeToLiveSpecification 제거: 항목이 영구적으로 보관됨
 
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
