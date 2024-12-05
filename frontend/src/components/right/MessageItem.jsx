@@ -145,9 +145,18 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
                 className="message-actions"
                 style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}
             >
-                {isCurrentUser && ( // 작성자만 수정/삭제 가능
+                {isCurrentUser && ( // 작성자만 액션 가능
                     <>
-                        {isEditing ? (
+                        {isFileMessage ? ( // 파일 메시지인 경우
+                            <IconButton
+                                sx={{ color: '#d81b60' }}
+                                size="small"
+                                onClick={handleDeleteClick}
+                                aria-label="삭제"
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        ) : isEditing ? ( // 일반 메시지 수정 중
                             <>
                                 <IconButton size="small" onClick={handleSaveClick} sx={{ color: '#43a047' }}>
                                     <CheckIcon />
@@ -156,12 +165,22 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
                                     <CloseIcon />
                                 </IconButton>
                             </>
-                        ) : (
+                        ) : ( // 일반 메시지 수정/삭제 버튼
                             <>
-                                <IconButton size="small" onClick={handleEditClick} aria-label="메시지 수정" sx={{ color: '#8e24aa' }}>
+                                <IconButton
+                                    size="small"
+                                    onClick={handleEditClick}
+                                    aria-label="메시지 수정"
+                                    sx={{ color: '#8e24aa' }}
+                                >
                                     <EditIcon />
                                 </IconButton>
-                                <IconButton size="small" onClick={handleDeleteClick} aria-label="삭제" sx={{ color: '#d81b60' }}>
+                                <IconButton
+                                    size="small"
+                                    onClick={handleDeleteClick}
+                                    aria-label="삭제"
+                                    sx={{ color: '#d81b60' }}
+                                >
                                     <DeleteIcon />
                                 </IconButton>
                             </>
@@ -169,7 +188,13 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
                     </>
                 )}
                 {isFileMessage && (
-                    <IconButton sx={{ color: '#8e24aa' }} size="small" onClick={handleDownloadFile} aria-label="파일 다운로드" disabled={isProcessing}>
+                    <IconButton
+                        sx={{ color: '#8e24aa' }}
+                        size="small"
+                        onClick={handleDownloadFile}
+                        aria-label="파일 다운로드"
+                        disabled={isProcessing}
+                    >
                         <DownloadIcon />
                     </IconButton>
                 )}
