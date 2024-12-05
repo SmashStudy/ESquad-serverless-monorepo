@@ -41,7 +41,7 @@ export const putAttendee = async (title, attendeeId, attendeeName, userEmail, te
           Put: {
             TableName: participantUsageTableName,
             Item: {
-              userEmail: { S: attendeeName },
+              userEmail: { S: userEmail },
               start_At: { S: startAtISO },
               studyId: { S: title },
               teamId: { S: teamId },
