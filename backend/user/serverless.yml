@@ -24,6 +24,7 @@ provider:
             - "cognito-idp:ListUsers"
             - cognito-idp:AdminEnableUser 
             - cognito-idp:AdminDisableUser
+            - cognito-idp:AdminListGroupsForUser
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         
@@ -189,6 +190,9 @@ functions:
             type: REQUEST
             name: authorizer # 연결된 Authorizer 함수
           cors: true
+  triggerUserEntryPoint:
+    handler: src/triggerUserEntryPoint.handler
+  
   
 
 resources:
@@ -323,3 +327,9 @@ package:
 useDotenv: true
 plugins:
   - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 1
