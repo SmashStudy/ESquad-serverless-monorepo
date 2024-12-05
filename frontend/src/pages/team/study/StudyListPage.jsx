@@ -228,8 +228,9 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                 <CardActions sx={{ justifyContent: "flex-end" }}>
                   {userInfo && (
                     <LiveStreamWindow
-                      nickname={userInfo.nickname}
+                      teamId={teamId}
                       studyId={study.PK}
+                      nickname={userInfo.nickname}
                     />
                   )}
                 </CardActions>
