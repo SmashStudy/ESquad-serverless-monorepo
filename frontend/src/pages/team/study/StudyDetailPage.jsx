@@ -49,11 +49,11 @@ const StudyStatus = ({ startDate, endDate }) => {
       </Box>
 
       <Typography
-        variant="h5"
         fontWeight="bold"
         sx={{
           color: 'text.primary',
           marginLeft: '8px', // 아이콘과 텍스트 간의 간격을 설정
+          fontSize: '17px'
         }}
       >
         {statusText}
@@ -127,85 +127,145 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        mb: 3,
-        p: 2,
-        gap: 2,
-        height: '100%',
-        position: 'relative',
-        backgroundColor: theme.palette.background.paper,
+        gap: 4,
+        p: 4,
+        backgroundColor: theme.palette.background.default,
+        borderRadius: 3,
+        boxShadow: 3,
+        minHeight: '100%'
       }}
     >
-      {/* 기간 정보 */}
-      <StudyStatus startDate={study?.startDate} endDate={study?.endDate} />
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-        {/* 이미지 영역 */}
-        <Box sx={{ maxWidth: '40vh', maxHeight: '40vh' }}>
-          <Box
-            component="img"
-            src={
-              study?.imgPath ||
-              'https://s3-esquad-public.s3.us-east-1.amazonaws.com/book-profile-man-and-sea-lJaouK3e.jpg'
-            }
-            alt={study?.studyName}
-            sx={{
-              objectFit: 'cover',
-              borderRadius: '8px',
-              boxShadow: 2,
-              width: '100%',
-              height: '100%',
-            }}
-          />
-        </Box>
 
-        {/* 스터디 정보 영역 */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'left' }}>
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            sx={{
-              mb: 2,
-              color: theme.palette.text.primary,
-              fontSize: { xs: '1.5rem', sm: '2rem' },
-            }}
-          >
+      {/* Study Info */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+        {/* Study Image */}
+        <Box
+          component="img"
+          src={study?.imgPath || 'default-image-path.jpg'}
+          alt={study?.studyName}
+          sx={{
+            width: { md: '30vh', top: 0 },
+            height: 'auto',
+            borderRadius: 2,
+            boxShadow: 2,
+            minHeight: '40vh'
+          }}
+        />
+        {/* Study Details */}
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" fontWeight="bold">
             {study?.studyName || 'Loading...'}
           </Typography>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{
-              mb: 2,
-              color: theme.palette.text.primary,
-              fontSize: { xs: '1.5rem', sm: '1rem' },
-            }}
-          >
+          <Typography variant="body1" sx={{ mt: 2, color: 'text.secondary' }}>
             {study?.description || 'Loading...'}
           </Typography>
         </Box>
-      </Box>
+        <Box>
+          <StudyStatus startDate={study?.startDate} endDate={study?.endDate} ></StudyStatus>
+        </Box></Box>
 
       {/* 파일 시스템 영역 */}
-      <Box sx={{ width: '100%' }}>
-        
-          <AccordionSummary aria-controls="panel1a-content" id="panel1a-header">
-            <Typography>공유파일 리스트</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <FileUploader
-              selectedFile={selectedFile}
-              onFileChange={handleFileChange}
-              onFileUpload={() =>
-                handleFileUpload(
-                  selectedFile,
+      <Box
+        sx={{
+          width: '100%',
+          padding: '16px',
+          position: 'relative', // position: 'flex'는 유효하지 않으므로 'relative'로 수정
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)', // 그림자 추가
+          borderRadius: '8px', // 선택 사항: 모서리 둥글게
+          minHeight: '40vh'
+
+        }}
+      >
+
+        <Box aria-controls="panel1a-content" id="panel1a-header" sx={{ position: 'relative', top: 0 }}>
+          <Typography sx={{ fontSize: '20px', paddingBottom: '10px' }}>공유파일 리스트</Typography>
+        </Box>
+        <Box >
+          <FileUploader
+            selectedFile={selectedFile}
+            onFileChange={handleFileChange}
+            onFileUpload={() =>
+              handleFileUpload(
+                selectedFile,
+                email,
+                studyId,
+                'STUDY_PAGE',
+                setIsUploading,
+                setSnackbar,
+                setUploadedFiles,
+                setSelectedFile,
+                () =>
+                  fetchFiles(
+                    studyId,
+                    'STUDY_PAGE',
+                    5,
+                    currentPage,
+                    lastEvaluatedKeys,
+                    setUploadedFiles,
+                    setLastEvaluatedKeys,
+                    setTotalPages,
+                    totalPages,
+                    setSnackbar,
+                    setIsLoading
+                  ),
+                setCurrentPage,
+                setUploadProgress
+              )
+            }
+            isUploading={isUploading}
+          />
+
+          {selectedFile !== null && <FilePreviewBeforeUpload file={selectedFile} />}
+
+          {downloadProgress && (
+            <Box sx={{ my: 2, alignItems: 'center' }}>
+              <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                다운로드 중... {downloadProgress.fileName}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }}>
+                <LinearProgressWithLabel variant="determinate" value={downloadProgress.percent} />
+              </Box>
+            </Box>
+          )}
+
+          {uploadProgress && (
+            <Box sx={{ my: 2, alignItems: 'center' }}>
+              <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                업로드 중... {uploadProgress.fileName}
+              </Typography>
+              <Box sx={{ flexGrow: 1 }}>
+                <LinearProgressWithLabel variant="determinate" value={uploadProgress.percent} />
+              </Box>
+            </Box>
+          )}
+
+          {isLoading ? (
+            <Typography
+              variant="h5"
+              sx={{
+                color: `${theme.palette.primary.main}`,
+                textAlign: 'center',
+              }}
+            >
+              <CircularProgress size={"3rem"} />
+              <br />
+              로딩 중...
+            </Typography>
+          ) : (
+            <FileList
+              files={uploadedFiles}
+              email={email}
+              onFileDownload={(fileKey, originalFileName) =>
+                handleFileDownload(fileKey, originalFileName, setSnackbar, setDownloadProgress)
+              }
+              onFileDelete={(fileKey, userEmail) =>
+                handleFileDelete(
+                  fileKey,
+                  userEmail,
                   email,
-                  studyId,
-                  'STUDY_PAGE',
-                  setIsUploading,
                   setSnackbar,
                   setUploadedFiles,
-                  setSelectedFile,
                   () =>
                     fetchFiles(
                       studyId,
@@ -220,85 +280,22 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
                       setSnackbar,
                       setIsLoading
                     ),
-                  setCurrentPage,
-                  setUploadProgress
+                  setCurrentPage
                 )
               }
-              isUploading={isUploading}
+              theme={theme}
             />
-
-            {selectedFile !== null && <FilePreviewBeforeUpload file={selectedFile} />}
-
-            {downloadProgress && (
-              <Box sx={{ my: 2, alignItems: 'center' }}>
-                <Typography variant="subtitle1" sx={{ mr: 2 }}>
-                  다운로드 중... {downloadProgress.fileName}
-                </Typography>
-                <Box sx={{ flexGrow: 1 }}>
-                  <LinearProgressWithLabel variant="determinate" value={downloadProgress.percent} />
-                </Box>
-              </Box>
-            )}
-
-            {uploadProgress && (
-              <Box sx={{ my: 2, alignItems: 'center' }}>
-                <Typography variant="subtitle1" sx={{ mr: 2 }}>
-                  업로드 중... {uploadProgress.fileName}
-                </Typography>
-                <Box sx={{ flexGrow: 1 }}>
-                  <LinearProgressWithLabel variant="determinate" value={uploadProgress.percent} />
-                </Box>
-              </Box>
-            )}
-
-            {isLoading ? (
-              <Typography
-                variant="h5"
-                sx={{
-                  color: `${theme.palette.primary.main}`,
-                  textAlign: 'center',
-                }}
-              >
-                <CircularProgress size={"3rem"} />
-                <br />
-                로딩 중...
-              </Typography>
-            ) : (
-              <FileList
-                files={uploadedFiles}
-                email={email}
-                onFileDownload={(fileKey, originalFileName) =>
-                  handleFileDownload(fileKey, originalFileName, setSnackbar, setDownloadProgress)
-                }
-                onFileDelete={(fileKey, userEmail) =>
-                  handleFileDelete(
-                    fileKey,
-                    userEmail,
-                    email,
-                    setSnackbar,
-                    setUploadedFiles,
-                    () =>
-                      fetchFiles(
-                        studyId,
-                        'STUDY_PAGE',
-                        5,
-                        currentPage,
-                        lastEvaluatedKeys,
-                        setUploadedFiles,
-                        setLastEvaluatedKeys,
-                        setTotalPages,
-                        totalPages,
-                        setSnackbar,
-                        setIsLoading
-                      ),
-                    setCurrentPage
-                  )
-                }
-                theme={theme}
+          )}
+          <Box sx={{ position: 'sticky', bottom: 0 }}>
+            {uploadedFiles.length > 3 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
               />
             )}
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-          </AccordionDetails>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

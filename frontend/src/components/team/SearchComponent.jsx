@@ -19,7 +19,7 @@ const SearchComponent = ({ onSearchChange, placeholderText, buttonVariant, butto
     };
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, width: '90%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, width: '100%' }}>
             <InputBase
                 placeholder={placeholderText}
                 value={searchTerm}
