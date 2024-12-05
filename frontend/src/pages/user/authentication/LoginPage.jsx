@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Box, Button, Typography, Grid, TextField, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { FcGoogle } from "react-icons/fc";
@@ -69,19 +70,23 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(`${getUserApi()}/signin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await axios.post(
+        `${getUserApi()}/signin`, 
+        { email, password }, // 요청 본문
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }, 
+        {
+          withCredentials: true, // 쿠키를 포함하여 요청 및 응답 처리
+        }
+      );
+      const data = await response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (!response.status === 200) {
         if (data.error === "User is not confirmed. Please confirm your email first.") {
-          localStorage.setItem("email", email);
+          // localStorage.setItem("email", email);
           navigate("/email/verification");
           return;
         }
@@ -91,10 +96,24 @@ const Login = () => {
       setSuccess("로그인에 성공했습니다!");
       setError("");
 
-      const { accessToken, idToken } = data;
-      localStorage.setItem("jwtToken", idToken);
+      // const { accessToken, idToken } = data;
+      // localStorage.setItem("jwtToken", idToken);
 
-      window.location.href = "/";
+      try {
+        const response = await axios.get(`${getUserApi()}/get-nickname`, {
+          withCredentials: true, 
+        });
+        setUser((prev) => ({
+          ...prev,
+          nickname: response.data.nickname,
+        }));
+      } catch (err) {
+        console.error("닉네임 가져오기 오류:", err);
+        setError("닉네임을 가져오는 중 오류가 발생했습니다.");
+      } finally {
+      }
+
+      // window.location.href = "/";
     } catch (error) {
       console.error("로그인 오류:", error);
       setError(error.message || "로그인 중 문제가 발생했습니다.");
