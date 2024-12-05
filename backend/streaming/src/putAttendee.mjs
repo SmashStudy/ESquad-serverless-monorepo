@@ -1,4 +1,3 @@
-// src/putAttendee.js
 import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
 
 // DynamoDB 클라이언트 초기화
@@ -42,10 +41,10 @@ export const putAttendee = async (title, attendeeId, attendeeName, userEmail, te
           Put: {
             TableName: participantUsageTableName,
             Item: {
-              userEmail: { S: userEmail }, // attendeeName을 userEmail로 설정
-              start_At: { S: startAtISO },    // 현재 시간
-              studyId: { S: title },          // studyId를 title로 설정
-              teamId: { S: teamId },              // teamId를 빈 문자열로 설정
+              userEmail: { S: attendeeName },
+              start_At: { S: startAtISO },
+              studyId: { S: title },
+              teamId: { S: teamId },
               // end_At은 초기에는 설정하지 않음
             },
           },
