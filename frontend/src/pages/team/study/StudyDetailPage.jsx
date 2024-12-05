@@ -23,6 +23,8 @@ import {
   handleFileDownload
 } from '../../../utils/storage/utilities.js';
 import LinearProgressWithLabel from "../../../components/custom/CustomMui.jsx";
+import FilePreviewBeforeUpload
+  from "../../../components/storage/FilePreviewBeforeUpload.jsx";
 
 const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
   const location = useLocation();
@@ -186,23 +188,25 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
             )}
 
             {downloadProgress && (
-                <Box sx={{ my: 2,  alignItems: 'center' }}>
-                  <Typography variant="subtitle1" sx = {{mr: 2}}>
+                <Box sx={{my: 2, alignItems: 'center'}}>
+                  <Typography variant="subtitle1" sx={{mr: 2}}>
                     다운로드 중... {downloadProgress.fileName}
                   </Typography>
-                  <Box sx = {{flexGrow:1}}>
-                  <LinearProgressWithLabel variant="determinate" value={downloadProgress.percent} />
+                  <Box sx={{flexGrow: 1}}>
+                    <LinearProgressWithLabel variant="determinate"
+                                             value={downloadProgress.percent}/>
                   </Box>
                 </Box>
             )}
 
             {uploadProgress && (
-                <Box sx={{ my: 2,  alignItems: 'center' }}>
-                  <Typography variant="subtitle1" sx = {{mr: 2}}>
+                <Box sx={{my: 2, alignItems: 'center'}}>
+                  <Typography variant="subtitle1" sx={{mr: 2}}>
                     업로드 중... {uploadProgress.fileName}
                   </Typography>
-                  <Box sx = {{flexGrow:1}}>
-                    <LinearProgressWithLabel variant="determinate" value={uploadProgress.percent} />
+                  <Box sx={{flexGrow: 1}}>
+                    <LinearProgressWithLabel variant="determinate"
+                                             value={uploadProgress.percent}/>
                   </Box>
                 </Box>
             )}
@@ -224,7 +228,8 @@ const StudyDetailPage = ({isSmallScreen, isMediumScreen}) => {
                     files={uploadedFiles}
                     email={email}
                     onFileDownload={(fileKey, originalFileName) =>
-                        handleFileDownload(fileKey, originalFileName, setSnackbar, setDownloadProgress)
+                        handleFileDownload(fileKey, originalFileName,
+                            setSnackbar, setDownloadProgress)
                     }
                     onFileDelete={(fileKey, userEmail) =>
                         handleFileDelete(

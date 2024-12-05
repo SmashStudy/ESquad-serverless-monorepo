@@ -54,7 +54,7 @@ export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = JSON.parse(event.body);
-  const { room_id, message, user_id, fileKey, presignedUrl, contentType, originalFileName, timestamp } = body;
+  const { room_id, message, user_id, fileKey, contentType, originalFileName, timestamp } = body;
 
   if (!room_id || !message || !user_id) {
     return {
@@ -71,7 +71,6 @@ export const handler = async (event) => {
     user_id: String(user_id),
     isFile: fileKey ? true : false, // 파일 여부 플래그 추가
     fileKey: fileKey ? fileKey : null,
-    presignedUrl: fileKey ? presignedUrl : null,
     contentType: fileKey ? contentType : null,
     originalFileName: fileKey ? originalFileName : null,
   };
@@ -113,7 +112,7 @@ export const handler = async (event) => {
       headers: {
         "Access-Control-Allow-Origin": "*", // 모든 출처 허용
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
       body: JSON.stringify({ result: "ok" }),
     };

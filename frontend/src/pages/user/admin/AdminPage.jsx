@@ -22,7 +22,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SortIcon from "@mui/icons-material/Sort";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import { getUserApi } from "../../utils/apiConfig";
+import { getUserApi } from "../../../utils/apiConfig.js";
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
@@ -107,7 +107,6 @@ const AdminPage = () => {
       }
 
       const data = await response.json();
-      console.log(data.message);
       fetchUsers(); // 상태 변경 후 사용자 목록 갱신
     } catch (error) {
       console.error("Error updating user status:", error);

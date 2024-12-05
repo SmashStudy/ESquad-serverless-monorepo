@@ -19,7 +19,6 @@ export const getTeamIdsAndNames = async () => {
 // 팀 프로필 가져오기
 export const getTeamProfiles = async (teamId) => {
   const response = await TeamApi.get(`/${encodeURIComponent(teamId)}`);
-  console.log(`getTeamProfiles: ${JSON.stringify(response.data.body)}`);
   return response.data.body;
   // return typeof profile === "string" ? JSON.parse(profile) : profile;
   // return profiles||[];

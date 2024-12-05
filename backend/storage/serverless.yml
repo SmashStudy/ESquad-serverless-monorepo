@@ -12,6 +12,8 @@ provider:
     AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
     USER_TABLE_STREAM_ARN: ${env:USER_TABLE_STREAM_ARN}
+    FILE_LOG_TABLE: ${env:FILE_LOG_TABLE}
+    QUILL_S3_BUCKET: ${env:QUILL_S3_BUCKET}
 
   iamRoleStatements:
     - Effect: Allow
@@ -21,48 +23,46 @@ provider:
         - dynamodb:Query
         - dynamodb:DeleteItem
         - dynamodb:UpdateItem
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
       Resource:
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndexByDate
         - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/UserUsageIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:FILE_LOG_TABLE}
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:FILE_LOG_TABLE}/index/*
+        - arn:aws:s3:::${env:QUILL_S3_BUCKET}/*
 
 functions:
 
-  generatePresignedUrl: # Deprecated
-    handler: src/utils/s3Utils.requestPresignedUrl
+  uploadFile:
+    handler: src/handlers/uploadFile.handler
     events:
       - http:
-          path: /presigned-url
+          path: /upload-file
           method: post
           cors: true
 
-  fetchFileMetadata:
-    handler: src/handlers/fetchFileMetadata.handler
+  getFile:
+    handler: src/handlers/getFile.handler
+    events:
+      - http:
+          path: /{fileKey}
+          method: get
+          cors: true
+
+  fetchFiles:
+    handler: src/handlers/fetchFiles.handler
     events:
       - http:
           path: /metadata
           method: get
           cors: true
 
-  deleteFile:
-    handler: src/handlers/deleteFile.handler
-    events:
-      - http:
-          path: /{fileKey}
-          method: delete
-          cors: true
-
-  storeFileMetadata: # Deprecated
-    handler: src/handlers/storeFileMetadata.handler
-    events:
-      - http:
-          path: /store-metadata
-          method: post
-          cors: true
-
-  getUserUsage:
-    handler: src/handlers/getUserUsage.handler
+  getUserFiles:
+    handler: src/handlers/getUserFiles.handler
     events:
       - http:
           path: /get-user-usage
@@ -77,12 +77,12 @@ functions:
           method: patch
           cors: true
 
-  uploadFile:
-    handler: src/handlers/uploadFile.handler
+  deleteFile:
+    handler: src/handlers/deleteFile.handler
     events:
       - http:
-          path: /upload-file
-          method: post
+          path: /{fileKey}
+          method: delete
           cors: true
 
   updateFileMetadataNickname:
@@ -94,10 +94,74 @@ functions:
           batchSize: 5
           startingPosition: LATEST
 
+  storeFileMetadata: # Deprecated
+    handler: src/handlers/storeFileMetadata.handler
+    events:
+      - http:
+          path: /store-metadata
+          method: post
+          cors: true
+
+  generatePresignedUrlForQuill:
+    handler: src/handlers/generatePresignedUrlForQuill.handler
+    events:
+      - http:
+          path: /presigned-url
+          method: post
+          cors: true
+
 
 
 resources:
   Resources:
+
+    FileLogTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:FILE_LOG_TABLE}
+        AttributeDefinitions:
+          - AttributeName: logId
+            AttributeType: S
+          - AttributeName: action
+            AttributeType: S
+          - AttributeName: userEmail
+            AttributeType: S
+          - AttributeName: targetId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: logId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ActionIndex
+            KeySchema:
+              - AttributeName: action
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserEmailIndex
+            KeySchema:
+              - AttributeName: userEmail
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: TargetIndex
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
     MetadataTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -180,12 +244,59 @@ resources:
                 - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
                 - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
 
+#    for Quill
+    QuillImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:QUILL_S3_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+              MaxAge: 3000
+        VersioningConfiguration:
+          Status: Enabled
+
+    QuillImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref QuillImageBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !Sub '${QuillImageBucket.Arn}/*'
+
+
+# plugin setting
 
 useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
+  - serverless-prune-plugin
 
 package:
   exclude:
     - tests/**
+
+custom:
+  prune:
+    automatic: true
+    number: 3
