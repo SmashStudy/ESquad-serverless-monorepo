@@ -162,6 +162,7 @@ functions:
           path: /{teamId}/settings/info
           method: put
           cors: true
+
   deleteTeam:
     handler: src/handlers/teamHandler.deleteTeam
     events:
@@ -169,6 +170,7 @@ functions:
           path: /{teamId}/settings
           method: delete
           cors: true
+
   updateTeamUsers:
     handler: src/handlers/teamUserHandler.updateTeamUsers
     events:
@@ -176,6 +178,7 @@ functions:
           path: /{teamId}/setting/users
           method: put
           cors: true
+
   searchBooks:
     handler: src/handlers/bookHandler.searchBooks
     events:
@@ -183,6 +186,7 @@ functions:
           path: /book/search
           method: get
           cors: true
+
   createStudy:
     handler: src/handlers/studyHandler.createStudy
     events:
@@ -190,13 +194,21 @@ functions:
           path: /{teamId}/study/create
           method: post
           cors: true
+
   getStudyList:
     handler: src/handlers/studyHandler.getStudyList
     events: 
       - http:
           path: /{teamId}/study/get
           method: get
-          cors: true
+          origin:
+            origin: ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
+              - x-jwt-token         # JWT 토큰이 헤더로 전달될 수 있도록 설정
+            allowCredentials: true  # 인증 정보를 포함한 요청을 허용
+
   getStudyInfo:
     handler: src/handlers/studyHandler.getStudyInfo
     events: 
