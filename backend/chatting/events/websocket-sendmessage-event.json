@@ -1,0 +1,8 @@
+{
+  "body": "{\"message\":\"Hello, World!\",\"room_id\":\"room1\",\"user_id\":\"user1\"}",
+  "requestContext": {
+    "connectionId": "connectionId123",
+    "domainName": "ynzseuc5gg.execute-api.us-east-1.amazonaws.com",
+    "stage": "dev"
+  }
+}

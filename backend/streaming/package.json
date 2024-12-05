@@ -1,0 +1,61 @@
+{
+    "name": "chime-sdk-meeting-serverless-demos",
+    "version": "0.1.0",
+    "description": "Amazon Chime SDK Serverless Demos",
+    "license": "Apache-2.0",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/aws-samples/amazon-chime-sdk"
+    },
+    "dependencies": {
+      "@aws-sdk/client-chime-sdk-meetings": "^3.490.0",
+      "@aws-sdk/client-cloudwatch-logs": "^3.490.0",
+      "@aws-sdk/client-dynamodb": "^3.693.0",
+      "@aws-sdk/client-s3": "^3.693.0"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.22.0",
+      "@babel/preset-env": "^7.22.0",
+      "babel-jest": "^29.7.0",
+      "jest": "^29.7.0",
+      "cross-env": "^7.0.3",
+      "serverless-iam-roles-per-function": "^3.2.0",
+      "serverless-offline": "^14.3.4",
+      "serverless-plugin-dotenv": "^1.0.0",
+      "serverless-plugin-ifelse": "^1.0.7"
+    },
+    "type": "module",
+    "scripts": {
+      "test": "cross-env SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:123456789012:MyQueue jest",
+      "test:watch": "cross-env SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:123456789012:MyQueue jest --watch",
+      "test:coverage": "cross-env SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:123456789012:MyQueue jest --coverage"
+    },
+    "babel": {
+      "presets": [
+        "@babel/preset-env"
+      ]
+    },
+    "jest": {
+      "transform": {
+        "^.+\\.mjs$": "babel-jest",
+        "^.+\\.jsx?$": "babel-jest",
+        "^.+\\.tsx?$": "babel-jest"
+      },
+      "testEnvironment": "node",
+      "testMatch": [
+        "**/?(*.)+(spec|test).[tj]s?(x)",
+        "**/?(*.)+(spec|test).mjs"
+      ],
+      "moduleFileExtensions": [
+        "js",
+        "mjs",
+        "ts",
+        "json",
+        "node"
+      ],
+      "transformIgnorePatterns": [
+        "/node_modules/(?!@aws-sdk/client-dynamodb|@aws-sdk/client-chime-sdk-meetings)/"
+      ]
+    }
+  }
+  

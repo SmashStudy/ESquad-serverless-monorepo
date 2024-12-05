@@ -1,0 +1,40 @@
+{
+  "post": {
+    "id": "1234567890",
+    "boardType": "general",
+    "title": "첫 번째 게시글입니다.",
+    "content": "안녕하세요 게시글 내용입니다.",
+    "writer": {
+      "email": "ffjjo0310@gmail.com",
+      "name": "박준형",
+      "nickname": "닉네임준형"
+    },
+    "book": {
+      "bookId": "123456789",
+      "title": "노인과 바다",
+      "author": "어니스트 헤밍웨이",
+      "isbn": "9781234567890"
+    },
+    "tags": ["AWS", "서버리스"],
+    "createdAt": "2024-03-19T10:30:00Z",
+    "updatedAt": "2024-03-19T10:30:00Z",
+    "viewCount": 42,
+    "likeCount": 5,
+    "comments": [
+      {
+        "id": "comment123",
+        "content": "좋은 글이네요!",
+        "writer": {
+          "email": "ffjjo0310@gmail.com",
+          "name": " 박준형",
+          "nickname": "닉네임준형"
+        },
+        "createdAt": "2024-03-19T11:00:00Z",
+        "updatedAt": "2024-03-19T11:30:00Z",
+        "likeCount": 5
+      }
+    ],
+    "resolved": false,
+    "recruitStatus": false
+  }
+}

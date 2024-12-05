@@ -1,55 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet } from "react-router-dom";
 import {
-    IconButton,
-    Typography,
     Box,
     CssBaseline,
-    InputBase,
-    Button,
-    Avatar,
 } from '@mui/material';
-import { useTheme, useMediaQuery, styled, alpha } from '@mui/material';
-import AppBarComponent from "../../components/header/AppbarComponent.jsx";
+import { useTheme, useMediaQuery } from '@mui/material';
+import Appbar from "../../components/header/Appbar.jsx";
 import SidebarComponent from "../../components/header/SidebarComponent.jsx";
-import PostListPage from "../community/PostListPage.jsx";
-import ChatWindow from "../../components/right/ChatWindow.jsx";
-import StudyPage from "../team/study/StudyPage.jsx";
-import {useUser} from "../../components/form/UserContext.jsx";
-import axios from "axios";
-import {fetchTeam} from "../../hooks/fetchTeam.jsx";
+import ChatDrawer from "../../components/right/ChatDrawer.jsx";
+import TeamsProvider, { useTeams } from "../../context/TeamContext.jsx";
 
-const Home = () => {
+const HomeContent = () => {
     const theme = useTheme();
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
+
     const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
+    const [selectedTeam, setSelectedTeam] = useState(null);         // 유저가 선택한 팀
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [teams, setTeams] = useState([
-        // { "teamName": "none" },
-        { "id": 21, "teamName": "문법존" },
-        { "id": 28, "teamName": "몬다니" },
-    ]);
-    const [selectedTeam, setSelectedTeam] = useState(null);
-    const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));     // Below 1200px
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));      // Below 900px
+    const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
 
-    // const accessToken= localStorage.getItem('jwt');
-    // const user = useUser();
+    const [loading, setLoading] = useState(false);
 
-    // useEffect(() => {
-    //     if(accessToken) {
-    //         // alert(accessToken);
-    //         fetchTeam()
-    //             .then((response) => {
-    //                 console.log(response);
-    //                 response == null ? setTeams([]) : setTeams(response);
-    //             }).catch((error) => {
-    //             console.log(error);
-    //         });
-    //     }
-    // }, [accessToken]);
+    const {teams, updateSelectedTeam, updateTeams} = useTeams();
 
-    // Toggle the sidebar or open the drawer based on screen size
+    const toggleChatDrawer = () => {
+        setChatDrawerOpen((prevState) => !prevState);
+    };
+
     const handleSidebarToggle = () => {
         if (isSmallScreen) {
             setDrawerOpen(true);
@@ -58,53 +37,44 @@ const Home = () => {
         }
     };
 
-    // Close the drawer
     const handleDrawerClose = () => { setDrawerOpen(false); };
 
-    // set selectedTab
-    const handleTab = (tabIndex) => {
-        setSelectedTab(tabIndex);
-        setSelectedTeam(null);
+    const handleTabChange = (tabIndex) => {
+        setSelectedTab((prev) => tabIndex);
+        if(tabIndex !== 1) setSelectedTeam(null);   // 커뮤니티 선택 시 선택 팀 초기화
     }
-
-    // update selectedTeam
-    const updateSelectedTeam = (i) => {
-        const changeSelectTeam = teams[i];
-        if (selectedTeam?.id !== changeSelectTeam.id || selectedTeam == null) {
-            setSelectedTeam(changeSelectTeam);
-            if(selectedTab !== 1) setSelectedTab(1);
-        }
-    };
-
-    const updateTeams = (team) => {
-        setTeams(...teams, team);
-    }
-
-    // console.log(teams);
 
     return (
         <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
             <CssBaseline />
 
             {/* AppBar/AppbarComponent */}
-            <AppBarComponent
+            <Appbar
                 handleSidebarToggle={handleSidebarToggle}
-                handleTab={handleTab}
                 selectedTab={selectedTab}
-                updateSelectedTeam={updateSelectedTeam}
-                updateTeams={updateTeams}
+                onTabChange={handleTabChange}   // Appbar 탭 변경 : 0 / 1
+                changeSelectedTeam={setSelectedTeam}    // 유저가 선택한 팀 PK 설정 -> 사이드바에 뿌려주기 위함
+                toggleChatDrawer={toggleChatDrawer}
+            />
+
+            <ChatDrawer
+                isSmallScreen={isSmallScreen}
+                isMediumScreen={isMediumScreen}
                 teams={teams}
+                selectedTeam={selectedTeam}
+                isOpen={chatDrawerOpen}
+                toggleDrawer={toggleChatDrawer}
             />
 
             {/* Home Content Area with Sidebar */}
             <Box
                 component="main"
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    width: '100%',
-                    height: 'calc(100vh - 57px)',
-                    marginTop: '57px',
+                display: 'flex',
+                flexDirection: 'row',
+                width: '100%',
+                height: 'calc(100vh - 57px)',
+                marginTop: '57px',
                 }}
             >
                 {/* Render Drawer instead of Sidebar when the screen width is less than 600px */}
@@ -120,41 +90,47 @@ const Home = () => {
                 {/* Home Content Area - Sidebar 제외한 나머지 body 영역 */}
                 <Box
                     sx={{
-                        display: 'flex',
-                        flexDirection: isMediumScreen ? 'column' : 'row',
-                        flexGrow: 1,
-                        py: 2,      // warn
-                        px: 2,      // warn
-                        gap: 1,     // Community area 와 chat area gap
-                        transition: 'width 0.3s ease',
-                        backgroundColor: '#fff',
+                    display: 'flex',
+                    flexDirection: isMediumScreen ? 'column' : 'row',
+                    flexGrow: 1,
+                    py: 2,
+                    px: 2,
+                    gap: 1,
+                    transition: 'width 0.3s ease',
+                    backgroundColor: theme.palette.background.default,
                     }}
                 >
-                    {/* Left Section - Community / Team Content */}
-                    <Box
-                        sx={{
-                            flex: isMediumScreen ? 6 : 7,
-                            flexDirection: 'row',
-                            gap: 1,
-                            height: isMediumScreen ? '60%' : '100%',
-                        }}
+
+                {/* Left Section - Community / Team Content */}
+                <Box
+                    sx={{
+                    flex: isMediumScreen ? 6 : 7,
+                    flexDirection: 'row',
+                    gap: 1,
+                    height: isMediumScreen ? '60%' : '100%',
+                    }}
                     >
-
-                        <Outlet />
-                    </Box>
-
-                    {/* Right Section - Chat Area */}
-                    <ChatWindow
-                        isSmallScreen={isSmallScreen}
-                        isMediumScreen={isMediumScreen}
-                        teams={teams}
-                        selectedTeam={selectedTeam}
-                        // user={user}
-                    />
+                    <Outlet context={{ selectedTab, selectedTeam }} />
                 </Box>
+
+                {/* Right Section - Chat Area */}
+                <ChatDrawer
+                    isSmallScreen={isSmallScreen}
+                    isMediumScreen={isMediumScreen}
+                    teams={teams}
+                    selectedTeam={selectedTeam}
+                    toggleDrawer={toggleChatDrawer}
+                />
+            </Box>
             </Box>
         </Box>
     );
 };
+
+const Home = () => (
+    <TeamsProvider>
+      <HomeContent />
+    </TeamsProvider>
+);
 
 export default Home;

@@ -1,20 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import {fetchPreview} from "../../../utils/storage/utilities.js";
 
-const FilePreviewComponent = ({file}) => {
-    const isImage = file && file.type.startsWith('image/');
+const FilePreviewComponent = ({ fileKey, contentType }) => {
+    const [previewUrl, setPreviewUrl] = useState(null);
 
-    return (
-        <div className="file-preview">
-            {isImage? (
-                <img
-                    src={URL.createObjectURL(file)}
-                    alt="사진 미리보기"
-                    style={{ maxWidth: '200px', maxHeight: '200px', margin: '10px 0' }}
-                />
-            ) : (
-                <p>미리보기가 지원되지 않는 파일 형식</p>
-            )}
-        </div>
-    )
-}
+    useEffect(() => {
+        const fetchPreviewUrl = async () => {
+            if (fileKey) {
+                try {
+                    await fetchPreview(fileKey, setPreviewUrl);
+                } catch (error) {
+                    console.error("미리보기 URL 요청 실패:", error);
+                }
+            }
+        };
+        fetchPreviewUrl();
+    }, [fileKey]);
+
+    // 파일 미리보기가 이미지인 경우
+    if (contentType?.startsWith("image/")) {
+        return (
+            <img
+                src={previewUrl}
+                alt="미리보기"
+                style={{
+                    maxWidth: "100px",
+                    maxHeight: "100px",
+                    objectFit: "cover",
+                    borderRadius: "4px",
+                }}
+            />
+        );
+    }
+    return <p>미리보기를 지원하지 않는 파일 형식입니다.</p>;
+};
+
 export default FilePreviewComponent;

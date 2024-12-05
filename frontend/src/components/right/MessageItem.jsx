@@ -1,14 +1,90 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import TextField from '@mui/material/TextField';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import { pink } from '@mui/material/colors';
+import { useMediaQuery, useTheme } from '@mui/material';
+import { handleFileDownload} from "../../utils/storage/utilities.js";
+import { getPresignedUrl} from "./chatApi/ChatUtils.jsx";
+import FilePreviewComponent from "./components/FilePreviewComponent.jsx";
 
-const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage, onDownloadFile }) => {
-    const timestamp = new Date(message.timestamp).toLocaleTimeString();
+const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) => {
+    const theme = useTheme();
+    const isFileMessage = message.fileKey && message.contentType;
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedMessage, setEditedMessage] = useState(message.message);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const isImage = (url) => {
-        return url && (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif'));
+    const isCurrentUser = currentUser;
+
+    useEffect(() => {
+        if (isFileMessage && !message.presignedUrl) {
+            const fetchPresignedUrl = async () => {
+                try {
+                    const url = await getPresignedUrl(message.fileKey);
+                    setPreviewUrl(url);
+                } catch (error) {
+                    console.error("Failed to fetch presigned URL for preview:", error);
+                }
+            };
+            fetchPresignedUrl();
+        } else {
+            setPreviewUrl(message.presignedUrl);
+        }
+    }, [message.fileKey, message.presignedUrl, isFileMessage]);
+
+    const getInitials = (nickname) => {
+        return nickname ? nickname.split(" ").map((word) => word[0]).join("").toUpperCase() : "U";
+    };
+
+    const getAvatarColor = (nickname) => {
+        const colors =
+            ['#FF80AB', '#FF8A80', '#EA80FC', '#8C9EFF',
+                '#80D8FF', '#A7FFEB', '#CCFF90', '#FFD180',
+                '#e57373', '#f06292', '#ba68c8', '#7986cb',
+                '#64b5f6', '#4fc3f7', '#4dd0e1', '#4db6ac',
+                '#81c784', '#aed581', '#dce775', '#fff176',
+                '#ffd54f', '#ffb74d', '#ff8a65', '#a1887f'];
+        const index = nickname ? nickname.charCodeAt(0) % colors.length : 0;
+        return colors[index];
+    };
+
+    const handleEditClick = () => { setIsEditing(true); };
+
+    const handleSaveClick = () => {
+        onEditMessage(message.timestamp, editedMessage, message.room_id);
+        setIsEditing(false);
+    };
+
+    const handleCancelClick = () => {
+        setEditedMessage(message.message);
+        setIsEditing(false);
+    };
+
+    const handleDeleteClick = async () => {
+        try {
+
+            // 파일 삭제 이후 메시지 삭제 핸들러 호출
+            onDeleteMessage(message);
+        } catch (error) {
+            console.error("삭제 실패:", error.message);
+        }
+    };
+
+    const handleDownloadFile = async () => {
+        try {
+            if (message.fileKey)
+            await handleFileDownload(message.fileKey, message.originalFileName);
+        } catch (error) {
+            console.error("파일 다운로드 실패:", error.message);
+        }
     };
 
     return (
@@ -16,87 +92,87 @@ const MessageItem = ({ message, currentUsername, onEditMessage, onDeleteMessage,
             className="message-item"
             style={{
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0.8rem',
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: isSmallScreen ? '0.4rem' : '0.8rem',
                 borderRadius: '8px',
-                backgroundColor: '#f9f9f9',
+                backgroundColor: isEditing ? '#ffffff' : '#ffffff',
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.05)',
                 marginBottom: '1rem',
-                maxWidth: '70%',
-                wordBreak: 'break-word'
+                maxWidth: isSmallScreen ? '100%' : '95%',
+                width: '100%',
+                wordBreak: 'break-word',
             }}
         >
-            <span
-                className="message-timestamp"
-                style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.25rem', alignSelf: 'flex-end' }}
-            >
-                {timestamp}
-            </span>
-            <div
-                className="message-content"
-                style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
-            >
-                <span
-                    className="message-user"
-                    style={{ fontWeight: 'bold', color: '#333', marginBottom: '0.3rem' }}
-                >
-                    {message.username || message.userId} {/* 사용자 이름 표시 */}
+            {/* 아바타 및 유저 정보 */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '0.8rem' }}>
+                <span style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '0.3rem' }}>
+                    {currentUser}
                 </span>
-
-                {message.message && (
-                    <span className="message-text" style={{ marginBottom: '0.5rem', color: '#333' }}>
-                        {message.message}
-                    </span>
-                )}
-
-                {message.fileUrl && isImage(message.fileUrl) && (
-                    <div className="image-preview" style={{ marginTop: '0.5rem' }}>
-                        <img
-                            src={message.fileUrl}
-                            alt="파일 미리보기"
-                            style={{ maxWidth: '150px', maxHeight: '150px', borderRadius: '8px', marginTop: '0.5rem' }}
-                        />
-                    </div>
-                )}
+                <Avatar sx={{ bgcolor: getAvatarColor(currentUser)}}>
+                    {getInitials(currentUser)}
+                </Avatar>
             </div>
 
+            {/* 메시지 내용 */}
+            <div style={{ flexGrow: 1 }}>
+                <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.25rem' }}>
+                    {new Date(message.timestamp).toLocaleTimeString()}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    {isEditing ? (
+                        <TextField
+                            value={editedMessage}
+                            onChange={(e) => setEditedMessage(e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                        />
+                    ) : (
+                        <>
+                            {isFileMessage ? (
+                                <FilePreviewComponent fileKey={message.fileKey} contentType={message.contentType}/>
+                            ) : (
+                                <span style={{ marginBottom: '0.5rem', color: '#333' }}>{message.message}</span>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* 메시지 액션 버튼 */}
             <div
                 className="message-actions"
-                style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'flex-end', alignSelf: 'flex-end' }}
+                style={{ display: 'flex', gap: '8px', marginLeft: 'auto', alignItems: 'center' }}
             >
-                {message.fileUrl && (
-                    <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => onDownloadFile(message.fileUrl)}
-                        aria-label="파일 다운로드"
-                        style={{ marginRight: '0.5rem' }}
-                    >
+                {isCurrentUser && ( // 작성자만 수정/삭제 가능
+                    <>
+                        {isEditing ? (
+                            <>
+                                <IconButton size="small" onClick={handleSaveClick} sx={{ color: '#43a047' }}>
+                                    <CheckIcon />
+                                </IconButton>
+                                <IconButton size="small" onClick={handleCancelClick} sx={{ color: pink[500] }}>
+                                    <CloseIcon />
+                                </IconButton>
+                            </>
+                        ) : (
+                            <>
+                                <IconButton size="small" onClick={handleEditClick} aria-label="메시지 수정" sx={{ color: '#8e24aa' }}>
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton size="small" onClick={handleDeleteClick} aria-label="삭제" sx={{ color: '#d81b60' }}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </>
+                        )}
+                    </>
+                )}
+                {isFileMessage && (
+                    <IconButton sx={{ color: '#8e24aa' }} size="small" onClick={handleDownloadFile} aria-label="파일 다운로드" disabled={isProcessing}>
                         <DownloadIcon />
                     </IconButton>
                 )}
-
-                {!message.fileUrl && (
-                    <IconButton
-                        color="secondary"
-                        size="small"
-                        onClick={() => onEditMessage(message.id, message.message)}
-                        aria-label="메시지 수정"
-                        style={{ marginRight: '0.5rem' }}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                )}
-
-                <IconButton
-                    color="error"
-                    size="small"
-                    onClick={() => onDeleteMessage(message.id, message.fileUrl)}
-                    aria-label="메시지 삭제"
-                >
-                    <DeleteIcon />
-                </IconButton>
             </div>
         </div>
     );

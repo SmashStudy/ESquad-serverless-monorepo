@@ -1,16 +1,199 @@
-service: example-service
+service: team-service
+frameworkVersion: '^3.15.0'
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  environment:
+    TEAM_TABLE: ${env:TEAM_TABLE}
+    CLIENT_ID: ${env:CLIENT_ID}
+    CLIENT_SECRET: ${env:CLIENT_SECRET}
+    ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Put
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Scan
+            - dynamodb:Query
+            - dynamodb:BatchWriteItem
+            - dynamodb:DeleteItem
+            - lambda:InvokeFunction
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/TeamName-Index # teamName 중복 찾기
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/StudyName-Index # studyName 중복 찾기
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/SK-ItemType-Index # USER로 teamID, studyID 찾을 때
+            - arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:provider.environment.TEAM_TABLE}/index/PK-ItemType-Index # teamID, studyID로 USER 찾을 때
+
+      managedPolicies:
+        - 'arn:aws:iam::aws:policy/AWSLambda_FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+
+resources:
+  Resources:
+    TeamTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TEAM_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          - AttributeName: itemType
+            AttributeType: S
+          - AttributeName: teamName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        GlobalSecondaryIndexes:
+          - IndexName: SK-ItemType-Index
+            KeySchema:
+              - AttributeName: SK
+                KeyType: HASH
+              - AttributeName: itemType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: PK-ItemType-Index
+            KeySchema:
+              - AttributeName: PK
+                KeyType: HASH
+              - AttributeName: itemType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: TeamName-Index
+            KeySchema:
+              - AttributeName: teamName
+                KeyType: HASH
+            Projection:
+              ProjectionType: KEYS_ONLY
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  getTeams:
+    handler: src/handlers/teamUserHandler.getTeams
     events:
       - http:
-          path: test
+          path: /get
+          method: get
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
+  createTeam:
+    handler: src/handlers/teamHandler.createTeam
+    events:
+      - http:
+          path: /create
+          method: post
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:   # 클라이언트에서 허용되는 헤더를 지정
+              - Content-Type
+              - Authorization
+  checkTeamName:
+    handler: src/handlers/teamHandler.checkTeamName
+    events:
+      - http:
+          path: /check-name/{teamName}
+          method: get
+          cors:
+            origins:
+              - ${env:ALLOWED_ORIGIN}
+            headers:
+              - Content-Type
+              - Authorization
+
+  getTeamProfile:
+    handler: src/handlers/teamHandler.getTeamProfile
+    events:
+      - http:
+          path: /{teamId}
           method: get
           cors: true
 
+  checkTeamUserRole:
+    handler: src/handlers/teamUserHandler.checkTeamUserRole
+    events:
+      - http:
+          path: /{teamId}/role
+          method: get
+          cors: true
+
+  getTeamUsersProfile:
+    handler: src/handlers/teamUserHandler.getTeamUsersProfile
+    events:
+      - http:
+          path: /{teamId}/user
+          method: get
+          cors: true
+
+  updateTeam:
+    handler: src/handlers/teamHandler.updateTeam
+    events:
+      - http:
+          path: /{teamId}/settings/info
+          method: put
+          cors: true
+  deleteTeam:
+    handler: src/handlers/teamHandler.deleteTeam
+    events:
+      - http:
+          path: /{teamId}/settings
+          method: delete
+          cors: true
+  updateTeamUsers:
+    handler: src/handlers/teamUserHandler.updateTeamUsers
+    events:
+      - http:
+          path: /{teamId}/setting/users
+          method: put
+          cors: true
+  searchBooks:
+    handler: src/handlers/bookHandler.searchBooks
+    events:
+      - http:
+          path: /book/search
+          method: get
+          cors: true
+  createStudy:
+    handler: src/handlers/studyHandler.createStudy
+    events:
+      - http:
+          path: /{teamId}/study/create
+          method: post
+          cors: true
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+
+#package:
+#  exclude:
+#    - package-lock.json
+#    - .env.dev
+#    - .env.local
+#    - .env.prod
+#  include:
+#    - package.json
+#    - src/utils/**
+#    - src/handlers/**
+#    - src/services/**

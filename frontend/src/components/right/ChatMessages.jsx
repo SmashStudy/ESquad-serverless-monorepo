@@ -5,9 +5,8 @@ import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } fro
 import {uploadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
 import {getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
-import {fetchUserEmail, handleFileDownload} from "../../utils/storage/utilities.js";
+import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
-
 const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
