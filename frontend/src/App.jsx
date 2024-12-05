@@ -11,6 +11,8 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
+import ManageUserPage from './pages/team/ManageUserPage.jsx';
+import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
 import UserStorageUsage from "./pages/user/profile/UserStorageUsagePage.jsx";
 import UserProfileNickname from "./pages/user/profile/UserProfileNicknamePage.jsx";
 import UserProfileLayout from "./pages/user/profile/UserProfileLayout.jsx";
@@ -26,12 +28,10 @@ import Login from './pages/user/authentication/LoginPage.jsx';
 import AuthCallback from './auth/AuthCallback.jsx';
 import Logout from './pages/user/authentication/LogoutPage.jsx';
 import UserProfile from './pages/user/profile/UserProfilePage.jsx';
-import ManageUserPage from './pages/team/ManageUserPage.jsx';
-import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
-import { decodeJWT } from "./utils/decodeJWT.js";
 import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
 import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
+import { decodeJWT } from "./utils/decodeJWT.js";
 
 const theme = createTheme({
     palette: {
@@ -130,14 +130,7 @@ function App() {
 
 
               {/* 보호된 경로 */}
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <Home />
-                  </PrivateRoute>
-                }
-              >
+              <Route path="/" element={ <PrivateRoute> <Home /> </PrivateRoute>}  >
                 {/* user */}
                 <Route path="/user/profile" element={<UserProfile />} />
                 <Route path="/user/profile/category" element={<UserStorageUsage />} />
@@ -152,10 +145,7 @@ function App() {
 
                 {/* community */}
                 <Route path="community/questions" element={<PostListPage />} />
-                <Route
-                  path="community/:boardType/:postId"
-                  element={<PostDetailsPage />}
-                />
+                <Route path="community/:boardType/:postId" element={<PostDetailsPage />} />
                 <Route path="community/general" element={<PostListPage />} />
                 <Route path="community/team-recruit" element={<PostListPage />} />
 
@@ -167,7 +157,7 @@ function App() {
                     <Route path="study" element={<StudyListPage />} />
                     <Route path="study/:studyId" element={<StudyDetailPage />} />
                     <Route path="book/search" element={<BookListPage />} />
-                    <Route path="book/search/:bookId" element={<BookDetailPage />} />
+                    <Route path="book/:bookId" element={<BookDetailPage />} />
                     <Route path="questions" element={<PostListPage />} />
                     <Route path="questions/:postId" element={<PostDetailsPage />} />
                     <Route path="questions/:postId/edit" element={<PostEditPage />} />

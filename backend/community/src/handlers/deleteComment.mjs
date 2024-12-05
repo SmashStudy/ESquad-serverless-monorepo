@@ -3,23 +3,22 @@ import {
   GetItemCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   try {
-    const body =
-      typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { commentId, content, userEmail } = body;
+    const { commentId } = event.pathParameters;
     const { boardType, postId } = event.pathParameters;
     const createdAt = event.queryStringParameters?.createdAt;
+    const userEmail = event.queryStringParameters?.userEmail;
 
     // 필수 매개변수 확인
-    if (!commentId || !content || !userEmail || !postId || !createdAt) {
+    if (!commentId || !userEmail || !postId || !createdAt) {
       return createResponse(400, {
         message:
-          "Missing required parameters: commentId, content, userEmail, postId, or createdAt",
+          "Missing required parameters: commentId, userEmail, postId, or createdAt",
       });
     }
 
@@ -62,18 +61,12 @@ export const handler = async (event) => {
 
     if (commentWriterEmail !== userEmail) {
       return createResponse(403, {
-        message: "You are not authorized to update this comment",
+        message: "You are not authorized to delete this comment",
       });
     }
 
-    // 댓글 수정
-    const updatedComment = {
-      ...comment,
-      content: { S: content },
-      updatedAt: { S: new Date().toISOString() },
-    };
-
-    comments[commentIndex] = { M: updatedComment };
+    // 댓글 삭제
+    comments.splice(commentIndex, 1);
 
     // DynamoDB 업데이트 명령
     const updateParams = {
@@ -95,11 +88,11 @@ export const handler = async (event) => {
     await ddbClient.send(new UpdateItemCommand(updateParams));
 
     return createResponse(200, {
-      message: "Comment updated successfully",
-      updatedComment,
+      message: "Comment deleted successfully",
+      deletedCommentId: commentId,
     });
   } catch (error) {
-    console.error("Error updating comment:", error);
+    console.error("Error deleting comment:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
