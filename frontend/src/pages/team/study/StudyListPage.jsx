@@ -210,8 +210,9 @@ useEffect(() => {
               <CardActions sx={{ justifyContent: "flex-end" }}>
                 {userInfo && (
                   <LiveStreamWindow
-                    nickname={userInfo.nickname}
+                    teamId = {params.teamId}
                     studyId={study.id}
+                    nickname={userInfo.nickname}
                   />
                 )}
               </CardActions>
