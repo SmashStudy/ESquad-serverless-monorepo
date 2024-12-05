@@ -3,23 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
 export class StudyService {
-    async createStudy(teamId, bookId, studyData) {
+    async createStudy(teamId, bookId, imgPath, studyData) {
         const decodedTeamId = decodeURIComponent(teamId);
         const studyPageId = `STUDY#${uuidv4()}`;
         const now = new Date().toISOString();
-        const {studyInfo, studyUserIds} = studyData;
-
-        const teamUsers = await this.getTeamUsers(decodedTeamId);
-        const invalidUserIds = studyUserIds.filter((userId) => !teamUsers.includes(userId));
-        console.log("Invalid users:", invalidUserIds);
-        if (invalidUserIds.length > 0) {
-            console.error(
-                "Invalid users detected:",
-                JSON.stringify({ decodedTeamId, studyUserIds, teamUsers, invalidUserIds }, null, 2)
-            );
-            throw new Error("InvalidUsersException");
-        }    
-
+        const {studyInfo} = studyData;
         const item = {
             PK: studyPageId,
             SK: studyPageId,
@@ -28,14 +16,13 @@ export class StudyService {
             bookId,
             createdAt: now,
             updatedAt: now,
+            imgPath,
             ...studyInfo,
         };
-        try {
-            await dynamoDb.send(new PutCommand({ TableName: TEAM_TABLE, Item: item, }));
-            console.log(`Study page created with ID: ${studyPageId}`);
 
-            const getRoleAndState = (index) => ({ role: index === 0 ? 'Manager' : 'Member' });
-            
+        const studyUserIds = await this.getTeamUsers(decodedTeamId);
+        const getRoleAndState = (index) => ({ role: index === 0 ? 'Manager' : 'Member' });
+        const addStudyUser = async () => {
             const memberPromises = studyUserIds.map(async (studyUserId, index) => {
                 const { role } = getRoleAndState(index);
                 try {
@@ -54,7 +41,13 @@ export class StudyService {
                     return { userId: studyUserId, error };
                 }
             });
-    
+            return memberPromises; // Promise 객체 배열을 반환
+        }
+
+        try {
+            await dynamoDb.send(new PutCommand({ TableName: TEAM_TABLE, Item: item, }));
+            
+            const memberPromises = await addStudyUser();
             const results = await Promise.all(memberPromises);
             const failedUsers = results.filter((result) => result?.error);
 

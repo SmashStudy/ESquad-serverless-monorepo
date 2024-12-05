@@ -12,7 +12,8 @@ export const createStudy = async (event) => {
         const teamId = event.pathParameters?.teamId;
         const { bookDto, studyData } = JSON.parse(event.body);
         const bookId = await bookService.saveBook(bookDto);
-        const studyPageId = await studyService.createStudy(teamId, bookId, studyData);
+        const imgPath =bookDto.imgPath;
+        const studyPageId = await studyService.createStudy(teamId, bookId, imgPath, studyData);
         return createResponse(201, { message: "Study page created successfully", body:studyPageId });
     } catch (error) {
         console.error("Error in createStudyHandler:", error.message);
