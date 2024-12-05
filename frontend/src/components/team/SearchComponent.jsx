@@ -1,17 +1,21 @@
-import {Box, Button, InputBase, useTheme} from "@mui/material";
+import {Box, Button, InputBase} from "@mui/material";
 import React, {useState} from "react";
 
-const SearchComponent = ({ isSmallScreen, isMediumScreen , placeholderText, buttonVariant, buttonBackgroundColor, onSearch}) => {
-    const theme = useTheme();
-    const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-    const [showPostDetails, setShowPostDetails] = useState(false);
+const SearchComponent = ({ onSearchChange, placeholderText, buttonVariant, buttonBackgroundColor }) => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const handleInputChange = (e) => {
         setSearchTerm(e.target.value);
     };
-    const handleSearchClick = () => {
-        onSearch(searchTerm);
+  
+    const handleSearch = () => {
+      onSearchChange(searchTerm);
+    };
+  
+    const handleKeyUp = (e) => {
+        if (e.key === "Enter") {
+          handleSearch();
+        }
     };
 
     return (
@@ -29,7 +33,8 @@ const SearchComponent = ({ isSmallScreen, isMediumScreen , placeholderText, butt
             />
             <Button
                 variant={buttonVariant}
-                onClick={handleSearchClick}
+                onClick={handleSearch}
+                onKeyUp={handleKeyUp}
                 sx={{
                     fontSize: 'medium',
                     backgroundColor: {buttonBackgroundColor}
