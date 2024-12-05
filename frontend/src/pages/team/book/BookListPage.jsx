@@ -154,7 +154,7 @@ const BookListPage = () => {
                             <Grid item key={index}>
                                 <Card
                                     onClick={() =>
-                                        navigate(`/teams/${params.teamId}/book/${book.isbn}`, {
+                                        navigate(`/teams/${encodeURIComponent(params.teamId)}/book/${book.isbn}`, {
                                             state: { book },
                                         })
                                     }
