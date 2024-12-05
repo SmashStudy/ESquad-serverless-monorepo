@@ -1,7 +1,7 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 
-const apiUrl = "https://gbsmx3y0og.execute-api.us-east-1.amazonaws.com/local";
+const apiUrl = getChatApi();
 const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({

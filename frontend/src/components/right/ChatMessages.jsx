@@ -3,11 +3,12 @@ import ChatInput from "./ChatInput.jsx";
 import MessageList from "./MessageList.jsx";
 import {fetchMessageAPI ,sendMessageAPI , editMessageAPI, deleteMessageAPI } from "./chatApi/ChatApi.jsx";
 import {uploadFile, deleteFile, fetchFiles} from "./chatApi/ChatFileApi.jsx";
-import {getUserApi} from "../../utils/apiConfig.js";
+import {getChatWebSocketApi, getUserApi} from "../../utils/apiConfig.js";
 import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
-const wsUrl = "wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local";
+
+const wsUrl = getChatWebSocketApi();
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
@@ -227,42 +228,6 @@ useEffect(() => {
 
 if (loading) { return <Loading />;}
 
-// 파일 업로드 핸들러
-// const handleUploadClick = async () => {
-//     if (!selectedFile || !currentChatRoom?.id) return;
-//     try {
-//         const uploadResponse = await uploadFile({
-//             file: selectedFile,
-//             room_id: currentChatRoom.id,
-//             user_id: email,
-//             nickname: nickname,
-//             targetType: 'CHAT',
-//         });
-//
-//         const fileMessage = {
-//             action: 'sendMessage',
-//             message: `파일 업로드 완료 : ${uploadResponse.originalFileName}`,
-//             id: uploadResponse.fileKey,
-//             room_id: currentChatRoom.id,
-//             user_id: email,
-//             nickname: nickname,
-//             contentType: uploadResponse.contentType,
-//             originalFileName: uploadResponse.originalFileName,
-//             isFile: true
-//     };
-//         // 메시지 전송 (WebSocket + DynamoDB 저장)
-//         await sendMessageAPI(fileMessage);
-//         setSelectedFile(null); // 파일 선택 초기화
-//     } catch (error) {
-//         console.error('파일 업로드 실패:', error.message);
-//     }
-// };
-
-// 파일 다운로드 핸들러
-// const handleDownloadFile = async (id, originalFileName) => {
-//     try { await handleFileDownload (id, originalFileName); }
-//     catch (error) { console.error("파일 다운로드 실패: ", error.message); } };
-
 const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
 return (
@@ -284,7 +249,6 @@ return (
                 currentUser={nickname}
                 onEditMessage={handleEditMessage}
                 onDeleteMessage={deleteMessageHandler}
-                onDownloadFile={handleDownloadFile}
                 onDeleteFile={deleteMessageHandler}
             />
             <div ref={messageEndRef}/>
