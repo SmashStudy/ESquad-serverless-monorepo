@@ -3,14 +3,15 @@ import {
   GetItemCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
-import { createResponse } from "../util/responseHelper.mjs";
+import { createResponse } from "../utils/responseHelper.mjs";
 
 const client = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   const { postId } = event.pathParameters;
   const createdAt = event.queryStringParameters?.createdAt;
-  const body = typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+  const body =
+    typeof event.body === "string" ? JSON.parse(event.body) : event.body;
   const userEmail = body.userEmail; // 프론트엔드에서 명시적으로 전달
 
   if (!postId || !createdAt || !userEmail) {

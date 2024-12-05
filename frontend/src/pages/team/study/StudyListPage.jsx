@@ -101,12 +101,15 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
               sx={{
                 fontSize: "medium",
                 fontWeight: "bold",
-                borderBottom: selectedFilter === filter ? "2px solid" : "none",
+                borderBottom: selectedFilter === filter ? "3px solid" : "none",
                 borderColor: theme.palette.primary.main,
                 color:
                   selectedFilter === filter
                     ? theme.palette.primary.main
-                    : "inherit",
+                    : theme.palette.text.secondary,
+                "&:hover": {
+                  color: theme.palette.primary.dark,
+                },
               }}
               onClick={() => handleFilterClick(filter)}
             >
@@ -116,7 +119,6 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         </Box>
         <SearchComponent onSearchChange={handleSearchChange} />
       </Box>
-
       {loading ? (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 3 }}>
           <CircularProgress />
@@ -157,7 +159,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                     <img
                       src={study.imgPath}
                       alt="Study"
-                      style={{ maxWidth: "100%", borderRadius: 8 }}
+                      style={{ maxWidth: "100%", borderRadius: 8, height: '20vh' }}
                     />
                   </Box>
                   <Typography variant="body2" color="text.secondary">
