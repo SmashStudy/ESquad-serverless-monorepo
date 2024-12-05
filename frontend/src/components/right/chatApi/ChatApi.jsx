@@ -2,9 +2,11 @@ import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 
 const apiUrl = getChatApi();
+const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({
     baseURL: apiUrl,
+    headers: { Authorization: `Bearer ${token}` }
 });
 
 // 팀 목록 가져오기
@@ -35,11 +37,10 @@ export const fetchMessageAPI = async (room_id) => {
 export const sendMessageAPI = async (socket, messageData) => {
     try {
         socket.current.send(JSON.stringify(messageData));
-
         // 파일 메시지 처리
         if (messageData.fileKey) {
             // 파일 메타데이터 확인
-            if (!messageData.presignedUrl || !messageData.contentType || !messageData.fileKey) {
+            if (!messageData.contentType || !messageData.fileKey) {
                 console.error("파일 메타데이터 누락:", messageData);
                 return;
             }
@@ -51,8 +52,8 @@ export const sendMessageAPI = async (socket, messageData) => {
                     message: messageData.message,
                     timestamp: messageData.timestamp,
                     user_id: messageData.user_id,
+                    nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
-                    presignedUrl: messageData.presignedUrl,
                     contentType: messageData.contentType,
                     originalFileName: messageData.originalFileName,
                 });
