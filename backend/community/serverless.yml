@@ -8,6 +8,7 @@ provider:
     DYNAMODB_TABLE: ${env:METADATA_TABLE}
     REGION: ${aws:region}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    QUILL_S3: ${env:QUILL_S3}
   iam:
     role:
       statements:
@@ -22,16 +23,24 @@ provider:
           Resource:
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
             - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
+
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
           Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - "arn:aws:s3:::${env:QUILL_S3}/uploads/*"
 
 functions:
   createPost:
-    handler: service/createPost.handler
+    handler: src/handlers/createPost.handler
     events:
       - http:
           path: /{boardType}
@@ -39,7 +48,7 @@ functions:
           cors: true
 
   getPost:
-    handler: service/getPost.handler
+    handler: src/handlers/getPost.handler
     events:
       - http:
           path: /{boardType}/{postId}
@@ -47,7 +56,7 @@ functions:
           cors: true
 
   listPosts:
-    handler: service/listPosts.handler
+    handler: src/handlers/listPosts.handler
     events:
       - http:
           path: /{boardType}
@@ -55,7 +64,7 @@ functions:
           cors: true
 
   updatePost:
-    handler: service/updatePost.handler
+    handler: src/handlers/updatePost.handler
     events:
       - http:
           path: /{boardType}/{postId}
@@ -63,7 +72,7 @@ functions:
           cors: true
 
   deletePost:
-    handler: service/deletePost.handler
+    handler: src/handlers/deletePost.handler
     events:
       - http:
           path: /{boardType}/{postId}
@@ -71,7 +80,7 @@ functions:
           cors: true
 
   createComment:
-    handler: service/createComment.handler
+    handler: src/handlers/createComment.handler
     events:
       - http:
           path: /{boardType}/{postId}
@@ -79,7 +88,7 @@ functions:
           cors: true
 
   listComments:
-    handler: service/listComments.handler
+    handler: src/handlers/listComments.handler
     events:
       - http:
           path: /{boardType}/{postId}/comments
@@ -87,7 +96,7 @@ functions:
           cors: true
 
   getComment:
-    handler: service/listComments.handler
+    handler: src/handlers/listComments.handler
     events:
       - http:
           path: /{boardType}/{postId}/comments/{commentId}
@@ -95,7 +104,7 @@ functions:
           cors: true
 
   updateComment:
-    handler: service/updateComment.handler
+    handler: src/handlers/updateComment.handler
     events:
       - http:
           path: /{boardType}/{postId}/comments/{commentId}
@@ -103,7 +112,7 @@ functions:
           cors: true
 
   deleteComment:
-    handler: service/deleteComment.handler
+    handler: src/handlers/deleteComment.handler
     events:
       - http:
           path: /{boardType}/{postId}/comments/{commentId}
@@ -111,7 +120,7 @@ functions:
           cors: true
 
   likePost:
-    handler: service/likePost.handler
+    handler: src/handlers/likePost.handler
     events:
       - http:
           path: /{boardType}/{postId}/like
