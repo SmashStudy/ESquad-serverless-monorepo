@@ -39,7 +39,8 @@ export async function createMeetingAndAttendee(
   region: string,
   echoReductionCapability = false,
   userEmail: string,
-  teamId: string
+  teamId: string,
+  status: string
 ): Promise<MeetingResponse> {
   const body = {
     title: encodeURIComponent(title),
@@ -48,9 +49,9 @@ export async function createMeetingAndAttendee(
     ns_es: String(echoReductionCapability),
     userEmail: userEmail,
     teamId: teamId,
+    status: status,
   };
 
-  // API Gateway URL로 요청을 보냄
   const res = await fetch(BASE_URL + 'stream/join', {
     method: 'POST',
     headers: {
@@ -67,6 +68,7 @@ export async function createMeetingAndAttendee(
 
   return data;
 }
+
 
 export async function getAttendee(
   title: string,
