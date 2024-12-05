@@ -37,13 +37,17 @@ export async function createMeetingAndAttendee(
   title: string,
   attendeeName: string,
   region: string,
-  echoReductionCapability = false
+  echoReductionCapability = false,
+  userEmail: string, // 추가된 인자
+  teamId: string // 추가된 인자
 ): Promise<MeetingResponse> {
   const body = {
     title: encodeURIComponent(title),
     attendeeName: encodeURIComponent(attendeeName),
     region: encodeURIComponent(region),
     ns_es: String(echoReductionCapability),
+    userEmail: encodeURIComponent(userEmail),
+    teamId: encodeURIComponent(teamId),
   };
 
   // API Gateway URL로 요청을 보냄
