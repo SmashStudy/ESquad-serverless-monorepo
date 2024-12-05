@@ -38,6 +38,7 @@ provider:
 
 functions:
 
+  # 메타데이터
   uploadFile:
     handler: src/handlers/uploadFile.handler
     events:
@@ -94,6 +95,25 @@ functions:
           method: delete
           cors: true
 
+  # 로깅용
+  getLogsByAction:
+    handler: src/handlers/getLogsByAction.handler
+    events:
+      - http:
+          path: /admin/logs/{action}
+          method: get
+          cors: true
+
+  # Quill 전용
+  generatePresignedUrlForQuill:
+    handler: src/handlers/generatePresignedUrlForQuill.handler
+    events:
+      - http:
+          path: /presigned-url
+          method: post
+          cors: true
+
+  # Trigger
   updateFileMetadataNickname:
     handler: src/triggers/updateFileMetadataNickname.trigger
     events:
@@ -111,13 +131,6 @@ functions:
           method: post
           cors: true
 
-  generatePresignedUrlForQuill:
-    handler: src/handlers/generatePresignedUrlForQuill.handler
-    events:
-      - http:
-          path: /presigned-url
-          method: post
-          cors: true
 
 
 
