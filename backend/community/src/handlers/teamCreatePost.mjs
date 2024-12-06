@@ -9,7 +9,7 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 export const handler = async (event) => {
   try {
     console.log(`event is ${JSON.stringify(event, null, 2)}`);
-    
+
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
     const { title, content, writer, book, teamId, tags = [] } = body;
@@ -57,6 +57,7 @@ export const handler = async (event) => {
       PK: { S: `POST#${postId}` },
       SK: { S: createdAt },
       teamId: { S: teamId },
+      boardType: { S: "questions" },
       title: { S: title },
       content: { S: updatedContent },
       writer: {
@@ -98,6 +99,7 @@ export const handler = async (event) => {
       message: "Post created successfully",
       postId: postId,
       teamId: teamId,
+      boardType: "questions",
       createdAt: createdAt,
     });
   } catch (error) {
