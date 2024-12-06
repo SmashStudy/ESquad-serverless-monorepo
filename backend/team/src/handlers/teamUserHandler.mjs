@@ -11,7 +11,6 @@ import * as TeamUserService from '../services/teamUserService.mjs';
  */
 export const getTeams = async (event) => {
     try {
-        console.log(`event is ${JSON.stringify(event, null, 2)}`);
         const decoded = decodeToken(event.headers);
         const userEmail = decoded?.email;
         const sortedTeams = await TeamUserService.getTeams(userEmail);
@@ -62,12 +61,10 @@ export const updateTeamUsers = async (event) => {
         const teamId = decodeURIComponent(event.pathParameters.teamId);
         const { membersToAdd, membersToDelete } = JSON.parse(event.body);
 
-        // 멤버 추가
         if (membersToAdd?.length > 0) {
             await TeamUserService.addTeamUsers(teamId, membersToAdd);
         }
 
-        // 멤버 삭제
         if (membersToDelete?.length > 0) {
             await TeamUserService.deleteTeamUsers(teamId, membersToDelete);
         }
