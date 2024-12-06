@@ -7,7 +7,6 @@ const docClient = DynamoDBDocumentClient.from(client);
 const MESSAGE_TABLE = process.env.MESSAGE_TABLE_NAME;
 
 export const handler = async (event) => {
-    console.log('DynamoDB Stream event:', JSON.stringify(event, null, 2));
     for (const record of event.Records) {
         if (record.eventName === "MODIFY") {
             const newImage = record.dynamodb.NewImage;
@@ -32,8 +31,6 @@ export const handler = async (event) => {
                     const data = await docClient.send(new ScanCommand(scanParams));
                     // 관련 메시지가 있으면 닉네임 업데이트
                     if (data.Items.length && data.Items.length > 0) {
-                        console.log(`Found ${data.Items.length} messages to update for user: ${userEmail}`);
-
                         await Promise.all(
                             data.Items.map(async (item) => {
                                 const updateParams = {
@@ -53,14 +50,11 @@ export const handler = async (event) => {
                                 };
                                 try {
                                     await docClient.send(new UpdateCommand(updateParams));
-                                    console.log(`Updated nickname for message at timestamp ${item.timestamp} to ${updatedNickname}`);
                                 } catch (updateError) {
                                     console.error(`Failed to update message at timestamp ${item.timestamp}:`, updateError.message);
                                 }
                             })
                         );
-                    } else {
-                        console.log(`No messages found for user: ${userEmail}`);
                     }
                 } catch (scanError) {
                     console.error(`Failed to scan messages for user ${userEmail}:`, scanError.message);
