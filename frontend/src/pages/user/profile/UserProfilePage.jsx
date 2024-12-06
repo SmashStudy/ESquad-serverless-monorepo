@@ -12,7 +12,8 @@ import {
   ListItem,
   ListItemText,
   Button,
-  useTheme
+  useTheme,
+  Modal
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -20,6 +21,8 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import Layout from './UserProfileLayout';
 import timeGridPlugin from '@fullcalendar/timegrid'; // 시간대 플러그인 추가
+import CloseIcon from "@mui/icons-material/Close";
+
 
 
 const UserProfile = () => {
@@ -29,6 +32,9 @@ const UserProfile = () => {
   const itemsPerPage = 3; // 팀 페이지당 항목 수
   const studiesPerPage = 5; // 스터디 페이지당 항목 수
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null)
+ 
 
   const userTeams = [
     { id: 1, name: 'Frontend Developers', joinedAt: '2023-05-01', members: 25, description: 'HTML, CSS, React 등 프론트엔드 기술을 탐구하는 팀입니다.' },
@@ -56,6 +62,16 @@ const UserProfile = () => {
     : studyGroups;
   const studyTotalPages = Math.ceil(filteredStudies.length / studiesPerPage);
 
+  // 모달 열기 및 닫기
+  const handleOpen = (event) => {
+    setSelectedEvent(event);
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedEvent(null);
+  };
+  
   const handleTeamNextPage = () => {
     if (teamPage < teamTotalPages - 1) setTeamPage(teamPage + 1);
   };
@@ -108,7 +124,7 @@ const UserProfile = () => {
   );
 
   return (
-    <Layout>
+    <>
       {/* 활동 중인 팀 섹션 */}
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         활동중인 팀
@@ -158,53 +174,217 @@ const UserProfile = () => {
 
       {/* 활동 캘린더 및 스터디 섹션 */}
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        활동 캘린더
-      </Typography>
-      <Box sx={{ display: 'flex', gap: 4, marginTop: 2, alignItems: 'stretch' }}>
-      <Box
-        sx={{
-          flex: 2,
-          padding: 2,
-          backgroundColor: '#fff',
-          borderRadius: 2,
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-          '& .fc-toolbar-title': {color: '#333333', fontWeight: 'bold',},
-          '& .fc-event': {
-            backgroundColor: theme.palette.primary.main,
-            color: '#fff',
+  활동 캘린더
+</Typography>
+<Box sx={{ display: "flex", gap: 4, marginTop: 2, alignItems: "stretch" }}>
+<Box
+      sx={{
+        flex: 2,
+        padding: 2,
+        backgroundColor: "#fff",
+        borderRadius: "15px",
+        boxShadow: "0 8px 15px rgba(0, 0, 0, 0.1)",
+        "& .fc-toolbar-title": {
+          color: "#4a4a4a",
+          fontWeight: "bold",
+          fontSize: "1.5rem",
+          fontFamily: "'Roboto', sans-serif",
+        },
+        "& .fc-button": {
+          backgroundColor: "#f2f2f2",
+          color: "#4a4a4a",
+          fontSize: "0.9rem",
+          borderRadius: "8px",
+          padding: "6px 12px",
+          margin: "0 5px",
+          "&:hover": {
+            backgroundColor: "#d6d6d6",
           },
-        }}
-      >
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin]} // 시간대 표시 플러그인 추가
-          initialView="timeGridWeek" // 주간 보기
-          events={events}
-          locale="ko" // 한국어 설정
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek',
+        },
+        "& .fc-event": {
+          backgroundColor: "white", // 배경색 제거
+          border: "1px solid #a29bfe", // 테두리 추가
+          color: "#4a4a4a", // 글자 색 검정
+          borderRadius: "5px",
+          padding: "2px 5px",
+          fontSize: "0.9rem",
+          fontFamily: "'Roboto', sans-serif",
+        },
+        "& .fc-timegrid-slot-label": {
+          fontSize: "0.8rem", // 시간 표시 폰트 크기
+          fontFamily: "'Roboto', sans-serif",
+          height: "20px", // 시간 라벨 크기 조정
+        },
+        "& .fc-timegrid-axis": {
+          width: "50px", // 시간대 영역 크기 축소
+          fontSize: "0.75rem",
+        },
+        "& .fc-timegrid-slot": {
+          height: "40px", // 슬롯 높이 고정
+        },
+        "& .fc-timegrid-axis-cushion": {
+          padding: "0", // 시간대 패딩 제거
+        },
+        "& .fc-daygrid-event": {
+          whiteSpace: "nowrap", // 줄바꿈 방지
+          overflow: "hidden", // 넘치는 텍스트 처리
+          textOverflow: "ellipsis", // 말줄임 표시
+          textAlign: "left", // 좌측 정렬
+        },
+      }}
+    >
+      {/* FullCalendar */}
+      <FullCalendar
+      plugins={[timeGridPlugin, dayGridPlugin]}
+      initialView="timeGridWeek"
+      events={events}
+      locale="ko"
+      headerToolbar={{
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek",
+      }}
+      slotMinTime="00:00:00"
+      slotMaxTime="24:00:00"
+      slotDuration="01:00:00" // 시간 간격을 1시간으로 설정
+      slotLabelFormat={{
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false, // 24시간 형식
+      }}
+      eventMouseEnter={(info) => {
+        info.el.style.backgroundColor = "#a29bfe"; // Hover 배경색
+        info.el.style.color = "#fff"; // Hover 글자색
+        info.el.style.transform = "scale(1.05)"; // Hover 확대
+      }}
+      eventMouseLeave={(info) => {
+        info.el.style.backgroundColor = "white"; // 원래 배경색
+        info.el.style.color = "#4a4a4a"; // 원래 글자색
+        info.el.style.transform = "scale(1)"; // 원래 크기
+      }}
+      eventClick={(arg) => handleOpen(arg.event)} // 이벤트 클릭 시 모달 열기
+      eventContent={(arg) => (
+        <div
+          style={{
+            textAlign: "left",
+            color: "#4a4a4a",
           }}
-          height="auto"
-          slotMinTime="06:00:00" // 시작 시간
-          slotMaxTime="22:00:00" // 종료 시간
-        />
+        >
+          {arg.event.title}
+        </div>
+      )}
+    />
+
+      {/* Modal */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="event-modal-title"
+        aria-describedby="event-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 300,
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <IconButton
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          {selectedEvent && (
+            <>
+              <Typography
+                id="event-modal-title"
+                variant="h6"
+                sx={{
+                  fontWeight: "bold",
+                  fontFamily: "'Roboto', sans-serif",
+                  mb: 2,
+                }}
+              >
+                {selectedEvent.title}
+              </Typography>
+              <Typography
+                id="event-modal-description"
+                sx={{
+                  fontSize: "1rem",
+                  color: "#4a4a4a",
+                  fontFamily: "'Roboto', sans-serif",
+                }}
+              >
+                시작: {new Date(selectedEvent.start).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: "1rem",
+                  color: "#4a4a4a",
+                  fontFamily: "'Roboto', sans-serif",
+                  mt: 1,
+                }}
+              >
+                종료: {new Date(selectedEvent.end).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false })}
+              </Typography>
+            </>
+          )}
+          <Button
+            onClick={handleClose}
+            variant="contained"
+            sx={{
+              mt: 2,
+              backgroundColor: "#a29bfe",
+              color: "#fff",
+              "&:hover": { backgroundColor: "#6c5ce7" },
+            }}
+          >
+            닫기
+          </Button>
         </Box>
-        {/* 스터디 리스트 */}
-        <Paper sx={{ flex: 1, backgroundColor: '#fff', padding: 2 }}>
-          <Typography variant="h6" sx={{ marginBottom: 2 }}>
-            활동중인 스터디
-          </Typography>
-          <List>
-            {filteredStudies.slice(studyPage * studiesPerPage, studyPage * studiesPerPage + studiesPerPage).map((study, index) => (
-              <ListItem key={index} divider>
-                <ListItemText
-                  primary={study.title}
-                  secondary={`활동 요일: ${study.days.join(', ')}`}
-                />
-              </ListItem>
-            ))}
-          </List>
+      </Modal>
+    </Box>
+
+
+
+
+
+  {/* 스터디 리스트 */}
+  <Paper
+    sx={{
+      flex: 1,
+      backgroundColor: "#fff",
+      padding: 2,
+      borderRadius: 2,
+      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+    }}
+  >
+    <Typography variant="h6" sx={{ marginBottom: 2 }}>
+      활동중인 스터디
+    </Typography>
+    <List>
+      {filteredStudies
+        .slice(studyPage * studiesPerPage, studyPage * studiesPerPage + studiesPerPage)
+        .map((study, index) => (
+          <ListItem key={index} divider>
+            <ListItemText
+              primary={study.title}
+              secondary={`활동 요일: ${study.days.join(", ")}`}
+            />
+          </ListItem>
+        ))}
+    </List>
 
           {/* 스터디 페이지 네이션 */}
           <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
@@ -218,7 +398,7 @@ const UserProfile = () => {
           </Box>
         </Paper>
         </Box>
-    </Layout>
+    </>
   );
 };
 

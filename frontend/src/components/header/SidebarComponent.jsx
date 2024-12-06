@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   alpha,
   Avatar,
@@ -21,7 +21,12 @@ import AbcIcon from "@mui/icons-material/Abc";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import {Link} from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
+import CategoryIcon from "@mui/icons-material/Category";
+import PersonIcon from "@mui/icons-material/Person";
+import {Link, useLocation} from "react-router-dom";
+import { getUserApi } from "../../utils/apiConfig.js";
+import axios from "axios";
 
 const SidebarList = ({ items, drawerOpen, sidebarOpen, selectedSection, onSectionClick }) => {
   const theme = useTheme();
@@ -102,7 +107,30 @@ const SidebarComponent = ({
   selectedTab, selectedTeam
 }) => {
   const theme = useTheme();
+  
   const [selectedSection, setSelectedSection] = useState(null);
+  const location = useLocation();
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("jwtToken");
+        if (!token) return;
+
+        const response = await axios.get(`${getUserApi()}/get-user-info`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error("유저 정보 로드 실패:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  
 
   const communityItems = [
     { text: "질문 및 답변", icon: <QuizIcon />, link: "/community/questions" },
@@ -125,9 +153,80 @@ const SidebarComponent = ({
     { text: "나가기", icon: <LogoutIcon />, link: "/logout" },
   ];
 
+  // 마이페이지 관련 항목
+  const profileItems = [
+    { text: "홈", icon: <HomeIcon />, link: "/user/profile" },
+    { text: "파일 관리", icon: <CategoryIcon />, link: "/user/profile/manage-file" },
+    { text: "닉네임 관리", icon: <PersonIcon />, link: "/user/profile/nickname" },
+    { text: "설정", icon: <SettingsIcon />, link: "/user/profile/settings" },
+  ];
+
   const sidebarContent = (
     <>
-      {selectedTab === 0 ? (
+      {location.pathname.startsWith("/user/profile") ? ( // 마이페이지 경로일 경우
+        <>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "row", sm: "column" }, // 작은 화면에서는 가로 정렬, 큰 화면에서는 세로 정렬
+              alignItems: "center",
+              justifyContent: { xs: "space-between", sm: "center" }, // 작은 화면에서는 간격 조정
+              padding: 2,
+              borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Avatar
+              sx={{
+                width: { xs: 30, sm: 55 }, // 작은 화면에서는 아바타 크기 축소
+                height: { xs: 30, sm: 55 },
+                bgcolor: theme.palette.primary.main,
+                fontSize: { xs: 15, sm: 20 },
+              }}
+            >
+              {userInfo?.nickname?.charAt(0).toUpperCase()}
+            </Avatar>
+
+            {sidebarOpen && (
+              <>
+                {window.innerWidth >= 600 ? ( // 큰 화면에서는 전체 프로필 표시
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 1 }}>
+                      {userInfo?.nickname}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {userInfo?.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {userInfo?.email}
+                    </Typography>
+                  </Box>
+                ) : (
+                  // 작은 화면에서는 닉네임만 표시
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      ml: 2, // 텍스트와 아바타 사이 간격 조정
+                    }}
+                  >
+                    {userInfo?.nickname || "Guest"}
+                  </Typography>
+                )}
+              </>
+            )}
+          </Box>
+          <SidebarList
+            items={profileItems}
+            drawerOpen={drawerOpen}
+            sidebarOpen={sidebarOpen}
+            selectedSection={selectedSection}
+            onSectionClick={setSelectedSection}
+          />
+        </>
+        ):selectedTab === 0 ? (
         <SidebarList
           items={communityItems}
           drawerOpen={drawerOpen}
