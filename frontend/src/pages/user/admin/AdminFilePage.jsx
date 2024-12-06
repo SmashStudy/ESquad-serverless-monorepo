@@ -4,21 +4,11 @@ import {
   Box,
   Container,
   CircularProgress,
-  TextField,
   IconButton,
   Tooltip,
-  Button,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead, TableRow, TableCell, TableBody, Chip, Grid, useTheme
+  Grid, useTheme
 } from "@mui/material";
-import {getStorageApi, getUserApi} from "../../../utils/apiConfig.js";
-import SearchIcon from "@mui/icons-material/Search";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import SortIcon from "@mui/icons-material/Sort";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import {getStorageApi} from "../../../utils/apiConfig.js";
 import {
   handleFileDelete,
   handleFileDownload
@@ -42,29 +32,35 @@ const AdminFilePage = () => {
     {
       headerName: '작업',
       field: 'actions',
-      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }, // 버튼 가운데 정렬
+      cellStyle: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }, // 버튼 가운데 정렬
       cellRenderer: (params) => {
-        const { fileKey, originalFileName, userEmail } = params.data;
+        const {fileKey, originalFileName, userEmail} = params.data;
         return (
-            <Box sx={{ display: 'flex', gap: 1 }}> {/* 버튼 간격 조정 */}
+            <Box sx={{display: 'flex', gap: 1}}> {/* 버튼 간격 조정 */}
               <Tooltip title="다운로드">
                 <IconButton
                     aria-label="download"
                     size="small"
-                    onClick={() => handleFileDownload(fileKey, originalFileName, setSnackbar)}
-                    sx={{ color: theme.palette.success.main }}
+                    onClick={() => handleFileDownload(fileKey,
+                        originalFileName)}
+                    sx={{color: theme.palette.success.main}}
                 >
-                  <DownloadIcon />
+                  <DownloadIcon/>
                 </IconButton>
               </Tooltip>
               <Tooltip title="삭제">
                 <IconButton
                     aria-label="delete"
                     size="small"
-                    onClick={() => handleFileDelete(fileKey, userEmail, userEmail, setSnackbar, fetchData)}
-                    sx={{ color: theme.palette.warning.main }}
+                    onClick={() => handleFileDelete(fileKey, userEmail,
+                        userEmail, fetchFiles)}
+                    sx={{color: theme.palette.warning.main}}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon/>
                 </IconButton>
               </Tooltip>
             </Box>
@@ -131,9 +127,6 @@ const AdminFilePage = () => {
 
   ];
 
-
-
-
   const fetchFiles = async () => {
     try {
       setLoading(true);
@@ -148,11 +141,10 @@ const AdminFilePage = () => {
     }
   };
 
-
   if (loading) {
     return (
-        <Container style={{ textAlign: "center", marginTop: "20%" }}>
-          <CircularProgress style={{ marginBottom: "20px" }} />
+        <Container style={{textAlign: "center", marginTop: "20%"}}>
+          <CircularProgress style={{marginBottom: "20px"}}/>
           <Typography variant="h6">파일 정보를 불러오는 중입니다...</Typography>
         </Container>
     );

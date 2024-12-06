@@ -3,12 +3,14 @@ import {
   Typography,
   Box,
   useTheme,
-  Container, CircularProgress, Grid
+  Container, CircularProgress, Grid, Tooltip, IconButton
 } from "@mui/material";
 import {formatFileSize} from "../../../utils/fileFormatUtils.js";
 import axios from "axios";
 import {getStorageApi} from "../../../utils/apiConfig.js";
 import {AgGridReact} from "ag-grid-react";
+import {handleLogDelete} from "../../../utils/storage/utilities.js";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const AdminDeletePage = () => {
   const [logs, setLogs] = useState([]);
@@ -20,6 +22,32 @@ const AdminDeletePage = () => {
   }, []);
 
   const columnDefs = [
+    {
+      headerName: '작업',
+      field: 'actions',
+      cellStyle: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }, // 버튼 가운데 정렬
+      cellRenderer: (params) => {
+        const {logId} = params.data;
+        return (
+            <Box sx={{display: 'flex', gap: 1}}> {/* 버튼 간격 조정 */}
+              <Tooltip title="삭제">
+                <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => handleLogDelete(logId, fetchLogs)}
+                    sx={{color: theme.palette.warning.main}}
+                >
+                  <DeleteIcon/>
+                </IconButton>
+              </Tooltip>
+            </Box>
+        );
+      }
+    },
     {
       headerName: '로그 PK',
       field: 'logId',
