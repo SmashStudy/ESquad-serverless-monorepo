@@ -286,8 +286,8 @@ const PostListPage = ({ isSmallScreen }) => {
         {posts.map((post) => {
           const hasImage = /<img[^>]*src=["']([^"']+)["'][^>]*>/.test(
             post.content
-          ); // 이미지 태그 감지
-          const plainText = post.content.replace(/<[^>]+>/g, ""); // HTML 태그 제거
+          );
+          const plainText = post.content.replace(/<[^>]+>/g, "");
 
           return (
             <Link
@@ -369,11 +369,19 @@ const PostListPage = ({ isSmallScreen }) => {
                   {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
                   <span
                     dangerouslySetInnerHTML={{
-                      __html: plainText.substring(0, 100), // HTML을 안전하게 렌더링
+                      __html: plainText.substring(0, 100),
                     }}
                   />
                 </Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: 1,
+                    flexWrap: "wrap",
+                    mb: 0,
+                    minHeight: "40px",
+                  }}
+                >
                   {post.tags &&
                     post.tags.length > 0 &&
                     post.tags.map((tag, idx) => (
