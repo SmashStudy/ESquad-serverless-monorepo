@@ -27,6 +27,7 @@ const EndMeetingControl: React.FC = () => {
 
   const participant = attendees.length.toString();
 
+
   const leaveMeeting = async (): Promise<void> => {
     try {
       if (meetingId && participant === "1") {
