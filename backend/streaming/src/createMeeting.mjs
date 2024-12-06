@@ -3,7 +3,7 @@ import { uuid } from './uuidGenerator.mjs';
 import { getNotificationsConfig } from './getNotificationsConfig.mjs';
 import { putMeeting } from './putMeeting.mjs';
 
-export const createMeeting = async (title, region, ns_es, status) => {
+export const createMeeting = async (title, region, ns_es, status, teamId) => {
   try {
     // 회의 요청 객체 준비
     const request = {
@@ -18,7 +18,7 @@ export const createMeeting = async (title, region, ns_es, status) => {
     const meetingInfo = await chimeSDKMeetings.createMeeting(request);
 
     // 회의 정보 저장
-    await putMeeting(title, meetingInfo, status);
+    await putMeeting(title, meetingInfo, status, teamId);
 
     // 성공적인 회의 생성 정보 반환
     return meetingInfo;
