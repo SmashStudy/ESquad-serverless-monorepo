@@ -101,7 +101,7 @@ const AdminFilePage = () => {
       filter: true
     },
     {
-      headerName: '타겟 PK',
+      headerName: '타겟 식별자',
       field: 'targetId',
       sortable: true,
       filter: true
@@ -119,7 +119,7 @@ const AdminFilePage = () => {
       filter: true
     },
     {
-      headerName: '파일 PK',
+      headerName: '파일 식별자',
       field: 'fileKey',
       sortable: true,
       filter: true

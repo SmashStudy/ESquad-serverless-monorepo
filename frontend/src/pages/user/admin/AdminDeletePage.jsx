@@ -49,7 +49,7 @@ const AdminDeletePage = () => {
       }
     },
     {
-      headerName: '로그 PK',
+      headerName: '로그 식별자',
       field: 'logId',
       sortable: true,
       filter: true
@@ -79,7 +79,7 @@ const AdminDeletePage = () => {
       filter: true
     },
     {
-      headerName: '타겟 PK',
+      headerName: '타겟 식별자',
       field: 'targetId',
       sortable: true,
       filter: true
@@ -136,7 +136,7 @@ const AdminDeletePage = () => {
     return (
         <Container style={{textAlign: "center", marginTop: "20%"}}>
           <CircularProgress style={{marginBottom: "20px"}}/>
-          <Typography variant="h6">파일 정보를 불러오는 중입니다...</Typography>
+          <Typography variant="h6">삭제 기록을 불러오는 중입니다...</Typography>
         </Container>
     );
   }

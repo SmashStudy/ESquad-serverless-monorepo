@@ -65,8 +65,8 @@ const AdminPage = () => {
         <Tabs value={selectedTab} onChange={handleTabChange} centered>
           <Tab icon={<PersonIcon />} label="유저 관리" />
           <Tab icon={<InsertDriveFileIcon />} label="파일 관리" />
-          <Tab icon={<CloudDownloadIcon />} label="다운로드 관리" />
-          <Tab icon={<DeleteIcon />} label="삭제 관리" /> {/* 삭제 관리 탭 추가 */}
+          <Tab icon={<CloudDownloadIcon />} label="다운로드 기록 관리" />
+          <Tab icon={<DeleteIcon />} label="삭제 기록 관리" /> {/* 삭제 관리 탭 추가 */}
         </Tabs>
       </Box>
 
