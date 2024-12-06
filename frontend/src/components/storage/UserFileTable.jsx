@@ -10,38 +10,40 @@ import {
   handleFileDelete,
   handleFileDownload
 } from "../../utils/storage/utilities.js";
+import Tooltip from "@mui/material/Tooltip";
 
 const UserFileTable = ({gridData, setSnackbar, fetchData, theme}) => {
   const columnDefs = [
     {
       headerName: '작업',
-      field: "작업",
+      field: 'actions',
+      cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }, // 버튼 가운데 정렬
       cellRenderer: (params) => {
-        const {fileKey, originalFileName, userEmail} = params.data;
+        const { fileKey, originalFileName, userEmail } = params.data;
         return (
-            <Box>
-              <IconButton
-                  aria-label="download"
-                  variant="contained"
-                  size="small"
-                  onClick={() => handleFileDownload(fileKey,
-                      originalFileName, setSnackbar)}
-                  sx={{marginRight: 1, color: theme.palette.success.main}}
-              >
-                <DownloadIcon/>
-              </IconButton>
-              <IconButton
-                  aria-label="delete"
-                  variant="contained"
-                  sx={{color: theme.palette.warning.main}}
-                  size="small"
-                  onClick={() => handleFileDelete(fileKey, userEmail,
-                      userEmail, setSnackbar, fetchData)}
-              >
-                <DeleteIcon/>
-              </IconButton>
+            <Box sx={{ display: 'flex', gap: 1 }}> {/* 버튼 간격 조정 */}
+              <Tooltip title="다운로드">
+                <IconButton
+                    aria-label="download"
+                    size="small"
+                    onClick={() => handleFileDownload(fileKey, originalFileName, setSnackbar)}
+                    sx={{ color: theme.palette.success.main }}
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="삭제">
+                <IconButton
+                    aria-label="delete"
+                    size="small"
+                    onClick={() => handleFileDelete(fileKey, userEmail, userEmail, setSnackbar, fetchData)}
+                    sx={{ color: theme.palette.warning.main }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
-        )
+        );
       }
     },
     {
