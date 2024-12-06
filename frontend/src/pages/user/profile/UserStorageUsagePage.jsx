@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   Grid,
-  IconButton, useTheme
+  IconButton, useTheme, Tabs, Tab
 } from '@mui/material';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -35,7 +35,13 @@ const UserStorageUsageRenewed = () => {
     message: '',
     severity: 'success',
   });
+  const [currentTab, setCurrentTab] = useState();
   const theme = useTheme();
+  const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
 
   const fetchFileData = async () => {
     setLoading(true);
@@ -61,9 +67,10 @@ const UserStorageUsageRenewed = () => {
 
   const fetchDownloadLogs = async () => {
     try {
-      const response = await axios.post(`${getStorageApi()}/get-user-download-logs`, {
-        userEmail: email,
-      });
+      const response = await axios.post(
+          `${getStorageApi()}/get-user-download-logs`, {
+            userEmail: email,
+          });
       setDownloadLogs(response.data);
     } catch (error) {
       console.error('Error fetching download logs:', error);
@@ -72,15 +79,15 @@ const UserStorageUsageRenewed = () => {
 
   const fetchDeleteLogs = async () => {
     try {
-      const response = await axios.post(`${getStorageApi()}/get-user-delete-logs`, {
-        uploaderEmail: email,
-      });
+      const response = await axios.post(
+          `${getStorageApi()}/get-user-delete-logs`, {
+            uploaderEmail: email,
+          });
       setDeleteLogs(response.data);
     } catch (error) {
       console.error('Error fetching delete logs:', error);
     }
   };
-
 
   useEffect(() => {
     if (email) {
@@ -99,7 +106,6 @@ const UserStorageUsageRenewed = () => {
       echarts.dispose(chartDom);
 
       const myChart = echarts.init(chartDom);
-      const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB
       const usagePercent = (usage / MAX_USAGE) * 100;
       const option = {
         series: [
@@ -147,30 +153,19 @@ const UserStorageUsageRenewed = () => {
           {/* 전체 레이아웃 그리드 */}
           <Grid container spacing={3}>
 
-            <Typography variant="h6" sx={{ marginTop: 4 }}>
-              파일 관리
-            </Typography>
-            <UserFileTable fetchData={fetchFileData} gridData={fileData}
-                           setSnackbar={setSnackbar}
-                           theme={theme}></UserFileTable>
-            <Typography variant="h6" sx={{ marginTop: 4 }}>
-              다운로드 기록
-            </Typography>
-            <DownloadLogsTable gridData={downloadLogs} />
-
-            <Typography variant="h6" sx={{ marginTop: 4 }}>
-              삭제 기록
-            </Typography>
-            <DeleteLogsTable gridData={deleteLogs} />
-
-            {/* 우측 상단 - 게이지 차트 */}
+            {/* 좌측 상단 - 게이지 차트 */}
             <Grid item xs={4}>
               <Box sx={{height: '300px'}}>
                 <Box id="usageGauge" sx={{height: '100%'}}/>
               </Box>
 
-              {/* 우측 하단 - 요약 정보 카드 */}
-              <Card sx={{padding: 1, backgroundColor: '#f9f9f9', boxShadow: 3}}>
+              {/* 좌측 하단 - 요약 정보 카드 */}
+              <Card sx={{
+                padding: 2,
+                marginTop: 3,
+                backgroundColor: '#f9f9f9',
+                boxShadow: 3
+              }}>
                 <CardContent>
                   <Typography variant="h6"
                               sx={{fontWeight: 'bold', marginBottom: 2}}>스토리지 요약
@@ -218,9 +213,47 @@ const UserStorageUsageRenewed = () => {
                   )}
                 </CardContent>
               </Card>
-
-
             </Grid>
+
+
+            <Grid item xs={8}>
+              <Tabs value={currentTab} onChange={handleTabChange} sx={{marginBottom: 3}}>
+                <Tab label="파일 관리"></Tab>
+                <Tab label="다운로드 기록"></Tab>
+                <Tab label="삭제 기록"></Tab>
+              </Tabs>
+
+              {currentTab === 0 && (
+                  <UserFileTable fetchData={fetchFileData} gridData={fileData}
+                                 setSnackbar={setSnackbar}
+                                 theme={theme}></UserFileTable>
+              )}
+              {currentTab === 1 && (
+                  <DownloadLogsTable gridData={downloadLogs}/>
+              )}
+
+              {currentTab === 2 && (
+                  <DeleteLogsTable gridData={deleteLogs}/>
+              )}
+            </Grid>
+
+            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
+            {/*  파일 관리*/}
+            {/*</Typography>*/}
+            {/*<UserFileTable fetchData={fetchFileData} gridData={fileData}*/}
+            {/*               setSnackbar={setSnackbar}*/}
+            {/*               theme={theme}></UserFileTable>*/}
+            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
+            {/*  다운로드 기록*/}
+            {/*</Typography>*/}
+            {/*<DownloadLogsTable gridData={downloadLogs}/>*/}
+
+            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
+            {/*  삭제 기록*/}
+            {/*</Typography>*/}
+            {/*<DeleteLogsTable gridData={deleteLogs}/>*/}
+
+
           </Grid>
         </Box>
       </Layout>
