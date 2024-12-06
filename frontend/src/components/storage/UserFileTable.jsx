@@ -1,5 +1,5 @@
 import React from 'react';
-import { AgGridReact } from 'ag-grid-react';
+import {AgGridReact} from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import {Box, Grid, IconButton} from "@mui/material";
@@ -11,8 +11,39 @@ import {
   handleFileDownload
 } from "../../utils/storage/utilities.js";
 
-const UserFileTable = ({ gridData, setSnackbar, fetchData, theme }) => {
+const UserFileTable = ({gridData, setSnackbar, fetchData, theme}) => {
   const columnDefs = [
+    {
+      headerName: '작업',
+      field: "작업",
+      cellRenderer: (params) => {
+        const {fileKey, originalFileName, userEmail} = params.data;
+        return (
+            <Box>
+              <IconButton
+                  aria-label="download"
+                  variant="contained"
+                  size="small"
+                  onClick={() => handleFileDownload(fileKey,
+                      originalFileName, setSnackbar)}
+                  sx={{marginRight: 1, color: theme.palette.success.main}}
+              >
+                <DownloadIcon/>
+              </IconButton>
+              <IconButton
+                  aria-label="delete"
+                  variant="contained"
+                  sx={{color: theme.palette.warning.main}}
+                  size="small"
+                  onClick={() => handleFileDelete(fileKey, userEmail,
+                      userEmail, setSnackbar, fetchData)}
+              >
+                <DeleteIcon/>
+              </IconButton>
+            </Box>
+        )
+      }
+    },
     {
       headerName: '파일 이름',
       field: 'originalFileName',
@@ -34,44 +65,14 @@ const UserFileTable = ({ gridData, setSnackbar, fetchData, theme }) => {
     },
     {headerName: '올린 시간', field: 'createdAt', sortable: true, filter: true},
     {headerName: '확장자', field: 'extension', sortable: true, filter: true},
-    {
-      headerName: '작업',
-      field: "작업",
-      cellRenderer: (params) => {
-        const {fileKey, originalFileName, userEmail} = params.data;
-        return (
-            <Box>
-              <IconButton
-                  aria-label="download"
-                  variant="contained"
-                  size="small"
-                  onClick={() => handleFileDownload(fileKey,
-                      originalFileName,setSnackbar)}
-                  sx={{marginRight: 1, color:theme.palette.success.main}}
-              >
-                <DownloadIcon/>
-              </IconButton>
-              <IconButton
-                  aria-label="delete"
-                  variant="contained"
-                  sx={{ color:theme.palette.warning.main}}
-                  size="small"
-                  onClick={() => handleFileDelete(fileKey, userEmail,
-                      userEmail, setSnackbar, fetchData)}
-              >
-                <DeleteIcon/>
-              </IconButton>
-            </Box>
-        )
-      }
-    }
+
   ];
 
   return (
-      <Grid item xs={8}>
+      <Grid item xs={10}>
         <Box sx={{height: '100%'}}>
           <div className="ag-theme-alpine"
-               style={{height: '500px', width: '100%'}}>
+               style={{width: '100%'}}>
             <AgGridReact
                 rowData={gridData}
                 columnDefs={columnDefs}

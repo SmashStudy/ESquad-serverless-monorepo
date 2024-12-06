@@ -1,6 +1,7 @@
 import React from 'react';
 import {AgGridReact} from 'ag-grid-react';
 import {formatFileSize} from "../../utils/fileFormatUtils.js";
+import {Box, Grid} from "@mui/material";
 
 const DeleteLogsTable = ({gridData}) => {
   const columnDefs = [
@@ -21,10 +22,18 @@ const DeleteLogsTable = ({gridData}) => {
   ];
 
   return (
-      <div className="ag-theme-alpine" style={{height: '400px', width: '100%'}}>
-        <AgGridReact rowData={gridData} columnDefs={columnDefs}
-                     pagination={true}/>
-      </div>
+      <Grid item xs={10}>
+        <Box sx={{height: '100%'}}>
+          <div className="ag-theme-alpine"
+               style={{width: '100%'}}>
+            <AgGridReact rowData={gridData} columnDefs={columnDefs}
+                         paginationPageSize={10}
+                         paginationPageSizeSelector={[10, 20, 50, 100]}
+                         domLayout="autoHeight"
+                         pagination={true}/>
+          </div>
+        </Box>
+      </Grid>
   );
 };
 
