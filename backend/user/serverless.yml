@@ -34,6 +34,7 @@ provider:
     CALLBACK_URLS: ${env:CALLBACK_URLS}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
     REGION: ${env:REGION}
+    NODE_ENV: ${env:NODE_ENV}
 
 functions:
 
@@ -75,7 +76,12 @@ functions:
       - http:
           path: signin
           method: post
-          cors: true
+          cors:
+            origin: "http://localhost:5173" # 허용할 도메인
+            headers:
+              - Content-Type
+              - Authorization
+            credentials: true # 쿠키 및 인증 정보 포함 허용
   
   signout:
     handler: src/signout.handler # Lambda 핸들러 파일 경로
@@ -134,13 +140,14 @@ functions:
           path: get-nickname
           method: get
           cors:
-            origin: '*'
+            origin: ${env:ALLOWED_ORIGIN}
             headers:
               - Content-Type
               - Authorization
             methods:
               - OPTIONS
               - GET
+            allowCredentials: true 
   
   myEnvironments:
     handler: src/handler.myEnvironments
@@ -323,11 +330,16 @@ package:
   include:
     - node_modules/**
     - backend/user/service/handler.mjs
-    - backend/user/service/authcallback.mjs
 useDotenv: true
+
 plugins:
   - serverless-dotenv-plugin
   - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 1
 
 custom:
   prune:

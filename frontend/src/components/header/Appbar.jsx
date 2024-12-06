@@ -152,9 +152,7 @@ const Appbar = ({
     setIsLoading(true);
     try {
       const response = await axios.get(`${getUserApi()}/get-nickname`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-        },
+        withCredentials: true, 
       });
       setUser((prev) => ({
         ...prev,

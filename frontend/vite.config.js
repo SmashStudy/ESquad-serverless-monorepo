@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ['jwt-decode']
+  },
+  server: {
+    host: true
   }
 })

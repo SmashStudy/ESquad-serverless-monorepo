@@ -2,6 +2,8 @@ import { DynamoDBClient, PutItemCommand, UpdateItemCommand, GetItemCommand, Scan
 import { CognitoIdentityProviderClient, AdminAddUserToGroupCommand, ListUsersCommand } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from 'jsonwebtoken';
 import { createResponse } from '../util/responseHelper.mjs';
+import { userRoutes } from './route/userRoutes.mjs';
+
 
 
 const dynamoDb = new DynamoDBClient({ region: 'us-east-1' });
@@ -30,7 +32,7 @@ export const saveUserToDynamoDB = async (event) => {
         name: { S: name },
         nickname: { S: nickname },
         role: { S: "user" }, // 기본 역할 설정
-        entryPoint: { SS: ["*"] },
+        entryPoint: { SS: userRoutes },
         createdAt: { S: new Date().toISOString() },
       },
     };
@@ -94,23 +96,24 @@ const addUserToCognitoGroupByEmail = async (email, groupName) => {
 
 // 닉네임 가져오기 함수
 export const getUserNickname = async (event) => {
+  console.log(`EVENT: ${event}`)
   try {
     if (!event.headers.Authorization) {
       throw new Error('Authorization 헤더가 없습니다');
     }
 
-    const authHeader = event.headers.Authorization;
-    const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    // const authHeader = event.headers.Authorization;
+    // const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
-    if (!token) {
-      throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
-    }
+    // if (!token) {
+    //   throw new Error('JWT 토큰이 Authorization 헤더에 없습니다');
+    // }
 
-    const decoded = jwt.decode(token);
+    // const decoded = jwt.decode(token);
 
-    if (!decoded || !decoded.email) {
-      throw new Error('JWT 토큰에 email 속성이 없습니다');
-    }
+    // if (!decoded || !decoded.email) {
+    //   throw new Error('JWT 토큰에 email 속성이 없습니다');
+    // }
 
     const email = String(decoded.email);
     console.log(`email: ${email}`);
@@ -168,6 +171,7 @@ export const myEnvironments = async (event) => {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true",
       },
       body: JSON.stringify(envVariables),
     };
@@ -180,6 +184,7 @@ export const myEnvironments = async (event) => {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": "true",
       },
       body: JSON.stringify({ message: '환경 변수 반환 중 오류 발생', error: error.message }),
     };

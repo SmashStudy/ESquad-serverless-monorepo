@@ -42,12 +42,33 @@ export const handler = async (event) => {
     const { AccessToken, IdToken, RefreshToken } =
       response.AuthenticationResult;
 
-    return createCredentialResponse(200, {
-      message: "Login successful",
-      accessToken: AccessToken,
-      idToken: IdToken,
-      refreshToken: RefreshToken,
-    });
+    // return createCredentialResponse(200, {
+    //   message: "Login successful",
+    //   accessToken: AccessToken,
+    //   idToken: IdToken,
+    //   refreshToken: RefreshToken,
+    // });
+
+    const cookies = [
+      `accessToken=${AccessToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=3600`,
+      `idToken=${IdToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=3600`,
+      `refreshToken=${RefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=2592000`,
+    ];
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN,
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+      multiValueHeaders: {
+        "Set-Cookie": cookies,
+      },
+      body: JSON.stringify({ message: "Login successful" }),
+    };
+
   } catch (error) {
     console.error("Signin error:", error);
 
