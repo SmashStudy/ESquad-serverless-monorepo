@@ -37,7 +37,6 @@ const apiSpec = {
 export { apiSpec };
 
 export const handler = async (event, context) => {
-    console.log(event);
 
     // 쿼리 문자열 파라미터에서 room_id와 user_id를 추출
     const queryStringParameters = event.queryStringParameters || {};

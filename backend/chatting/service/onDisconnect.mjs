@@ -16,7 +16,6 @@ async function deleteItem(tableName, key) {
 
   try {
     await docClient.send(new DeleteCommand(params));
-    console.log("Delete succeeded");
   } catch (err) {
     console.error("Unable to delete item. Error:", JSON.stringify(err, null, 2));
     throw err;
@@ -24,7 +23,6 @@ async function deleteItem(tableName, key) {
 }
 
 export const handler = async (event) => {
-  console.log("Received event:", JSON.stringify(event, null, 2));
 
   const connectionId = event.requestContext.connectionId;
 

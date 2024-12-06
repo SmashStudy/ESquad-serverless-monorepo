@@ -16,7 +16,6 @@ async function putItemWithNickname(tableName, item) {
   };
   try {
     await docClient.send(new PutCommand(params));
-    console.log("Put succeeded:", JSON.stringify(item));
   } catch (err) {
     console.error("Unable to add item. Error:", JSON.stringify(err));
     throw err;
@@ -35,7 +34,6 @@ async function broadcastMessage(apiGatewayManagementApi, connections, message) {
       );
     } catch (e) {
       if (e.statusCode === 410) {
-        console.log(`Stale connection detected, removing connection_id: ${connection_id}`);
         await docClient.send(
             new DeleteCommand({
               TableName: process.env.USERLIST_TABLE_NAME,
@@ -51,7 +49,6 @@ async function broadcastMessage(apiGatewayManagementApi, connections, message) {
 }
 
 export const handler = async (event) => {
-  console.log("Received event:", JSON.stringify(event, null, 2));
 
   const body = JSON.parse(event.body);
   const { room_id, message, user_id, nickname, fileKey, contentType, originalFileName, timestamp } = body;
@@ -74,8 +71,6 @@ export const handler = async (event) => {
     contentType: contentType || null,
     originalFileName: originalFileName || null,
   };
-
-  console.log("Attempting to put item in DynamoDB:", JSON.stringify(item, null, 2));
 
   try {
     // 메시지 저장
