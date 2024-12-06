@@ -17,15 +17,15 @@ function ChatMessages({currentChatRoom}) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState("");
-    const [uploadedFiles, setUploadedFiles] = useState([]);
-    const messageEndRef = useRef(null);
-    const socketRef = useRef(null);
     const room_id = String (currentChatRoom?.id);
     const [email, setEmail] = useState('unknown');
     const [error, setError] = useState(null);
     const [nickname, setNickname] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    const [loading, setLoading] = useState(true)
+    const socketRef = useRef(null);
+    const messageEndRef = useRef(null);
+    const currentRoomIdRef = useRef(null);
 
     // 유저 정보 로드
     useEffect(() => {
@@ -50,12 +50,26 @@ function ChatMessages({currentChatRoom}) {
     }, []);
 
     useEffect(() => {
-        if (!currentChatRoom || !email) { return; }
-        setMessages([]);
+        if (!room_id || !email) {
+            return;
+        }
+
         setLoading(true);
-        if (socketRef.current) { socketRef.current.close();}
-        connectWebSocket(currentChatRoom.id);
-    }, [currentChatRoom, email]);
+
+        // 현재 연결된 WebSocket이 있다면 닫아줌 (중복 연결 방지)
+        if (socketRef.current) {
+            socketRef.current.close();
+        }
+
+        // 기존 메시지를 유지하고 새로운 채팅방에 맞는 메시지를 불러오기
+        if (currentRoomIdRef.current !== room_id) {
+            currentRoomIdRef.current = room_id;
+            loadMessages(room_id);
+            connectWebSocket(room_id);
+        }
+
+    }, [room_id, email]);
+
 
     const sortMessages = (messages) => {
         return [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -69,27 +83,29 @@ function ChatMessages({currentChatRoom}) {
 
             // 유효하지 않은 파일 메시지를 필터링
             const combinedMessages = sortMessages([
-                ...(fetchedMessages || []).filter(msg => !(msg.fileKey )),
-                ...(fetchedFiles || []).filter(file => file.fileKey ),
+                ...(fetchedMessages || []).filter(msg => !(msg.fileKey)),
+                ...(fetchedFiles || []).filter(file => file.fileKey),
             ]);
             setMessages(combinedMessages);
             scrollToBottom();
         } catch (error) {
             console.error("메시지 불러오기 실패:", error.message);
-        } finally { setLoading(false); }
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 웹소켓 연결 함수
     const connectWebSocket = (room_id) => {
-        const encodedRoomId = encodeURIComponent(room_id); // room_id를 인코딩
-        const encodedUserId = encodeURIComponent(email); // email도 인코딩
+        const encodedRoomId = encodeURIComponent(room_id);
+        const encodedUserId = encodeURIComponent(email);
 
         const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
         newSocket.onopen = () => {
-            setLoading(false);
-            loadMessages(room_id);
+            console.log("WebSocket 연결 성공");
         };
+
         newSocket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
@@ -120,19 +136,18 @@ function ChatMessages({currentChatRoom}) {
                     default:
                         console.warn("Unknown action received:", data.action);
                 }
-                scrollToBottom(); // 새 메시지가 추가되었을 때 스크롤 이동
+                scrollToBottom();
             } catch (error) {
                 console.error("Invalid JSON received:", event.data);
             }
         };
-
         newSocket.onclose = () => {
             console.error("WebSocket 연결 종료");
             setTimeout(() => connectWebSocket(room_id), 3000);
-            socketRef.current = null;
-        }
+        };
         socketRef.current = newSocket;
-    }
+    };
+
     const scrollToBottom = () => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});
     }
@@ -146,7 +161,7 @@ function ChatMessages({currentChatRoom}) {
                 // 파일 업로드 로직
                 const uploadResponse = await uploadFile({
                     file: selectedFile,
-                    room_id: currentChatRoom.id,
+                    room_id: room_id,
                     user_id: email,
                     nickname: nickname,
                     targetType: 'CHAT',
@@ -157,7 +172,7 @@ function ChatMessages({currentChatRoom}) {
                     fileKey: uploadResponse.fileKey,
                     contentType: uploadResponse.contentType,
                     originalFileName: uploadResponse.originalFileName,
-                    room_id: currentChatRoom.id,
+                    room_id: room_id,
                     user_id: email,
                     nickname: nickname,
                     timestamp: timestamp,
@@ -261,7 +276,6 @@ function ChatMessages({currentChatRoom}) {
     },[messages]);
 
     if (loading) { return <Loading />;}
-
     const handleMessageInput = (e) => { setMessageInput(e.target.value); };
 
     return (
