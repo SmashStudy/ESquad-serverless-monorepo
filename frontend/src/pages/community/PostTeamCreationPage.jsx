@@ -278,18 +278,18 @@ const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
       const data = {
         title,
         content: finalContent,
+        teamId: teamId,
         writer: {
           name: userInfo.name,
           nickname: userInfo.nickname,
           email: userInfo.email,
         },
-        teamId: teamId,
         tags,
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
       console.log(`data: ${JSON.stringify(data)}`);
 
-      const url = `${getCommunityApi()}/${boardType}`;
+      const url = `${getCommunityApi()}/teams/new-question-post`;
       const response = await axios.post(url, data);
 
       if (response.status === 201) {

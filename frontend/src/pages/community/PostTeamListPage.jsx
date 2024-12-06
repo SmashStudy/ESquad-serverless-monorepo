@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
-import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
 import { Link, useLocation, useParams } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
@@ -10,6 +9,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
 import { useTeams } from "../../context/TeamContext.jsx";
+import TeamCreationDialog from "../../components/content/community/TeamCreationDialog.jsx";
 
 const PostTeamListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -62,9 +62,6 @@ const PostTeamListPage = ({ isSmallScreen }) => {
       if (boardType === "questions") {
         if (filterTab === "미해결") params.resolved = "false";
         if (filterTab === "해결됨") params.resolved = "true";
-      } else if (boardType === "team-recruit") {
-        if (filterTab === "모집중") params.recruitStatus = "false";
-        if (filterTab === "모집완료") params.recruitStatus = "true";
       }
 
       const url = `${getCommunityApi()}/team-questions`; // 동적 API 경로 설정
@@ -192,45 +189,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
               gap: 2,
               width: "100%",
             }}
-          >
-            <InputBase
-              placeholder="   태그로 검색해보세요!"
-              sx={{
-                flex: 1,
-                height: "50px",
-                p: 1.5,
-                border: "1px solid #ccc",
-                borderRadius: 1,
-                transition: "border 0.3s ease",
-                "&:focus-within": {
-                  border: "2px solid #A020F0",
-                },
-              }}
-              startAdornment={
-                <Box sx={{ color: "#000", fontSize: "1.5rem" }}>#</Box>
-              }
-            />
-            <Button
-              variant="text"
-              startIcon={
-                <RestartAltIcon
-                  sx={{ fontSize: "1.5rem", color: theme.palette.primary.main }}
-                />
-              }
-              sx={{
-                fontSize: "1rem",
-                fontWeight: "bold",
-                color: theme.palette.primary.main,
-                height: "50px",
-                padding: "0 20px",
-                "&:hover": {
-                  backgroundColor: "rgba(160, 32, 240, 0.1)",
-                },
-              }}
-            >
-              초기화
-            </Button>
-          </Box>
+          ></Box>
         </Box>
       </Box>
       {/* Sort Buttons */}
@@ -447,7 +406,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
           다음
         </Button>
       </Box>
-      <PostCreationDialog
+      <TeamCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}
         teamId={teamId}

@@ -47,6 +47,14 @@ functions:
           method: POST
           cors: true
 
+  teamCreatePost:
+    handler: src/handlers/teamCreatePost.handler
+    events:
+      - http:
+          path: /teams/new-question-post
+          method: POST
+          cors: true
+
   getPost:
     handler: src/handlers/getPost.handler
     events:

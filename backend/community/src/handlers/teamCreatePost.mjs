@@ -8,17 +8,16 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
 export const handler = async (event) => {
   try {
+    console.log(`event is ${JSON.stringify(event, null, 2)}`);
+    
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags = [] } = body;
-    const boardType = event.pathParameters.boardType;
+    const { title, content, writer, book, teamId, tags = [] } = body;
+    console.log(
+      `body: ${title}, ${content}, ${writer}, ${book}, ${teamId}, ${tags}`
+    );
 
-    const validBoardTypes = ["general", "questions", "team-recruit"];
-    if (!validBoardTypes.includes(boardType)) {
-      return createResponse(400, { message: "Invalid boardType" });
-    }
-
-    if (!title || !content || !writer) {
+    if (!title || !content || !writer || !teamId) {
       return createResponse(400, { message: "Missing required fields" });
     }
 
@@ -26,6 +25,7 @@ export const handler = async (event) => {
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 
+    // Extract Base64 images and replace in content
     const base64Images = [];
     const updatedContent = content.replace(
       /<img src="data:image\/(png|jpeg|jpg);base64,([^"]+)"/g,
@@ -39,6 +39,7 @@ export const handler = async (event) => {
 
     console.log("Extracted Base64 Images:", base64Images);
 
+    // Upload images to S3
     for (const image of base64Images) {
       const buffer = Buffer.from(image.data, "base64");
       const params = {
@@ -51,10 +52,11 @@ export const handler = async (event) => {
       console.log(`Image uploaded to S3: ${image.key}`);
     }
 
+    // Prepare DynamoDB item
     const item = {
       PK: { S: `POST#${postId}` },
       SK: { S: createdAt },
-      boardType: { S: boardType },
+      teamId: { S: teamId },
       title: { S: title },
       content: { S: updatedContent },
       writer: {
@@ -79,8 +81,7 @@ export const handler = async (event) => {
       updatedAt: { S: updatedAt },
       viewCount: { N: "0" },
       likeCount: { N: "0" },
-      ...(boardType === "questions" && { resolved: { S: "false" } }),
-      ...(boardType === "team-recruit" && { recruitStatus: { S: "false" } }),
+      resolved: { S: "false" },
       comments: { L: [] },
     };
 
@@ -89,12 +90,14 @@ export const handler = async (event) => {
       Item: item,
     });
 
+    // Insert into DynamoDB
     await ddbClient.send(command);
 
+    console.log(`Post created successfully: ${postId}`);
     return createResponse(201, {
       message: "Post created successfully",
       postId: postId,
-      boardType: boardType,
+      teamId: teamId,
       createdAt: createdAt,
     });
   } catch (error) {
