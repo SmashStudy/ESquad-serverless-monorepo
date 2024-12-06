@@ -361,9 +361,9 @@ const PostListPage = ({ isSmallScreen }) => {
                   variant="body2"
                   sx={{
                     color: theme.palette.grey[700],
-                    mb: 1,
                     display: "flex",
                     alignItems: "center",
+                    my: 2,
                   }}
                 >
                   {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
@@ -378,7 +378,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     display: "flex",
                     gap: 1,
                     flexWrap: "wrap",
-                    mb: 0,
+                    mt: 1,
                     minHeight: "40px",
                   }}
                 >
@@ -390,6 +390,7 @@ const PostListPage = ({ isSmallScreen }) => {
                         label={tag}
                         variant="outlined"
                         sx={{
+                          m: 0,
                           borderRadius: "16px",
                           color: theme.palette.primary.main,
                           borderColor: theme.palette.primary.main,
@@ -403,7 +404,6 @@ const PostListPage = ({ isSmallScreen }) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    mt: 1,
                   }}
                 >
                   {/* 작성자와 작성일 */}
@@ -420,13 +420,34 @@ const PostListPage = ({ isSmallScreen }) => {
                       alignItems: "center",
                     }}
                   >
-                    <Typography variant="caption">
-                      👍 {post.likeCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      ❤️ {post.likeCount || 0}
                     </Typography>
-                    <Typography variant="caption">
-                      👁 {post.viewCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      👀 {post.viewCount || 0}
                     </Typography>
-                    <Typography variant="caption">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       💬 {post.commentCount || 0}
                     </Typography>
                   </Box>
