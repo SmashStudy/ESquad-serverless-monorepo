@@ -10,7 +10,6 @@ import {
     Grid,
     CardMedia,
     Pagination,
-    Container,
     TextField,
 } from "@mui/material";
 import { useTheme, styled } from "@mui/material";
