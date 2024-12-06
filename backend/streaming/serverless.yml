@@ -1,10 +1,10 @@
 service: streaming-service  # 서비스 이름 정의
 
-frameworkVersion: "^3.15.0"
+frameworkVersion: "^3.15.0"  # 필요시 최신 버전으로 업데이트
 
 provider:
   name: aws  # AWS 클라우드 제공자 설정
-  runtime: nodejs20.x  # Node.js 런타임 버전
+  runtime: nodejs20.x  # Node.js 런타임 버전 (업데이트 후 지원됨)
   region: ${opt:region, 'us-east-1'}  # AWS 리전 설정
   stage: ${opt:stage, 'dev'}  # 배포 스테이지 설정
   environment:
@@ -185,6 +185,10 @@ resources:
         AttributeDefinitions:
           - AttributeName: 'userEmail'
             AttributeType: 'S'
+          - AttributeName: 'teamId'
+            AttributeType: 'S'
+          - AttributeName: 'title'
+            AttributeType: 'S'
           - AttributeName: 'start_At'
             AttributeType: 'S'
         KeySchema:
@@ -193,19 +197,35 @@ resources:
           - AttributeName: 'start_At'
             KeyType: RANGE  # 정렬 키
         BillingMode: PAY_PER_REQUEST
-        # 추가 속성은 DynamoDB 아이템에 동적으로 추가됨
+        GlobalSecondaryIndexes:
+          - IndexName: 'TitleIndex'  # title을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'title'
+                KeyType: HASH  # GSI의 파티션 키로 title 설정
+              - AttributeName: 'start_At'
+                KeyType: RANGE  # GSI의 정렬 키로 start_At 설정
+            Projection:
+              ProjectionType: ALL  # 모든 속성을 인덱스에 포함
+          - IndexName: 'TeamIndex'  # teamId를 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'teamId'
+                KeyType: HASH  # GSI의 파티션 키로 teamId 설정
+            Projection:
+              ProjectionType: ALL  # 모든 속성을 인덱스에 포함
 
     MeetingRoomUsageTracking:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: 'esquad-streaming-meeting-room-usage-${self:provider.stage}'  # 스트리밍 회의실 사용 추적 테이블
         AttributeDefinitions:
+          - AttributeName: 'teamId'  # teamId 속성 추가
+            AttributeType: 'S'
           - AttributeName: 'title'
             AttributeType: 'S'
           - AttributeName: 'start_At'
             AttributeType: 'S'
           - AttributeName: 'status'
-            AttributeType: 'S'  # Global Secondary Index를 위한 속성 정의
+            AttributeType: 'S'
         KeySchema:
           - AttributeName: 'title'
             KeyType: HASH  # 파티션 키
@@ -219,7 +239,12 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-        # TimeToLiveSpecification 제거: 항목이 영구적으로 보관됨
+          - IndexName: 'TeamIndex'  # teamId를 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'teamId'
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
 
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
