@@ -4,6 +4,7 @@ import {
   Flex,
   Heading,
   PrimaryButton,
+  useRosterState,
 } from "amazon-chime-sdk-component-library-react";
 
 import { useAppState } from "../../providers/AppStateProvider";
@@ -12,6 +13,9 @@ import { AVAILABLE_AWS_REGIONS } from "../../constants/index";
 
 const MeetingDetails = () => {
   const { meetingId, toggleTheme, theme, region } = useAppState();
+  const { roster } = useRosterState();
+
+  let attendees = Object.values(roster);
 
   // region을 keyof typeof AVAILABLE_AWS_REGIONS로 지정
   const hostResion =
@@ -32,6 +36,10 @@ const MeetingDetails = () => {
           <div>
             <dt>호스트의 지역</dt>
             <dd>{hostResion}</dd> {/* 호스트 지역 한국어로 맵핑 - 가까운 리전 */}
+          </div>
+          <div>
+            <dt>참여자 수</dt>
+            <dd>{attendees.length}</dd>
           </div>
         </StyledList>
         <PrimaryButton
