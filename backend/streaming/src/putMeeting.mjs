@@ -1,6 +1,6 @@
 import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
 
-const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 
 const meetingsTableName = process.env.MEETINGS_TABLE_NAME;
 const MeetingRoomUsageTrackingTableName = process.env.MEETING_ROOM_USAGE_TABLE_NAME;
