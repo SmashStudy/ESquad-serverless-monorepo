@@ -39,20 +39,25 @@ const PostTeamListPage = ({ isSmallScreen }) => {
         );
       }
 
-      filterTab === "미해결"
-        ? (params.resolved = "false")
-        : (params.resolved = "true");
+      // 탭 필터에 따라 resolved 값을 설정
+      if (filterTab === "미해결") {
+        params.resolved = "false";
+      } else if (filterTab === "해결됨") {
+        params.resolved = "true";
+      } 
 
       console.log(`params: ${JSON.stringify(params)}`);
 
       const url = `${getCommunityApi()}/team-questions`;
       const response = await axios.get(url, { params });
+      console.log(`data: ${JSON.stringify(response)}`);
 
       const items = response.data.items || [];
 
       const newLastEvaluatedKeys = [...lastEvaluatedKeys];
       newLastEvaluatedKeys[curPage] = response.data.lastEvaluatedKey || null;
       setLastEvaluatedKeys(newLastEvaluatedKeys);
+      setPosts(reset ? items : [...posts, ...items]);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
@@ -65,10 +70,12 @@ const PostTeamListPage = ({ isSmallScreen }) => {
 
   const handleFilterChange = (filter) => {
     if (filterTab === filter) return;
+
     setFilterTab(filter);
     setCurPage(1);
     setPosts([]);
     setLastEvaluatedKeys([]);
+    fetchPosts(true); // 새로 데이터를 가져옵니다.
   };
 
   const handlePageChange = (direction) => {

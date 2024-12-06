@@ -1,4 +1,8 @@
-import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  QueryCommand,
+  ScanCommand,
+} from "@aws-sdk/client-dynamodb";
 import { createResponse } from "../utils/responseHelper.mjs";
 
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
@@ -15,9 +19,27 @@ export const handler = async (event) => {
       teamId,
     } = parseQueryStringParameters(event.queryStringParameters);
 
+    if (!teamId) {
+      throw new Error("teamId가 제공되지 않았습니다.");
+    }
+
     let params;
 
-    if (resolved !== undefined) {
+    if (resolved === undefined) {
+      // 전체 조회 (resolved 관계없이 teamId 기준)
+      params = {
+        TableName: TABLE_NAME,
+        IndexName: "team-create-index", // teamId 기반 인덱스
+        KeyConditionExpression: "teamId = :teamId",
+        ExpressionAttributeValues: {
+          ":teamId": { S: teamId },
+        },
+        Limit: limit,
+        ExclusiveStartKey: lastEvaluatedKey,
+        ScanIndexForward: false,
+      };
+    } else {
+      // 미해결 또는 해결된 목록 조회 (resolved 필터 사용)
       params = {
         TableName: TABLE_NAME,
         IndexName: "board-resolved-create-index",
@@ -33,10 +55,12 @@ export const handler = async (event) => {
       };
     }
 
+    console.log("Query Params:", JSON.stringify(params, null, 2));
     const data = await ddbClient.send(new QueryCommand(params));
-    console.log(`data: ${JSON.stringify(data)}`);
-    const posts = formatPosts(data.Items);
-    console.log(`posts: ${JSON.stringify(posts)}`);
+    console.log(`DynamoDB Response: ${JSON.stringify(data)}`);
+
+    const posts = formatPosts(data.Items || []);
+    console.log(`Formatted Posts: ${JSON.stringify(posts)}`);
 
     return createResponse(200, {
       items: posts,
