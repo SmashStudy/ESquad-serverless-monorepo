@@ -120,6 +120,14 @@ functions:
           method: post
           cors: true
 
+  deleteLog:
+    handler: src/handlers/deleteLog.handler
+    events:
+      - http:
+          path: /admin/delete-log/{logId}
+          method: delete
+          cors: true
+
   # Quill 전용
   generatePresignedUrlForQuill:
     handler: src/handlers/generatePresignedUrlForQuill.handler
@@ -139,13 +147,13 @@ functions:
           batchSize: 5
           startingPosition: LATEST
 
-  storeFileMetadata: # Deprecated
-    handler: src/handlers/storeFileMetadata.handler
-    events:
-      - http:
-          path: /store-metadata
-          method: post
-          cors: true
+#  storeFileMetadata: # Deprecated
+#    handler: src/handlers/storeFileMetadata.handler
+#    events:
+#      - http:
+#          path: /store-metadata
+#          method: post
+#          cors: ${self:custom.defaultCors}
 
 
 
@@ -343,3 +351,4 @@ custom:
   prune:
     automatic: true
     number: 3
+
