@@ -23,6 +23,7 @@ provider:
         - dynamodb:Query
         - dynamodb:DeleteItem
         - dynamodb:UpdateItem
+        - dynamodb:Scan
         - s3:GetObject
         - s3:PutObject
         - s3:DeleteObject
@@ -37,6 +38,7 @@ provider:
 
 functions:
 
+  # 메타데이터
   uploadFile:
     handler: src/handlers/uploadFile.handler
     events:
@@ -50,6 +52,14 @@ functions:
     events:
       - http:
           path: /{fileKey}
+          method: get
+          cors: true
+
+  getAllFiles:
+    handler: src/handlers/getAllFiles.handler
+    events:
+      - http:
+          path: /admin/metadata
           method: get
           cors: true
 
@@ -85,6 +95,41 @@ functions:
           method: delete
           cors: true
 
+  # 로깅용
+  getLogsByAction:
+    handler: src/handlers/getLogsByAction.handler
+    events:
+      - http:
+          path: /admin/logs/{action}
+          method: get
+          cors: true
+
+  getUserDeleteLogs:
+    handler: src/handlers/getUserDeleteLogs.handler
+    events:
+      - http:
+          path: /get-user-delete-logs
+          method: post
+          cors: true
+
+  getUserDownloadLogs:
+    handler: src/handlers/getUserDownloadLogs.handler
+    events:
+      - http:
+          path: /get-user-download-logs
+          method: post
+          cors: true
+
+  # Quill 전용
+  generatePresignedUrlForQuill:
+    handler: src/handlers/generatePresignedUrlForQuill.handler
+    events:
+      - http:
+          path: /presigned-url
+          method: post
+          cors: true
+
+  # Trigger
   updateFileMetadataNickname:
     handler: src/triggers/updateFileMetadataNickname.trigger
     events:
@@ -102,13 +147,6 @@ functions:
           method: post
           cors: true
 
-  generatePresignedUrlForQuill:
-    handler: src/handlers/generatePresignedUrlForQuill.handler
-    events:
-      - http:
-          path: /presigned-url
-          method: post
-          cors: true
 
 
 
@@ -124,6 +162,8 @@ resources:
             AttributeType: S
           - AttributeName: action
             AttributeType: S
+          - AttributeName: uploaderEmail
+            AttributeType: S
           - AttributeName: userEmail
             AttributeType: S
           - AttributeName: targetId
@@ -134,23 +174,25 @@ resources:
           - AttributeName: logId
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: ActionIndex
+          - IndexName: ActionIndex # 서비스 내에 파일 다운로드 삭제 로그 추적용 (어드민 전용)
             KeySchema:
               - AttributeName: action
                 KeyType: HASH
-              - AttributeName: createdAt
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: UserEmailIndex
+          - IndexName: UploaderEmailIndex # 유저가 삭제한 기록 추적용 필터로 Action -> DELETE
+            KeySchema:
+              - AttributeName: uploaderEmail
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserEmailIndex # 유저의 다운로드 기록 추적용 필터로 Action -> DOWNLOAD
             KeySchema:
               - AttributeName: userEmail
                 KeyType: HASH
-              - AttributeName: createdAt
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: TargetIndex
+          - IndexName: TargetIndex # 공간 내의 기록 추적용 필터로 targetType
             KeySchema:
               - AttributeName: targetId
                 KeyType: HASH
@@ -217,7 +259,7 @@ resources:
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
-                - '*'
+                - ${env:ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
               AllowedMethods:
@@ -254,10 +296,11 @@ resources:
           BlockPublicPolicy: false
           IgnorePublicAcls: false
           RestrictPublicBuckets: false
+
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
-                - '*'
+                - ${env:ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
               AllowedMethods:
