@@ -30,6 +30,7 @@ provider:
           Action:
             - "chime:CreateMeeting"
             - "chime:CreateAttendee"
+            - "chime:DeleteMeeting"
           Resource: "arn:aws:chime:*:*:meeting/*"  # Chime 미팅 및 참석자 생성 권한
         - Effect: "Allow"
           Action:
