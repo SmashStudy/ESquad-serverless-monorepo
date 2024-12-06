@@ -239,7 +239,17 @@ export const handleFileDownload = async (fileKey, originalFileName,
   }
 };
 
-export const handleQuillImageUpload = async (file,setQuillUrl) => {
+export const handleLogDelete = async (logId, fetchLogs = () => {}) => {
+  try {
+    await axios.delete(
+        `${storageApi}/admin/delete-log/${encodeURIComponent(logId)}`)
+    fetchLogs();
+  } catch (error) {
+    console.error('Failed to delete file:', error);
+  }
+};
+
+export const handleQuillImageUpload = async (file, setQuillUrl) => {
   if (!file) {
     return;
   }

@@ -4,6 +4,7 @@ import {requestPresignedUrl} from "../utils/s3Utils.mjs";
 import {METADATA_TABLE, dynamoDb} from "../utils/dynamoUtil.mjs";
 import {sendLog} from "../utils/logActionHelper.mjs";
 import {requestExtractor} from "../utils/extractLoggingInfo.mjs";
+import {getFormattedDate} from "../utils/dateUtil.mjs";
 
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
@@ -62,7 +63,7 @@ export const handler = async (event) => {
       uploaderEmail: fileMetadata.userEmail,
       userEmail: email, // 사용자 이메일 (JWT에서 추출)
       userRole: group, // 사용자 역할 (JWT에서 추출)
-      createdAt: new Date().toISOString(),
+      createdAt: getFormattedDate(),
       fileSize: fileMetadata.fileSize,
       targetId: fileMetadata.targetId,
       targetType: fileMetadata.targetType,
