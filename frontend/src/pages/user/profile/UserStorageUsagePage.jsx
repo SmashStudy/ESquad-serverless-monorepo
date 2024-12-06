@@ -17,7 +17,7 @@ import DownloadLogsTable
 import DeleteLogsTable
   from "../../../components/storage/UserDeleteLogsTable.jsx";
 import UserUsageChart from "../../../components/storage/UserUsageChart.jsx";
-import UserMaxUsage from "../../../components/storage/UserMaxUsage.jsx";
+import UserMaxUsage from "../../../components/storage/UserUsageSummary.jsx";
 
 const UserStorageUsageRenewed = () => {
   const [fileData, setFileData] = useState([]);
@@ -127,25 +127,31 @@ const UserStorageUsageRenewed = () => {
           </Grid>
 
           <Grid item xs={8}>
-            <Tabs value={currentTab} onChange={handleTabChange}
-                  sx={{marginBottom: 3}}>
+            <Tabs value={currentTab} onChange={handleTabChange}>
               <Tab label="파일 관리"></Tab>
               <Tab label="다운로드 기록"></Tab>
               <Tab label="삭제 기록"></Tab>
             </Tabs>
 
-            {currentTab === 0 && (
-                <UserFileTable fetchData={fetchFileData} gridData={fileData}
-                               setSnackbar={setSnackbar}
-                               theme={theme}></UserFileTable>
-            )}
-            {currentTab === 1 && (
-                <DownloadLogsTable gridData={downloadLogs}/>
-            )}
+            <Box sx={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
 
-            {currentTab === 2 && (
-                <DeleteLogsTable gridData={deleteLogs}/>
-            )}
+              {currentTab === 0 && (
+                  <UserFileTable fetchData={fetchFileData} gridData={fileData}
+                                 setSnackbar={setSnackbar}
+                                 theme={theme}></UserFileTable>
+              )}
+              {currentTab === 1 && (
+                  <DownloadLogsTable gridData={downloadLogs}/>
+              )}
+
+              {currentTab === 2 && (
+                  <DeleteLogsTable gridData={deleteLogs}/>
+              )}
+            </Box>
           </Grid>
         </Grid>
       </Box>

@@ -23,7 +23,7 @@ const UsageChart = ({ usage, MAX_USAGE }) => {
             },
             detail: { valueAnimation: true, formatter: '{value}%', fontSize: 20 },
             data: [{ value: usagePercent.toFixed(2), name: '사용량' }],
-            animationDuration: 1000,
+            animationDuration: 1800,
             animationEasing: 'circularOut',
           },
         ],
@@ -33,7 +33,7 @@ const UsageChart = ({ usage, MAX_USAGE }) => {
     }
   }, [usage, MAX_USAGE]);
 
-  return <Box id="usageGauge" sx={{ height: '100%' }} />;
+  return <Box id="usageGauge" sx={{ height: '300px', width: '100%', position: 'relative' }} />;
 };
 
 export default UsageChart;
