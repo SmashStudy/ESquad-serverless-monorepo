@@ -8,7 +8,6 @@ import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
-import { useTeams } from "../../context/TeamContext.jsx";
 import TeamCreationDialog from "../../components/content/community/TeamCreationDialog.jsx";
 
 const PostTeamListPage = ({ isSmallScreen }) => {
@@ -315,12 +314,20 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                   variant="body2"
                   sx={{
                     color: theme.palette.grey[700],
-                    mb: 1,
                     display: "flex",
                     alignItems: "center",
+                    my: 2,
                   }}
                 >
-                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
+                  {hasImage && (
+                    <ImageIcon
+                      sx={{
+                        color: theme.palette.primary.light,
+                        fontSize: "35px",
+                        mr: 2,
+                      }}
+                    />
+                  )}
                   <span
                     dangerouslySetInnerHTML={{
                       __html: plainText.substring(0, 100),
@@ -332,7 +339,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                     display: "flex",
                     gap: 1,
                     flexWrap: "wrap",
-                    mb: 0,
+                    mt: 1,
                     minHeight: "40px",
                   }}
                 >
@@ -377,17 +384,17 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}
                     >
-                      ❤️ {post.likeCount || 0}
+                      🤍 {post.likeCount || 0}
                     </Typography>
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}
@@ -397,7 +404,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}

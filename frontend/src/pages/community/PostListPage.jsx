@@ -406,7 +406,6 @@ const PostListPage = ({ isSmallScreen }) => {
                         label={tag}
                         variant="outlined"
                         sx={{
-                          m: 0,
                           borderRadius: "16px",
                           color: theme.palette.primary.main,
                           borderColor: theme.palette.primary.main,
@@ -420,6 +419,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
+                    mt: 1,
                   }}
                 >
                   {/* 작성자와 작성일 */}
@@ -439,17 +439,17 @@ const PostListPage = ({ isSmallScreen }) => {
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}
                     >
-                      ❤️ {post.likeCount || 0}
+                      🤍{post.likeCount || 0}
                     </Typography>
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}
@@ -459,7 +459,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     <Typography
                       variant="caption"
                       sx={{
-                        fontSize: "1.3rem",
+                        fontSize: "1.1rem",
                         display: "flex",
                         alignItems: "center",
                       }}
