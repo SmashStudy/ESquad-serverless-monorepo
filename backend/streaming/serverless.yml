@@ -36,6 +36,7 @@ provider:
           Action:
             - "dynamodb:PutItem"
             - "dynamodb:GetItem"
+            - "dynamodb:DeleteItem"
             - "dynamodb:UpdateItem"
             - "dynamodb:Query"
             - "dynamodb:Scan"
