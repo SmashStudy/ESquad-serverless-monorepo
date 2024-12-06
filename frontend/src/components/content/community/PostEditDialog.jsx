@@ -14,6 +14,7 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../../utils/apiConfig";
+import QuillEditor from "../../../utils/QuillEditor"; // QuillEditor 임포트
 
 const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
   const { boardType, postId } = useParams();
@@ -81,7 +82,7 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
       const updatedPost = {
         title,
         content,
-        tags: tags.length > 0 ? tags : [], // tags가 비어있어도 포함
+        tags: tags.length > 0 ? tags : [],
       };
 
       await axios.put(
@@ -163,15 +164,14 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
             />
           )}
         />
-        <TextField
-          label="내용"
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={10}
-          margin="dense"
+        <Typography variant="subtitle1" sx={{ marginTop: 2, marginBottom: 1 }}>
+          내용
+        </Typography>
+        {/* QuillEditor 적용 */}
+        <QuillEditor
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={setContent}
+          placeholder="내용을 입력하세요."
         />
       </DialogContent>
       <DialogActions>
