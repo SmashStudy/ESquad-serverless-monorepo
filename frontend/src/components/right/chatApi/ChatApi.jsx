@@ -1,7 +1,7 @@
 import axios from "axios";
 import {getChatApi} from "../../../utils/apiConfig.js";
 
-const apiUrl = getChatApi();
+const apiUrl ="https://iq1g5j62ok.execute-api.us-east-1.amazonaws.com/local";
 const token = localStorage.getItem("jwtToken");
 
 const apiClient = axios.create({
@@ -15,8 +15,8 @@ export const fetchTeamListAPI = async () => {
         const response = await apiClient.get(`/team`);
         return response.data;
     } catch (error) {
-      console.error("팀 목록 가져오기 실패: " , error.message);
-      throw error;
+        console.error("팀 목록 가져오기 실패: " , error.message);
+        throw error;
     }
 }
 
@@ -51,7 +51,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
                     timestamp: messageData.timestamp,
-                    user_id: messageData.user_id,
+                    user_id: messageData.email,
                     nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
                     contentType: messageData.contentType,

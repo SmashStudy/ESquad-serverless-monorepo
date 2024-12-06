@@ -22,7 +22,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
     const [editedMessage, setEditedMessage] = useState(message.message);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const isCurrentUser = currentUser;
+    const isCurrentUser = currentUser === message.nickname;
 
     useEffect(() => {
         if (isFileMessage && !message.presignedUrl) {
@@ -81,7 +81,7 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
     const handleDownloadFile = async () => {
         try {
             if (message.fileKey)
-            await handleFileDownload(message.fileKey, message.originalFileName);
+                await handleFileDownload(message.fileKey, message.originalFileName);
         } catch (error) {
             console.error("파일 다운로드 실패:", error.message);
         }
@@ -107,10 +107,10 @@ const MessageItem = ({ message, onEditMessage, currentUser ,onDeleteMessage}) =>
             {/* 아바타 및 유저 정보 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '0.8rem' }}>
                 <span style={{ fontSize: '0.85rem', color: '#333', fontWeight: 'bold', marginBottom: '0.3rem' }}>
-                    {currentUser}
+                    {message.nickname}
                 </span>
-                <Avatar sx={{ bgcolor: getAvatarColor(currentUser)}}>
-                    {getInitials(currentUser)}
+                <Avatar sx={{ bgcolor: getAvatarColor(message.nickname)}}>
+                    {getInitials(message.nickname)}
                 </Avatar>
             </div>
 

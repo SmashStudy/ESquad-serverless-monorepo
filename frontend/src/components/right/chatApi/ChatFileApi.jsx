@@ -40,16 +40,16 @@ export const uploadFile = async ({ file, room_id, user_id, nickname,targetType})
         const presignedResponse = await axios.post(
             `${storageApi}/upload-file`,
             {
-                    originalFileName: file.name,
-                    targetId: room_id,
-                    targetType: targetType,
-                    userEmail: user_id,
-                    userNickname: nickname,
-                    fileSize: file.size,
-                    contentType: file ? file.type : getMimeType(
-                        file.name),
-                    actualType: file.type,
-                    createdAt: getFormattedDate(),
+                originalFileName: file.name,
+                targetId: room_id,
+                targetType: targetType,
+                userEmail: user_id,
+                userNickname: nickname,
+                fileSize: file.size,
+                contentType: file ? file.type : getMimeType(
+                    file.name),
+                actualType: file.type,
+                createdAt: getFormattedDate(),
             },
             { headers: {'Content-Type': 'application/json'}}
         );
