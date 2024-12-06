@@ -101,7 +101,7 @@ export async function getAttendee(
 
 export async function endMeeting(
   title: string,
-  participant: string
+  participant: string,
 ): Promise<void> {
   const body = {
     title: title,
