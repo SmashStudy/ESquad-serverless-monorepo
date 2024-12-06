@@ -84,6 +84,7 @@ const HomeContent = () => {
                     sidebarOpen={sidebarOpen}
                     handleDrawerClose={handleDrawerClose}
                     selectedTab={selectedTab}
+                    onTabChange={handleTabChange}
                     selectedTeam={selectedTeam}
                 />
 
@@ -110,7 +111,7 @@ const HomeContent = () => {
                     height: isMediumScreen ? '60%' : '100%',
                     }}
                     >
-                    <Outlet context={{ selectedTab, selectedTeam }} />
+                    <Outlet context={{ selectedTab, selectedTeam }} onTabChange={handleTabChange} />
                 </Box>
 
                 {/* Right Section - Chat Area */}
