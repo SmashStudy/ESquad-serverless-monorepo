@@ -62,6 +62,13 @@ functions:
           path: /{boardType}
           method: GET
           cors: true
+  listTeamPosts:
+    handler: src/handlers/listTeamPosts.handler
+    events:
+      - http:
+          path: /team-questions
+          method: GET
+          cors: true
 
   updatePost:
     handler: src/handlers/updatePost.handler

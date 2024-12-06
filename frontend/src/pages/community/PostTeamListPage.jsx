@@ -3,7 +3,7 @@ import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
@@ -11,9 +11,9 @@ import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
 import { useTeams } from "../../context/TeamContext.jsx";
 
-const PostListPage = ({ isSmallScreen }) => {
+const PostTeamListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
-  const { teams, selectedTeam } = useTeams(); // useTeams에서 teams와 selectedTeam 가져오기
+  const { teamId } = useParams();
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -45,12 +45,12 @@ const PostListPage = ({ isSmallScreen }) => {
   }, [location.pathname]);
 
   const fetchPosts = async (reset = false) => {
-    if (!boardType || !selectedTeam) return;
+    if (!boardType || !teamId) return;
 
     try {
       const params = {
         limit: 10,
-        teamId: selectedTeam.PK, // 현재 선택된 팀의 PK를 teamId로 사용
+        teamId: teamId, // 현재 선택된 팀의 PK를 teamId로 사용
       };
 
       if (!reset && lastEvaluatedKeys[curPage - 1]) {
@@ -67,7 +67,7 @@ const PostListPage = ({ isSmallScreen }) => {
         if (filterTab === "모집완료") params.recruitStatus = "true";
       }
 
-      const url = `${getCommunityApi()}/${boardType}`; // 동적 API 경로 설정
+      const url = `${getCommunityApi()}/team-questions`; // 동적 API 경로 설정
       const response = await axios.get(url, { params });
 
       const items = response.data.items || [];
@@ -83,7 +83,7 @@ const PostListPage = ({ isSmallScreen }) => {
   useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardType, filterTab, curPage, selectedTeam]);
+  }, [boardType, filterTab, curPage, teamId]);
 
   const handleFilterChange = (filter) => {
     if (filterTab === filter) return;
@@ -450,9 +450,10 @@ const PostListPage = ({ isSmallScreen }) => {
       <PostCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}
+        teamId={teamId}
       />
     </Box>
   );
 };
 
-export default PostListPage;
+export default PostTeamListPage;

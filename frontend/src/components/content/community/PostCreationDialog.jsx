@@ -6,9 +6,9 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import PostCreationPage from "../../../pages/community/PostCreationPage.jsx";
+import PostTeamCreationPage from "../../../pages/community/PostTeamCreationPage";
 
-const PostCreationDialog = ({ open, onClose }) => {
+const PostCreationDialog = ({ open, onClose, teamId }) => {
   const [isDraft, setIsDraft] = useState(false); // 작성 상태
   const [showWarning, setShowWarning] = useState(false); // 경고 모달 상태
   const [isSubmitting, setIsSubmitting] = useState(false); // 등록 중 상태
@@ -76,10 +76,11 @@ const PostCreationDialog = ({ open, onClose }) => {
       >
         <DialogContent>
           {/* PostCreationPage 컴포넌트로 작성 상태 전달 */}
-          <PostCreationPage
+          <PostTeamCreationPage
             onCancel={handleCancel}
             setIsDraft={setIsDraft}
             onSubmit={handleSubmit}
+            teamId={teamId}
           />
         </DialogContent>
       </Dialog>
