@@ -8,7 +8,6 @@ import {
   Grid,
   IconButton, useTheme
 } from '@mui/material';
-import {AgGridReact} from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import * as echarts from 'echarts';
@@ -16,16 +15,17 @@ import Layout from './UserProfileLayout.jsx';
 import useUserEmail from "../../../hooks/user/UseUserEmail.jsx";
 import {formatFileSize} from "../../../utils/fileFormatUtils.js";
 import {getStorageApi} from "../../../utils/apiConfig.js";
-import {
-  handleFileDelete,
-  handleFileDownload
-} from "../../../utils/storage/utilities.js";
 import SnackbarAlert from "../../../components/storage/SnackBarAlert.jsx";
-import DownloadIcon from "@mui/icons-material/Download";
-import DeleteIcon from "@mui/icons-material/Delete";
+import UserFileTable from "../../../components/storage/UserFileTable.jsx";
+import DownloadLogsTable
+  from "../../../components/storage/UserDownloadLogsTable.jsx";
+import DeleteLogsTable
+  from "../../../components/storage/UserDeleteLogsTable.jsx";
 
 const UserStorageUsageRenewed = () => {
-  const [gridData, setGridData] = useState([]);
+  const [fileData, setFileData] = useState([]);
+  const [downloadLogs, setDownloadLogs] = useState([]);
+  const [deleteLogs, setDeleteLogs] = useState([]);
   const {email, error: emailError} = useUserEmail();
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState(0);
@@ -37,31 +37,59 @@ const UserStorageUsageRenewed = () => {
   });
   const theme = useTheme();
 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // API 호출을 통해 유저 사용량 및 파일 목록 받아오기
-        const response = await axios.get(`${getStorageApi()}/get-user-usage`, {
-          params: {userEmail: email},
-        });
-        const files = response.data;
+  const fetchFileData = async () => {
+    setLoading(true);
+    try {
+      // API 호출을 통해 유저 사용량 및 파일 목록 받아오기
+      const response = await axios.get(`${getStorageApi()}/get-user-usage`, {
+        params: {userEmail: email},
+      });
+      const files = response.data;
 
-        // 파일 데이터 업데이트
-        setGridData(files);
+      // 파일 데이터 업데이트
+      setFileData(files);
 
-        // 사용량 계산: 모든 파일의 크기를 합산
-        const totalUsage = files.reduce((sum, file) => sum + file.fileSize, 0);
-        setUsage(totalUsage);
-      } catch (error) {
-        setUsageError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // 사용량 계산: 모든 파일의 크기를 합산
+      const totalUsage = files.reduce((sum, file) => sum + file.fileSize, 0);
+      setUsage(totalUsage);
+    } catch (error) {
+      setUsageError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDownloadLogs = async () => {
+    try {
+      const response = await axios.post(`${getStorageApi()}/get-user-download-logs`, {
+        userEmail: email,
+      });
+      setDownloadLogs(response.data);
+    } catch (error) {
+      console.error('Error fetching download logs:', error);
+    }
+  };
+
+  const fetchDeleteLogs = async () => {
+    try {
+      const response = await axios.post(`${getStorageApi()}/get-user-delete-logs`, {
+        uploaderEmail: email,
+      });
+      setDeleteLogs(response.data);
+    } catch (error) {
+      console.error('Error fetching delete logs:', error);
+    }
+  };
+
 
   useEffect(() => {
     if (email) {
-      fetchData();
+      fetchFileData();
+      fetchDownloadLogs();
+      fetchDeleteLogs();
+
+      console.log(fileData);
+      console.log(deleteLogs);
     }
   }, [email]);
 
@@ -101,61 +129,6 @@ const UserStorageUsageRenewed = () => {
     setSnackbar({...snackbar, open: false});
   };
 
-  const columnDefs = [
-    {
-      headerName: '파일 이름',
-      field: 'originalFileName',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '다운로드 수',
-      field: 'downloadCount',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '파일 크기',
-      field: 'fileSize',
-      sortable: true,
-      filter: true,
-      valueFormatter: ({value}) => formatFileSize(value)
-    },
-    {headerName: '올린 시간', field: 'createdAt', sortable: true, filter: true},
-    {headerName: '확장자', field: 'extension', sortable: true, filter: true},
-    {
-      headerName: '작업',
-      field: "작업",
-      cellRenderer: (params) => {
-        const {fileKey, originalFileName, userEmail} = params.data;
-        return (
-            <Box>
-              <IconButton
-                  aria-label="download"
-                  variant="contained"
-                  size="small"
-                  onClick={() => handleFileDownload(fileKey,
-                      originalFileName,setSnackbar)}
-                  sx={{marginRight: 1, color:theme.palette.success.main}}
-              >
-                <DownloadIcon/>
-              </IconButton>
-              <IconButton
-                  aria-label="delete"
-                  variant="contained"
-                  sx={{ color:theme.palette.warning.main}}
-                  size="small"
-                  onClick={() => handleFileDelete(fileKey, userEmail,
-                      userEmail, setSnackbar, fetchData)}
-              >
-                <DeleteIcon/>
-              </IconButton>
-            </Box>
-        )
-      }
-    }
-  ];
-
   return (
       <Layout>
         <Box sx={{padding: 1}}>
@@ -173,22 +146,22 @@ const UserStorageUsageRenewed = () => {
 
           {/* 전체 레이아웃 그리드 */}
           <Grid container spacing={3}>
-            {/* 좌측 - AG Grid 테이블 */}
-            <Grid item xs={8}>
-              <Box sx={{height: '100%'}}>
-                <div className="ag-theme-alpine"
-                     style={{height: '500px', width: '100%'}}>
-                  <AgGridReact
-                      rowData={gridData}
-                      columnDefs={columnDefs}
-                      pagination={true}
-                      paginationPageSize={10}
-                      paginationPageSizeSelector={[10, 20, 50, 100]}
-                      domLayout="autoHeight"
-                  />
-                </div>
-              </Box>
-            </Grid>
+
+            <Typography variant="h6" sx={{ marginTop: 4 }}>
+              파일 관리
+            </Typography>
+            <UserFileTable fetchData={fetchFileData} gridData={fileData}
+                           setSnackbar={setSnackbar}
+                           theme={theme}></UserFileTable>
+            <Typography variant="h6" sx={{ marginTop: 4 }}>
+              다운로드 기록
+            </Typography>
+            <DownloadLogsTable gridData={downloadLogs} />
+
+            <Typography variant="h6" sx={{ marginTop: 4 }}>
+              삭제 기록
+            </Typography>
+            <DeleteLogsTable gridData={deleteLogs} />
 
             {/* 우측 상단 - 게이지 차트 */}
             <Grid item xs={4}>
@@ -211,7 +184,7 @@ const UserStorageUsageRenewed = () => {
                   ) : (
                       <>
                         <Typography variant="body2" sx={{marginBottom: 1}}>
-                          <strong>총 파일 수:</strong> {gridData.length}
+                          <strong>총 파일 수:</strong> {fileData.length}
                         </Typography>
                         <Typography variant="body2" sx={{marginBottom: 1}}>
                           <strong>총 용량:</strong> 5GB
