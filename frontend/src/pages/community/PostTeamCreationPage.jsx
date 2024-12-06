@@ -287,7 +287,6 @@ const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
         tags,
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
-      console.log(`data: ${JSON.stringify(data)}`);
 
       const url = `${getCommunityApi()}/teams/new-question-post`;
       const response = await axios.post(url, data);
@@ -301,7 +300,6 @@ const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
       }
     } catch (error) {
-      console.error("Error during post submission:", error);
       alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };

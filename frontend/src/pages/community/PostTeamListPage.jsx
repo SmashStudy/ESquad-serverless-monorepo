@@ -44,13 +44,10 @@ const PostTeamListPage = ({ isSmallScreen }) => {
         params.resolved = "false";
       } else if (filterTab === "해결됨") {
         params.resolved = "true";
-      } 
-
-      console.log(`params: ${JSON.stringify(params)}`);
+      }
 
       const url = `${getCommunityApi()}/team-questions`;
       const response = await axios.get(url, { params });
-      console.log(`data: ${JSON.stringify(response)}`);
 
       const items = response.data.items || [];
 
@@ -75,7 +72,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
     setCurPage(1);
     setPosts([]);
     setLastEvaluatedKeys([]);
-    fetchPosts(true); // 새로 데이터를 가져옵니다.
+    fetchPosts(true);
   };
 
   const handlePageChange = (direction) => {
@@ -88,7 +85,6 @@ const PostTeamListPage = ({ isSmallScreen }) => {
 
   const handleWriteButtonClick = () => setIsPostModalOpen(true);
 
-  // 게시글 등록 후 해당 게시판으로 렌더링
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
     setCurPage(1); // 페이지를 첫 페이지로 초기화

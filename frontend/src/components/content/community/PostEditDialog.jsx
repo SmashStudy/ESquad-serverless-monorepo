@@ -13,7 +13,7 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../../utils/apiConfig";
-import QuillEditor from "../../../utils/QuillEditor"; // QuillEditor 임포트
+import QuillEditor from "../../../utils/QuillEditor";
 
 const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
   const { boardType, postId } = useParams();
@@ -135,7 +135,6 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
         <Typography variant="subtitle1" sx={{ marginTop: 2, marginBottom: 1 }}>
           내용
         </Typography>
-        {/* QuillEditor 적용 */}
         <QuillEditor
           value={content}
           onChange={setContent}

@@ -13,7 +13,6 @@ const TeamCreationDialog = ({ open, onClose, teamId }) => {
   const [showWarning, setShowWarning] = useState(false); // 경고 모달 상태
   const [isSubmitting, setIsSubmitting] = useState(false); // 등록 중 상태
 
-  // 모달 상태 초기화
   useEffect(() => {
     if (!open) {
       setIsDraft(false);
@@ -22,36 +21,29 @@ const TeamCreationDialog = ({ open, onClose, teamId }) => {
     }
   }, [open]);
 
-  // 취소 버튼 클릭 시 동작
   const handleCancel = () => {
     if (!isSubmitting && isDraft) {
-      setShowWarning(true); // 경고 모달 표시
+      setShowWarning(true);
     } else if (!isSubmitting) {
-      onClose(); // 모달 닫기
+      onClose();
     }
   };
 
-  // 경고 모달에서 "나가기" 클릭 시
   const handleLeave = () => {
     setShowWarning(false);
     setIsDraft(false);
     onClose();
   };
 
-  // 경고 모달에서 "계속 작성" 클릭 시
   const handleKeepWriting = () => {
     setShowWarning(false);
   };
 
-  // 등록 버튼 클릭 시 동작
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      // TODO: 등록 처리 로직 추가 (API 호출 등)
-      console.log(`Submitting post for teamId: ${teamId}`);
       onClose(); // 등록 완료 후 모달 닫기
     } catch (error) {
-      console.error("등록 중 오류 발생:", error);
       alert("등록 중 오류가 발생했습니다. 다시 시도해 주세요.");
     } finally {
       setIsSubmitting(false);
@@ -75,7 +67,6 @@ const TeamCreationDialog = ({ open, onClose, teamId }) => {
         }}
       >
         <DialogContent>
-          {/* PostTeamCreationPage 컴포넌트로 상태 전달 */}
           <PostTeamCreationPage
             onCancel={handleCancel}
             setIsDraft={setIsDraft}
