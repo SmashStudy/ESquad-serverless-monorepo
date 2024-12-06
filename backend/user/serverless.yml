@@ -24,6 +24,8 @@ provider:
             - "cognito-idp:ListUsers"
             - cognito-idp:AdminEnableUser 
             - cognito-idp:AdminDisableUser
+            - cognito-idp:AdminListGroupsForUser
+            - cognito-idp:AdminRemoveUserFromGroup
           Resource:
             - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
         
@@ -58,6 +60,18 @@ functions:
       - http:
           path: admin
           method: get
+          cors: true
+    
+  adminGroupHandler:
+    handler: src/admingroup.handler
+    events:
+      - http:
+          path: admin/group/add
+          method: post
+          cors: true
+      - http:
+          path: admin/group/remove
+          method: post
           cors: true
 
   signup:
@@ -189,6 +203,9 @@ functions:
             type: REQUEST
             name: authorizer # 연결된 Authorizer 함수
           cors: true
+
+  triggerUserEntryPoint:
+    handler: src/triggerUserEntryPoint.handler
   
 
 resources:
@@ -323,3 +340,9 @@ package:
 useDotenv: true
 plugins:
   - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 1

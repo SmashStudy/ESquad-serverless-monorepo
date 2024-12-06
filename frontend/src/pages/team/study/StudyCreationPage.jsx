@@ -1,35 +1,47 @@
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material';
+import { useNavigate, useParams } from "react-router-dom";
+import { createStudy } from '../../../utils/team/studyApi.js';
 import {
     Box,
     Button,
     Typography,
     TextField,
-    Grid,
+    Grid2,
     FormControl,
     Select,
     MenuItem,
-    Divider
+    Divider,
+    Alert,
+    Snackbar
 } from '@mui/material';
-import { useTheme } from '@mui/material';
-import dayjs from 'dayjs';
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+
+const AlertDayOptions = [
+    { label: "Monday", value: 0 },
+    { label: "Tuesday", value: 1 },
+    { label: "Wednesday", value: 2 },
+    { label: "Thursday", value: 3 },
+    { label: "Friday", value: 4 },
+    { label: "Saturday", value: 5 },
+    { label: "Sunday", value: 6 },
+];
 
 const StudyCreationPage = ({ onCancel, selectedBook }) => {
-    const param = useParams();
+    const navigate = useNavigate(); 
     const theme = useTheme();
+    
+    const { teamId } = useParams();
 
+    const [reminds, setReminds] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const [formData, setFormData] = useState({
-        studyPageName: "",
+        studyName: "",
         startDate: "",
         endDate: "",
         description: "",
     });
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [reminds, setReminds] = useState([]);
-    const userIds = ["", ""]; // 사용자 ID 배열
-    const navigate = useNavigate(); // useNavigate 훅 사용
     const handleChange = (field, value) => {
         setFormData((prevState) => ({
             ...prevState,
@@ -51,19 +63,38 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 폼 제출 이벤트 방지
-
+        e.preventDefault();
+        await onCreate();
     };
 
-    const AlertDayOptions = [
-        { label: "Monday", value: 0 },
-        { label: "Tuesday", value: 1 },
-        { label: "Wednesday", value: 2 },
-        { label: "Thursday", value: 3 },
-        { label: "Friday", value: 4 },
-        { label: "Saturday", value: 5 },
-        { label: "Sunday", value: 6 },
-    ];
+    const onCreate = async () => {
+        try {
+            const bookDto = {
+                isbn: selectedBook.isbn,
+                title: selectedBook.maintitle,
+                authors: selectedBook.authors,
+                publisher: selectedBook.publisher,
+                publishedDate: selectedBook.publishedDate,
+                imgPath: selectedBook.imgPath
+            };
+            const studyData = { 
+                studyInfo: formData,
+            };
+            const response = await createStudy(encodeURIComponent(teamId), bookDto, studyData);
+            const { PK } = response.body || {};
+            if (!PK) throw new Error("스터디 생성에 실패했습니다.");
+
+            setSnackbarMessage("스터디가 성공적으로 생성되었습니다.");
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate('/');
+                window.location.reload();
+            }, 2000);
+
+        } catch (error) {
+            console.error("Error creating study:", error.message);
+        }
+    };
 
     return (
         <Box
@@ -82,9 +113,9 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
             }}
         >
             {/* Book Details Section */}
-            <Grid container spacing={4} sx={{ mb: 2 }}>
+            <Grid2 container spacing={4} sx={{ mb: 2 }}>
                 {/* Book Image Column */}
-                <Grid item xs={12} md={4}>
+                <Grid2 item xs={12} md={4}>
                     <Box
                         component="img"
                         src={selectedBook.imgPath}
@@ -96,12 +127,12 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                             border: '1px solid #ddd',
                         }}
                     />
-                </Grid>
+                </Grid2>
 
                 {/* Book Info Column */}
-                <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Grid2 item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
-                        {selectedBook.subtitle}
+                        {selectedBook.maintitle}
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                         {selectedBook.authors}
@@ -118,20 +149,20 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                         스터디 설정
                     </Typography>
                     <TextField
-                        value={formData.studyPageName}
-                        onChange={(e) => handleChange("studyPageName", e.target.value)}
+                        value={formData.studyName}
+                        onChange={(e) => handleChange("studyName", e.target.value)}
                         fullWidth
                         size='small'
                         label="스터디 페이지 이름을 작성해주세요"
                         variant="outlined"
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
 
             {/* Study Creation Form */}
-            <Grid container spacing={4}>
+            <Grid2 container spacing={4}>
                 {/* Study Duration Column */}
-                <Grid item xs={12} md={6}>
+                <Grid2 item xs={12} md={6}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 기간
                     </Typography>
@@ -142,7 +173,7 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                             size="small"
                             type="date"
                             variant="outlined"
-                            sx={{ width: '100%'}}
+                            sx={{ width: '100%' }}
                         />
                         <Typography variant="h6">~</Typography>
                         <TextField
@@ -154,10 +185,10 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                             sx={{ width: '100%' }}
                         />
                     </Box>
-                </Grid>
+                </Grid2>
 
                 {/* Study Schedule Section */}
-                <Grid item xs={12} md={6}>
+                <Grid2 item xs={12} md={6}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 요일 및 시간
                     </Typography>
@@ -188,10 +219,10 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                     <Button onClick={handleAddRemind} variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Add Reminder
                     </Button>
-                </Grid>
+                </Grid2>
 
                 {/* Study Introduction Column */}
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 페이지 개요
                     </Typography>
@@ -204,8 +235,8 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                         variant="outlined"
                         placeholder="스터디 페이지를 소개하는 내용을 입력해주세요"
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
 
             {/* Action Buttons */}
             <Box
@@ -223,6 +254,18 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
                     생성
                 </Button>
             </Box>
+
+            {/* Snackbar */}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </Box>
     );
 };

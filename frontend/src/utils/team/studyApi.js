@@ -12,8 +12,8 @@ const studyApi = axios.create({
 
 // 스터디 생성
 export const createStudy = async (teamId, bookDto, studyData) => {
-  const response = await studyApi.post(`${teamId}/study/create`, bookDto, studyData);
-  return JSON.parse(response.data.body)
+  const response = await studyApi.post(`${teamId}/study/create`, {bookDto, studyData});
+  return response.data;
 };
 
 // 스터디 목록 조회
