@@ -146,7 +146,7 @@ functions:
     events:
       - http:
           path: /{boardType}/{postId}/resolved
-          method: put
+          method: PUT
           cors: true
 
 resources:

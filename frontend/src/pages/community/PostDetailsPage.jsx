@@ -76,7 +76,7 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  const toggleStatus = async () => {
+  const toggleResolvedStatus = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
@@ -84,26 +84,13 @@ const PostDetailsPage = () => {
         return;
       }
 
-      let updatedField = {};
-      let successMessage = "";
+      // 현재 resolved 상태를 반전
+      const updatedResolved = !post.resolved;
 
-      if (boardType === "team-recruit") {
-        // 스터디 모집 게시판의 recruitStatus 필드 업데이트
-        updatedField = { recruitStatus: !post.recruitStatus };
-        successMessage = `게시글이 ${
-          !post.recruitStatus ? "모집완료" : "모집중"
-        }으로 설정되었습니다.`;
-      } else {
-        // 다른 게시판 (질문 게시판)의 resolved 필드 업데이트
-        updatedField = { resolved: !post.resolved };
-        successMessage = `게시글이 ${
-          !post.resolved ? "해결됨" : "미해결"
-        }으로 설정되었습니다.`;
-      }
-
+      // API 호출
       const response = await axios.put(
-        `${getCommunityApi()}/${boardType}/${postId}/status`,
-        updatedField, // 업데이트 필드
+        `${getCommunityApi()}/${boardType}/${postId}/resolved`,
+        { resolved: post.resolved }, // 현재 상태를 보내 서버에서 처리
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { createdAt },
@@ -114,9 +101,13 @@ const PostDetailsPage = () => {
         // 서버에서 반환된 데이터로 상태 업데이트
         setPost((prevPost) => ({
           ...prevPost,
-          ...updatedField,
+          resolved: updatedResolved,
         }));
-        alert(successMessage);
+        alert(
+          `게시글이 ${
+            updatedResolved ? "해결됨" : "미해결"
+          }으로 설정되었습니다.`
+        );
       } else {
         throw new Error("서버에서 예상치 못한 응답이 반환되었습니다.");
       }
@@ -580,16 +571,8 @@ const PostDetailsPage = () => {
         {post.writer?.email === currentUser?.email && (
           <Button
             variant="contained"
-            color={
-              boardType === "team-recruit"
-                ? post.recruitStatus
-                  ? "success"
-                  : "secondary"
-                : post.resolved
-                ? "success"
-                : "secondary"
-            }
-            onClick={toggleStatus}
+            color={post.resolved ? "success" : "secondary"} // 상태에 따른 색상 변경
+            onClick={toggleResolvedStatus} // 버튼 클릭 시 함수 호출
             sx={{
               textTransform: "none",
               fontWeight: "bold",
@@ -597,13 +580,7 @@ const PostDetailsPage = () => {
               borderRadius: "16px",
             }}
           >
-            {boardType === "team-recruit"
-              ? post.recruitStatus
-                ? "모집완료"
-                : "모집중"
-              : post.resolved
-              ? "해결됨"
-              : "미해결"}
+            {post.resolved ? "해결됨" : "미해결"} {/* 버튼 텍스트 변경 */}
           </Button>
         )}
 

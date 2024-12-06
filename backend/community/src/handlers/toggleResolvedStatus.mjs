@@ -7,39 +7,23 @@ export const handler = async (event) => {
   try {
     const { postId } = event.pathParameters;
     const { createdAt } = event.queryStringParameters;
-    const { resolved, recruitStatus } = JSON.parse(event.body); // resolved, recruitStatus 모두 받음
-    const { boardType } = event.queryStringParameters; // boardType 추가 확인
+    const { resolved } = JSON.parse(event.body);
 
     // 필수 파라미터 검증
-    if (!postId || !createdAt || !boardType) {
+    if (!postId || !createdAt) {
       return createResponse(400, {
-        message: "Missing required parameters: postId, createdAt, or boardType",
+        message: "Missing required parameters: postId or createdAt",
       });
     }
 
-    let updateField, currentValue, updatedValue;
-
-    if (boardType === "team-recruit") {
-      // 스터디 모집 게시판의 경우 recruitStatus 업데이트
-      if (recruitStatus === undefined) {
-        return createResponse(400, {
-          message: "The recruitStatus field is required for team-recruit.",
-        });
-      }
-      updateField = "recruitStatus";
-      currentValue = recruitStatus;
-      updatedValue = !recruitStatus;
-    } else {
-      // 다른 게시판 (예: 질문 게시판)의 경우 resolved 업데이트
-      if (resolved === undefined) {
-        return createResponse(400, {
-          message: "The resolved field is required for this board type.",
-        });
-      }
-      updateField = "resolved";
-      currentValue = resolved;
-      updatedValue = !resolved;
+    if (resolved === undefined) {
+      return createResponse(400, {
+        message: "The resolved field is required.",
+      });
     }
+
+    // resolved 값을 반전하여 업데이트할 값 정의
+    const updatedResolved = !resolved;
 
     // DynamoDB UpdateItemCommand 파라미터 정의
     const params = {
@@ -48,13 +32,13 @@ export const handler = async (event) => {
         PK: { S: `POST#${postId}` },
         SK: { S: createdAt },
       },
-      UpdateExpression: `SET #${updateField} = :updatedValue, #updatedAt = :updatedAt`,
+      UpdateExpression: "SET #resolved = :resolved, #updatedAt = :updatedAt",
       ExpressionAttributeNames: {
-        [`#${updateField}`]: updateField,
+        "#resolved": "resolved",
         "#updatedAt": "updatedAt",
       },
       ExpressionAttributeValues: {
-        ":updatedValue": { S: updatedValue.toString() }, // Boolean -> String 변환
+        ":resolved": { S: updatedResolved.toString() }, // Boolean -> String 변환
         ":updatedAt": { S: new Date().toISOString() },
       },
       ReturnValues: "ALL_NEW",
@@ -65,18 +49,18 @@ export const handler = async (event) => {
     // DynamoDB에 업데이트 수행
     const data = await ddbClient.send(new UpdateItemCommand(params));
 
-    // 응답 데이터 처리
+    // 응답 데이터를 Boolean으로 변환
     const updatedPost = {
-      [updateField]: data.Attributes?.[updateField]?.S === "true", // String -> Boolean 변환
+      resolved: data.Attributes?.resolved?.S === "true", // String -> Boolean 변환
       updatedAt: data.Attributes?.updatedAt?.S,
     };
 
     return createResponse(200, {
-      message: `Post ${updateField} status updated successfully.`,
+      message: "Post resolved status updated successfully.",
       updatedPost,
     });
   } catch (error) {
-    console.error("Error updating post status:", error);
+    console.error("Error updating resolved status:", error);
     return createResponse(500, {
       message: "Internal server error",
       error: error.message,
