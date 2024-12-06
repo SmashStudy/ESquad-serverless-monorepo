@@ -35,7 +35,7 @@ const UserStorageUsageRenewed = () => {
     message: '',
     severity: 'success',
   });
-  const [currentTab, setCurrentTab] = useState();
+  const [currentTab, setCurrentTab] = useState(0);
   const theme = useTheme();
   const MAX_USAGE = 5 * 1024 * 1024 * 1024; // 5GB
 
@@ -95,8 +95,6 @@ const UserStorageUsageRenewed = () => {
       fetchDownloadLogs();
       fetchDeleteLogs();
 
-      console.log(fileData);
-      console.log(deleteLogs);
     }
   }, [email]);
 
@@ -215,9 +213,9 @@ const UserStorageUsageRenewed = () => {
               </Card>
             </Grid>
 
-
             <Grid item xs={8}>
-              <Tabs value={currentTab} onChange={handleTabChange} sx={{marginBottom: 3}}>
+              <Tabs value={currentTab} onChange={handleTabChange}
+                    sx={{marginBottom: 3}}>
                 <Tab label="파일 관리"></Tab>
                 <Tab label="다운로드 기록"></Tab>
                 <Tab label="삭제 기록"></Tab>
@@ -236,24 +234,6 @@ const UserStorageUsageRenewed = () => {
                   <DeleteLogsTable gridData={deleteLogs}/>
               )}
             </Grid>
-
-            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
-            {/*  파일 관리*/}
-            {/*</Typography>*/}
-            {/*<UserFileTable fetchData={fetchFileData} gridData={fileData}*/}
-            {/*               setSnackbar={setSnackbar}*/}
-            {/*               theme={theme}></UserFileTable>*/}
-            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
-            {/*  다운로드 기록*/}
-            {/*</Typography>*/}
-            {/*<DownloadLogsTable gridData={downloadLogs}/>*/}
-
-            {/*<Typography variant="h6" sx={{marginTop: 4}}>*/}
-            {/*  삭제 기록*/}
-            {/*</Typography>*/}
-            {/*<DeleteLogsTable gridData={deleteLogs}/>*/}
-
-
           </Grid>
         </Box>
       </Layout>
