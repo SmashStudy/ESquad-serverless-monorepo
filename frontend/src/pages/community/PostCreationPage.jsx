@@ -11,7 +11,11 @@ import {
 import { useTheme } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { getCommunityApi, getUserApi } from "../../utils/apiConfig";
+import {
+  getCommunityApi,
+  getUserApi,
+  getStorageApi,
+} from "../../utils/apiConfig";
 import QuillEditor from "../../utils/QuillEditor";
 
 const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
@@ -175,18 +179,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const { key, ...restProps } = getTagProps({ index });
-                return (
-                  <Chip
-                    key={`tag-${index}`} // 명시적으로 key 설정
-                    variant="outlined"
-                    size="small"
-                    label={option}
-                    {...restProps} // 나머지 props 전달
-                  />
-                );
-              })
+              value.map((option, index) => (
+                <Chip
+                  key={`tag-${index}`}
+                  variant="outlined"
+                  size="small"
+                  label={option}
+                  {...getTagProps({ index })}
+                />
+              ))
             }
             renderInput={(params) => (
               <TextField
@@ -202,7 +203,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                     borderBottom: "1px solid #ccc",
                   },
                   "& .MuiInput-underline:after": {
-                    borderBottom: "none", //
+                    borderBottom: "none",
                   },
                   "&:hover .MuiInput-underline:before": {
                     borderBottom: "1px solid #ccc",
@@ -239,21 +240,68 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       alert("내용을 입력해주세요.");
       return;
     }
+
     try {
-      const url = `${getCommunityApi()}/${boardType}`;
+      const base64Images = [];
+      const updatedContent = content.replace(
+        /<img\s+src="data:image\/(png|jpeg|jpg);base64,([^"]+)"[^>]*>/g,
+        (match, type, data) => {
+          const fileName = `${Date.now()}.${type}`;
+          base64Images.push({ fileName, data });
+          return `<img data-file="${fileName}" />`;
+        }
+      );
+
+      // Upload images to S3
+      const imageUploadPromises = base64Images.map(async (image) => {
+        const presignedUrlResponse = await axios.post(
+          `${getStorageApi()}/presigned-url`,
+          {
+            fileName: image.fileName,
+            fileType: `image/${image.fileName.split(".").pop()}`,
+          }
+        );
+
+        const { uploadURL, imageUrl } = presignedUrlResponse.data;
+        const binaryData = atob(image.data);
+        const arrayBuffer = new Uint8Array(binaryData.length);
+
+        for (let i = 0; i < binaryData.length; i++) {
+          arrayBuffer[i] = binaryData.charCodeAt(i);
+        }
+
+        await axios.put(uploadURL, arrayBuffer, {
+          headers: {
+            "Content-Type": `image/${image.fileName.split(".").pop()}`,
+          },
+        });
+
+        return { fileName: image.fileName, imageUrl };
+      });
+
+      const uploadedImages = await Promise.all(imageUploadPromises);
+
+      let finalContent = updatedContent;
+      uploadedImages.forEach(({ fileName, imageUrl }) => {
+        finalContent = finalContent.replace(
+          `<img data-file="${fileName}" />`,
+          `<img src="${imageUrl}" />`
+        );
+      });
 
       const data = {
         title,
-        content,
+        content: finalContent,
         writer: {
           name: userInfo.name,
           nickname: userInfo.nickname,
           email: userInfo.email,
         },
-        tags: tags, // 태그가 없어도 빈 배열로 설정
+        tags,
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 
+      const url = `${getCommunityApi()}/${boardType}`;
       const response = await axios.post(url, data);
 
       if (response.status === 201) {
@@ -316,7 +364,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 7,
+          pt: 8,
         }}
       >
         <Button

@@ -26,6 +26,8 @@ import PostEditDialog from "../../components/content/community/PostEditDialog";
 import Tooltip from "@mui/material/Tooltip";
 import DOMPurify from "dompurify";
 import he from "he"; // npm install he
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const PostDetailsPage = () => {
   const { boardType, postId } = useParams();
@@ -432,7 +434,7 @@ const PostDetailsPage = () => {
       </Box>
 
       {/* 태그 표시 */}
-      <Box sx={{ mt: 1, mb: 2 }}>
+      <Box sx={{ mt: 2, mb: 2 }}>
         {post.tags && post.tags.length > 0 && (
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
             {post.tags.map((tag, index) => (
@@ -453,12 +455,40 @@ const PostDetailsPage = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 2,
+          mb: 1,
           color: "text.secondary",
         }}
       >
         <Box>
           <Typography variant="body2">
+            {post.recruitStatus && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "green",
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  mb: 1,
+                }}
+              >
+                ✔ 모집완료
+              </Typography>
+            )}
+            {post.resolved && (
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "primary.main",
+                  display: "flex",
+                  alignItems: "center",
+                  fontWeight: "bold",
+                  mb: 1,
+                }}
+              >
+                ✔ 해결된 질문
+              </Typography>
+            )}
             {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
             {post.updatedAt &&
               new Date(post.updatedAt).getTime() !==
@@ -488,17 +518,29 @@ const PostDetailsPage = () => {
           </Typography>
         </Typography>
       </Box>
-
-      <Button
-        startIcon={<ThumbUpIcon />}
-        onClick={handleLikePost}
+      <Box
         sx={{
-          color: likedByUser ? "primary.main" : "text.secondary",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          mb: 1,
         }}
       >
-        {post.likeCount}
-      </Button>
-      <Divider sx={{ marginBottom: 3 }} />
+        <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
+          <IconButton
+            onClick={handleLikePost}
+            sx={{
+              color: likedByUser ? "red" : "gray",
+              padding: "9px",
+            }}
+          >
+            {likedByUser ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </Tooltip>
+        <Typography variant="body2" sx={{ marginLeft: "0px" }}>
+          {post.likeCount}
+        </Typography>
+      </Box>
 
       <Paper
         elevation={2}
@@ -510,11 +552,26 @@ const PostDetailsPage = () => {
         }}
       >
         <div
-          style={{ fontSize: "1rem", lineHeight: 1.6 }}
+          className="content-container"
+          style={{
+            fontSize: "1rem",
+            lineHeight: 1.6,
+          }}
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(he.decode(post.content)), // HTML 엔터티 디코딩 후 렌더링
+            __html: DOMPurify.sanitize(he.decode(post.content)),
           }}
         />
+        <style>
+          {`
+      .content-container img {
+        max-width: 90%; 
+        max-height: 1000px; 
+        height: auto; 
+        display: block; 
+        margin: 10px auto; 
+      }
+    `}
+        </style>
       </Paper>
 
       <Typography variant="h6" fontWeight="bold" mb={2}>

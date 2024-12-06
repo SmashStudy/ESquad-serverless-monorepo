@@ -19,3 +19,22 @@ export const createStudy = async (event) => {
         return createResponse(500, { error: "Failed to create study page" });
     }
 };
+
+// 팀의 Study 페이지 목록 조회
+export const getStudyList = async (event) => {
+    const { teamId, studyId } = event.pathParameters || {};
+
+    if (!teamId || !studyId) {
+        throw new Error("Missing required parameters: teamId and studyId");
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(teamId) || !/^[a-zA-Z0-9_-]+$/.test(studyId)) {
+        throw new Error("Invalid parameter format");
+    }
+    try {
+        const studyList = await studyService.getStudyList(teamId);
+        return createResponse(200, studyList );
+    } catch (error) {
+        console.error("Error fetching study pages:", error);
+        return createResponse(500, { error: "Failed to fetch study pages" });
+    }
+};
