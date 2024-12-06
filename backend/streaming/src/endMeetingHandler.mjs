@@ -1,5 +1,6 @@
 import { CORS_HEADERS, handleOptions } from './corsConfig.mjs';
 import { deleteMeeting } from './deleteMeeting.mjs';
+import { updateParticipantUsage } from './updateParticipantUsage.mjs';
 
 export const handler = async (event) => {
   // 프리플라이트(OPTIONS) 요청 처리
@@ -8,7 +9,7 @@ export const handler = async (event) => {
   }
 
   try {
-    const { title, participant } = JSON.parse(event.body);
+    const { title, participant, userEmail } = JSON.parse(event.body);
 
     if (!title) {
       return {
@@ -28,8 +29,16 @@ export const handler = async (event) => {
 
     console.log("Ending meeting for title:", title, "with participant:", participant);
 
-    // participant를 전달하여 삭제 조건 적용
-    const response = await deleteMeeting(title, participant);
+
+    const response = "";
+
+// participant를 전달하여 삭제 조건 적용
+    if (participant === "1") {
+        response = await deleteMeeting(title, participant);
+    }else{
+        response = await updateParticipantUsage(title, userEmail);
+    }
+
 
     return {
       statusCode: 200,
