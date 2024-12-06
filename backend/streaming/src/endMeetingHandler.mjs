@@ -3,35 +3,46 @@ import { deleteMeeting } from './deleteMeeting.mjs';
 
 export const handler = async (event) => {
   // 프리플라이트(OPTIONS) 요청 처리
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return handleOptions();
   }
 
   try {
-    const { title } = JSON.parse(event.body);
+    const { title, participant } = JSON.parse(event.body);
 
     if (!title) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ message: 'Title is required' })
+        body: JSON.stringify({ message: "Title is required" }),
       };
     }
 
-    const response = await deleteMeeting(title);
+    if (!participant) {
+      return {
+        statusCode: 400,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ message: "Participant is required" }),
+      };
+    }
+
+    console.log("Ending meeting for title:", title, "with participant:", participant);
+
+    // participant를 전달하여 삭제 조건 적용
+    const response = await deleteMeeting(title, participant);
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify(response)
+      body: JSON.stringify(response),
     };
   } catch (error) {
     return {
-      statusCode: error.message === 'Meeting not found' ? 404 : 500,
+      statusCode: error.message === "Meeting not found" ? 404 : 500,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: error.message === 'Meeting not found' ? 'Meeting not found' : 'Internal Server Error',
-        error: error.message
+        message: error.message === "Meeting not found" ? "Meeting not found" : "Internal Server Error",
+        error: error.message,
       }),
     };
   }
