@@ -45,7 +45,7 @@ functions:
       - http:
           path: /upload-file
           method: post
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   getFile:
     handler: src/handlers/getFile.handler
@@ -53,7 +53,7 @@ functions:
       - http:
           path: /{fileKey}
           method: get
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   getAllFiles:
     handler: src/handlers/getAllFiles.handler
@@ -61,7 +61,7 @@ functions:
       - http:
           path: /admin/metadata
           method: get
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   fetchFiles:
     handler: src/handlers/fetchFiles.handler
@@ -69,7 +69,7 @@ functions:
       - http:
           path: /metadata
           method: get
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   getUserFiles:
     handler: src/handlers/getUserFiles.handler
@@ -77,7 +77,7 @@ functions:
       - http:
           path: /get-user-usage
           method: get
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   downloadFile:
     handler: src/handlers/downloadFile.handler
@@ -85,7 +85,7 @@ functions:
       - http:
           path: /metadata/{fileKey}
           method: patch
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   deleteFile:
     handler: src/handlers/deleteFile.handler
@@ -93,7 +93,7 @@ functions:
       - http:
           path: /{fileKey}
           method: delete
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   # 로깅용
   getLogsByAction:
@@ -102,7 +102,7 @@ functions:
       - http:
           path: /admin/logs/{action}
           method: get
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   getUserDeleteLogs:
     handler: src/handlers/getUserDeleteLogs.handler
@@ -110,7 +110,7 @@ functions:
       - http:
           path: /get-user-delete-logs
           method: post
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   getUserDownloadLogs:
     handler: src/handlers/getUserDownloadLogs.handler
@@ -118,7 +118,7 @@ functions:
       - http:
           path: /get-user-download-logs
           method: post
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   # Quill 전용
   generatePresignedUrlForQuill:
@@ -127,7 +127,7 @@ functions:
       - http:
           path: /presigned-url
           method: post
-          cors: true
+          cors: ${self:custom.defaultCors}
 
   # Trigger
   updateFileMetadataNickname:
@@ -139,13 +139,13 @@ functions:
           batchSize: 5
           startingPosition: LATEST
 
-  storeFileMetadata: # Deprecated
-    handler: src/handlers/storeFileMetadata.handler
-    events:
-      - http:
-          path: /store-metadata
-          method: post
-          cors: true
+#  storeFileMetadata: # Deprecated
+#    handler: src/handlers/storeFileMetadata.handler
+#    events:
+#      - http:
+#          path: /store-metadata
+#          method: post
+#          cors: ${self:custom.defaultCors}
 
 
 
@@ -343,3 +343,10 @@ custom:
   prune:
     automatic: true
     number: 3
+
+  defaultCors:
+    origins: ${env:ALLOWED_ORIGIN}
+    headers:
+      - Content-Type
+      - Authorization
+    allowCredentials: true
