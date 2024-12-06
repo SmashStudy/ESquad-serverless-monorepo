@@ -43,7 +43,7 @@ export async function createMeetingAndAttendee(
   status: string
 ): Promise<MeetingResponse> {
   const body = {
-    title: encodeURIComponent(title),
+    title: title,
     attendeeName: attendeeName,
     region: encodeURIComponent(region),
     ns_es: String(echoReductionCapability),
@@ -99,9 +99,11 @@ export async function getAttendee(
 }
 
 
-export async function endMeeting(title: string): Promise<void> {
+export async function endMeeting(
+  title: string
+): Promise<void> {
   const body = {
-    title: encodeURIComponent(title),
+    title: title,
   };
 
   const res = await fetch(BASE_URL + 'stream/end', {
