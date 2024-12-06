@@ -4,6 +4,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TextField,
   Button,
   Box,
   Typography,
@@ -13,7 +14,6 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { getCommunityApi } from "../../../utils/apiConfig";
-import QuillEditor from "../../../utils/QuillEditor";
 
 const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
   const { boardType, postId } = useParams();
@@ -29,13 +29,44 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
     }
   }, [postDetails]);
 
-  const handleTagChange = (event, newValue, reason) => {
-    const uniqueTags = Array.from(new Set(newValue));
-    if (uniqueTags.length > 10) {
-      alert("태그는 최대 10개까지 추가할 수 있습니다.");
-      return;
+  // 태그 관련 함수
+  const handleTagKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      const newTag = event.target.value.trim();
+      if (!newTag) return;
+
+      if (tags.includes(newTag)) {
+        alert(`중복된 태그: "${newTag}"는 추가할 수 없습니다.`);
+        return;
+      }
+
+      if (tags.length >= 10) {
+        alert("태그는 최대 10개까지 추가할 수 있습니다.");
+        return;
+      }
+
+      setTags((prevTags) => [...prevTags, newTag]);
+      event.target.value = "";
     }
-    setTags(uniqueTags);
+  };
+
+  const handleTagChange = (event, newValue, reason) => {
+    if (reason === "clear") {
+      setTags([]);
+    } else if (
+      reason === "removeOption" ||
+      reason === "createOption" ||
+      reason === "selectOption"
+    ) {
+      const uniqueTags = Array.from(new Set(newValue));
+      if (uniqueTags.length > 10) {
+        alert("태그는 최대 10개까지 추가할 수 있습니다.");
+        return;
+      }
+      setTags(uniqueTags);
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -50,7 +81,7 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
       const updatedPost = {
         title,
         content,
-        tags: tags.length > 0 ? tags : [],
+        tags: tags.length > 0 ? tags : [], // tags가 비어있어도 포함
       };
 
       await axios.put(
@@ -68,7 +99,11 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
       );
 
       alert("게시글이 수정되었습니다.");
-      if (onUpdate) onUpdate(updatedPost);
+
+      if (onUpdate) {
+        onUpdate(updatedPost);
+      }
+
       handleClose();
     } catch (error) {
       console.error("게시글 수정 중 오류 발생:", error);
@@ -84,18 +119,13 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle1">제목</Typography>
-        <input
-          type="text"
+        <TextField
+          label="제목"
+          variant="outlined"
+          fullWidth
+          margin="dense"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: "20px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
         />
         <Typography variant="subtitle1" sx={{ marginTop: 2 }}>
           태그를 설정하세요 (최대 10개)
@@ -109,36 +139,39 @@ const PostEditDialog = ({ open, handleClose, postDetails, onUpdate }) => {
             handleTagChange(event, newValue, reason)
           }
           renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip
-                key={`tag-${index}`}
-                variant="outlined"
-                size="small"
-                label={option}
-                {...getTagProps({ index })}
-              />
-            ))
+            value.map((option, index) => {
+              const { key, ...restProps } = getTagProps({ index });
+              return (
+                <Chip
+                  key={`tag-${index}`}
+                  variant="outlined"
+                  size="small"
+                  label={option}
+                  {...restProps}
+                />
+              );
+            })
           }
           renderInput={(params) => (
-            <input
+            <TextField
               {...params}
-              placeholder="태그를 입력하세요"
-              style={{
-                width: "100%",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-              }}
+              size="small"
+              variant="standard"
+              placeholder="입력 후 엔터키를 누르면 태그가 생성됩니다."
+              onKeyDown={handleTagKeyDown}
+              sx={{ width: "100%", p: 1 }}
             />
           )}
         />
-        <Typography variant="subtitle1" sx={{ marginTop: 2, marginBottom: 1 }}>
-          내용
-        </Typography>
-        <QuillEditor
+        <TextField
+          label="내용"
+          variant="outlined"
+          fullWidth
+          multiline
+          rows={10}
+          margin="dense"
           value={content}
-          onChange={setContent}
-          placeholder="내용을 입력하세요."
+          onChange={(e) => setContent(e.target.value)}
         />
       </DialogContent>
       <DialogActions>
