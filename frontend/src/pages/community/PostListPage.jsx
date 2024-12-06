@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  List,
+  InputBase,
+  Chip,
+  colors,
+} from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
@@ -366,7 +374,15 @@ const PostListPage = ({ isSmallScreen }) => {
                     my: 2,
                   }}
                 >
-                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
+                  {hasImage && (
+                    <ImageIcon
+                      sx={{
+                        color: theme.palette.primary.light,
+                        fontSize: "35px",
+                        mr: 2,
+                      }}
+                    />
+                  )}
                   <span
                     dangerouslySetInnerHTML={{
                       __html: plainText.substring(0, 100),

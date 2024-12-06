@@ -76,6 +76,42 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
+  const toggleResolvedStatus = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      // 상태 전환 요청
+      const updatedResolved = !post.resolved; // 상태 전환
+      const response = await axios.put(
+        `${getCommunityApi()}/${boardType}/${postId}/toggle-resolved`,
+        { resolved: updatedResolved },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { createdAt },
+        }
+      );
+
+      if (response.status === 200) {
+        setPost((prevPost) => ({
+          ...prevPost,
+          resolved: updatedResolved,
+        }));
+        alert(
+          `게시글이 ${
+            updatedResolved ? "해결됨" : "미해결"
+          }으로 설정되었습니다.`
+        );
+      }
+    } catch (error) {
+      console.error("상태 전환 중 오류 발생:", error);
+      alert("상태 전환에 실패했습니다.");
+    }
+  };
+
   useEffect(() => {
     const fetchPostAndIncrementView = async () => {
       if (fetchRef.current) return;
@@ -542,6 +578,19 @@ const PostDetailsPage = () => {
         </Typography>
       </Box>
 
+      <Button
+        variant="contained"
+        color={post.resolved ? "success" : "secondary"}
+        onClick={toggleResolvedStatus}
+        sx={{
+          textTransform: "none",
+          fontWeight: "bold",
+          padding: "8px 16px",
+          borderRadius: "16px",
+        }}
+      >
+        {post.resolved ? "해결됨" : "미해결"}
+      </Button>
       <Paper
         elevation={2}
         sx={{
