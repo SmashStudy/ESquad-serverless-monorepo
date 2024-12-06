@@ -5,18 +5,14 @@ const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
 
 export const handler = async (event) => {
+  console.log(`event is ${JSON.stringify(event, null, 2)}`);
+
   try {
-    const { boardType } = event.pathParameters;
-
-    if (!validBoardTypes.includes(boardType)) {
-      return createResponse(400, { message: "Invalid boardType" });
-    }
-
     const {
       limit = 10,
       lastEvaluatedKey,
       resolved,
-      teamId
+      teamId,
     } = parseQueryStringParameters(event.queryStringParameters);
 
     let params;
@@ -26,20 +22,21 @@ export const handler = async (event) => {
         TableName: TABLE_NAME,
         IndexName: "board-resolved-create-index",
         KeyConditionExpression: "resolved = :resolved",
-        FilterExpression:"teamId = :teamId",
+        FilterExpression: "teamId = :teamId",
         ExpressionAttributeValues: {
           ":resolved": { S: resolved },
-          ":teamId": {S: teamId}
+          ":teamId": { S: teamId },
         },
         Limit: limit,
         ExclusiveStartKey: lastEvaluatedKey,
         ScanIndexForward: false,
       };
-    
     }
 
     const data = await ddbClient.send(new QueryCommand(params));
+    console.log(`data: ${JSON.stringify(data)}`);
     const posts = formatPosts(data.Items);
+    console.log(`posts: ${JSON.stringify(posts)}`);
 
     return createResponse(200, {
       items: posts,
@@ -62,7 +59,7 @@ const parseQueryStringParameters = (queryStringParameters = {}) => ({
     ? JSON.parse(queryStringParameters.lastEvaluatedKey)
     : null,
   resolved: queryStringParameters.resolved,
-  recruitStatus: queryStringParameters.recruitStatus,
+  teamId: queryStringParameters.teamId,
 });
 
 // DynamoDB에서 반환된 데이터를 클라이언트에 맞게 포맷

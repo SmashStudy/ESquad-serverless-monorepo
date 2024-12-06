@@ -17,40 +17,20 @@ const PostTeamListPage = ({ isSmallScreen }) => {
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [board, setBoardType] = useState("questions");
   const [curPage, setCurPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
-  const [boardType, setBoardType] = useState("");
+
   const [filterTab, setFilterTab] = useState("전체");
-  const [texts, setTexts] = useState([]);
-
-  // URL 경로에 따라 boardType 설정
-  useEffect(() => {
-    const board = location.pathname.includes("team-recruit")
-      ? "team-recruit"
-      : location.pathname.includes("questions")
-      ? "questions"
-      : "general";
-
-    setBoardType(board);
-    setTexts(
-      board === "team-recruit"
-        ? ["전체", "모집중", "모집완료"]
-        : board === "questions"
-        ? ["전체", "미해결", "해결됨"]
-        : []
-    );
-    setCurPage(1);
-    setPosts([]);
-    setLastEvaluatedKeys([]);
-  }, [location.pathname]);
+  const [texts, setTexts] = useState(["전체", "미해결", "해결됨"]);
 
   const fetchPosts = async (reset = false) => {
-    if (!boardType || !teamId) return;
+    if (!teamId) return;
 
     try {
       const params = {
         limit: 10,
-        teamId: teamId, // 현재 선택된 팀의 PK를 teamId로 사용
+        teamId,
       };
 
       if (!reset && lastEvaluatedKeys[curPage - 1]) {
@@ -59,12 +39,13 @@ const PostTeamListPage = ({ isSmallScreen }) => {
         );
       }
 
-      if (boardType === "questions") {
-        if (filterTab === "미해결") params.resolved = "false";
-        if (filterTab === "해결됨") params.resolved = "true";
-      }
+      filterTab === "미해결"
+        ? (params.resolved = "false")
+        : (params.resolved = "true");
 
-      const url = `${getCommunityApi()}/team-questions`; // 동적 API 경로 설정
+      console.log(`params: ${JSON.stringify(params)}`);
+
+      const url = `${getCommunityApi()}/team-questions`;
       const response = await axios.get(url, { params });
 
       const items = response.data.items || [];
@@ -80,7 +61,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
   useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardType, filterTab, curPage, teamId]);
+  }, [filterTab, curPage, teamId]);
 
   const handleFilterChange = (filter) => {
     if (filterTab === filter) return;
@@ -189,7 +170,45 @@ const PostTeamListPage = ({ isSmallScreen }) => {
               gap: 2,
               width: "100%",
             }}
-          ></Box>
+          >
+            <InputBase
+              placeholder="   태그로 검색해보세요!"
+              sx={{
+                flex: 1,
+                height: "50px",
+                p: 1.5,
+                border: "1px solid #ccc",
+                borderRadius: 1,
+                transition: "border 0.3s ease",
+                "&:focus-within": {
+                  border: "2px solid #A020F0",
+                },
+              }}
+              startAdornment={
+                <Box sx={{ color: "#000", fontSize: "1.5rem" }}>#</Box>
+              }
+            />
+            <Button
+              variant="text"
+              startIcon={
+                <RestartAltIcon
+                  sx={{ fontSize: "1.5rem", color: theme.palette.primary.main }}
+                />
+              }
+              sx={{
+                fontSize: "1rem",
+                fontWeight: "bold",
+                color: theme.palette.primary.main,
+                height: "50px",
+                padding: "0 20px",
+                "&:hover": {
+                  backgroundColor: "rgba(160, 32, 240, 0.1)",
+                },
+              }}
+            >
+              초기화
+            </Button>
+          </Box>
         </Box>
       </Box>
       {/* Sort Buttons */}
@@ -245,7 +264,7 @@ const PostTeamListPage = ({ isSmallScreen }) => {
 
           return (
             <Link
-              to={`/community/${boardType}/${
+              to={`/community/questions/${
                 post.postId
               }?createdAt=${encodeURIComponent(post.createdAt)}`}
               key={post.postId}
@@ -267,46 +286,24 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  {boardType === "questions" && (
-                    <Chip
-                      label={post.resolved ? "해결됨" : "미해결"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.resolved ? "#FFFFFF" : "#FFFFFF",
-                        backgroundColor: post.resolved
-                          ? theme.palette.primary.main
-                          : "#CED4DA",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
-                  {boardType === "team-recruit" && (
-                    <Chip
-                      label={post.recruitStatus ? "모집완료" : "모집중"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.recruitStatus ? "#fff" : "#fff",
-                        backgroundColor: post.recruitStatus
-                          ? "#CED4DA"
-                          : theme.palette.primary.main,
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
+                  <Chip
+                    label={post.resolved ? "해결됨" : "미해결"}
+                    sx={{
+                      mr: 2,
+                      borderRadius: "16px",
+                      fontWeight: "bold",
+                      color: post.resolved ? "#FFFFFF" : "#FFFFFF",
+                      backgroundColor: post.resolved
+                        ? theme.palette.primary.main
+                        : "#CED4DA",
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                      height: "30px",
+                      minWidth: "60px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  />
                   <Typography variant="body1" fontWeight="bold">
                     {post.title}
                   </Typography>
