@@ -50,22 +50,6 @@ async function broadcastMessage(apiGatewayManagementApi, connections, message) {
   await Promise.all(postCalls);
 }
 
-// 메시지 전송 함수
-// async function putItem(tableName, item) {
-//   const params = {
-//     TableName: tableName,
-//     Item: item,
-//   };
-//
-//   try {
-//     await docClient.send(new PutCommand(params));
-//     console.log("Put succeeded", JSON.stringify(item, null, 2));
-//   } catch (err) {
-//     console.error("Unable to add item. Error:", JSON.stringify(err, null, 2));
-//     throw err;
-//   }
-// }
-
 export const handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
@@ -128,7 +112,7 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },

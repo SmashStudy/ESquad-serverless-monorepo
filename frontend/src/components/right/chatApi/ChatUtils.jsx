@@ -11,7 +11,3 @@ export const getPresignedUrl = async (fileKey) => {
         throw error;
     }
 };
-
-export const subcribeToBroadcast = async (onEvent) => {
-
-}
