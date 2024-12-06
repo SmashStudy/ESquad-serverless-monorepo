@@ -25,6 +25,7 @@ export const handler = async (event) => {
             timestamp: Date.now(),
             message,
             user_id,
+            nickname,
         };
 
         if (fileKey) {
