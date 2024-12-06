@@ -76,7 +76,7 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  const toggleResolvedStatus = async () => {
+  const toggleStatus = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
@@ -84,28 +84,48 @@ const PostDetailsPage = () => {
         return;
       }
 
-      // 현재 resolved 상태를 반전
-      const updatedResolved = !post.resolved;
+      // 상태 필드 및 현재 상태 결정
+      let statusField;
+      let currentValue;
+
+      if (boardType === "questions") {
+        statusField = "resolved";
+        currentValue = post.resolved;
+      } else if (boardType === "team-recruit") {
+        statusField = "recruitStatus";
+        currentValue = post.recruitStatus;
+      } else {
+        alert("지원하지 않는 게시판 유형입니다.");
+        return;
+      }
+
+      // 현재 상태를 반전
+      const updatedValue = !currentValue;
 
       // API 호출
       const response = await axios.put(
-        `${getCommunityApi()}/${boardType}/${postId}/resolved`,
-        { resolved: post.resolved }, // 현재 상태를 보내 서버에서 처리
+        `${getCommunityApi()}/${boardType}/${postId}/status`,
+        { [statusField]: currentValue },
         {
           headers: { Authorization: `Bearer ${token}` },
-          params: { createdAt },
+          params: { createdAt, boardType },
         }
       );
 
       if (response.status === 200) {
-        // 서버에서 반환된 데이터로 상태 업데이트
         setPost((prevPost) => ({
           ...prevPost,
-          resolved: updatedResolved,
+          [statusField]: updatedValue,
         }));
         alert(
           `게시글이 ${
-            updatedResolved ? "해결됨" : "미해결"
+            boardType === "questions"
+              ? updatedValue
+                ? "해결됨"
+                : "미해결"
+              : updatedValue
+              ? "모집 완료"
+              : "모집 중"
           }으로 설정되었습니다.`
         );
       } else {
@@ -208,7 +228,7 @@ const PostDetailsPage = () => {
     setPost((prevPost) => ({
       ...prevPost,
       ...updatedPost,
-      updatedAt: new Date().toISOString(), // updatedAt 필드를 현재 시간으로 업데이트
+      updatedAt: new Date().toISOString(),
     }));
   };
 
@@ -571,8 +591,16 @@ const PostDetailsPage = () => {
         {post.writer?.email === currentUser?.email && (
           <Button
             variant="contained"
-            color={post.resolved ? "success" : "secondary"} // 상태에 따른 색상 변경
-            onClick={toggleResolvedStatus} // 버튼 클릭 시 함수 호출
+            color={
+              boardType === "questions"
+                ? post.resolved
+                  ? "success"
+                  : "secondary"
+                : post.recruitStatus
+                ? "success"
+                : "secondary"
+            }
+            onClick={toggleStatus} // 변경된 함수 호출
             sx={{
               textTransform: "none",
               fontWeight: "bold",
@@ -580,7 +608,13 @@ const PostDetailsPage = () => {
               borderRadius: "16px",
             }}
           >
-            {post.resolved ? "해결됨" : "미해결"} {/* 버튼 텍스트 변경 */}
+            {boardType === "questions"
+              ? post.resolved
+                ? "해결됨"
+                : "미해결"
+              : post.recruitStatus
+              ? "모집 완료"
+              : "모집 중"}
           </Button>
         )}
 

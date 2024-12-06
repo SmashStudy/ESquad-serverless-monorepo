@@ -145,7 +145,7 @@ functions:
     handler: src/handlers/toggleResolvedStatus.handler
     events:
       - http:
-          path: /{boardType}/{postId}/resolved
+          path: /{boardType}/{postId}/status
           method: PUT
           cors: true
 
