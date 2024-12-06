@@ -157,7 +157,7 @@ const UserStorageUsageRenewed = () => {
   ];
 
   return (
-      <Layout>
+      
         <Box sx={{padding: 1}}>
           <SnackbarAlert
               open={snackbar.open}
@@ -250,7 +250,7 @@ const UserStorageUsageRenewed = () => {
             </Grid>
           </Grid>
         </Box>
-      </Layout>
+      
   );
 };
 
