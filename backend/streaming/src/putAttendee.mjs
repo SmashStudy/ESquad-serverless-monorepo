@@ -1,7 +1,7 @@
 import { DynamoDBClient, TransactWriteItemsCommand } from "@aws-sdk/client-dynamodb";
 
 // DynamoDB 클라이언트 초기화
-const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
+const dynamoDbClient = new DynamoDBClient({ region: 'us-east-1' });
 
 // 환경 변수에서 테이블 이름 가져오기
 const attendeesTableName = process.env.ATTENDEES_TABLE_NAME;
