@@ -374,13 +374,34 @@ const PostTeamListPage = ({ isSmallScreen }) => {
                       alignItems: "center",
                     }}
                   >
-                    <Typography variant="caption">
-                      👍 {post.likeCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      ❤️ {post.likeCount || 0}
                     </Typography>
-                    <Typography variant="caption">
-                      👁 {post.viewCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      👀 {post.viewCount || 0}
                     </Typography>
-                    <Typography variant="caption">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.3rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       💬 {post.commentCount || 0}
                     </Typography>
                   </Box>
