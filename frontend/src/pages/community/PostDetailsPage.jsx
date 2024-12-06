@@ -76,7 +76,7 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
-  const toggleResolvedStatus = async () => {
+  const toggleStatus = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
       if (!token) {
@@ -84,11 +84,26 @@ const PostDetailsPage = () => {
         return;
       }
 
-      // 상태 전환 요청
-      const updatedResolved = !post.resolved; // 상태 전환
+      let updatedField = {};
+      let successMessage = "";
+
+      if (boardType === "team-recruit") {
+        // 스터디 모집 게시판의 recruitStatus 필드 업데이트
+        updatedField = { recruitStatus: !post.recruitStatus };
+        successMessage = `게시글이 ${
+          !post.recruitStatus ? "모집완료" : "모집중"
+        }으로 설정되었습니다.`;
+      } else {
+        // 다른 게시판 (질문 게시판)의 resolved 필드 업데이트
+        updatedField = { resolved: !post.resolved };
+        successMessage = `게시글이 ${
+          !post.resolved ? "해결됨" : "미해결"
+        }으로 설정되었습니다.`;
+      }
+
       const response = await axios.put(
-        `${getCommunityApi()}/${boardType}/${postId}/toggle-resolved`,
-        { resolved: updatedResolved },
+        `${getCommunityApi()}/${boardType}/${postId}/status`,
+        updatedField, // 업데이트 필드
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { createdAt },
@@ -96,19 +111,18 @@ const PostDetailsPage = () => {
       );
 
       if (response.status === 200) {
+        // 서버에서 반환된 데이터로 상태 업데이트
         setPost((prevPost) => ({
           ...prevPost,
-          resolved: updatedResolved,
+          ...updatedField,
         }));
-        alert(
-          `게시글이 ${
-            updatedResolved ? "해결됨" : "미해결"
-          }으로 설정되었습니다.`
-        );
+        alert(successMessage);
+      } else {
+        throw new Error("서버에서 예상치 못한 응답이 반환되었습니다.");
       }
     } catch (error) {
-      console.error("상태 전환 중 오류 발생:", error);
-      alert("상태 전환에 실패했습니다.");
+      console.error("상태 전환 중 오류 발생:", error.message || error);
+      alert("상태 전환에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -560,8 +574,40 @@ const PostDetailsPage = () => {
           justifyContent: "flex-end",
           alignItems: "center",
           mb: 1,
+          gap: 2,
         }}
       >
+        {post.writer?.email === currentUser?.email && (
+          <Button
+            variant="contained"
+            color={
+              boardType === "team-recruit"
+                ? post.recruitStatus
+                  ? "success"
+                  : "secondary"
+                : post.resolved
+                ? "success"
+                : "secondary"
+            }
+            onClick={toggleStatus}
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              padding: "8px 16px",
+              borderRadius: "16px",
+            }}
+          >
+            {boardType === "team-recruit"
+              ? post.recruitStatus
+                ? "모집완료"
+                : "모집중"
+              : post.resolved
+              ? "해결됨"
+              : "미해결"}
+          </Button>
+        )}
+
+        {/* 좋아요 버튼 */}
         <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
           <IconButton
             onClick={handleLikePost}
@@ -577,20 +623,6 @@ const PostDetailsPage = () => {
           {post.likeCount}
         </Typography>
       </Box>
-
-      <Button
-        variant="contained"
-        color={post.resolved ? "success" : "secondary"}
-        onClick={toggleResolvedStatus}
-        sx={{
-          textTransform: "none",
-          fontWeight: "bold",
-          padding: "8px 16px",
-          borderRadius: "16px",
-        }}
-      >
-        {post.resolved ? "해결됨" : "미해결"}
-      </Button>
       <Paper
         elevation={2}
         sx={{

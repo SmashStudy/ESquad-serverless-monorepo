@@ -141,6 +141,13 @@ functions:
           path: /{boardType}/{postId}/like
           method: POST
           cors: true
+  toggleResolvedStatus:
+    handler: src/handlers/toggleResolvedStatus.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/resolved
+          method: put
+          cors: true
 
 resources:
   Resources:
