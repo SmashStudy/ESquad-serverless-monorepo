@@ -489,7 +489,7 @@ const PostDetailsPage = () => {
                 ✔ 해결된 질문
               </Typography>
             )}
-            {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
+            {new Date(post.createdAt).toLocaleString()} • 👀 {post.viewCount}
             {post.updatedAt &&
               new Date(post.updatedAt).getTime() !==
                 new Date(post.createdAt).getTime() && (
