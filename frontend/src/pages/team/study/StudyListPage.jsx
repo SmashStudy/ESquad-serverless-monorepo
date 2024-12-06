@@ -83,6 +83,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
           alignItems: "flex-start",
           mb: 3,
           gap: 2,
+          width: '100%'
         }}
       >
         <Box
@@ -120,7 +121,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         <SearchComponent onSearchChange={handleSearchChange} />
       </Box>
       {loading ? (
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mt: 3}}>
           <CircularProgress />
           <Typography variant="body1" sx={{ mt: 2 }}>
             스터디 데이터를 불러오는 중입니다...
@@ -149,6 +150,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                   "&:hover": {
                     boxShadow: theme.shadows[4],
                   },
+                  minWidth: '40vh'
                 }}
               >
                 <CardContent>

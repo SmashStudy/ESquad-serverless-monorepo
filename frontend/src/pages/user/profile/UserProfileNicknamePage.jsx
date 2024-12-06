@@ -89,7 +89,6 @@ const NicknameEditor = () => {
   }, []);
 
   return (
-    <Layout>
       <Box sx={{ flexGrow: 1, padding: 3 }}>
         <Card>
           <CardContent>
@@ -137,7 +136,6 @@ const NicknameEditor = () => {
           </CardContent>
         </Card>
       </Box>
-    </Layout>
   );
 };
 

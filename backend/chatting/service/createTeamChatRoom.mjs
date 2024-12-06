@@ -12,7 +12,7 @@ const TEAM_TABLE = process.env.TEAM_TABLE_NAME;
 const WEBSOCKET_ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
 
 const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
+    'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
@@ -125,7 +125,7 @@ const handleStreamEvent = async (event) => {
     return {
         statusCode: 200,
         headers: {
-            "Access-Control-Allow-Origin": "*",
+            'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
             "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type,Authorization",
         },

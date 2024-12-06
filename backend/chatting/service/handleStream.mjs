@@ -26,7 +26,6 @@ async function query(
 
   try {
     const data = await docClient.send(new QueryCommand(params));
-    console.log("query", data);
     return data.Items;
   } catch (err) {
     console.error("Error", err);
@@ -51,12 +50,8 @@ async function deleteItem(tableName, key) {
 
 // Lambda 핸들러 함수
 export const handler = async (event) => {
-  console.log("Received event:", JSON.stringify(event, null, 2));
-  console.log("Environment variables:", JSON.stringify(process.env, null, 2));
-
   // 이벤트에 레코드가 없는 경우 처리
   if (!event.Records || event.Records.length === 0) {
-    console.log("No records found in the event");
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "No records to process" }),
@@ -64,7 +59,6 @@ export const handler = async (event) => {
   }
 
   const record = event.Records[0];
-  console.log("Processing record:", JSON.stringify(record, null, 2));
 
   // INSERT 이벤트가 아닌 경우 처리
   if (record.eventName !== "INSERT") {
@@ -76,7 +70,6 @@ export const handler = async (event) => {
 
   // NewImage가 없는 경우 처리
   if (!record.dynamodb || !record.dynamodb.NewImage) {
-    console.log("NewImage not found in the record");
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "No new image to process" }),
@@ -95,11 +88,8 @@ export const handler = async (event) => {
     name: newImage.name?.S,
   };
 
-  console.log("Extracted item:", item);
-
   // 필수 필드가 없는 경우 처리
   if (!item.room_id || !item.message) {
-    console.log("Missing required fields in the item");
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Missing required fields" }),
@@ -120,7 +110,6 @@ export const handler = async (event) => {
     const stage = process.env.stage || process.env.CHATTING_STAGE;
     const region = process.env.AWS_REGION || process.env.CHATTING_REGION;
     const endpoint = `https://${apiId}.execute-api.${region}.amazonaws.com/${stage}`;
-    console.log("API Gateway endpoint:", endpoint);
 
     const apigwManagementApi = new ApiGatewayManagementApiClient({
       apiVersion: "2018-11-29",
@@ -139,14 +128,13 @@ export const handler = async (event) => {
         );
       } catch (e) {
         if (e.statusCode === 410) {
-          console.log(`Found stale connection, deleting ${connection_id}`);
           try {
             // 오래된 연결 삭제
             await deleteItem(process.env.USERLIST_TABLE_NAME, {
               connection_id: connection_id,
             });
           } catch (deleteErr) {
-            console.log(deleteErr);
+            console.error(deleteErr);
           }
         } else {
           throw e;
@@ -160,7 +148,7 @@ export const handler = async (event) => {
     return {
       statusCode: 200,
       headers:{
-        "Access-Control-Allow-Origin": "*", // 모든 출처 허용
+        'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
         "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },

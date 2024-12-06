@@ -10,7 +10,6 @@ import {
     Grid,
     CardMedia,
     Pagination,
-    Container,
     TextField,
 } from "@mui/material";
 import { useTheme, styled } from "@mui/material";
@@ -154,7 +153,7 @@ const BookListPage = () => {
                             <Grid item key={index}>
                                 <Card
                                     onClick={() =>
-                                        navigate(`/teams/${params.teamId}/book/${book.isbn}`, {
+                                        navigate(`/teams/${encodeURIComponent(params.teamId)}/book/${book.isbn}`, {
                                             state: { book },
                                         })
                                     }

@@ -37,7 +37,6 @@ const apiSpec = {
 export { apiSpec };
 
 export const handler = async (event, context) => {
-    console.log(event);
 
     // 쿼리 문자열 파라미터에서 room_id와 user_id를 추출
     const queryStringParameters = event.queryStringParameters || {};
@@ -69,7 +68,7 @@ export const handler = async (event, context) => {
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // 모든 출처 허용
+                'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
                 "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
             },

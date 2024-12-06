@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material';
+import { useNavigate, useParams } from "react-router-dom";
+import { createStudy } from '../../../utils/team/studyApi.js';
 import {
     Box,
     Button,
     Typography,
     TextField,
-    Grid,
+    Grid2,
     FormControl,
     Select,
     MenuItem,
-    Divider
+    Divider,
+    Alert,
+    Snackbar
 } from '@mui/material';
-import { useTheme } from '@mui/material';
-import dayjs from 'dayjs';
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { createStudy } from '../../../utils/team/studyApi.js';
+
 const AlertDayOptions = [
     { label: "Monday", value: 0 },
     { label: "Tuesday", value: 1 },
@@ -24,33 +25,36 @@ const AlertDayOptions = [
     { label: "Saturday", value: 5 },
     { label: "Sunday", value: 6 },
 ];
-const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {   
-    const [loading, setLoading] = useState(false);
-    //studyName으로 추후 변경
+
+const StudyCreationPage = ({ onCancel, selectedBook }) => {
+    const navigate = useNavigate(); 
+    const theme = useTheme();
+    
+    const { teamId } = useParams();
+
+    const [reminds, setReminds] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const [formData, setFormData] = useState({
-        name: "",
+        studyName: "",
         startDate: "",
         endDate: "",
         description: "",
     });
-    const teamId ="TEAM%230878b2df-9c94-46fb-b32c-2cab673cee90";    
 
-    //팀 유저 중 택 1
-    const userIds =  ["afeirhl223@gmail.com", "dbeb@naver.com"];
-    
-    const [errorMessage, setErrorMessage] = useState("");
-    const [reminds, setReminds] = useState([]);
-    const navigate = useNavigate();
-    const theme = useTheme();
-    const param = useParams();
-
-    const  handleChange = (field, value) => {
-        setFormData((prevState) => ({ ...prevState, [field]: value }));
+    const handleChange = (field, value) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [field]: value,
+        }));
     };
 
     const handleRemindChange = (index, field, value) => {
         const updatedReminds = [...reminds];
-        updatedReminds[index] = { ...updatedReminds[index], [field]: value };
+        updatedReminds[index] = {
+            ...updatedReminds[index],
+            [field]: value,
+        };
         setReminds(updatedReminds);
     };
 
@@ -64,7 +68,6 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
     };
 
     const onCreate = async () => {
-        setLoading(true);
         try {
             const bookDto = {
                 isbn: selectedBook.isbn,
@@ -74,26 +77,24 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                 publishedDate: selectedBook.publishedDate,
                 imgPath: selectedBook.imgPath
             };
-            const studyData = {
+            const studyData = { 
                 studyInfo: formData,
-                studyUserIds: userIds,
             };
-            
-            console.log(`${JSON.stringify(bookDto)}`);
-            console.log(`${JSON.stringify(studyData)}`);
-
-            const response = await createStudy(teamId, bookDto, studyData);
-            const { PK } = response.data || {};
+            const response = await createStudy(encodeURIComponent(teamId), bookDto, studyData);
+            const { PK } = response.body || {};
             if (!PK) throw new Error("스터디 생성에 실패했습니다.");
-            navigate(`/teams/${teamId}/study/${PK}`);
+
+            setSnackbarMessage("스터디가 성공적으로 생성되었습니다.");
+            setOpenSnackbar(true);
+            setTimeout(() => {
+                navigate('/');
+                window.location.reload();
+            }, 2000);
+
         } catch (error) {
             console.error("Error creating study:", error.message);
-            setErrorMessage(error.response?.data?.message||"스터디를 생성할 수 없습니다. 다시 시도해주세요.");
-        } finally {
-            setLoading(false);
         }
     };
-
 
     return (
         <Box
@@ -112,9 +113,9 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
             }}
         >
             {/* Book Details Section */}
-            <Grid container spacing={4} sx={{ mb: 2 }}>
+            <Grid2 container spacing={4} sx={{ mb: 2 }}>
                 {/* Book Image Column */}
-                <Grid item xs={12} md={4}>
+                <Grid2 item xs={12} md={4}>
                     <Box
                         component="img"
                         src={selectedBook.imgPath}
@@ -126,14 +127,14 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                             border: '1px solid #ddd',
                         }}
                     />
-                </Grid>
+                </Grid2>
 
                 {/* Book Info Column */}
-                <Grid item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Grid2 item xs={12} md={8} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Typography variant="h5" fontWeight="bold" gutterBottom>
                         {selectedBook.maintitle}
                     </Typography>
-                    <Typography variant="authors" color="textSecondary" gutterBottom>
+                    <Typography variant="subtitle1" color="textSecondary" gutterBottom>
                         {selectedBook.authors}
                     </Typography>
 
@@ -148,20 +149,20 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                         스터디 설정
                     </Typography>
                     <TextField
-                        value={formData.name}
-                        onChange={(e) => handleChange("name", e.target.value)}
+                        value={formData.studyName}
+                        onChange={(e) => handleChange("studyName", e.target.value)}
                         fullWidth
                         size='small'
                         label="스터디 페이지 이름을 작성해주세요"
                         variant="outlined"
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
 
             {/* Study Creation Form */}
-            <Grid container spacing={4}>
+            <Grid2 container spacing={4}>
                 {/* Study Duration Column */}
-                <Grid item xs={12} md={6}>
+                <Grid2 item xs={12} md={6}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 기간
                     </Typography>
@@ -172,7 +173,7 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                             size="small"
                             type="date"
                             variant="outlined"
-                            sx={{ width: '100%'}}
+                            sx={{ width: '100%' }}
                         />
                         <Typography variant="h6">~</Typography>
                         <TextField
@@ -184,10 +185,10 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                             sx={{ width: '100%' }}
                         />
                     </Box>
-                </Grid>
+                </Grid2>
 
                 {/* Study Schedule Section */}
-                <Grid item xs={12} md={6}>
+                <Grid2 item xs={12} md={6}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 요일 및 시간
                     </Typography>
@@ -218,10 +219,10 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                     <Button onClick={handleAddRemind} variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                         Add Reminder
                     </Button>
-                </Grid>
+                </Grid2>
 
                 {/* Study Introduction Column */}
-                <Grid item xs={12}>
+                <Grid2 item xs={12}>
                     <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                         스터디 페이지 개요
                     </Typography>
@@ -234,8 +235,8 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                         variant="outlined"
                         placeholder="스터디 페이지를 소개하는 내용을 입력해주세요"
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
 
             {/* Action Buttons */}
             <Box
@@ -249,10 +250,22 @@ const StudyCreationPage = ({ onCancel, selectedBook , selectedTeamId}) => {
                 <Button variant="contained" onClick={onCancel} sx={{ color: '#fff', backgroundColor: theme.palette.warning.main, px: 4 }}>
                     취소
                 </Button>
-                <Button type="submit" onClick={onCreate} variant="contained" sx={{ backgroundColor: theme.palette.primary.main, color: '#fff', px: 4 }}>
+                <Button type="submit" variant="contained" sx={{ backgroundColor: theme.palette.primary.main, color: '#fff', px: 4 }}>
                     생성
                 </Button>
             </Box>
+
+            {/* Snackbar */}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </Box>
     );
 };

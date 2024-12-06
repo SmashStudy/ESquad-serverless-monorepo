@@ -9,7 +9,6 @@ const docClient = DynamoDBDocumentClient.from(client);
 // Lambda 함수 핸들러
 export const handler = async (event) => {
     try {
-        console.log("Received event:", JSON.stringify(event, null, 2));
         const { room_id, message, timestamp, fileKey } = JSON.parse(event.body);
 
         // 필수 필드 검증
@@ -43,7 +42,6 @@ export const handler = async (event) => {
 
         // DynamoDB에서 삭제 실행
         const result = await docClient.send(command);
-        console.log("Delete command result:", JSON.stringify(result, null, 2));
 
         if (!result.Attributes) {
             console.warn("Message not found:", key);
@@ -86,7 +84,6 @@ export const handler = async (event) => {
                 );
             } catch (e) {
                 if (e.statusCode === 410) {
-                    console.log(`Stale connection detected for connection_id: ${connection_id}`);
                     await docClient.send(
                         new DeleteCommand({
                             TableName: process.env.USERLIST_TABLE_NAME,
@@ -102,11 +99,10 @@ export const handler = async (event) => {
         await Promise.all(postCalls);
 
         // 성공적인 삭제 후 결과 반환
-        console.log("Deleted item:", result.Attributes);
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // 모든 출처 허용
+                'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
                 "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
                 "Access-Control-Allow-Headers": "Content-Type, Authorization",
             },
