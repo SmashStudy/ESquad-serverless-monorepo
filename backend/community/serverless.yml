@@ -189,3 +189,8 @@ useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 3
