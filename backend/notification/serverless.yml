@@ -1,6 +1,3 @@
-plugins:
-  - serverless-export-env   # 환경 변수를 내보내는 플러그인 추가
-
 useDotenv: true   # .env 파일을 사용하여 환경 변수 설정
 
 service: notification-service
@@ -11,15 +8,17 @@ frameworkVersion: "^3.15.0"
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ${env:AWS_REGION}
+  STAGE: ${opt:stage, 'dev'}
+  region: ${env:AWS_REGION, 'us-east-1'}
+  stackName: ${self:service}-${self:provider.stage}
   environment:
     STAGE: ${opt:stage, 'dev'}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
-    WEBSOCKET_ENDPOINT: ${env:WEBSOCKET_ENDPOINT}
-    STORAGE_DYNAMODB_TABLE: ${env:METADATA_TABLE}
-    TEAM_DYNAMODB_TABLE: ${env:TEAM_TABLE}
+    WEBSOCKET_RESOURCE_ID: !Ref ApiGatewayWebsocketApi
+    FILE_METADATA_TABLE: ${env:FILE_METADATA_TABLE}
+    TEAM_TABLE: ${env:TEAM_TABLE}
     TEAM_TABLE_STREAM_LABEL: ${env:TEAM_TABLE_STREAM_LABEL}
-    NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
+    NOTIFICATION_CONNECTION_TABLE: ${env:NOTIFICATION_CONNECTION_TABLE}
     NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
     NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
     NOTIFICATION_CREATED_INDEX: ${env:NOTIFICATION_CREATED_INDEX}

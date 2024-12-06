@@ -9,7 +9,7 @@ const docClient = DynamoDBDocumentClient.from(client);
 const MESSAGE_TABLE = process.env.MESSAGE_TABLE_NAME;
 const USERLIST_TABLE = process.env.USERLIST_TABLE_NAME;
 const TEAM_TABLE = process.env.TEAM_TABLE_NAME;
-const WEBSOCKET_ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+const WEBSOCKET_RESOURCE_ID = process.env.WEBSOCKET_RESOURCE_ID;
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': `${process.env.ALLOWED_ORIGIN}`,
@@ -213,7 +213,9 @@ const broadcastToConnections = async (room_id, message) => {
     const result = await docClient.send(new QueryCommand(params));
     const connections = result.Items.map((item) => unmarshall(item).connection_id);
 
-    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({ endpoint: WEBSOCKET_ENDPOINT });
+    const apiGatewayManagementApi = new ApiGatewayManagementApiClient({
+        endpoint: `https://${WEBSOCKET_RESOURCE_ID}.execute-api.${process.env.STAGE}.amazonaws.com/${process.env.STAGE}`
+    });
 
     const postCalls = connections.map(async (connection_id) => {
         try {

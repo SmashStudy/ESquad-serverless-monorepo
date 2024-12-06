@@ -10,7 +10,7 @@ const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
 const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
 const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
-const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+const WEBSOCKET_RESOURCE_ID = process.env.WEBSOCKET_RESOURCE_ID;
 
 // WebSocket 으로 메시지 전송
 const sendToConnection = async (connectionId, payload) => {
@@ -19,7 +19,7 @@ const sendToConnection = async (connectionId, payload) => {
   }
 
   const apiClient = new ApiGatewayManagementApiClient({
-    endpoint: ENDPOINT,
+    endpoint: `https://${WEBSOCKET_RESOURCE_ID}.execute-api.${process.env.STAGE}.amazonaws.com/${process.env.STAGE}`,
   });
 
   try {
