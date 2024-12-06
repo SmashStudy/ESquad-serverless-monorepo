@@ -100,10 +100,12 @@ export async function getAttendee(
 
 
 export async function endMeeting(
-  title: string
+  title: string,
+  participant: string
 ): Promise<void> {
   const body = {
     title: title,
+    participant: participant,
   };
 
   const res = await fetch(BASE_URL + 'stream/end', {
