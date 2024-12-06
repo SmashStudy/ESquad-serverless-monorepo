@@ -1,4 +1,4 @@
-import { dynamoDb, LOG_TABLE_NAME } from "./dynamoUtil.mjs";
+import { dynamoDb, LOG_TABLE } from "./dynamoUtil.mjs";
 import {PutCommand} from '@aws-sdk/lib-dynamodb';
 import { createResponse } from "./responseHelper.mjs";
 import { v4 as uuidv4 } from "uuid"; // UUID 생성 라이브러리
@@ -19,7 +19,7 @@ export const sendLog = async (logData) => {
     };
 
     const params = {
-      TableName: LOG_TABLE_NAME,
+      TableName: LOG_TABLE,
       Item: item,
     };
 

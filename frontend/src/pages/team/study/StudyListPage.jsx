@@ -31,7 +31,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userInfo, setUserInfo] = useState(null);
 
-  // 스터디 리스트 데이터 가져오기
+  // Fetch study list data
   useEffect(() => {
     const fetchStudyList = async () => {
       try {
@@ -49,7 +49,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
     fetchStudyList();
   }, [teamId]);
 
-  // 사용자 정보 가져오기
+  // Fetch user information
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -65,7 +65,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
 
         setUserInfo(response.data);
       } catch (err) {
-        console.error(err);
+        console.error("사용자 정보를 가져오는 중 에러 발생:", err);
       }
     };
 
@@ -96,6 +96,19 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
     study.studyName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const studiesPerPage = 6; // Adjust as needed
+
+  const indexOfLastStudy = currentPage * studiesPerPage;
+  const indexOfFirstStudy = indexOfLastStudy - studiesPerPage;
+  const currentStudies = filteredStudies.slice(indexOfFirstStudy, indexOfLastStudy);
+  const totalPages = Math.ceil(filteredStudies.length / studiesPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <>
       {/* Filters and Search */}
@@ -106,6 +119,8 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
           alignItems: "flex-start",
           mb: 3,
           gap: 2,
+          width: "100%",
+          px: isSmallScreen || isMediumScreen ? 2 : 0,
         }}
       >
         <Box
@@ -130,7 +145,9 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                   selectedFilter === filter
                     ? theme.palette.primary.main
                     : theme.palette.text.secondary,
-                "&:hover": { color: theme.palette.primary.dark },
+                "&:hover": {
+                  color: theme.palette.primary.dark,
+                },
               }}
               onClick={() => handleFilterClick(filter)}
             >
@@ -146,6 +163,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
         />
       </Box>
 
+      {/* Loading State */}
       {loading ? (
         <Box
           sx={{
@@ -161,108 +179,129 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
           </Typography>
         </Box>
       ) : error ? (
+        /* Error State */
         <Typography align="center" color="error" sx={{ mt: 3 }}>
           데이터를 가져오는 중 문제가 발생했습니다.
         </Typography>
       ) : (
-        <Grid container spacing={3} sx={{ width: "100%", px: 2 }}>
-          {filteredStudies.map((study) => (
-            <Grid item xs={12} sm={6} md={4} key={study.PK}>
-              <Card
-                onClick={() =>
-                  navigate(
-                    `/teams/${encodeURIComponent(teamId)}/study/${encodeURIComponent(
-                      study.PK
-                    )}`,
-                    { state: { study, teamId } }
-                  )
-                }
-                sx={{
-                  cursor: "pointer",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  p: 2,
-                  "&:hover": { boxShadow: theme.shadows[4] },
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    {study.studyName}
-                  </Typography>
-                  <Box sx={{ textAlign: "center", mb: 2 }}>
-                    <img
-                      src={study.imgPath}
-                      alt="Study"
-                      style={{
-                        maxWidth: "100%",
-                        borderRadius: 8,
-                        height: "20vh",
+        /* Study List */
+        <>
+          <Grid container spacing={3} sx={{ width: "100%", px: isSmallScreen || isMediumScreen ? 2 : 0 }}>
+            {currentStudies.map((study) => (
+              <Grid item xs={12} sm={6} md={4} key={study.PK}>
+                <Card
+                  onClick={() =>
+                    navigate(
+                      `/teams/${encodeURIComponent(teamId)}/study/${encodeURIComponent(study.PK)}`,
+                      { state: { study, teamId } }
+                    )
+                  }
+                  sx={{
+                    cursor: "pointer",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    p: 2,
+                    "&:hover": { boxShadow: theme.shadows[4] },
+                    minWidth: isSmallScreen ? 'auto' : '40vh',
+                  }}
+                >
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      {study.studyName}
+                    </Typography>
+                    <Box sx={{ textAlign: "center", mb: 2 }}>
+                      <img
+                        src={study.imgPath}
+                        alt="Study"
+                        style={{
+                          maxWidth: "100%",
+                          borderRadius: 8,
+                          height: "20vh",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {study.description}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 1,
+                        color:
+                          new Date(study.endDate) > new Date()
+                            ? "success.main"
+                            : "error.main",
+                        fontWeight: "bold",
                       }}
-                    />
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {study.description}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mt: 1,
-                      color:
-                        new Date(study.endDate) > new Date()
-                          ? "success.main"
-                          : "error.main",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {new Date(study.endDate) > new Date() ? "진행중" : "종료"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {format(
-                      new Date(study.startDate),
-                      "yyyy-MM-dd"
-                    )} ~ {format(new Date(study.endDate), "yyyy-MM-dd")}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: "flex-end" }}>
-                  {userInfo && (
-                    <LiveStreamWindow
-                      teamId={teamId}
-                      studyId={study.PK}
-                      nickname={userInfo.nickname}
-                    />
-                  )}
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      )}
+                    >
+                      {new Date(study.endDate) > new Date() ? "진행중" : "종료"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {format(new Date(study.startDate), "yyyy-MM-dd")} ~{" "}
+                      {format(new Date(study.endDate), "yyyy-MM-dd")}
+                    </Typography>
+                  </CardContent>
+                  <CardActions sx={{ justifyContent: "flex-end" }}>
+                    {userInfo && (
+                      <LiveStreamWindow
+                        teamId={teamId}
+                        studyId={study.PK}
+                        nickname={userInfo.nickname}
+                      />
+                    )}
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
 
-      {/* Pagination */}
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          alignItems: "center",
-          my: 3,
-        }}
-      >
-        <Button variant="outlined" sx={{ mx: 1 }}>
-          이전
-        </Button>
-        {[1, 2, 3, 4, 5].map((page) => (
-          <Button key={page} variant="text" sx={{ mx: 1 }}>
-            {page}
-          </Button>
-        ))}
-        <Button variant="outlined" sx={{ mx: 1 }}>
-          다음
-        </Button>
-      </Box>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                my: 3,
+                px: isSmallScreen || isMediumScreen ? 2 : 0,
+              }}
+            >
+              <Button
+                variant="outlined"
+                sx={{ mx: 1 }}
+                disabled={currentPage === 1}
+                onClick={() => handlePageChange(currentPage - 1)}
+              >
+                이전
+              </Button>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "contained" : "text"}
+                  color={page === currentPage ? "primary" : "inherit"}
+                  sx={{ mx: 1 }}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button
+                variant="outlined"
+                sx={{ mx: 1 }}
+                disabled={currentPage === totalPages}
+                onClick={() => handlePageChange(currentPage + 1)}
+              >
+                다음
+              </Button>
+            </Box>
+          )}
+        </>
+      )}
     </>
   );
 };
