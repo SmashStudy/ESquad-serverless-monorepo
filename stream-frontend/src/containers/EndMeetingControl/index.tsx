@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-//import { useNavigate } from 'react-router-dom';
 import {
   ControlBarButton,
   Phone,
@@ -9,12 +8,12 @@ import {
   ModalButton,
   ModalButtonGroup,
   useLogger,
+  useRosterState,
 } from "amazon-chime-sdk-component-library-react";
 
 import { endMeeting } from '../../utils/api';
 import { StyledP } from "./Styled";
 import { useAppState } from '../../providers/AppStateProvider';
-//import routes from '../../constants/routes';
 
 
 const EndMeetingControl: React.FC = () => {
@@ -22,18 +21,23 @@ const EndMeetingControl: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const toggleModal = (): void => setShowModal(!showModal);
   const { meetingId } = useAppState();
-//  const navigate = useNavigate();
+  const { roster } = useRosterState();
+
+  let attendees = Object.values(roster);
+
+  const participant = attendees.length.toString();
 
   const leaveMeeting = async (): Promise<void> => {
     try {
-      if (meetingId) {
-        await endMeeting(meetingId);
+      if (meetingId && participant === "1") {
+        await endMeeting(meetingId, participant);
         window.close();
-        //navigate(routes.HOME);
       }
     } catch (e) {
       logger.error(`Could not end meeting: ${e}`);
     }
+
+    window.close();
   };
 
 
