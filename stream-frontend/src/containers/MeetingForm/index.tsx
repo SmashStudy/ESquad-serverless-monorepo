@@ -108,8 +108,8 @@ const MeetingForm: React.FC = () => {
     // studyId 추출 및 상태 설정
     const studyIdParam = extractValue("studyId");
     if (studyIdParam) {
-      setMeetingId(studyIdParam); // 상태 설정
-      console.log("Extracted Study ID:", studyIdParam); // 디버깅용 로그
+      setMeetingId(studyIdParam.toLowerCase()); // 소문자로 변환하여 상태 설정
+      console.log("Extracted Study ID:", studyIdParam.toLowerCase()); // 디버깅용 로그
     }
   
     // name 추출 및 상태 설정
@@ -119,7 +119,7 @@ const MeetingForm: React.FC = () => {
       console.log("Extracted Name:", nameParam); // 디버깅용 로그
     }
   }, [setMeetingId, setLocalUserName]);
-
+  
 
 
   const handleJoinMeeting = async (e: React.FormEvent) => {
