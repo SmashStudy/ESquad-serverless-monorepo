@@ -130,7 +130,14 @@ function App() {
 
 
               {/* 보호된 경로 */}
-              <Route path="/" element={ <PrivateRoute> <Home /> </PrivateRoute>}  >
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                }
+              >
                 {/* user */}
                 <Route path="/user/profile" element={<UserProfile />} />
                 <Route path="/user/profile/category" element={<UserStorageUsage />} />
