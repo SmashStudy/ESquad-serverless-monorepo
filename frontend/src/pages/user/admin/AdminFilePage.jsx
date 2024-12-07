@@ -18,15 +18,25 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {formatFileSize} from "../../../utils/fileFormatUtils.js";
 import axios from "axios";
 import {AgGridReact} from "ag-grid-react";
+import SnackbarAlert from "../../../components/storage/SnackBarAlert.jsx";
 
 const AdminFilePage = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     fetchFiles();
   }, []);
+
+  const handleSnackbarClose = () => {
+    setSnackbar({...snackbar, open: false});
+  };
 
   const columnDefs = [
     {
@@ -46,7 +56,7 @@ const AdminFilePage = () => {
                     aria-label="download"
                     size="small"
                     onClick={() => handleFileDownload(fileKey,
-                        originalFileName)}
+                        originalFileName, setSnackbar)}
                     sx={{color: theme.palette.success.main}}
                 >
                   <DownloadIcon/>
@@ -57,7 +67,7 @@ const AdminFilePage = () => {
                     aria-label="delete"
                     size="small"
                     onClick={() => handleFileDelete(fileKey, userEmail,
-                        userEmail, fetchFiles)}
+                        userEmail, setSnackbar, setFiles, fetchFiles)}
                     sx={{color: theme.palette.warning.main}}
                 >
                   <DeleteIcon/>
@@ -153,6 +163,13 @@ const AdminFilePage = () => {
   return (
       <Grid item xs={10}>
         <Box sx={{height: '100%'}}>
+          <SnackbarAlert
+              open={snackbar.open}
+              message={snackbar.message}
+              severity={snackbar.severity}
+              onClose={handleSnackbarClose}
+          />
+
           <div className="ag-theme-alpine"
                style={{width: '100%'}}>
             <AgGridReact

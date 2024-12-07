@@ -1,63 +1,35 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  List,
-  InputBase,
-  Chip,
-  colors,
-} from "@mui/material";
+import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
-import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import axios from "axios";
 import SearchIcon from "@mui/icons-material/Search";
 import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
-import { useTeams } from "../../context/TeamContext.jsx";
+import TeamCreationDialog from "../../components/content/community/TeamCreationDialog.jsx";
 
-const PostListPage = ({ isSmallScreen }) => {
+const PostTeamListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
-  const { teams } = useTeams();
+  const { teamId } = useParams();
   const location = useLocation();
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [board, setBoardType] = useState("questions");
   const [curPage, setCurPage] = useState(1);
   const [lastEvaluatedKeys, setLastEvaluatedKeys] = useState([]);
-  const [boardType, setBoardType] = useState("");
+
   const [filterTab, setFilterTab] = useState("전체");
-  const [texts, setTexts] = useState([]);
-
-  // URL 경로에 따라 boardType 설정
-  useEffect(() => {
-    const board = location.pathname.includes("team-recruit")
-      ? "team-recruit"
-      : location.pathname.includes("questions")
-      ? "questions"
-      : "general";
-
-    setBoardType(board);
-    setTexts(
-      board === "team-recruit"
-        ? ["전체", "모집중", "모집완료"]
-        : board === "questions"
-        ? ["전체", "미해결", "해결됨"]
-        : []
-    );
-    setCurPage(1);
-    setPosts([]);
-    setLastEvaluatedKeys([]);
-  }, [location.pathname]);
+  const [texts, setTexts] = useState(["전체", "미해결", "해결됨"]);
 
   const fetchPosts = async (reset = false) => {
-    if (!boardType) return;
+    if (!teamId) return;
 
     try {
       const params = {
         limit: 10,
+        teamId,
       };
 
       if (!reset && lastEvaluatedKeys[curPage - 1]) {
@@ -66,28 +38,22 @@ const PostListPage = ({ isSmallScreen }) => {
         );
       }
 
-      if (boardType === "questions") {
-        if (filterTab === "미해결") params.resolved = "false";
-        if (filterTab === "해결됨") params.resolved = "true";
-      } else if (boardType === "team-recruit") {
-        if (filterTab === "모집중") params.recruitStatus = "false";
-        if (filterTab === "모집완료") params.recruitStatus = "true";
+      // 탭 필터에 따라 resolved 값을 설정
+      if (filterTab === "미해결") {
+        params.resolved = "false";
+      } else if (filterTab === "해결됨") {
+        params.resolved = "true";
       }
 
-      const url = `${getCommunityApi()}/${boardType}`; // 동적 API 경로 설정
+      const url = `${getCommunityApi()}/team-questions`;
       const response = await axios.get(url, { params });
 
       const items = response.data.items || [];
 
-      const updatedItems = items.map((item) => ({
-        ...item,
-        comments: item.comments || [],
-      }));
-
-      setPosts(response.data.items || []);
       const newLastEvaluatedKeys = [...lastEvaluatedKeys];
       newLastEvaluatedKeys[curPage] = response.data.lastEvaluatedKey || null;
       setLastEvaluatedKeys(newLastEvaluatedKeys);
+      setPosts(reset ? items : [...posts, ...items]);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
     }
@@ -96,14 +62,16 @@ const PostListPage = ({ isSmallScreen }) => {
   useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardType, filterTab, curPage]);
+  }, [filterTab, curPage, teamId]);
 
   const handleFilterChange = (filter) => {
     if (filterTab === filter) return;
+
     setFilterTab(filter);
     setCurPage(1);
     setPosts([]);
     setLastEvaluatedKeys([]);
+    fetchPosts(true);
   };
 
   const handlePageChange = (direction) => {
@@ -116,7 +84,6 @@ const PostListPage = ({ isSmallScreen }) => {
 
   const handleWriteButtonClick = () => setIsPostModalOpen(true);
 
-  // 게시글 등록 후 해당 게시판으로 렌더링
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
     setCurPage(1); // 페이지를 첫 페이지로 초기화
@@ -299,7 +266,7 @@ const PostListPage = ({ isSmallScreen }) => {
 
           return (
             <Link
-              to={`/community/${boardType}/${
+              to={`/community/questions/${
                 post.postId
               }?createdAt=${encodeURIComponent(post.createdAt)}`}
               key={post.postId}
@@ -321,46 +288,24 @@ const PostListPage = ({ isSmallScreen }) => {
                 }}
               >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  {boardType === "questions" && (
-                    <Chip
-                      label={post.resolved ? "해결됨" : "미해결"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.resolved ? "#FFFFFF" : "#FFFFFF",
-                        backgroundColor: post.resolved
-                          ? theme.palette.primary.main
-                          : "#CED4DA",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
-                  {boardType === "team-recruit" && (
-                    <Chip
-                      label={post.recruitStatus ? "모집완료" : "모집중"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.recruitStatus ? "#fff" : "#fff",
-                        backgroundColor: post.recruitStatus
-                          ? "#CED4DA"
-                          : theme.palette.primary.main,
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
+                  <Chip
+                    label={post.resolved ? "해결됨" : "미해결"}
+                    sx={{
+                      mr: 2,
+                      borderRadius: "16px",
+                      fontWeight: "bold",
+                      color: post.resolved ? "#FFFFFF" : "#FFFFFF",
+                      backgroundColor: post.resolved
+                        ? theme.palette.primary.main
+                        : "#CED4DA",
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                      height: "30px",
+                      minWidth: "60px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  />
                   <Typography variant="body1" fontWeight="bold">
                     {post.title}
                   </Typography>
@@ -444,7 +389,7 @@ const PostListPage = ({ isSmallScreen }) => {
                         alignItems: "center",
                       }}
                     >
-                      🤍{post.likeCount || 0}
+                      🤍 {post.likeCount || 0}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -489,12 +434,13 @@ const PostListPage = ({ isSmallScreen }) => {
           다음
         </Button>
       </Box>
-      <PostCreationDialog
+      <TeamCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}
+        teamId={teamId}
       />
     </Box>
   );
 };
 
-export default PostListPage;
+export default PostTeamListPage;
