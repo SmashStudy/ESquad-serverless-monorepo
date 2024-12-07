@@ -49,10 +49,13 @@ provider:
                 - Arn  # Attendees 테이블 접근 권한
             - Fn::GetAtt:
                 - ParticipantUsageTracking
-                - Arn  # 참여자 사용량 추적 테이블 접근 권한
+                - Arn  # ParticipantUsageTracking 테이블 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/TitleIndex"  # TitleIndex GSI 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/TeamIndex"  # TeamIndex GSI 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/NameIndex"  # NameIndex GSI 접근 권한
             - Fn::GetAtt:
                 - MeetingRoomUsageTracking
-                - Arn  # 스트리밍 회의실 사용 추적 테이블 접근 권한
+                - Arn  # MeetingRoomUsageTracking 테이블 접근 권한
         - Effect: "Allow"
           Action:
             - "kms:Decrypt"
@@ -191,6 +194,8 @@ resources:
             AttributeType: 'S'
           - AttributeName: 'start_At'
             AttributeType: 'S'
+          - AttributeName: 'name'   # name 필드 추가
+            AttributeType: 'S'
         KeySchema:
           - AttributeName: 'userEmail'
             KeyType: HASH  # 파티션 키
@@ -212,6 +217,14 @@ resources:
                 KeyType: HASH  # GSI의 파티션 키로 teamId 설정
             Projection:
               ProjectionType: ALL  # 모든 속성을 인덱스에 포함
+          - IndexName: 'NameIndex'  # name을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'name'
+                KeyType: HASH  # GSI의 파티션 키로 name 설정
+              - AttributeName: 'start_At'
+                KeyType: RANGE # GSI의 정렬 키로 start_At 설정
+            Projection:
+              ProjectionType: ALL
 
     MeetingRoomUsageTracking:
       Type: AWS::DynamoDB::Table
