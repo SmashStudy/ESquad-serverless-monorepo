@@ -83,6 +83,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     if (tab === "스터디") {
       setContent(`
         <h2>[스터디 모집 내용 예시]</h2>
+        <br>
         <ul>
           <li>스터디 주제 :</li>
           <li>스터디 목표 :</li>
@@ -93,7 +94,8 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           <li>스터디 관련 주의사항 :</li>
           <li>스터디 지원 방법 : 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등)</li>
         </ul>
-        <p><em>참고 사항:</em> 스터디 게시판에 영리를 목적으로 하는 게시글(유료 과외 및 멘토링 등)을 작성한 경우 해당 글은 운영 방침에 의해 중단, 삭제될 수 있음을 안내드립니다.</p>
+        <br>
+        <p><em>참고 사항:</em> 스터디를 함꼐하려면 이메일이 필요해요! </p>
       `);
     } else {
       setContent(""); // 내용 초기화
@@ -247,7 +249,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               setContent(value);
               setIsDraft(true);
             }}
-            placeholder="내용을 입력하세요."
+            placeholder={`- 마크다운, 단축키를 이용해서 편리하게 글을 작성할 수 있어요.
+- 먼저 유사한 질문이 있었는지 검색해보세요.
+- 서로 예의를 지키며 존중하는 문화를 만들어가요.`}
           />
         </Box>
       </>
@@ -387,7 +391,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 8,
+          pt: 9,
         }}
       >
         <Button
