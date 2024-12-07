@@ -20,18 +20,17 @@ const EndMeetingControl: React.FC = () => {
   const logger = useLogger();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = (): void => setShowModal(!showModal);
-  const { meetingId } = useAppState();
+  const { meetingId, localUserName } = useAppState();
   const { roster } = useRosterState();
 
   let attendees = Object.values(roster);
 
   const participant = attendees.length.toString();
 
-
   const leaveMeeting = async (): Promise<void> => {
     try {
-      if (meetingId && participant === "1") {
-        await endMeeting(meetingId, participant);
+      if (meetingId) {
+        await endMeeting(meetingId, participant, localUserName);
         window.close();
       }
     } catch (e) {
