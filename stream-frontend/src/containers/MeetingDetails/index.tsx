@@ -46,6 +46,7 @@ const MeetingDetails = () => {
           mt={4}
           label={theme === "light" ? "어두운 모드" : "밝은 모드"}
           onClick={toggleTheme}
+          style={{ backgroundColor: '#9F51E8', borderColor: '#9F51E8' }}
         ></PrimaryButton>
       </Flex>
     </Flex>

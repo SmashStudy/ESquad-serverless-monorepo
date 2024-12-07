@@ -353,7 +353,8 @@ const MeetingForm: React.FC = () => {
         infoText="회의에 성공적으로 참여하려면 장치를 수동으로 선택하세요"
       />
       <Flex container layout="fill-space-centered" style={{ marginTop: "2.5rem" }}>
-        {isLoading ? <Spinner /> : <PrimaryButton label="계속" onClick={handleJoinMeeting} />}
+        {isLoading ? <Spinner /> : <PrimaryButton label="계속" onClick={handleJoinMeeting}
+          style={{ backgroundColor: '#9F51E8', borderColor: '#9F51E8' }}/>}
       </Flex>
       {errorMessage && (
         <Modal size="md" onClose={closeError}>
