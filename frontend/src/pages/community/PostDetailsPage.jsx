@@ -45,6 +45,10 @@ const PostDetailsPage = () => {
   const [likedByUser, setLikedByUser] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
+  // 추가된 상태 (게시글 상태 전환용)
+  const [postStatusAlertOpen, setPostStatusAlertOpen] = useState(false);
+  const [postStatusAlertMessage, setPostStatusAlertMessage] = useState("");
+
   const menuOpen = Boolean(menuAnchorEl);
   const fetchRef = useRef(false);
 
@@ -117,17 +121,18 @@ const PostDetailsPage = () => {
           ...prevPost,
           [statusField]: updatedValue,
         }));
-        alert(
-          `게시글이 ${
-            boardType === "questions"
-              ? updatedValue
-                ? "해결됨"
-                : "미해결"
-              : updatedValue
-              ? "모집 완료"
-              : "모집 중"
-          }으로 설정되었습니다.`
-        );
+
+        const msg =
+          boardType === "questions"
+            ? updatedValue
+              ? "질문이 해결되었습니다!"
+              : "게시글이 미해결 상태로 변경되었습니다!"
+            : updatedValue
+            ? "스터디가 모집완료 되었습니다!"
+            : "게시글이 모집 중으로 변경되었습니다!";
+
+        setPostStatusAlertMessage(msg);
+        setPostStatusAlertOpen(true);
       } else {
         throw new Error("서버에서 예상치 못한 응답이 반환되었습니다.");
       }
@@ -136,7 +141,6 @@ const PostDetailsPage = () => {
       alert("상태 전환에 실패했습니다. 다시 시도해주세요.");
     }
   };
-
   useEffect(() => {
     const fetchPostAndIncrementView = async () => {
       if (fetchRef.current) return;
@@ -816,6 +820,21 @@ const PostDetailsPage = () => {
           댓글이 삭제되었습니다!
         </Alert>
       </Snackbar>
+
+      <Snackbar
+        open={postStatusAlertOpen}
+        autoHideDuration={3000}
+        onClose={() => setPostStatusAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setPostStatusAlertOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {postStatusAlertMessage}
+        </Alert>
+      </Snackbar>
+
       <PostEditDialog
         open={isEditDialogOpen}
         handleClose={() => setIsEditDialogOpen(false)}
