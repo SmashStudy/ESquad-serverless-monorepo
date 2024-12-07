@@ -18,7 +18,7 @@ import {
 } from "../../utils/apiConfig";
 import QuillEditor from "../../utils/QuillEditor";
 
-const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
+const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -26,8 +26,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [activeTab, setActiveTab] = useState("질문");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState([]);
@@ -66,40 +64,14 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     fetchUserInfo();
   }, []);
 
-  const boardType =
-    activeTab === "질문"
-      ? "questions"
-      : activeTab === "자유"
-      ? "general"
-      : "team-recruit";
+  const boardType = "questions";
 
   // 탭 변경 함수
   const handleTabChange = (tab) => {
-    setActiveTab(tab); // 탭 변경
     setTitle(""); // 제목 초기화
     setContent(""); // 내용 초기화
     setTags([]); // 태그 초기화
     setIsDraft(false); // 드래프트 상태 초기화
-    if (tab === "스터디") {
-      setContent(`
-        <h2>[스터디 모집 내용 예시]</h2>
-        <br>
-        <ul>
-          <li>스터디 주제 :</li>
-          <li>스터디 목표 :</li>
-          <li>예상 스터디 일정(횟수) :</li>
-          <li>예상 커리큘럼 간략히 :</li>
-          <li>예상 모집인원 :</li>
-          <li>스터디 소개와 개설 이유 :</li>
-          <li>스터디 관련 주의사항 :</li>
-          <li>스터디 지원 방법 : 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등)</li>
-        </ul>
-        <br>
-        <p><em>참고 사항:</em> 스터디를 함꼐하려면 이메일이 필요해요! </p>
-      `);
-    } else {
-      setContent(""); // 내용 초기화
-    }
   };
   const renderTabContent = () => {
     const handleTagKeyDown = (event) => {
@@ -156,13 +128,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           }}
         >
           <InputBase
-            placeholder={
-              activeTab === "질문"
-                ? "제목에 핵심 내용을 요약해보세요."
-                : activeTab === "자유"
-                ? "자유게시판 제목을 입력하세요."
-                : "스터디 제목을 입력하세요."
-            }
+            placeholder={"제목에 핵심 내용을 요약해보세요."}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -199,20 +165,15 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => {
-                const tagProps = getTagProps({ index });
-                delete tagProps.key; // key를 제거
-
-                return (
-                  <Chip
-                    key={`tag-${index}`} // 고유 key 설정
-                    variant="outlined"
-                    size="small"
-                    label={option}
-                    {...tagProps} // key가 제거된 props 전달
-                  />
-                );
-              })
+              value.map((option, index) => (
+                <Chip
+                  key={`tag-${index}`}
+                  variant="outlined"
+                  size="small"
+                  label={option}
+                  {...getTagProps({ index })}
+                />
+              ))
             }
             renderInput={(params) => (
               <TextField
@@ -249,9 +210,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               setContent(value);
               setIsDraft(true);
             }}
-            placeholder={`- 마크다운, 단축키를 이용해서 편리하게 글을 작성할 수 있어요.
-- 먼저 유사한 질문이 있었는지 검색해보세요.
-- 서로 예의를 지키며 존중하는 문화를 만들어가요.`}
+            placeholder="내용을 입력하세요."
           />
         </Box>
       </>
@@ -319,6 +278,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
       const data = {
         title,
         content: finalContent,
+        teamId: teamId,
         writer: {
           name: userInfo.name,
           nickname: userInfo.nickname,
@@ -328,19 +288,18 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         ...(boardType === "team-recruit" && { recruitStatus: false }),
       };
 
-      const url = `${getCommunityApi()}/${boardType}`;
+      const url = `${getCommunityApi()}/teams/new-question-post`;
       const response = await axios.post(url, data);
 
       if (response.status === 201) {
         alert("게시글이 성공적으로 등록되었습니다.");
         setIsDraft(false);
         onSubmit();
-        navigate(`/community/${boardType}`);
+        navigate(`/teams/${encodeURIComponent(teamId)}/${boardType}`);
       } else {
         alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
       }
     } catch (error) {
-      console.error("Error during post submission:", error);
       alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
@@ -351,39 +310,13 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         display: "flex",
         flexDirection: "column",
         gap: 1,
-        maxWidth: "800px",
-        height: "70vh",
+        maxWidth: "700px",
+        height: "80vh",
         mx: "auto",
         my: "auto",
         py: 2,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          gap: 3,
-          mb: 2,
-          borderBottom: `1px solid ${theme.palette.primary.light}`,
-        }}
-      >
-        {["질문", "자유", "스터디"].map((tab) => (
-          <Button
-            key={tab}
-            variant="text"
-            onClick={() => handleTabChange(tab)}
-            sx={{
-              fontSize: "large",
-              fontWeight: activeTab === tab ? "bold" : "normal",
-              borderBottom: activeTab === tab ? "2px solid" : "none",
-              borderColor:
-                activeTab === tab ? theme.palette.primary.main : "transparent",
-            }}
-          >
-            {tab}
-          </Button>
-        ))}
-      </Box>
-
       {renderTabContent()}
 
       <Box
@@ -391,7 +324,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 9,
+          pt: 8,
         }}
       >
         <Button
@@ -421,4 +354,4 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
   );
 };
 
-export default PostCreationPage;
+export default PostTeamCreationPage;
