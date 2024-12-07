@@ -9,7 +9,7 @@ export const handler = async (event) => {
   }
 
   try {
-    const { title, participant, userEmail } = JSON.parse(event.body);
+    const { title, participant, nickname } = JSON.parse(event.body);
 
     if (!title) {
       return {
@@ -32,13 +32,13 @@ export const handler = async (event) => {
 
     const response = "";
 
+
+    await updateParticipantUsage(title, nickname);
+
 // participant를 전달하여 삭제 조건 적용
     if (participant === "1") {
         response = await deleteMeeting(title, participant);
-    }else{
-        response = await updateParticipantUsage(title, userEmail);
     }
-
 
     return {
       statusCode: 200,
