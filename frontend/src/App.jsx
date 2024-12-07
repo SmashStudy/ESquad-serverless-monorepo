@@ -27,7 +27,7 @@ import UserConfirmPassword from "./pages/user/authentication/UserConfirmPassword
 import Login from './pages/user/authentication/LoginPage.jsx';
 import AuthCallback from './auth/AuthCallback.jsx';
 import Logout from './pages/user/authentication/LogoutPage.jsx';
-import UserProfile from './pages/user/profile/UserProfilePage.jsx';
+import MainPage from './pages/home/MainPage.jsx';
 import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
 import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
@@ -138,11 +138,13 @@ function App() {
                   </PrivateRoute>
                 }
               >
+                <Route path="/home" element={<MainPage />} />
+
                 {/* user */}
-                <Route path="/user/profile" element={<UserProfile />} />
-                <Route path="/user/profile/manage-file" element={<UserStorageUsage />} />
-                <Route path="/user/profile/nickname" element={<UserProfileNickname />} />
-                <Route path="/user/profile/layout" element={<UserProfileLayout />} />
+                <Route path="/user/profile" element={<MainPage />} />
+                <Route path="/user/manage-file" element={<UserStorageUsage />} />
+                <Route path="/user/nickname" element={<UserProfileNickname />} />
+                <Route path="/user/layout" element={<UserProfileLayout />} />
 
                 {/* admin */}
                 <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
@@ -174,7 +176,7 @@ function App() {
               <Route
                 path="*"
                 element={
-                  isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
+                  isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/login" />
                 }
               />
             </Routes>

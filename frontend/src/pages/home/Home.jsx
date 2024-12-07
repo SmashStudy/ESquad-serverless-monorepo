@@ -15,7 +15,7 @@ const HomeContent = () => {
     const isMediumScreen = useMediaQuery(theme.breakpoints.down('lg'));
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    const [selectedTab, setSelectedTab] = useState(0);      // 0: 커뮤니티, 1: 팀
+    const [selectedTab, setSelectedTab] = useState(null);      // 0: 커뮤니티, 1: 팀
     const [selectedTeam, setSelectedTeam] = useState(null);         // 유저가 선택한 팀
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,6 +24,7 @@ const HomeContent = () => {
     const [loading, setLoading] = useState(false);
 
     const {teams, updateSelectedTeam, updateTeams} = useTeams();
+
 
     const toggleChatDrawer = () => {
         setChatDrawerOpen((prevState) => !prevState);

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, {useState, useEffect, useCallback} from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -84,6 +84,7 @@ const Appbar = ({
   const theme = useTheme();
   const {teams, updateTeams} = useTeams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -100,6 +101,8 @@ const Appbar = ({
 
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+
+  const isHomePage = location.pathname === '/home';
 
   const fetchUserRole = async () => {
     try {
@@ -268,30 +271,34 @@ const Appbar = ({
       sx={{ width: `100%`, backgroundColor: "#fff" }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center", flex: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center", flex: 3}}>
+          <Box>
           {showSearchBar ? (
             <IconButton
               edge="start"
               color="inherit"
               aria-label="back"
               onClick={() => setShowSearchBar(false)}
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, my: 2, }}
             >
               <ArrowBackIcon />
             </IconButton>
           ) : (
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleSidebarToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
+              !isHomePage && (
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleSidebarToggle}
+                  sx={{ mr: 2}}
+                >
+                  <MenuIcon />
+                </IconButton>
+            )
           )}
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <NavLink to="/community/questions" activeclassname="nav-logo">
+            <NavLink to="/home" activeclassname="nav-logo">
               <img
                 src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
                 alt="Logo"
@@ -299,7 +306,9 @@ const Appbar = ({
               />
             </NavLink>
           </Box>
+
           {!showSearchBar && !isVerySmallScreen && (
+
             <Box sx={{ display: "flex", gap: 1 }}>
               <NavLink
                 to="/community/questions"
