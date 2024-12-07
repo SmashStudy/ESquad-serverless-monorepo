@@ -83,7 +83,6 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     if (tab === "스터디") {
       setContent(`
         <h2>[스터디 모집 내용 예시]</h2>
-        <br>
         <ul>
           <li>스터디 주제 :</li>
           <li>스터디 목표 :</li>
