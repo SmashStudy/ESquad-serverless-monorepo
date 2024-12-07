@@ -141,7 +141,7 @@ function App() {
               <Route path="/" element={ <PrivateRoute> <Home /> </PrivateRoute>}  >
                 {/* user */}
                 <Route path="/user/profile" element={<UserProfile />} />
-                <Route path="/user/profile/category" element={<UserStorageUsage />} />
+                <Route path="/user/profile/manage-file" element={<UserStorageUsage />} />
                 <Route path="/user/profile/nickname" element={<UserProfileNickname />} />
                 <Route path="/user/profile/layout" element={<UserProfileLayout />} />
 
