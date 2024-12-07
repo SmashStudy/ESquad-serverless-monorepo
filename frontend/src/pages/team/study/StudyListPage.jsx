@@ -250,6 +250,7 @@ const StudyListPage = ({ isSmallScreen, isMediumScreen }) => {
                         teamId={teamId}
                         studyId={study.PK}
                         nickname={userInfo.nickname}
+                        userEmail={userInfo.email}
                       />
                     )}
                   </CardActions>

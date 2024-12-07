@@ -50,6 +50,10 @@ const VIDEO_TRANSFORM_FILTER_OPTIONS = [
   },
 ];
 
+function fromBase64(str: string) {
+  return decodeURIComponent(escape(atob(str)));
+}
+
 const MeetingForm: React.FC = () => {
   const meetingManager = useMeetingManager();
   const {
@@ -78,9 +82,8 @@ const MeetingForm: React.FC = () => {
     toggleMeetingJoinDeviceSelection,
   } = useAppState();
 
-  const [userEmail, setUserEmail] = useState<string>('test@naver.com'); // 사용자 이메일 더미 데이터
-  const [teamId, setTeamId] = useState<string | null>(null); // 팀 ID 상태 추가
-  //const [status, setStatus] = useState<string>("false");
+  const [userEmail, setUserEmail] = useState<string>(""); 
+  const [teamId, setTeamId] = useState<string | null>(null); 
   const [meetingErr, setMeetingErr] = useState(false);
   const [nameErr, setNameErr] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,38 +92,43 @@ const MeetingForm: React.FC = () => {
   const browserBehavior = new DefaultBrowserBehavior();
 
   useEffect(() => {
-    // URL 전체에서 값을 추출
     const url = window.location.href;
-  
-    // 특정 키의 값을 추출하는 함수 (쿼리 및 해시 처리)
+
     const extractValue = (key: string): string | null => {
-      const match = url.match(new RegExp(`[?&]${key}=([^&]*)`)); // 키에 해당하는 값을 추출
-      return match ? decodeURIComponent(match[1]).replace(/#/g, "") : null; // # 제거
+      const match = url.match(new RegExp(`[?&]${key}=([^&]*)`));
+      return match ? decodeURIComponent(match[1]).replace(/#/g, "") : null;
     };
-  
-    // teamId 추출 및 상태 설정
+
     const teamIdParam = extractValue("teamId");
     if (teamIdParam) {
-      setTeamId(teamIdParam); // 상태 설정
-      console.log("Extracted Team ID:", teamIdParam); // 디버깅용 로그
+      setTeamId(teamIdParam);
+      console.log("Extracted Team ID:", teamIdParam);
     }
-  
-    // studyId 추출 및 상태 설정
+
     const studyIdParam = extractValue("studyId");
     if (studyIdParam) {
-      setMeetingId(studyIdParam.toLowerCase()); // 소문자로 변환하여 상태 설정
-      console.log("Extracted Study ID:", studyIdParam.toLowerCase()); // 디버깅용 로그
+      setMeetingId(studyIdParam.toLowerCase());
+      console.log("Extracted Study ID:", studyIdParam.toLowerCase());
     }
-  
-    // name 추출 및 상태 설정
+
     const nameParam = extractValue("name");
     if (nameParam) {
-      setLocalUserName(nameParam); // 상태 설정
-      console.log("Extracted Name:", nameParam); // 디버깅용 로그
+      setLocalUserName(nameParam);
+      console.log("Extracted Name:", nameParam);
+    }
+
+    // Base64로 인코딩된 userEmail 값 추출
+    const userParam = extractValue("user");
+    if (userParam) {
+      try {
+        const decodedEmail = fromBase64(userParam);
+        setUserEmail(decodedEmail);
+        console.log("Decoded Email:", decodedEmail);
+      } catch (e) {
+        console.error("이메일 디코딩 중 오류 발생:", e);
+      }
     }
   }, [setMeetingId, setLocalUserName]);
-  
-
 
   const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,7 +156,6 @@ const MeetingForm: React.FC = () => {
     meetingManager.getAttendee = createGetAttendeeCallback(id);
 
     try {
-
       const status = "true";
 
       const { JoinInfo } = await createMeetingAndAttendee(
@@ -256,7 +263,6 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
-      {/* 사용자 이메일 입력 필드 추가 */}
       <FormField
         field={Input}
         label="이메일"
@@ -264,6 +270,7 @@ const MeetingForm: React.FC = () => {
         fieldProps={{
           name: "email",
           placeholder: "이메일을 입력해주세요",
+          disabled: true, // 이메일 변경 불가 (URL에서 받은 값)
         }}
         errorText="올바른 이메일을 입력해주세요"
         error={!userEmail}
@@ -271,7 +278,6 @@ const MeetingForm: React.FC = () => {
           setUserEmail(e.target.value);
         }}
       />
-      {/* 팀 ID는 URL 파라미터에서 자동으로 설정되므로 입력 필드가 필요 없다면 생략 */}
       <RegionSelection setRegion={setRegion} region={region} />
       <FormField
         field={Checkbox}
