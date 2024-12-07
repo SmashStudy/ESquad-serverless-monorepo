@@ -25,6 +25,7 @@ import {
 } from '../../../utils/storage/utilities.js';
 import LinearProgressWithLabel from "../../../components/custom/CustomMui.jsx";
 import FilePreviewBeforeUpload from "../../../components/storage/FilePreviewBeforeUpload.jsx";
+import SnackbarAlert from "../../../components/storage/SnackBarAlert.jsx";
 
 const StudyStatus = ({ startDate, endDate }) => {
   const theme = useTheme();
@@ -178,6 +179,12 @@ const StudyDetailPage = ({ isSmallScreen, isMediumScreen }) => {
         }}
       >
 
+        <SnackbarAlert
+            open={snackbar.open}
+            message={snackbar.message}
+            severity={snackbar.severity}
+            onClose={handleSnackbarClose}
+        />
         <Box aria-controls="panel1a-content" id="panel1a-header" sx={{ position: 'relative', top: 0 }}>
           <Typography sx={{ fontSize: '20px', paddingBottom: '10px' }}>공유파일 리스트</Typography>
         </Box>
