@@ -15,7 +15,7 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ message: "Title is required" }),
+        body: JSON.stringify({ message: "회의 제목은 필수 항목입니다." }),
       };
     }
 
@@ -23,21 +23,19 @@ export const handler = async (event) => {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ message: "Participant is required" }),
+        body: JSON.stringify({ message: "참가자 정보는 필수 항목입니다." }),
       };
     }
 
-    console.log("Ending meeting for title:", title, "with participant:", participant);
+    console.log("회의 종료 요청 - 제목:", title, "참가자:", participant);
 
-
-    const response = "";
-
+    let response = "";
 
     await updateParticipantUsage(title, nickname);
 
-// participant를 전달하여 삭제 조건 적용
+    // participant를 전달하여 삭제 조건 적용
     if (participant === "1") {
-        response = await deleteMeeting(title, participant);
+      response = await deleteMeeting(title, participant);
     }
 
     return {
@@ -50,7 +48,7 @@ export const handler = async (event) => {
       statusCode: error.message === "Meeting not found" ? 404 : 500,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: error.message === "Meeting not found" ? "Meeting not found" : "Internal Server Error",
+        message: error.message === "Meeting not found" ? "회의를 찾을 수 없습니다." : "서버 내부 오류가 발생했습니다.",
         error: error.message,
       }),
     };

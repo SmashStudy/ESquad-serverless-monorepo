@@ -11,12 +11,12 @@ export const handler = async (event) => {
 
   try {
     const { title, attendeeName, region = 'us-east-1', ns_es, userEmail, teamId, status } = JSON.parse(event.body);
-    
+
     if (!title || !attendeeName) {
       return {
         statusCode: 400,
         headers: CORS_HEADERS,
-        body: JSON.stringify({ message: 'Must provide title and name' })
+        body: JSON.stringify({ message: '회의 제목과 참가자 이름을 제공해야 합니다.' }),
       };
     }
 
@@ -39,8 +39,8 @@ export const handler = async (event) => {
       statusCode: 500,
       headers: CORS_HEADERS,
       body: JSON.stringify({
-        message: 'Internal Server Error',
-        error: error.message
+        message: '서버 내부 오류가 발생했습니다.',
+        error: error.message,
       }),
     };
   }

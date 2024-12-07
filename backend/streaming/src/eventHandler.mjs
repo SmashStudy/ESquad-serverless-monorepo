@@ -6,28 +6,22 @@
 export const handler = async (event) => {
   try {
     // 이벤트 로깅
-    console.log('Received Event:', JSON.stringify(event, null, 2));
-
-    // 이벤트 처리 로직을 여기에 추가
-    // 예: 특정 이벤트 유형에 따라 다른 작업 수행
-    // if (event['detail-type'] === 'SomeEventType') {
-    //   // 처리 로직
-    // }
+    console.log('수신된 이벤트:', JSON.stringify(event, null, 2));
 
     // 성공적인 응답 반환
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Event processed successfully' }),
+      body: JSON.stringify({ message: '이벤트가 성공적으로 처리되었습니다.' }),
     };
   } catch (error) {
     // 오류 로깅
-    console.error('Error processing event:', error);
+    console.error('이벤트 처리 중 오류 발생:', error);
 
     // 오류 응답 반환
     return {
       statusCode: 500,
       body: JSON.stringify({
-        message: 'Internal Server Error',
+        message: '내부 서버 오류가 발생했습니다.',
         error: error.message,
       }),
     };

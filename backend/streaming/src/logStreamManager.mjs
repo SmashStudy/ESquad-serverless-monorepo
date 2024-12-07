@@ -6,7 +6,7 @@ import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
 const logGroupName = process.env.BROWSER_LOG_GROUP_NAME;
 
 if (!logGroupName) {
-  throw new Error('필수 환경 변수 BROWSER_LOG_GROUP_NAME이(가) 설정되어 있지 않습니다.');
+  throw new Error('필수 환경 변수 BROWSER_LOG_GROUP_NAME이 설정되어 있지 않습니다.');
 }
 
 /**
@@ -43,7 +43,7 @@ export const ensureLogStream = async (logStreamName) => {
 
     return null;
   } catch (error) {
-    console.error(`Error ensuring log stream "${logStreamName}":`, error);
-    throw new Error('Failed to ensure log stream in CloudWatch Logs.');
+    console.error(`로그 스트림 "${logStreamName}"을 보장하는 중 오류 발생:`, error);
+    throw new Error('CloudWatch Logs에서 로그 스트림을 보장하는 데 실패했습니다.');
   }
 };
