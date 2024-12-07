@@ -35,7 +35,7 @@ const AdminFilePage = () => {
   }, []);
 
   const handleSnackbarClose = () => {
-    setSnackbar({ ...snackbar, open: false });
+    setSnackbar({...snackbar, open: false});
   };
 
   const columnDefs = [
@@ -67,7 +67,7 @@ const AdminFilePage = () => {
                     aria-label="delete"
                     size="small"
                     onClick={() => handleFileDelete(fileKey, userEmail,
-                        userEmail, fetchFiles, setSnackbar)}
+                        userEmail, setSnackbar, setFiles, fetchFiles)}
                     sx={{color: theme.palette.warning.main}}
                 >
                   <DeleteIcon/>
