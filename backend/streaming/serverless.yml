@@ -218,14 +218,16 @@ resources:
       Properties:
         TableName: 'esquad-streaming-meeting-room-usage-${self:provider.stage}'  # 스트리밍 회의실 사용 추적 테이블
         AttributeDefinitions:
-          - AttributeName: 'teamId'  # teamId 속성 추가
-            AttributeType: 'S'
           - AttributeName: 'title'
             AttributeType: 'S'
-          - AttributeName: 'start_At'
+          - AttributeName: 'teamId'
             AttributeType: 'S'
           - AttributeName: 'status'
             AttributeType: 'S'
+          - AttributeName: 'start_At'
+            AttributeType: 'S'
+          - AttributeName: 'userEmail'
+            AttributeType: 'S'  # GSI에 사용하기 위해 추가
         KeySchema:
           - AttributeName: 'title'
             KeyType: HASH  # 파티션 키
@@ -239,9 +241,15 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-          - IndexName: 'TeamIndex'  # teamId를 기준으로 검색하기 위한 GSI 추가
+          - IndexName: 'TeamIndex'
             KeySchema:
               - AttributeName: 'teamId'
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: 'UserEmailIndex'  # userEmail을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'userEmail'
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -250,7 +258,8 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: 'MeetingNotificationsQueue-${self:provider.stage}'  # 미팅 알림용 SQS 큐
-        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS-${self:provider.stage}  # KMS 키 사용
+        KmsMasterKeyId: 
+          Fn::Sub: arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/ChimeKMS-${self:provider.stage}  # KMS 키 사용
 
     ChimeBrowserLogs:
       Type: AWS::Logs::LogGroup
@@ -267,7 +276,8 @@ resources:
             - Sid: Allow access for Chime Service
               Effect: Allow
               Principal:
-                Service: chime.amazonaws.com
+                Service:
+                  - chime.amazonaws.com
               Action:
                 - kms:GenerateDataKey
                 - kms:Decrypt
@@ -276,8 +286,9 @@ resources:
               Effect: Allow
               Principal:
                 AWS:
-                  Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
-              Action: kms:*
+                  - Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+              Action: 
+                - kms:*
               Resource: '*'  # 루트 사용자에 전체 권한 부여
 
     ChimeKMSAlias:
