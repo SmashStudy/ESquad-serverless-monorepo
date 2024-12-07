@@ -22,7 +22,7 @@ export const handler = async (event) => {
 
     let meetingInfo = await getMeeting(title);
     if (!meetingInfo) {
-      meetingInfo = await createMeeting(title, region, ns_es, status, teamId);
+      meetingInfo = await createMeeting(title, region, ns_es, userEmail, teamId, status);
     }
 
     const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName, userEmail, teamId);
