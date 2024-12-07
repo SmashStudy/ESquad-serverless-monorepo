@@ -43,9 +43,8 @@ export const putAttendee = async (title, attendeeId, attendeeName, userEmail, te
             Item: {
               userEmail: { S: userEmail },
               start_At: { S: startAtISO },
-              studyId: { S: title },
+              title: { S: title },
               teamId: { S: teamId },
-              // end_At은 초기에는 설정하지 않음
             },
           },
         },
@@ -57,7 +56,7 @@ export const putAttendee = async (title, attendeeId, attendeeName, userEmail, te
     await dynamoDbClient.send(command);
 
     console.log(`Attendee ${attendeeName} added successfully to ${title} and participant usage tracked.`);
-    
+
   } catch (error) {
     console.error('Error saving attendee and tracking usage:', error);
     throw new Error(`Failed to save attendee and track usage: ${error.message}`);
