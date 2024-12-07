@@ -13,7 +13,7 @@ const MeetingRoomUsageTrackingTableName = process.env.MEETING_ROOM_USAGE_TABLE_N
  * @returns {void}
  * @throws {Error} - DynamoDB 오류 발생 시
  */
-export const putMeeting = async (title, meetingInfo, status) => {
+export const putMeeting = async (title, meetingInfo, status, teamId) => {
  
   const now = new Date();
   const ttlSeconds = Math.floor(now.getTime() / 1000) + 3 * 60 * 60;
@@ -35,6 +35,7 @@ export const putMeeting = async (title, meetingInfo, status) => {
           Put: {
             TableName: MeetingRoomUsageTrackingTableName,
             Item: {
+              teamId: {S: teamId},
               title: { S: title },
               start_At: { S: now.toISOString() },
               status: { S: status },
