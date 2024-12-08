@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useAppState } from "../../providers/AppStateProvider";
 import { useDataMessages } from '../../providers/DataMessagesProvider';
 import { StyledMessages, CustomChatBubble, SenderName, MessageBox, Timestamp } from './Styled';
 
@@ -28,6 +29,7 @@ function convertMessageToHyperlink(message: string): JSX.Element {
 }
 
 export default function Messages() {
+  const { theme } = useAppState(); // 현재 테마 가져오기
   const { messages } = useDataMessages();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +46,7 @@ export default function Messages() {
     return messages.map((message) => (
       <CustomChatBubble isSelf={message.isSelf} key={message.timestamp}>
         {/* 발신자 이름 */}
-        <SenderName>{message.senderName}</SenderName>
+        <SenderName theme={theme}>{message.senderName}</SenderName>
         {/* 메시지 박스 */}
         <MessageBox>
           {convertMessageToHyperlink(message.message)}

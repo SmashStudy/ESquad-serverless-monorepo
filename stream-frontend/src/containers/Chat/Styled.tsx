@@ -42,13 +42,14 @@ export const CustomChatBubble = styled.div<{ isSelf: boolean }>`
 `;
 
 // 발신자 이름 스타일
-export const SenderName = styled.div`
+export const SenderName = styled.div<{ theme: string }>`
   font-weight: bold;
   font-size: 0.9rem;
-  color: black; /* 닉네임 색상 */
+  color: ${({ theme }) => (theme === 'dark' ? 'white' : 'black')}; /* 다크 모드: 흰색, 라이트 모드: 검은색 */
   margin-bottom: 5px;
   text-align: left;
 `;
+
 
 // 메시지 박스 스타일
 export const MessageBox = styled.div`
