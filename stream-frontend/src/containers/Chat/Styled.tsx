@@ -45,7 +45,7 @@ export const CustomChatBubble = styled.div<{ isSelf: boolean }>`
 export const SenderName = styled.div`
   font-weight: bold;
   font-size: 0.9rem;
-  color: #7b3dc8; /* 닉네임 색상 */
+  color: black; /* 닉네임 색상 */
   margin-bottom: 5px;
   text-align: left;
 `;
