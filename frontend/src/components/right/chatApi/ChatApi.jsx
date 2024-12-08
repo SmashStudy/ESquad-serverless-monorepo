@@ -51,7 +51,7 @@ export const sendMessageAPI = async (socket, messageData) => {
                     room_id: String(messageData.room_id),
                     message: messageData.message,
                     timestamp: messageData.timestamp,
-                    user_id: messageData.email,
+                    user_id: messageData.user_id,
                     nickname: messageData.nickname,
                     fileKey: messageData.fileKey,
                     contentType: messageData.contentType,

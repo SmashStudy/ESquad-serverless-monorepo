@@ -100,9 +100,7 @@ function ChatMessages({currentChatRoom}) {
 
         const newSocket = new WebSocket(`${wsUrl}?room_id=${encodedRoomId}&user_id=${encodedUserId}`);
 
-        newSocket.onopen = () => {
-            console.log("WebSocket 연결 성공");
-        };
+        newSocket.onopen = () => {};
 
         newSocket.onmessage = (event) => {
             try {
@@ -160,11 +158,11 @@ function ChatMessages({currentChatRoom}) {
                 const uploadResponse = await uploadFile({
                     file: selectedFile,
                     room_id: room_id,
-                    user_id: currentChatRoom.id,
+                    user_id: email,
                     nickname: nickname,
                     targetType: 'CHAT',
                 });
-                console.log("Upload Response:", uploadResponse);
+
                 const fileMessage = {
                     action: 'sendMessage',
                     message: `파일 업로드 완료: ${uploadResponse.originalFileName}`,
@@ -177,7 +175,7 @@ function ChatMessages({currentChatRoom}) {
                     timestamp: timestamp,
                     isFile: true,
                 };
-                console.log("File Message:", fileMessage);
+
                 // 웹소켓으로 전송
                 await sendMessageAPI(socketRef, fileMessage);
                 // 메시지 상태 업데이트
