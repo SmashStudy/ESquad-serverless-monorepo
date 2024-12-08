@@ -139,8 +139,8 @@ const SidebarComponent = ({
   ];
 
   const studyItems = [
-      { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
       { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search` },
+      { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
       { text: '질문', icon: <QuizIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions` },
   ];
 
@@ -161,7 +161,7 @@ const SidebarComponent = ({
     { text: "설정", icon: <SettingsIcon />, link: "/user/settings" },
   ];
 
-  if(location.pathname === "/home") {
+  if(location.pathname === "/main" || location.pathname === "/") {
     return null;
   }
 

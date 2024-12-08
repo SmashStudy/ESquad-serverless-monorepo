@@ -102,7 +102,7 @@ const Appbar = ({
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
-  const isHomePage = location.pathname === '/home';
+  const isHomePage = location.pathname === "/" || location.pathname === '/main';
 
   const fetchUserRole = async () => {
     try {
@@ -121,7 +121,7 @@ const Appbar = ({
       const data = await response.json();
       setRole(data.role); // 역할 정보 설정
     } catch (error) {
-      console.error("사용자 역할 가져오기 중 오류:", error);
+      console.error("사용자 역할 가져오기 중 오류:", error);``
     }
   };
 
@@ -298,7 +298,7 @@ const Appbar = ({
           )}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <NavLink to="/home" activeclassname="nav-logo">
+            <NavLink to="/main" activeclassname="nav-logo">
               <img
                 src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
                 alt="Logo"

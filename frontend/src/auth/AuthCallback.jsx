@@ -42,7 +42,7 @@ const AuthCallback = () => {
                     
 
                     // 메인 페이지로 이동
-                    navigate('/home');
+                    navigate('/main');
                 }
 
             } catch (error) {

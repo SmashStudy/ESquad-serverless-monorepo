@@ -138,7 +138,9 @@ function App() {
                   </PrivateRoute>
                 }
               >
-                <Route path="/home" element={<MainPage />} />
+
+                <Route path="/" element={<MainPage />} />
+                <Route path="/main" element={<MainPage />} />
 
                 {/* user */}
                 <Route path="/user/profile" element={<MainPage />} />
@@ -176,7 +178,7 @@ function App() {
               <Route
                 path="*"
                 element={
-                  isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/login" />
+                  isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/login" />
                 }
               />
             </Routes>
