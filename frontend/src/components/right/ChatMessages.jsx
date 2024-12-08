@@ -8,7 +8,7 @@ import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
 
-const wsUrl = "wss://zrmpjkuu7f.execute-api.us-east-1.amazonaws.com/local";
+const wsUrl = getChatWebSocketApi();
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
