@@ -11,6 +11,7 @@ export const StyledArrowButton = styled.button`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  margin-right: 5px; /* 오른쪽 벽과 버튼 사이 간격 추가 */
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
@@ -119,6 +120,8 @@ export const StyledChatInputContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 0.75rem;
+  padding-left: 5px; /* 왼쪽 벽과 입력란 사이 간격 추가 */
+  gap: 5px; /* 입력란과 버튼 사이 간격 추가 */
 
   .ch-input-wrapper {
     width: 90%;
@@ -128,6 +131,7 @@ export const StyledChatInputContainer = styled.div`
     }
   }
 `;
+
 
 export const StyledMessages = styled.div`
   grid-area: messages;
