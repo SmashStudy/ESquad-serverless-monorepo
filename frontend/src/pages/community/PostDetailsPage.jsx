@@ -128,7 +128,7 @@ const PostDetailsPage = () => {
               ? "질문이 해결되었습니다!"
               : "게시글이 미해결 상태로 변경되었습니다!"
             : updatedValue
-            ? "스터디가 모집완료 되었습니다!"
+            ? "팀 모집이 완료되었습니다!"
             : "게시글이 모집 중으로 변경되었습니다!";
 
         setPostStatusAlertMessage(msg);
