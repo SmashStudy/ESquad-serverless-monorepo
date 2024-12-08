@@ -8,7 +8,7 @@ import axios from "axios";
 import {fetchUserEmail} from "../../utils/storage/utilities.js";
 import Loading from "../custom/Loading.jsx";
 
-const wsUrl = "wss://zrmpjkuu7f.execute-api.us-east-1.amazonaws.com/local"
+const wsUrl = "wss://zrmpjkuu7f.execute-api.us-east-1.amazonaws.com/local";
 
 function ChatMessages({currentChatRoom}) {
     const [messages, setMessages] = useState([]);
@@ -50,9 +50,7 @@ function ChatMessages({currentChatRoom}) {
     }, []);
 
     useEffect(() => {
-        if (!room_id || !email) {
-            return;
-        }
+        if (!room_id || !email) return;
 
         setLoading(true);
 
@@ -162,22 +160,24 @@ function ChatMessages({currentChatRoom}) {
                 const uploadResponse = await uploadFile({
                     file: selectedFile,
                     room_id: room_id,
-                    user_id: email,
+                    user_id: currentChatRoom.id,
                     nickname: nickname,
                     targetType: 'CHAT',
                 });
+                console.log("Upload Response:", uploadResponse);
                 const fileMessage = {
                     action: 'sendMessage',
                     message: `파일 업로드 완료: ${uploadResponse.originalFileName}`,
                     fileKey: uploadResponse.fileKey,
                     contentType: uploadResponse.contentType,
                     originalFileName: uploadResponse.originalFileName,
-                    room_id: room_id,
+                    room_id: currentChatRoom.id,
                     user_id: email,
                     nickname: nickname,
                     timestamp: timestamp,
                     isFile: true,
                 };
+                console.log("File Message:", fileMessage);
                 // 웹소켓으로 전송
                 await sendMessageAPI(socketRef, fileMessage);
                 // 메시지 상태 업데이트
@@ -210,7 +210,6 @@ function ChatMessages({currentChatRoom}) {
                     nickname: nickname,
                     timestamp: timestamp
                 };
-                console.log("메시지 전송 데이터 : " , messageContent)
                 await sendMessageAPI(socketRef, textMessage);
                 setMessages((prevMessages) => [...prevMessages, textMessage]);
             }
