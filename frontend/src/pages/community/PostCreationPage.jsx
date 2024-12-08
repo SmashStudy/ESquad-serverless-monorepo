@@ -80,9 +80,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setContent(""); // 내용 초기화
     setTags([]); // 태그 초기화
     setIsDraft(false); // 드래프트 상태 초기화
-    if (tab === "팀모집") {
+    if (tab === "팀 모집") {
       setContent(`
-        <h2>[스터디 팀모집 내용 예시]</h2>
+        <h2>[스터디 팀 모집 내용 예시]</h2>
         <ul>
           <li>스터디 주제 :</li>
           <li>스터디 목표 :</li>
@@ -160,7 +160,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 ? "제목에 핵심 내용을 요약해보세요."
                 : activeTab === "자유"
                 ? "자유게시판 제목을 입력하세요."
-                : "팀모집 제목을 입력하세요."
+                : "팀 모집 제목을 입력하세요."
             }
             value={title}
             onChange={(e) => {
@@ -365,7 +365,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           borderBottom: `1px solid ${theme.palette.primary.light}`,
         }}
       >
-        {["질문", "자유", "팀모집"].map((tab) => (
+        {["질문", "자유", "팀 모집"].map((tab) => (
           <Button
             key={tab}
             variant="text"

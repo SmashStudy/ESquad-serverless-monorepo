@@ -146,7 +146,7 @@ const SidebarComponent = ({
       link: "/community/general",
     },
     {
-      text: "스터디 팀모집",
+      text: "스터디 팀 모집",
       icon: <Groups3Icon />,
       link: "/community/team-recruit",
     },
