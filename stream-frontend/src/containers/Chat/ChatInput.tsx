@@ -1,7 +1,7 @@
 import { Input } from "amazon-chime-sdk-component-library-react";
 import React, { ChangeEvent, useState } from "react";
 import { useDataMessages } from "../../providers/DataMessagesProvider";
-import { StyledChatInputContainer } from "./Styled";
+import { StyledChatInputContainer, StyledArrowButton } from "./Styled";
 
 export default function ChatInput() {
   const [message, setMessage] = useState(""); // 메시지 상태
@@ -35,6 +35,18 @@ export default function ChatInput() {
         onKeyPress={handleKeyPress}
         placeholder="대기 중인 메시지"
       />
+      
+      {/* 채팅 메세지 버튼 */}
+      <StyledArrowButton onClick={handleSendMessage}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="white"
+      >
+        <path d="M8 5v14l11-7z" />
+      </svg>
+      </StyledArrowButton>
+
     </StyledChatInputContainer>
   );
 }

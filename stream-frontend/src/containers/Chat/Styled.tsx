@@ -1,5 +1,37 @@
 import styled from 'styled-components';
 
+// 채팅 화살표 버튼
+export const StyledArrowButton = styled.button`
+  background-color: #ffffff; /* 버튼 배경: 흰색 */
+  border: 2px solid #ffffff; /* 테두리: 흰색 */
+  border-radius: 8px; /* 사각형 모서리를 살짝 둥글게 */
+  width: 34px; /* 버튼 너비 */
+  height: 34px; /* 버튼 높이 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    background-color: #f3f0ff; /* 호버 시 연보라 배경 */
+    box-shadow: 0 0 5px rgba(159, 81, 232, 0.5); /* 보라색 그림자 */
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  /* SVG 삼각형 */
+  svg {
+    width: 14px; /* 삼각형 크기 */
+    height: 14px;
+    fill: none; /* 내부 비움 */
+    stroke: #9f51e8; /* 삼각형 테두리 색상 */
+    stroke-width: 2;
+  }
+`;
+
 // 커스텀 ChatBubble 스타일 컨테이너
 export const CustomChatBubble = styled.div<{ isSelf: boolean }>`
   display: flex;
@@ -36,8 +68,6 @@ export const Timestamp = styled.div`
   margin-top: 5px;
   text-align: left;
 `;
-
-
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const StyledChat = styled.aside<any>`
