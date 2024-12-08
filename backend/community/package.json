@@ -16,5 +16,8 @@
     "node-fetch": "^3.3.2",
     "serverless-dotenv-plugin": "^6.0.0",
     "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "serverless-prune-plugin": "^2.1.0"
   }
 }

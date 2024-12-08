@@ -35,6 +35,7 @@ const AdminUserPage = () => {
     fetchUsers();
   }, []);
 
+  // 사용자 목록 가져오기
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -50,7 +51,14 @@ const AdminUserPage = () => {
       }
 
       const data = await response.json();
-      setUsers(data.users);
+
+      // isAdmin 필드 설정
+      const updatedUsers = data.users.map((user) => ({
+        ...user,
+        isAdmin: user.groups && user.groups.includes("admin"), // "admin" 그룹 확인
+      }));
+
+      setUsers(updatedUsers);
       setTotalUsers(data.totalUsers);
       setLoading(false);
     } catch (error) {
@@ -59,6 +67,7 @@ const AdminUserPage = () => {
     }
   };
 
+  // 검색 기능
   const handleSearch = () => {
     const filteredUsers = users.filter((user) =>
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -66,11 +75,13 @@ const AdminUserPage = () => {
     setUsers(filteredUsers);
   };
 
+  // 초기화 버튼
   const handleReset = () => {
     setSearchTerm("");
     fetchUsers();
   };
 
+  // 정렬 기능
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -92,6 +103,7 @@ const AdminUserPage = () => {
     setSortConfig({ key, direction });
   };
 
+  // 활성화/비활성화 API 호출
   const handleStatusChange = async (email, action) => {
     try {
       const response = await fetch(`${getUserApi()}/admin/status`, {
@@ -106,25 +118,54 @@ const AdminUserPage = () => {
         throw new Error("Failed to update user status");
       }
 
-      const data = await response.json();
+      console.log("Status updated successfully");
       fetchUsers(); // 상태 변경 후 사용자 목록 갱신
     } catch (error) {
       console.error("Error updating user status:", error);
     }
   };
+  
 
-  if (loading) {
-    return (
-      <Container style={{ textAlign: "center", marginTop: "20%" }}>
-        <CircularProgress style={{ marginBottom: "20px" }} />
-        <Typography variant="h6">사용자 정보를 불러오는 중입니다...</Typography>
-      </Container>
-    );
-  }
+  // 그룹 추가/제거 API 호출
+  const handleAdminGroupChange = async (email, action) => {
+    try {
+      const endpoint =
+        action === "add"
+          ? `${getUserApi()}/admin/group/add`
+          : `${getUserApi()}/admin/group/remove`;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error updating admin group:", errorData.message || "Unknown error");
+        throw new Error(`Failed to ${action === "add" ? "add" : "remove"} admin group`);
+      }
+
+      console.log("Admin group change successful");
+      fetchUsers(); // 상태 변경 후 사용자 목록 갱신
+    } catch (error) {
+      console.error(`Error updating admin group: ${error.message}`);
+    }
+  };
+
+  // if (loading) {
+  //   return (
+  //     <Container style={{ textAlign: "center", marginTop: "20%" }}>
+  //       <CircularProgress style={{ marginBottom: "20px" }} />
+  //       <Typography variant="h6">사용자 정보를 불러오는 중입니다...</Typography>
+  //     </Container>
+  //   );
+  // }
 
   return (
     <Container style={{ marginTop: "20px" }}>
-
       {/* 총 사용자 수 */}
       <Typography
         variant="subtitle1"
@@ -199,7 +240,10 @@ const AdminUserPage = () => {
                 <strong>마지막 업데이트</strong> <SortIcon />
               </TableCell>
               <TableCell>
-                <strong>작업</strong>
+                <strong>관리자 추가/해제</strong>
+              </TableCell>
+              <TableCell>
+                <strong>활성화/비활성화</strong>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -207,7 +251,6 @@ const AdminUserPage = () => {
             {users.map((user, index) => (
               <TableRow key={index}>
                 <TableCell>{user.email}</TableCell>
-                {/* 계정 상태별 색상 표시 */}
                 <TableCell>
                   <Chip
                     label={user.accountStatus}
@@ -228,32 +271,56 @@ const AdminUserPage = () => {
                     ? new Date(user.lastLogin).toLocaleString()
                     : "기록 없음"}
                 </TableCell>
-                {/* 활성화/비활성화 버튼 */}
                 <TableCell>
-                  {user.accountStatus === "활성화됨" ? (
-                    <Tooltip title="비활성화">
+                  {user.isAdmin ? (
+                    <Tooltip title="관리자 해제">
                       <Button
                         variant="contained"
                         color="secondary"
                         startIcon={<RemoveCircleIcon />}
-                        onClick={() => handleStatusChange(user.email, "disable")}
+                        onClick={() => handleAdminGroupChange(user.email, "remove")}
                       >
-                        비활성화
+                        해제
                       </Button>
                     </Tooltip>
                   ) : (
-                    <Tooltip title="활성화">
+                    <Tooltip title="관리자 추가">
                       <Button
                         variant="contained"
                         color="primary"
                         startIcon={<PersonAddAltIcon />}
-                        onClick={() => handleStatusChange(user.email, "enable")}
+                        onClick={() => handleAdminGroupChange(user.email, "add")}
                       >
-                        활성화
+                        추가
                       </Button>
                     </Tooltip>
                   )}
                 </TableCell>
+                <TableCell>
+        {user.accountStatus === "활성화됨" ? (
+          <Tooltip title="비활성화">
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<RemoveCircleIcon />}
+              onClick={() => handleStatusChange(user.email, "disable")}
+            >
+              비활성화
+            </Button>
+          </Tooltip>
+        ) : (
+          <Tooltip title="활성화">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PersonAddAltIcon />}
+              onClick={() => handleStatusChange(user.email, "enable")}
+            >
+              활성화
+            </Button>
+          </Tooltip>
+        )}
+      </TableCell>
               </TableRow>
             ))}
           </TableBody>
