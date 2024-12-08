@@ -82,10 +82,10 @@ const MeetingForm: React.FC = () => {
     toggleMeetingJoinDeviceSelection,
   } = useAppState();
 
-  const [userEmail, setUserEmail] = useState<string>(""); 
-  const [teamId, setTeamId] = useState<string | null>(null); 
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [teamId, setTeamId] = useState<string | null>(null);
   const [meetingErr, setMeetingErr] = useState(false);
-  const [nameErr, setNameErr] = useState(false);
+//  const [nameErr, setNameErr] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { errorMessage, updateErrorMessage } = useContext(getErrorContext());
   const navigate = useNavigate();
@@ -135,17 +135,22 @@ const MeetingForm: React.FC = () => {
     const id = meetingId.trim().toLocaleLowerCase();
     const attendeeName = localUserName.trim();
 
-    if (!id || !attendeeName) {
-      if (!attendeeName) {
-        setNameErr(true);
-      }
-
-      if (!id) {
-        setMeetingErr(true);
-      }
-
+    if (!id) {
+      setMeetingErr(true);
       return;
     }
+
+    // if (!id || !attendeeName) {
+    //   if (!attendeeName) {
+    //     setNameErr(true);
+    //   }
+
+    //   if (!id) {
+    //     setMeetingErr(true);
+    //   }
+
+    //   return;
+    // }
 
     if (!userEmail || !teamId) {
       updateErrorMessage("사용자 이메일 또는 팀 ID가 누락되었습니다.");
@@ -245,6 +250,8 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
+
+      {/*
       <FormField
         field={Input}
         label="닉네임"
@@ -263,6 +270,9 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
+      */}
+
+      {/*
       <FormField
         field={Input}
         label="이메일"
@@ -278,6 +288,8 @@ const MeetingForm: React.FC = () => {
           setUserEmail(e.target.value);
         }}
       />
+      */}
+
       <RegionSelection setRegion={setRegion} region={region} />
       <FormField
         field={Checkbox}
@@ -353,8 +365,15 @@ const MeetingForm: React.FC = () => {
         infoText="회의에 성공적으로 참여하려면 장치를 수동으로 선택하세요"
       />
       <Flex container layout="fill-space-centered" style={{ marginTop: "2.5rem" }}>
-        {isLoading ? <Spinner /> : <PrimaryButton label="계속" onClick={handleJoinMeeting}
-          style={{ backgroundColor: '#9F51E8', borderColor: '#9F51E8' }}/>}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <PrimaryButton
+            label="계속"
+            onClick={handleJoinMeeting}
+            style={{ backgroundColor: "#9F51E8", borderColor: "#9F51E8" }}
+          />
+        )}
       </Flex>
       {errorMessage && (
         <Modal size="md" onClose={closeError}>
