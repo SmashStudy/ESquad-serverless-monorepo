@@ -10,7 +10,7 @@ export const handler = async (event) => {
   try {
     const body =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
-    const { title, content, writer, book, tags = [] } = body;
+    const { title, content, writer, tags = [] } = body; // book 제거
     const boardType = event.pathParameters.boardType;
 
     const validBoardTypes = ["general", "questions", "team-recruit"];
@@ -64,16 +64,6 @@ export const handler = async (event) => {
           email: { S: writer.email },
         },
       },
-      book: book
-        ? {
-            M: {
-              bookId: { S: book.bookId },
-              title: { S: book.title },
-              author: { S: book.author },
-              isbn: { S: book.isbn },
-            },
-          }
-        : { NULL: true },
       ...(tags.length > 0 && { tags: { SS: tags } }),
       createdAt: { S: createdAt },
       updatedAt: { S: updatedAt },
