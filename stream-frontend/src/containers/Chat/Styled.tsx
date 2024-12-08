@@ -1,5 +1,44 @@
 import styled from 'styled-components';
 
+// 커스텀 ChatBubble 스타일 컨테이너
+export const CustomChatBubble = styled.div<{ isSelf: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 항상 왼쪽 정렬 */
+  margin: 10px 0 10px 15px; /* 왼쪽에 여백 추가 (15px) */
+`;
+
+// 발신자 이름 스타일
+export const SenderName = styled.div`
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #7b3dc8; /* 닉네임 색상 */
+  margin-bottom: 5px;
+  text-align: left;
+`;
+
+// 메시지 박스 스타일
+export const MessageBox = styled.div`
+  background-color: #f3e8ff; /* 메시지 박스 배경 연보라색 */
+  color: #4a2e82; /* 텍스트 색상 */
+  border-radius: 12px;
+  padding: 10px 15px;
+  max-width: 70%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
+  text-align: left;
+`;
+
+// 타임스탬프 스타일
+export const Timestamp = styled.div`
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 5px;
+  text-align: left;
+`;
+
+
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const StyledChat = styled.aside<any>`
   display: grid;
@@ -68,3 +107,4 @@ export const StyledMessages = styled.div`
   overflow-y: auto;
   row-gap: 0.5rem;
 `;
+
