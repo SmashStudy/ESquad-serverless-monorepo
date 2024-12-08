@@ -84,7 +84,6 @@ function ChatMessages({currentChatRoom}) {
                 ...(fetchedMessages || []).filter(msg => !(msg.fileKey)),
                 ...(fetchedFiles || []).filter(file => file.fileKey),
             ]);
-            console.log("불러온 메시지:", combinedMessages);
             setMessages(combinedMessages);
             scrollToBottom();
         } catch (error) {
