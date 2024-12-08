@@ -49,20 +49,33 @@ const AdminDeletePage = () => {
       }
     },
     {
-      headerName: '로그 식별자',
-      field: 'logId',
-      sortable: true,
-      filter: true
-    },
-    {
       headerName: '이벤트 발생 시점',
       field: 'createdAt',
       sortable: true,
       filter: true
     },
     {
-      headerName: '파일 키',
-      field: 'fileKey',
+      headerName: '파일 이름',
+      field: 'originalFileName',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '파일 크기',
+      field: 'fileSize',
+      sortable: true,
+      filter: true,
+      valueFormatter: ({value}) => formatFileSize(value)
+    },
+    {
+      headerName: '생성한 유저',
+      field: 'uploaderEmail',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '접근한 유저',
+      field: 'userEmail',
       sortable: true,
       filter: true
     },
@@ -73,8 +86,21 @@ const AdminDeletePage = () => {
       filter: true
     },
     {
-      headerName: '파일 이름',
-      field: 'originalFileName',
+      headerName: '유저 에이전트',
+      field: 'userAgent',
+      sortable: true,
+      filter: true
+    },
+    {headerName: '역할', field: 'userRole', sortable: true, filter: true},
+    {
+      headerName: '로그 식별자',
+      field: 'logId',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '파일 키',
+      field: 'fileKey',
       sortable: true,
       filter: true
     },
@@ -90,32 +116,6 @@ const AdminDeletePage = () => {
       sortable: true,
       filter: true
     },
-    {
-      headerName: '생성한 유저',
-      field: 'uploaderEmail',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '유저 에이전트',
-      field: 'userAgent',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '접근한 유저',
-      field: 'userEmail',
-      sortable: true,
-      filter: true
-    },
-    {headerName: '역할', field: 'userRole', sortable: true, filter: true},
-    {
-      headerName: '파일 크기',
-      field: 'fileSize',
-      sortable: true,
-      filter: true,
-      valueFormatter: ({value}) => formatFileSize(value)
-    }
   ];
 
   const fetchLogs = async () => {
