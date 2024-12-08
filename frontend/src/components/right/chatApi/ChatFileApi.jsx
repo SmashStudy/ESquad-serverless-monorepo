@@ -21,8 +21,8 @@ export const fetchFiles = async (room_id) => {
             message: `파일 업로드 완료: ${file.originalFileName}`,
             fileKey: file.fileKey,
             room_id,
-            user_id: file.email,
-            nickname: file.nickname,
+            user_id: file.userEmail,
+            nickname: file.userNickname,
             timestamp: file.createdAt || Date.now(),
             contentType: file.contentType,
             originalFileName: file.originalFileName,
@@ -34,7 +34,7 @@ export const fetchFiles = async (room_id) => {
     }
 };
 
-export const uploadFile = async ({ file, room_id, user_id, nickname,targetType}) => {
+export const uploadFile = async ({ file, room_id, user_id, nickname, targetType}) => {
 
     try {
         const presignedResponse = await axios.post(
