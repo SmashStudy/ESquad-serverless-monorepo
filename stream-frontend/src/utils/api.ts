@@ -1,14 +1,10 @@
-// BASE_URL을 배포된 API Gateway URL로 수정
-// export const BASE_URL = 'https://api.esquad.click/dev/';
-
-// import routes from '../constants/routes';
-// export const BASE_URL = routes.HOME;
-
 import routes from '../constants/routes';
+
+const environment = (import.meta.env?.VITE_ENVIRONMENT) || 'dev';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export const BASE_URL = isProduction ? 'https://api.esquad.click/dev/' : routes.HOME;
+export const BASE_URL = isProduction ? `https://api.esquad.click/${environment}/` : routes.HOME;
 
 
 export type MeetingFeatures = {
@@ -38,19 +34,20 @@ export async function createMeetingAndAttendee(
   attendeeName: string,
   region: string,
   echoReductionCapability = false,
-  userEmail: string, // 추가된 인자
-  teamId: string // 추가된 인자
+  userEmail: string,
+  teamId: string,
+  status: string
 ): Promise<MeetingResponse> {
   const body = {
-    title: encodeURIComponent(title),
-    attendeeName: encodeURIComponent(attendeeName),
+    title: title,
+    attendeeName: attendeeName,
     region: encodeURIComponent(region),
     ns_es: String(echoReductionCapability),
-    userEmail: encodeURIComponent(userEmail),
-    teamId: encodeURIComponent(teamId),
+    userEmail: userEmail,
+    teamId: teamId,
+    status: status,
   };
 
-  // API Gateway URL로 요청을 보냄
   const res = await fetch(BASE_URL + 'stream/join', {
     method: 'POST',
     headers: {
@@ -67,6 +64,7 @@ export async function createMeetingAndAttendee(
 
   return data;
 }
+
 
 export async function getAttendee(
   title: string,
@@ -97,9 +95,15 @@ export async function getAttendee(
 }
 
 
-export async function endMeeting(title: string): Promise<void> {
+export async function endMeeting(
+  title: string,
+  participant: string,
+  nickname: string,
+): Promise<void> {
   const body = {
-    title: encodeURIComponent(title),
+    title: title,
+    participant: participant,
+    nickname: nickname,
   };
 
   const res = await fetch(BASE_URL + 'stream/end', {

@@ -1,46 +1,74 @@
-import { getMeeting } from './getMeeting.mjs';
-import { CORS_HEADERS, handleOptions } from './corsConfig.mjs';
-import { createMeeting } from './createMeeting.mjs';
-import { createAttendee } from './createAttendee.mjs';
+import { getMeeting } from "./getMeeting.mjs";
+import { CORS_HEADERS, handleOptions } from "./corsConfig.mjs";
+import { createMeeting } from "./createMeeting.mjs";
+import { createAttendee } from "./createAttendee.mjs";
 
 export const handler = async (event) => {
+  const origin = event.headers?.origin || ""; // 요청 Origin 추출
+
   // 프리플라이트(OPTIONS) 요청 처리
-  if (event.httpMethod === 'OPTIONS') {
-    return handleOptions();
+  if (event.httpMethod === "OPTIONS") {
+    return handleOptions(origin); // Origin 전달
   }
 
   try {
-    const { title, attendeeName, region = 'us-east-1', ns_es, userEmail, teamId } = JSON.parse(event.body);
-    
+    const {
+      title,
+      attendeeName,
+      region = "us-east-1",
+      ns_es,
+      userEmail,
+      teamId,
+      status,
+    } = JSON.parse(event.body);
+
     if (!title || !attendeeName) {
       return {
         statusCode: 400,
-        headers: CORS_HEADERS,
-        body: JSON.stringify({ message: 'Must provide title and name' })
+        headers: CORS_HEADERS(origin), // Origin 기반 CORS 헤더
+        body: JSON.stringify({ message: "회의 제목과 참가자 이름을 제공해야 합니다." }),
       };
     }
 
     let meetingInfo = await getMeeting(title);
     if (!meetingInfo) {
-      meetingInfo = await createMeeting(title, region, ns_es);
+      meetingInfo = await createMeeting(
+        title,
+        attendeeName,
+        region,
+        ns_es,
+        userEmail,
+        teamId,
+        status
+      );
     }
 
-    const attendeeInfo = await createAttendee(title, meetingInfo.Meeting.MeetingId, attendeeName,  userEmail, teamId);
+    const attendeeInfo = await createAttendee(
+      title,
+      meetingInfo.Meeting.MeetingId,
+      attendeeName,
+      userEmail,
+      teamId
+    );
 
     return {
       statusCode: 200,
-      headers: CORS_HEADERS,
+      headers: CORS_HEADERS(origin), // Origin 기반 CORS 헤더
       body: JSON.stringify({
-        JoinInfo: { Title: title, Meeting: meetingInfo.Meeting, Attendee: attendeeInfo.Attendee },
+        JoinInfo: {
+          Title: title,
+          Meeting: meetingInfo.Meeting,
+          Attendee: attendeeInfo.Attendee,
+        },
       }),
     };
   } catch (error) {
     return {
       statusCode: 500,
-      headers: CORS_HEADERS,
+      headers: CORS_HEADERS(origin), // Origin 기반 CORS 헤더
       body: JSON.stringify({
-        message: 'Internal Server Error',
-        error: error.message
+        message: "서버 내부 오류가 발생했습니다.",
+        error: error.message,
       }),
     };
   }

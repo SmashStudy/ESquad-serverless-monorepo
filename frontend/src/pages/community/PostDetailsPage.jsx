@@ -45,6 +45,10 @@ const PostDetailsPage = () => {
   const [likedByUser, setLikedByUser] = useState(false);
   const [isCommentsLoading, setIsCommentsLoading] = useState(true);
 
+  // 추가된 상태 (게시글 상태 전환용)
+  const [postStatusAlertOpen, setPostStatusAlertOpen] = useState(false);
+  const [postStatusAlertMessage, setPostStatusAlertMessage] = useState("");
+
   const menuOpen = Boolean(menuAnchorEl);
   const fetchRef = useRef(false);
 
@@ -76,6 +80,67 @@ const PostDetailsPage = () => {
     fetchUserInfo();
   }, []);
 
+  const toggleStatus = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      // 상태 필드 및 현재 상태 결정
+      let statusField;
+      let currentValue;
+
+      if (boardType === "questions") {
+        statusField = "resolved";
+        currentValue = post.resolved;
+      } else if (boardType === "team-recruit") {
+        statusField = "recruitStatus";
+        currentValue = post.recruitStatus;
+      } else {
+        alert("지원하지 않는 게시판 유형입니다.");
+        return;
+      }
+
+      // 현재 상태를 반전
+      const updatedValue = !currentValue;
+
+      // API 호출
+      const response = await axios.put(
+        `${getCommunityApi()}/${boardType}/${postId}/status`,
+        { [statusField]: currentValue },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { createdAt, boardType },
+        }
+      );
+
+      if (response.status === 200) {
+        setPost((prevPost) => ({
+          ...prevPost,
+          [statusField]: updatedValue,
+        }));
+
+        const msg =
+          boardType === "questions"
+            ? updatedValue
+              ? "질문이 해결되었습니다!"
+              : "게시글이 미해결 상태로 변경되었습니다!"
+            : updatedValue
+            ? "팀 모집이 완료되었습니다!"
+            : "게시글이 모집 중으로 변경되었습니다!";
+
+        setPostStatusAlertMessage(msg);
+        setPostStatusAlertOpen(true);
+      } else {
+        throw new Error("서버에서 예상치 못한 응답이 반환되었습니다.");
+      }
+    } catch (error) {
+      console.error("상태 전환 중 오류 발생:", error.message || error);
+      alert("상태 전환에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
   useEffect(() => {
     const fetchPostAndIncrementView = async () => {
       if (fetchRef.current) return;
@@ -167,7 +232,7 @@ const PostDetailsPage = () => {
     setPost((prevPost) => ({
       ...prevPost,
       ...updatedPost,
-      updatedAt: new Date().toISOString(), // updatedAt 필드를 현재 시간으로 업데이트
+      updatedAt: new Date().toISOString(),
     }));
   };
 
@@ -489,7 +554,7 @@ const PostDetailsPage = () => {
                 ✔ 해결된 질문
               </Typography>
             )}
-            {new Date(post.createdAt).toLocaleString()} • 👁 {post.viewCount}
+            {new Date(post.createdAt).toLocaleString()} • 👀 {post.viewCount}
             {post.updatedAt &&
               new Date(post.updatedAt).getTime() !==
                 new Date(post.createdAt).getTime() && (
@@ -524,8 +589,40 @@ const PostDetailsPage = () => {
           justifyContent: "flex-end",
           alignItems: "center",
           mb: 1,
+          gap: 2,
         }}
       >
+        {post.writer?.email === currentUser?.email && (
+          <Button
+            variant="contained"
+            color={
+              boardType === "questions"
+                ? post.resolved
+                  ? "success"
+                  : "secondary"
+                : post.recruitStatus
+                ? "success"
+                : "secondary"
+            }
+            onClick={toggleStatus} // 변경된 함수 호출
+            sx={{
+              textTransform: "none",
+              fontWeight: "bold",
+              padding: "8px 16px",
+              borderRadius: "16px",
+            }}
+          >
+            {boardType === "questions"
+              ? post.resolved
+                ? "해결됨"
+                : "미해결"
+              : post.recruitStatus
+              ? "모집 완료"
+              : "모집 중"}
+          </Button>
+        )}
+
+        {/* 좋아요 버튼 */}
         <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
           <IconButton
             onClick={handleLikePost}
@@ -541,7 +638,6 @@ const PostDetailsPage = () => {
           {post.likeCount}
         </Typography>
       </Box>
-
       <Paper
         elevation={2}
         sx={{
@@ -605,7 +701,15 @@ const PostDetailsPage = () => {
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   {comment.writer?.nickname || "익명"}
                 </Typography>
-                <Typography variant="body2">{comment.content}</Typography>
+                <Typography
+                  variant="body2"
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {comment.content}
+                </Typography>
                 <Typography
                   variant="caption"
                   sx={{ color: "text.secondary", display: "block", mt: 1 }}
@@ -724,6 +828,21 @@ const PostDetailsPage = () => {
           댓글이 삭제되었습니다!
         </Alert>
       </Snackbar>
+
+      <Snackbar
+        open={postStatusAlertOpen}
+        autoHideDuration={3000}
+        onClose={() => setPostStatusAlertOpen(false)}
+      >
+        <Alert
+          onClose={() => setPostStatusAlertOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {postStatusAlertMessage}
+        </Alert>
+      </Snackbar>
+
       <PostEditDialog
         open={isEditDialogOpen}
         handleClose={() => setIsEditDialogOpen(false)}

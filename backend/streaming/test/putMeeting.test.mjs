@@ -1,109 +1,109 @@
 import { jest } from '@jest/globals';
+import { TransactWriteItemsCommand } from '@aws-sdk/client-dynamodb';
+
+// dynamoClient를 먼저 모킹합니다.
+jest.mock('../src/dynamoClient.mjs', () => ({
+  ddb: {
+    send: jest.fn(),
+  },
+}));
+
+import { ddb } from '../src/dynamoClient.mjs';
+import { putMeeting } from '../src/putMeeting.mjs';
 
 describe('putMeeting 함수 테스트', () => {
-  let putMeeting;
-  let putItemMock;
   let consoleLogSpy;
   let consoleErrorSpy;
 
-  beforeEach(async () => {
-    // 모듈 캐시 초기화 및 모든 모킹 초기화
-    jest.resetModules();
-    jest.clearAllMocks();
-
+  beforeAll(() => {
     // 환경 변수 설정
     process.env.MEETINGS_TABLE_NAME = 'testMeetingsTable';
+    process.env.MEETING_ROOM_USAGE_TABLE_NAME = 'testMeetingRoomUsageTable';
+  });
 
-    // `putItem.mjs` 모듈을 모킹
-    await jest.doMock('../src/putItem.mjs', () => ({
-      putItem: jest.fn(),
-    }));
-
-    // 모킹된 `putItem` 가져오기
-    const putItemModule = await import('../src/putItem.mjs');
-    putItemMock = putItemModule.putItem;
-
-    // 테스트 대상 함수 `putMeeting` 가져오기
-    const putMeetingModule = await import('../src/putMeeting.mjs');
-    putMeeting = putMeetingModule.putMeeting;
-
-    // console.log와 console.error 모킹
+  beforeEach(() => {
+    jest.clearAllMocks();
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    // 콘솔 스파이 복원
-    if (consoleLogSpy) {
-      consoleLogSpy.mockRestore();
-    }
-    if (consoleErrorSpy) {
-      consoleErrorSpy.mockRestore();
-    }
+    consoleLogSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   test('회의 정보를 성공적으로 저장해야 합니다', async () => {
     const title = 'Test Meeting';
+    const attendeeName = 'John Doe';
     const meetingInfo = { host: 'John Doe', participants: ['Alice', 'Bob'] };
+    const userEmail = 'john@example.com';
+    const teamId = 'team123';
+    const status = 'true';
 
-    const expectedItem = {
-      title: { S: title },
-      data: { S: JSON.stringify(meetingInfo) },
-      ttl: { N: expect.any(String) },
-    };
+    ddb.send.mockResolvedValue({});
 
-    // `putItem` 모킹 설정 (성공)
-    putItemMock.mockResolvedValueOnce();
+    await putMeeting(title, attendeeName, meetingInfo, userEmail, teamId, status);
 
-    await putMeeting(title, meetingInfo);
+    expect(ddb.send).toHaveBeenCalledTimes(1);
+    const callArg = ddb.send.mock.calls[0][0];
+    expect(callArg).toBeInstanceOf(TransactWriteItemsCommand);
 
-    // `putItem` 호출 검증
-    expect(putItemMock).toHaveBeenCalledWith(process.env.MEETINGS_TABLE_NAME, expectedItem);
+    const params = callArg.input;
+    expect(params.TransactItems).toHaveLength(2);
 
-    // 로그 호출 검증
-    expect(consoleLogSpy).toHaveBeenCalledWith(`Meeting "${title}" saved successfully`);
+    const meetingItem = params.TransactItems[0].Put.Item;
+    expect(meetingItem.title.S).toBe(title);
+    expect(meetingItem.data.S).toBe(JSON.stringify(meetingInfo));
+    expect(meetingItem.ttl.N).toEqual(expect.any(String));
+
+    const usageItem = params.TransactItems[1].Put.Item;
+    expect(usageItem.teamId.S).toBe(teamId);
+    expect(usageItem.title.S).toBe(title);
+    expect(usageItem.name.S).toBe(attendeeName);
+    expect(usageItem.userEmail.S).toBe(userEmail);
+    expect(usageItem.status.S).toBe(status);
+    expect(usageItem.start_At.S).toEqual(expect.any(String));
+
+    expect(consoleLogSpy).toHaveBeenCalledWith(`회의 "${title}"과(와) 사용 기록이 성공적으로 저장되었습니다.`);
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
   test('DynamoDB 오류가 발생하면 예외를 던져야 합니다', async () => {
     const title = 'Test Meeting';
+    const attendeeName = 'John Doe';
     const meetingInfo = { host: 'John Doe', participants: ['Alice', 'Bob'] };
-    const error = new Error('DynamoDB error');
+    const userEmail = 'john@example.com';
+    const teamId = 'team123';
+    const status = 'true';
+    const error = new Error('DynamoDB Error');
 
-    // `putItem` 모킹 설정 (오류 발생)
-    putItemMock.mockRejectedValueOnce(error);
+    ddb.send.mockRejectedValue(error);
 
-    await expect(putMeeting(title, meetingInfo)).rejects.toThrow(
-      'Failed to save meeting: DynamoDB error'
-    );
+    await expect(putMeeting(title, attendeeName, meetingInfo, userEmail, teamId, status))
+      .rejects.toThrow(`회의 정보 저장 및 사용 기록 추적에 실패했습니다: ${error.message}`);
 
-    // `putItem` 호출 검증
-    expect(putItemMock).toHaveBeenCalledWith(process.env.MEETINGS_TABLE_NAME, {
-      title: { S: title },
-      data: { S: JSON.stringify(meetingInfo) },
-      ttl: { N: expect.any(String) },
-    });
-
-    // 오류 로그 호출 검증
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving meeting:', error);
+    expect(consoleErrorSpy).toHaveBeenCalledWith("회의 정보 저장 및 사용 기록 추적 중 오류 발생:", error);
   });
 
   test('TTL 값이 정상적으로 설정되어야 합니다', async () => {
     const title = 'Test Meeting';
+    const attendeeName = 'John Doe';
     const meetingInfo = { host: 'John Doe', participants: ['Alice', 'Bob'] };
+    const userEmail = 'john@example.com';
+    const teamId = 'team123';
+    const status = 'true';
 
-    putItemMock.mockResolvedValueOnce();
+    ddb.send.mockResolvedValue({});
 
-    await putMeeting(title, meetingInfo);
+    await putMeeting(title, attendeeName, meetingInfo, userEmail, teamId, status);
 
-    // TTL 값 확인
-    const [_, item] = putItemMock.mock.calls[0];
-    const ttl = parseInt(item.ttl.N, 10);
+    const callArg = ddb.send.mock.calls[0][0];
+    const meetingItem = callArg.input.TransactItems[0].Put.Item;
+    const ttl = parseInt(meetingItem.ttl.N, 10);
     const now = Math.floor(Date.now() / 1000);
-    const threeHours = 60 * 60 * 3;
+    const threeHours = 3 * 60 * 60;
 
     expect(ttl).toBeGreaterThan(now);
-    expect(ttl).toBeLessThan(now + threeHours + 10); // 약간의 허용 오차
+    expect(ttl).toBeLessThanOrEqual(now + threeHours);
   });
 });
-

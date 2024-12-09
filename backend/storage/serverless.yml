@@ -38,8 +38,8 @@ provider:
 
 functions:
 
-  # 메타데이터
-  uploadFile:
+  # 메타데이터 관련
+  uploadFile: # 메타데이터 저장 및 Presigned URL 응답
     handler: src/handlers/uploadFile.handler
     events:
       - http:
@@ -47,7 +47,7 @@ functions:
           method: post
           cors: true
 
-  getFile:
+  getFile: # 파일에 대한 Presigned URL을 응답. 미리보기시 사용
     handler: src/handlers/getFile.handler
     events:
       - http:
@@ -55,7 +55,7 @@ functions:
           method: get
           cors: true
 
-  getAllFiles:
+  getAllFiles: # 모든 파일의 메타데이터를 가져옴
     handler: src/handlers/getAllFiles.handler
     events:
       - http:
@@ -63,7 +63,7 @@ functions:
           method: get
           cors: true
 
-  fetchFiles:
+  fetchFiles: # targetId, targetType을 통해 정렬된 리스트를 가져옴. Pagination 가능
     handler: src/handlers/fetchFiles.handler
     events:
       - http:
@@ -71,15 +71,16 @@ functions:
           method: get
           cors: true
 
-  getUserFiles:
+  getUserFiles: # 유저가 올려둔 파일에 대한 메타데이터들을 가져옴. 이를 통해 본인의 파일 관리 가능
     handler: src/handlers/getUserFiles.handler
     events:
       - http:
-          path: /get-user-usage
+          path: /user-usage
           method: get
           cors: true
 
-  downloadFile:
+  # 로그 관련
+  downloadFile: #요청 시 Presigned URL 응답 + 로그 저장
     handler: src/handlers/downloadFile.handler
     events:
       - http:
@@ -87,7 +88,7 @@ functions:
           method: patch
           cors: true
 
-  deleteFile:
+  deleteFile: # 요청 시 Presigned URL 응답 + 메타데이터에서 삭제 + 로그 저장
     handler: src/handlers/deleteFile.handler
     events:
       - http:
@@ -95,8 +96,7 @@ functions:
           method: delete
           cors: true
 
-  # 로깅용
-  getLogsByAction:
+  getLogsByAction: # action DOWNLOAD, DELETE 분기를 두고 로그 데이터 가져옴.
     handler: src/handlers/getLogsByAction.handler
     events:
       - http:
@@ -104,22 +104,25 @@ functions:
           method: get
           cors: true
 
+  # 유저가 삭제한 기록 가져오기
   getUserDeleteLogs:
     handler: src/handlers/getUserDeleteLogs.handler
     events:
       - http:
-          path: /get-user-delete-logs
-          method: post
+          path: /user-delete-logs
+          method: get
           cors: true
 
+  # 유저가 다운로드한 기록 가져오기
   getUserDownloadLogs:
     handler: src/handlers/getUserDownloadLogs.handler
     events:
       - http:
-          path: /get-user-download-logs
-          method: post
+          path: /user-download-logs
+          method: get
           cors: true
 
+  # 어드민이 로그 관리 할 때 사용할 수 있는 로그 삭제 기능
   deleteLog:
     handler: src/handlers/deleteLog.handler
     events:
@@ -128,7 +131,7 @@ functions:
           method: delete
           cors: true
 
-  # Quill 전용
+  # Quill에서 이미지 올릴 때 사용하는 람다. quill-image 버킷 Presigned URL 응답
   generatePresignedUrlForQuill:
     handler: src/handlers/generatePresignedUrlForQuill.handler
     events:
@@ -138,7 +141,7 @@ functions:
           cors: true
 
   # Trigger
-  updateFileMetadataNickname:
+  updateFileMetadataNickname: # DynamoDB Streams 기능을 통해 닉네임 변경시 자동으로 반영.
     handler: src/triggers/updateFileMetadataNickname.trigger
     events:
       - stream:
@@ -146,14 +149,6 @@ functions:
           arn: ${env:USER_TABLE_STREAM_ARN}
           batchSize: 5
           startingPosition: LATEST
-
-#  storeFileMetadata: # Deprecated
-#    handler: src/handlers/storeFileMetadata.handler
-#    events:
-#      - http:
-#          path: /store-metadata
-#          method: post
-#          cors: ${self:custom.defaultCors}
 
 
 

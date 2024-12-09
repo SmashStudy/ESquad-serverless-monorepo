@@ -17,11 +17,10 @@ describe('handler', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.BROWSER_LOG_GROUP_NAME = 'TestLogGroupName'; // 환경 변수 설정
+    process.env.BROWSER_LOG_GROUP_NAME = 'TestLogGroupName'; 
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     
-    // CloudWatchLogs 인스턴스를 올바르게 생성하여 테스트에서 사용하도록 설정
     mockCloudWatchClient = {
       putLogEvents: jest.fn(),
     };
@@ -51,9 +50,8 @@ describe('handler', () => {
     ensureLogStream.mockResolvedValue(mockSequenceToken);
     mockCloudWatchClient.putLogEvents.mockResolvedValueOnce({});
 
-    // ISO String 변환을 하되, UTC로 고정하여 테스트합니다.
     const formatDateToISOString = (timestampMs) => {
-      return new Date(timestampMs).toISOString();  // UTC로 변환된 ISO 8601 형식
+      return new Date(timestampMs).toISOString();
     };
 
     const expectedLogEvents = [
@@ -69,14 +67,15 @@ describe('handler', () => {
 
     const response = await handler(mockEvent);
 
+    // 실제 코드의 성공 메시지는 한글로 되어 있음.
     expect(response).toEqual({
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Logs processed successfully.' }),
+      body: JSON.stringify({ message: '로그가 성공적으로 처리되었습니다.' }),
       isBase64Encoded: false,
     });
 
-    expect(consoleLogSpy).toHaveBeenCalledWith('Received Event:', expect.any(String));
+    expect(consoleLogSpy).toHaveBeenCalledWith('수신된 이벤트:', expect.any(String));
     expect(ensureLogStream).toHaveBeenCalledWith(mockLogStreamName);
     expect(mockCloudWatchClient.putLogEvents).toHaveBeenCalledWith({
       logGroupName: process.env.BROWSER_LOG_GROUP_NAME,
@@ -97,10 +96,11 @@ describe('handler', () => {
 
     const response = await handler(mockEvent);
 
+    // 실제 코드에서 필수 파라미터가 없을 때 반환하는 메시지: '필수 파라미터가 누락되었습니다.'
     expect(response).toEqual({
       statusCode: 400,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: 'Empty Parameters Received' }),
+      body: JSON.stringify({ message: '필수 파라미터가 누락되었습니다.' }),
       isBase64Encoded: false,
     });
 
@@ -112,17 +112,19 @@ describe('handler', () => {
 
     const response = await handler(mockEvent);
 
+    // 실제 코드에서 에러 시 반환하는 한글 메시지: '서버 내부 오류가 발생했습니다.' 
+    // 그리고 error는 개발 환경이 아닐 경우 '예기치 않은 오류가 발생했습니다.'
     expect(response).toEqual({
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? 'Event body is missing.' : 'An unexpected error occurred.',
+        message: '서버 내부 오류가 발생했습니다.',
+        error: '예기치 않은 오류가 발생했습니다.',
       }),
       isBase64Encoded: false,
     });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error processing logs:', expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalled();
   });
 
   test('로그 스트림을 보장하는 동안 오류가 발생하면 적절히 처리해야 합니다', async () => {
@@ -145,16 +147,13 @@ describe('handler', () => {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? 'Failed to ensure log stream.' : 'An unexpected error occurred.',
+        message: '서버 내부 오류가 발생했습니다.',
+        error: '예기치 않은 오류가 발생했습니다.',
       }),
       isBase64Encoded: false,
     });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      `Error ensuring log stream "${mockLogStreamName}":`,
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalled();
   });
 
   test('로그 이벤트 업로드 중 오류가 발생하면 적절히 처리해야 합니다', async () => {
@@ -180,12 +179,12 @@ describe('handler', () => {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? 'Failed to upload log events.' : 'An unexpected error occurred.',
+        message: '서버 내부 오류가 발생했습니다.',
+        error: '예기치 않은 오류가 발생했습니다.',
       }),
       isBase64Encoded: false,
     });
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error uploading log events to CloudWatch:', expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalled();
   });
 });

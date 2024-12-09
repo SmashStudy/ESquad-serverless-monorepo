@@ -50,6 +50,10 @@ const VIDEO_TRANSFORM_FILTER_OPTIONS = [
   },
 ];
 
+function fromBase64(str: string) {
+  return decodeURIComponent(escape(atob(str)));
+}
+
 const MeetingForm: React.FC = () => {
   const meetingManager = useMeetingManager();
   const {
@@ -78,70 +82,75 @@ const MeetingForm: React.FC = () => {
     toggleMeetingJoinDeviceSelection,
   } = useAppState();
 
-  const [userEmail, setUserEmail] = useState<string>('hb1809@naver'); // 사용자 이메일 상태 추가
-  const [teamId, setTeamId] = useState<string | null>(null); // 팀 ID 상태 추가
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [teamId, setTeamId] = useState<string | null>(null);
   const [meetingErr, setMeetingErr] = useState(false);
-  const [nameErr, setNameErr] = useState(false);
+//  const [nameErr, setNameErr] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { errorMessage, updateErrorMessage } = useContext(getErrorContext());
   const navigate = useNavigate();
   const browserBehavior = new DefaultBrowserBehavior();
 
-  // URL에서 파라미터 추출 (쿼리와 해시 모두)
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search); // 쿼리 파라미터 추출
-    const hash = window.location.hash.substring(1); // 해시(#) 제거
-    const hashParams = new URLSearchParams(hash); // 해시 파라미터 처리
-  
-    // teamId 추출 및 디코딩
-    const teamIdParam = queryParams.get("teamId");
-    const decodedTeamId = teamIdParam ? decodeURIComponent(teamIdParam) : null;
-  
-    // studyId는 해시에서 추출 후 # 제거
-    let studyId = hashParams.get("studyId");
-    if (studyId) {
-      studyId = decodeURIComponent(studyId).replace(/#/g, ""); // # 제거 후 디코딩
+    const url = window.location.href;
+
+    const extractValue = (key: string): string | null => {
+      const match = url.match(new RegExp(`[?&]${key}=([^&]*)`));
+      return match ? decodeURIComponent(match[1]).replace(/#/g, "") : null;
+    };
+
+    const teamIdParam = extractValue("teamId");
+    if (teamIdParam) {
+      setTeamId(teamIdParam);
+      console.log("Extracted Team ID:", teamIdParam);
     }
-  
-    // name 값 디코딩
-    const name = hashParams.get("name");
-    const decodedName = name ? decodeURIComponent(name) : null;
-  
-    // 상태 설정
-    if (decodedTeamId) {
-      setTeamId(decodedTeamId); // teamId 상태 설정
-      console.log("Decoded Team ID:", decodedTeamId); // 디버깅용 로그
+
+    const studyIdParam = extractValue("studyId");
+    if (studyIdParam) {
+      setMeetingId(studyIdParam.toLowerCase());
+      console.log("Extracted Study ID:", studyIdParam.toLowerCase());
     }
-  
-    if (studyId) {
-      setMeetingId(studyId); // studyId 설정
-      console.log("Clean Study ID:", studyId); // 디버깅용 로그
+
+    const nameParam = extractValue("name");
+    if (nameParam) {
+      setLocalUserName(nameParam);
+      console.log("Extracted Name:", nameParam);
     }
-  
-    if (decodedName) {
-      setLocalUserName(decodedName); // name 설정
-      console.log("Decoded Name:", decodedName); // 디버깅용 로그
+
+    // Base64로 인코딩된 userEmail 값 추출
+    const userParam = extractValue("user");
+    if (userParam) {
+      try {
+        const decodedEmail = fromBase64(userParam);
+        setUserEmail(decodedEmail);
+        console.log("Decoded Email:", decodedEmail);
+      } catch (e) {
+        console.error("이메일 디코딩 중 오류 발생:", e);
+      }
     }
   }, [setMeetingId, setLocalUserName]);
-  
-  
 
   const handleJoinMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
     const id = meetingId.trim().toLocaleLowerCase();
     const attendeeName = localUserName.trim();
 
-    if (!id || !attendeeName) {
-      if (!attendeeName) {
-        setNameErr(true);
-      }
-
-      if (!id) {
-        setMeetingErr(true);
-      }
-
+    if (!id) {
+      setMeetingErr(true);
       return;
     }
+
+    // if (!id || !attendeeName) {
+    //   if (!attendeeName) {
+    //     setNameErr(true);
+    //   }
+
+    //   if (!id) {
+    //     setMeetingErr(true);
+    //   }
+
+    //   return;
+    // }
 
     if (!userEmail || !teamId) {
       updateErrorMessage("사용자 이메일 또는 팀 ID가 누락되었습니다.");
@@ -152,13 +161,16 @@ const MeetingForm: React.FC = () => {
     meetingManager.getAttendee = createGetAttendeeCallback(id);
 
     try {
+      const status = "true";
+
       const { JoinInfo } = await createMeetingAndAttendee(
         id,
         attendeeName,
         region,
         isEchoReductionEnabled,
         userEmail,
-        teamId
+        teamId,
+        status
       );
       setJoinInfo(JoinInfo);
       const meetingSessionConfiguration = new MeetingSessionConfiguration(
@@ -238,6 +250,8 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
+
+      {/*
       <FormField
         field={Input}
         label="닉네임"
@@ -256,7 +270,9 @@ const MeetingForm: React.FC = () => {
           }
         }}
       />
-      {/* 사용자 이메일 입력 필드 추가 */}
+      */}
+
+      {/*
       <FormField
         field={Input}
         label="이메일"
@@ -264,6 +280,7 @@ const MeetingForm: React.FC = () => {
         fieldProps={{
           name: "email",
           placeholder: "이메일을 입력해주세요",
+          disabled: true, // 이메일 변경 불가 (URL에서 받은 값)
         }}
         errorText="올바른 이메일을 입력해주세요"
         error={!userEmail}
@@ -271,7 +288,8 @@ const MeetingForm: React.FC = () => {
           setUserEmail(e.target.value);
         }}
       />
-      {/* 팀 ID는 URL 파라미터에서 자동으로 설정되므로 입력 필드가 필요 없다면 생략 */}
+      */}
+
       <RegionSelection setRegion={setRegion} region={region} />
       <FormField
         field={Checkbox}
@@ -347,7 +365,15 @@ const MeetingForm: React.FC = () => {
         infoText="회의에 성공적으로 참여하려면 장치를 수동으로 선택하세요"
       />
       <Flex container layout="fill-space-centered" style={{ marginTop: "2.5rem" }}>
-        {isLoading ? <Spinner /> : <PrimaryButton label="계속" onClick={handleJoinMeeting} />}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <PrimaryButton
+            label="계속"
+            onClick={handleJoinMeeting}
+            style={{ backgroundColor: "#9F51E8", borderColor: "#9F51E8" }}
+          />
+        )}
       </Flex>
       {errorMessage && (
         <Modal size="md" onClose={closeError}>

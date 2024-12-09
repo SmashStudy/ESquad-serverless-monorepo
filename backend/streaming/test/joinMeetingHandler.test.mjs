@@ -59,7 +59,7 @@ describe('joinMeetingHandler 테스트', () => {
     expect(response.statusCode).toBe(400);
     expect(response.headers).toEqual(corsConfig.CORS_HEADERS);
     expect(JSON.parse(response.body)).toEqual({
-      message: 'Must provide title and name',
+      message: '회의 제목과 참가자 이름을 제공해야 합니다.',
     });
   });
 
@@ -74,7 +74,7 @@ describe('joinMeetingHandler 테스트', () => {
     expect(response.statusCode).toBe(400);
     expect(response.headers).toEqual(corsConfig.CORS_HEADERS);
     expect(JSON.parse(response.body)).toEqual({
-      message: 'Must provide title and name',
+      message: '회의 제목과 참가자 이름을 제공해야 합니다.',
     });
   });
 
@@ -94,21 +94,32 @@ describe('joinMeetingHandler 테스트', () => {
         attendeeName: 'John Doe',
         region: 'us-east-1',
         ns_es: 'extra-data',
+        userEmail: 'john@example.com',
+        teamId: 'team-123',
+        status: 'active'
       }),
     };
 
     const response = await handler(event);
 
     expect(meetingService.getMeeting).toHaveBeenCalledWith('New Meeting');
+    // 실제 코드에서는 createMeeting을 호출할 때 (title, attendeeName, region, ns_es, userEmail, teamId, status) 순서로 인자를 넘김
     expect(createMeetingService.createMeeting).toHaveBeenCalledWith(
       'New Meeting',
+      'John Doe',
       'us-east-1',
-      'extra-data'
+      'extra-data',
+      'john@example.com',
+      'team-123',
+      'active'
     );
+    // createAttendee는 (title, MeetingId, attendeeName, userEmail, teamId) 순으로 인자를 받음
     expect(createAttendeeService.createAttendee).toHaveBeenCalledWith(
       'New Meeting',
       'new-meeting-id',
-      'John Doe'
+      'John Doe',
+      'john@example.com',
+      'team-123'
     );
 
     expect(response.statusCode).toBe(200);
@@ -135,6 +146,8 @@ describe('joinMeetingHandler 테스트', () => {
       body: JSON.stringify({
         title: 'Existing Meeting',
         attendeeName: 'John Doe',
+        userEmail: 'john@example.com',
+        teamId: 'team-123'
       }),
     };
 
@@ -145,7 +158,9 @@ describe('joinMeetingHandler 테스트', () => {
     expect(createAttendeeService.createAttendee).toHaveBeenCalledWith(
       'Existing Meeting',
       'existing-meeting-id',
-      'John Doe'
+      'John Doe',
+      'john@example.com',
+      'team-123'
     );
 
     expect(response.statusCode).toBe(200);
@@ -175,7 +190,7 @@ describe('joinMeetingHandler 테스트', () => {
     expect(response.statusCode).toBe(500);
     expect(response.headers).toEqual(corsConfig.CORS_HEADERS);
     expect(JSON.parse(response.body)).toEqual({
-      message: 'Internal Server Error',
+      message: '서버 내부 오류가 발생했습니다.',
       error: 'Internal DB Error',
     });
   });

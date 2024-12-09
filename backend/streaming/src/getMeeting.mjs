@@ -21,9 +21,9 @@ export const getMeeting = async (meetingTitle) => {
     return null;
   } catch (error) {
     // DynamoDB 오류 처리
-    console.error('Error fetching meeting:', error);
+    console.error('회의 정보를 조회하는 중 오류 발생:', error);
 
     // DynamoDB에서 발생한 오류를 명확히 처리
-    throw new Error(`Failed to retrieve meeting: ${error.message}`);
+    throw new Error(`회의 정보를 가져오는 데 실패했습니다: ${error.message}`);
   }
 };

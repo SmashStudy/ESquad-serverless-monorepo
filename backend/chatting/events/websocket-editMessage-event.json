@@ -1,8 +1,0 @@
-{
-  "body": "{\"action\": \"editmessage\", \"room_id\": \"room1\", \"user_id\":\"user1\",\"message\": \"Hello, World!\", \"newMessage\": \"Hello, World! - update\", \"timestamp\": 1730794226805}",
-  "requestContext": {
-    "connectionId": "connectionId123",
-    "domainName": "ynzseuc5gg.execute-api.us-east-1.amazonaws.com",
-    "stage": "dev"
-  }
-}

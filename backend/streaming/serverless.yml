@@ -1,10 +1,10 @@
 service: streaming-service  # 서비스 이름 정의
 
-frameworkVersion: "^3.15.0"
+frameworkVersion: "^3.15.0"  # 필요시 최신 버전으로 업데이트
 
 provider:
   name: aws  # AWS 클라우드 제공자 설정
-  runtime: nodejs20.x  # Node.js 런타임 버전
+  runtime: nodejs20.x  # Node.js 런타임 버전 (업데이트 후 지원됨)
   region: ${opt:region, 'us-east-1'}  # AWS 리전 설정
   stage: ${opt:stage, 'dev'}  # 배포 스테이지 설정
   environment:
@@ -30,11 +30,13 @@ provider:
           Action:
             - "chime:CreateMeeting"
             - "chime:CreateAttendee"
+            - "chime:DeleteMeeting"
           Resource: "arn:aws:chime:*:*:meeting/*"  # Chime 미팅 및 참석자 생성 권한
         - Effect: "Allow"
           Action:
             - "dynamodb:PutItem"
             - "dynamodb:GetItem"
+            - "dynamodb:DeleteItem"
             - "dynamodb:UpdateItem"
             - "dynamodb:Query"
             - "dynamodb:Scan"
@@ -47,10 +49,13 @@ provider:
                 - Arn  # Attendees 테이블 접근 권한
             - Fn::GetAtt:
                 - ParticipantUsageTracking
-                - Arn  # 참여자 사용량 추적 테이블 접근 권한
+                - Arn  # ParticipantUsageTracking 테이블 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/TitleIndex"  # TitleIndex GSI 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/TeamIndex"  # TeamIndex GSI 접근 권한
+            - Fn::Sub: "${ParticipantUsageTracking.Arn}/index/NameIndex"  # NameIndex GSI 접근 권한
             - Fn::GetAtt:
                 - MeetingRoomUsageTracking
-                - Arn  # 스트리밍 회의실 사용 추적 테이블 접근 권한
+                - Arn  # MeetingRoomUsageTracking 테이블 접근 권한
         - Effect: "Allow"
           Action:
             - "kms:Decrypt"
@@ -76,12 +81,7 @@ functions:
       - http:
           path: /join
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
     environment:
       USE_EVENT_BRIDGE: ${self:custom.useEventBridge}  # EventBridge 사용 여부
 
@@ -91,12 +91,7 @@ functions:
       - http:
           path: /end
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
   ChimeSdkAttendeeLambda:
     handler: src/attendeeMeetingHandler.handler  # 참석자 정보 핸들러
@@ -104,12 +99,7 @@ functions:
       - http:
           path: /attendee
           method: get
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
   ChimeSQSQueueLambda:
     handler: src/sqsHandler.handler  # SQS 메시지 처리 핸들러
@@ -131,12 +121,7 @@ functions:
       - http:
           path: /logs
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
 resources:
   Resources:
@@ -183,7 +168,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: 'userEmail'
             AttributeType: 'S'
+          - AttributeName: 'teamId'
+            AttributeType: 'S'
+          - AttributeName: 'title'
+            AttributeType: 'S'
           - AttributeName: 'start_At'
+            AttributeType: 'S'
+          - AttributeName: 'name'   # name 필드 추가
             AttributeType: 'S'
         KeySchema:
           - AttributeName: 'userEmail'
@@ -191,7 +182,29 @@ resources:
           - AttributeName: 'start_At'
             KeyType: RANGE  # 정렬 키
         BillingMode: PAY_PER_REQUEST
-        # 추가 속성은 DynamoDB 아이템에 동적으로 추가됨
+        GlobalSecondaryIndexes:
+          - IndexName: 'TitleIndex'  # title을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'title'
+                KeyType: HASH  # GSI의 파티션 키로 title 설정
+              - AttributeName: 'start_At'
+                KeyType: RANGE  # GSI의 정렬 키로 start_At 설정
+            Projection:
+              ProjectionType: ALL  # 모든 속성을 인덱스에 포함
+          - IndexName: 'TeamIndex'  # teamId를 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'teamId'
+                KeyType: HASH  # GSI의 파티션 키로 teamId 설정
+            Projection:
+              ProjectionType: ALL  # 모든 속성을 인덱스에 포함
+          - IndexName: 'NameIndex'  # name을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'name'
+                KeyType: HASH  # GSI의 파티션 키로 name 설정
+              - AttributeName: 'start_At'
+                KeyType: RANGE # GSI의 정렬 키로 start_At 설정
+            Projection:
+              ProjectionType: ALL
 
     MeetingRoomUsageTracking:
       Type: AWS::DynamoDB::Table
@@ -200,10 +213,14 @@ resources:
         AttributeDefinitions:
           - AttributeName: 'title'
             AttributeType: 'S'
-          - AttributeName: 'start_At'
+          - AttributeName: 'teamId'
             AttributeType: 'S'
           - AttributeName: 'status'
-            AttributeType: 'S'  # Global Secondary Index를 위한 속성 정의
+            AttributeType: 'S'
+          - AttributeName: 'start_At'
+            AttributeType: 'S'
+          - AttributeName: 'userEmail'
+            AttributeType: 'S'  # GSI에 사용하기 위해 추가
         KeySchema:
           - AttributeName: 'title'
             KeyType: HASH  # 파티션 키
@@ -217,13 +234,25 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-        # TimeToLiveSpecification 제거: 항목이 영구적으로 보관됨
+          - IndexName: 'TeamIndex'
+            KeySchema:
+              - AttributeName: 'teamId'
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: 'UserEmailIndex'  # userEmail을 기준으로 검색하기 위한 GSI 추가
+            KeySchema:
+              - AttributeName: 'userEmail'
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
 
     MeetingNotificationsQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: 'MeetingNotificationsQueue-${self:provider.stage}'  # 미팅 알림용 SQS 큐
-        KmsMasterKeyId: arn:aws:kms:us-east-1:${aws:accountId}:alias/ChimeKMS-${self:provider.stage}  # KMS 키 사용
+        KmsMasterKeyId: 
+          Fn::Sub: arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/ChimeKMS-${self:provider.stage}  # KMS 키 사용
 
     ChimeBrowserLogs:
       Type: AWS::Logs::LogGroup
@@ -240,7 +269,8 @@ resources:
             - Sid: Allow access for Chime Service
               Effect: Allow
               Principal:
-                Service: chime.amazonaws.com
+                Service:
+                  - chime.amazonaws.com
               Action:
                 - kms:GenerateDataKey
                 - kms:Decrypt
@@ -249,8 +279,9 @@ resources:
               Effect: Allow
               Principal:
                 AWS:
-                  Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
-              Action: kms:*
+                  - Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+              Action: 
+                - kms:*
               Resource: '*'  # 루트 사용자에 전체 권한 부여
 
     ChimeKMSAlias:
