@@ -5,9 +5,11 @@ import {dynamoDb, LOG_TABLE} from "../utils/dynamoUtil.mjs";
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  const body = JSON.parse(event.body);
-  let userEmail = body.userEmail;
+  let {userEmail} = event.queryStringParameters || {};
 
+  // const body = JSON.parse(event.body);
+  // let userEmail = body.userEmail;
+  //
   if (!userEmail){
     console.error("Missing userEmail in queryStringParameters.");
     return createResponse(400, { error: 'Please provide the userEmail.' })
