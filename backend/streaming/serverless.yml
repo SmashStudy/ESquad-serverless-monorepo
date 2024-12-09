@@ -81,12 +81,7 @@ functions:
       - http:
           path: /join
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
     environment:
       USE_EVENT_BRIDGE: ${self:custom.useEventBridge}  # EventBridge 사용 여부
 
@@ -96,12 +91,7 @@ functions:
       - http:
           path: /end
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
   ChimeSdkAttendeeLambda:
     handler: src/attendeeMeetingHandler.handler  # 참석자 정보 핸들러
@@ -109,12 +99,7 @@ functions:
       - http:
           path: /attendee
           method: get
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
   ChimeSQSQueueLambda:
     handler: src/sqsHandler.handler  # SQS 메시지 처리 핸들러
@@ -136,12 +121,7 @@ functions:
       - http:
           path: /logs
           method: post
-          cors:
-            origin: 'https://live.dev.esquad.click'
-            headers:
-              - Content-Type
-              - Authorization
-            allowCredentials: true
+          cors: true
 
 resources:
   Resources:
