@@ -1,6 +1,5 @@
 import { ChimeSDKMeetings } from '@aws-sdk/client-chime-sdk-meetings';
 
-
 let chimeSDKMeetings;
 try {
   chimeSDKMeetings = new ChimeSDKMeetings({ region: 'us-east-1' });

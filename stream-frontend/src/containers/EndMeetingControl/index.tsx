@@ -7,17 +7,39 @@ import {
   ModalHeader,
   ModalButton,
   ModalButtonGroup,
+  useLogger,
+  useRosterState,
 } from "amazon-chime-sdk-component-library-react";
 
+import { endMeeting } from '../../utils/api';
 import { StyledP } from "./Styled";
+import { useAppState } from '../../providers/AppStateProvider';
+
 
 const EndMeetingControl: React.FC = () => {
+  const logger = useLogger();
   const [showModal, setShowModal] = useState(false);
   const toggleModal = (): void => setShowModal(!showModal);
+  const { meetingId, localUserName } = useAppState();
+  const { roster } = useRosterState();
+
+  let attendees = Object.values(roster);
+
+  const participant = attendees.length.toString();
 
   const leaveMeeting = async (): Promise<void> => {
+    try {
+      if (meetingId) {
+        await endMeeting(meetingId, participant, localUserName);
         window.close();
+      }
+    } catch (e) {
+      logger.error(`Could not end meeting: ${e}`);
+    }
+
+    window.close();
   };
+
 
   return (
     <>
@@ -38,6 +60,7 @@ const EndMeetingControl: React.FC = () => {
                 variant="primary"
                 label="회의 종료"
                 closesModal
+                style={{ backgroundColor: "#9F51E8", borderColor: "#9F51E8" }}
               />,
               <ModalButton
                 key="cancel-meeting-ending"

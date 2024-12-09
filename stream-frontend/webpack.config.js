@@ -111,6 +111,6 @@ module.exports = {
           cert: fs.existsSync(certPath) ? fs.readFileSync(certPath) : undefined,
         }
       : undefined,
-    open: `https://localhost:9000/?studyId=${getRandomValue(2)}&name=${getRandomName()}`,  // 랜덤 이름 및 값 삽입
+    open: `https://localhost:9000/?teamId=test&studyId=${getRandomValue(2)}&name=${getRandomName()}&user=dGVzdEBlbWFpbC5jb20=`,  // 랜덤 이름 및 값 삽입
   },
 };

@@ -20,7 +20,7 @@ export const getItem = async (tableName, key) => {
 
     return null;
   } catch (error) {
-    console.error(`Error fetching item from table "${tableName}":`, error);
-    throw new Error('Failed to fetch item from DynamoDB.');
+    console.error(`테이블 "${tableName}"에서 항목을 조회하는 중 오류 발생:`, error);
+    throw new Error('DynamoDB에서 항목을 가져오는 데 실패했습니다.');
   }
 };

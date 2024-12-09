@@ -15,8 +15,8 @@ export const fetchTeamListAPI = async () => {
         const response = await apiClient.get(`/team`);
         return response.data;
     } catch (error) {
-      console.error("팀 목록 가져오기 실패: " , error.message);
-      throw error;
+        console.error("팀 목록 가져오기 실패: " , error.message);
+        throw error;
     }
 }
 

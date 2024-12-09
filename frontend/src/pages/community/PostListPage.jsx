@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  List,
+  InputBase,
+  Chip,
+  colors,
+} from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
@@ -361,12 +369,20 @@ const PostListPage = ({ isSmallScreen }) => {
                   variant="body2"
                   sx={{
                     color: theme.palette.grey[700],
-                    mb: 1,
                     display: "flex",
                     alignItems: "center",
+                    my: 2,
                   }}
                 >
-                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
+                  {hasImage && (
+                    <ImageIcon
+                      sx={{
+                        color: theme.palette.primary.light,
+                        fontSize: "35px",
+                        mr: 2,
+                      }}
+                    />
+                  )}
                   <span
                     dangerouslySetInnerHTML={{
                       __html: plainText.substring(0, 100),
@@ -378,7 +394,7 @@ const PostListPage = ({ isSmallScreen }) => {
                     display: "flex",
                     gap: 1,
                     flexWrap: "wrap",
-                    mb: 0,
+                    mt: 1,
                     minHeight: "40px",
                   }}
                 >
@@ -420,13 +436,34 @@ const PostListPage = ({ isSmallScreen }) => {
                       alignItems: "center",
                     }}
                   >
-                    <Typography variant="caption">
-                      👍 {post.likeCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.1rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      🤍{post.likeCount || 0}
                     </Typography>
-                    <Typography variant="caption">
-                      👁 {post.viewCount || 0}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.1rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      👀 {post.viewCount || 0}
                     </Typography>
-                    <Typography variant="caption">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: "1.1rem",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       💬 {post.commentCount || 0}
                     </Typography>
                   </Box>

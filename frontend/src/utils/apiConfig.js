@@ -15,5 +15,5 @@ export const getNotificationWebsocketApi = () => environment === 'local' ?
     : 'wss://u0ly4j754b.execute-api.us-east-1.amazonaws.com/dev'
 
 export const getChatWebSocketApi = () => environment === 'local' ?
-    'wss://u0wf0w7bsa.execute-api.us-east-1.amazonaws.com/local'
+    'wss://zrmpjkuu7f.execute-api.us-east-1.amazonaws.com/local'
     : 'wss://eed8yi4jw0.execute-api.us-east-1.amazonaws.com/dev'
