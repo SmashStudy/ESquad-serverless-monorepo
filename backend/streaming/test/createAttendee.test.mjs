@@ -36,27 +36,25 @@ describe('createAttendee 함수 테스트', () => {
     const title = '테스트 회의';
     const meetingId = 'meeting123';
     const attendeeName = '참석자1';
+    const userEmail = 'test@example.com';
+    const teamId = 'team123';
     const fakeUuid = '123e4567-e89b-12d3-a456-426614174000';
     const fakeAttendeeInfo = { Attendee: { AttendeeId: 'attendee123' } };
 
-    // 모킹된 함수들의 반환 값 설정
     uuid.mockReturnValue(fakeUuid);
     chimeSDKMeetings.createAttendee.mockResolvedValue(fakeAttendeeInfo);
     putAttendee.mockResolvedValue();
 
-    // 함수 호출
-    const result = await createAttendee(title, meetingId, attendeeName);
+    const result = await createAttendee(title, meetingId, attendeeName, userEmail, teamId);
 
-    // 호출 여부 및 인자 검증
     expect(uuid).toHaveBeenCalled();
     expect(chimeSDKMeetings.createAttendee).toHaveBeenCalledWith({
       MeetingId: meetingId,
       ExternalUserId: fakeUuid,
     });
-    expect(putAttendee).toHaveBeenCalledWith(title, fakeAttendeeInfo.Attendee.AttendeeId, attendeeName);
+    // putAttendee는 title, AttendeeId, attendeeName, userEmail, teamId 순서로 호출
+    expect(putAttendee).toHaveBeenCalledWith(title, fakeAttendeeInfo.Attendee.AttendeeId, attendeeName, userEmail, teamId);
     expect(result).toBe(fakeAttendeeInfo);
-
-    // console.error가 호출되지 않았는지 검증
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
@@ -64,17 +62,17 @@ describe('createAttendee 함수 테스트', () => {
     const title = '테스트 회의';
     const meetingId = 'invalidMeetingId';
     const attendeeName = '참석자1';
+    const userEmail = 'test@example.com';
+    const teamId = 'team123';
     const fakeUuid = '123e4567-e89b-12d3-a456-426614174000';
     const error = new Error('Meeting not found');
 
-    // 모킹된 함수들의 반환 값 설정
     uuid.mockReturnValue(fakeUuid);
     chimeSDKMeetings.createAttendee.mockRejectedValue(error);
 
-    // 오류 발생 여부 및 메시지 검증
-    await expect(createAttendee(title, meetingId, attendeeName)).rejects.toThrow('Meeting not found');
+    // 코드에서는 '회의를 찾을 수 없습니다.' 를 던지고 있으므로 테스트도 동일한 메시지를 기대
+    await expect(createAttendee(title, meetingId, attendeeName, userEmail, teamId)).rejects.toThrow('회의를 찾을 수 없습니다.');
 
-    // 호출 여부 및 인자 검증
     expect(uuid).toHaveBeenCalled();
     expect(chimeSDKMeetings.createAttendee).toHaveBeenCalledWith({
       MeetingId: meetingId,
@@ -82,33 +80,31 @@ describe('createAttendee 함수 테스트', () => {
     });
     expect(putAttendee).not.toHaveBeenCalled();
 
-    // console.error가 호출되었는지 검증
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating attendee:', error);
+    // 코드에서 console.error('참가자 생성 중 오류 발생:', error) 형태로 에러 로그를 남기므로 해당 메시지로 검증
+    expect(consoleErrorSpy).toHaveBeenCalledWith('참가자 생성 중 오류 발생:', error);
   });
 
   test('일반적인 오류를 처리해야 합니다', async () => {
     const title = '테스트 회의';
     const meetingId = 'meeting123';
     const attendeeName = '참석자1';
+    const userEmail = 'test@example.com';
+    const teamId = 'team123';
     const fakeUuid = '123e4567-e89b-12d3-a456-426614174000';
     const error = new Error('Some other error');
 
-    // 모킹된 함수들의 반환 값 설정
     uuid.mockReturnValue(fakeUuid);
     chimeSDKMeetings.createAttendee.mockRejectedValue(error);
 
-    // 오류 발생 여부 및 메시지 검증
-    await expect(createAttendee(title, meetingId, attendeeName)).rejects.toThrow('Failed to create attendee: Some other error');
+    // 코드에서는 '참가자 생성에 실패하였습니다: Some other error' 형태로 던지므로 동일하게 기대
+    await expect(createAttendee(title, meetingId, attendeeName, userEmail, teamId)).rejects.toThrow('참가자 생성에 실패하였습니다: Some other error');
 
-    // 호출 여부 및 인자 검증
     expect(uuid).toHaveBeenCalled();
     expect(chimeSDKMeetings.createAttendee).toHaveBeenCalledWith({
       MeetingId: meetingId,
       ExternalUserId: fakeUuid,
     });
     expect(putAttendee).not.toHaveBeenCalled();
-
-    // console.error가 호출되었는지 검증
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error creating attendee:', error);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('참가자 생성 중 오류 발생:', error);
   });
 });

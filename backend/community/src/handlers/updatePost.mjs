@@ -1,32 +1,30 @@
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { createResponse } from "../utils/responseHelper.mjs";
+import { v4 as uuidv4 } from "uuid";
 
+const s3Client = new S3Client({ region: process.env.REGION });
 const ddbClient = new DynamoDBClient({ region: process.env.REGION });
 
-const convertDynamoDBItem = (item) => {
-  const convertedItem = {};
-  for (const key in item) {
-    if (item[key].S) {
-      convertedItem[key] = item[key].S;
-    } else if (item[key].N) {
-      convertedItem[key] = parseInt(item[key].N, 10);
-    } else if (item[key].BOOL !== undefined) {
-      convertedItem[key] = item[key].BOOL;
-    } else if (item[key].SS) {
-      convertedItem[key] = item[key].SS;
-    } else if (item[key].M) {
-      convertedItem[key] = convertDynamoDBItem(item[key].M);
-    }
-  }
-  return convertedItem;
+const uploadImageToS3 = async (fileName, base64Data) => {
+  const buffer = Buffer.from(base64Data, "base64");
+  const key = `uploads/${uuidv4()}-${fileName}`;
+  const params = {
+    Bucket: process.env.S3_BUCKET,
+    Key: key,
+    Body: buffer,
+    ContentType: `image/${fileName.split(".").pop()}`,
+  };
+
+  await s3Client.send(new PutObjectCommand(params));
+  return `https://${process.env.S3_BUCKET}.s3.${process.env.REGION}.amazonaws.com/${key}`;
 };
 
 export const handler = async (event) => {
   try {
     const postId = event.pathParameters.postId;
     const createdAt = event.queryStringParameters?.createdAt;
-
-    const { title, content, resolved, tags } = JSON.parse(event.body);
+    let { title, content, resolved, tags } = JSON.parse(event.body);
 
     if (!postId || !createdAt) {
       return createResponse(400, {
@@ -41,11 +39,32 @@ export const handler = async (event) => {
       });
     }
 
+    // Base64 이미지 추출 및 변환
+    const base64Images = [];
+    content = content.replace(
+      /<img\s+src="data:image\/(png|jpeg|jpg);base64,([^"]+)"[^>]*>/g,
+      (match, type, data) => {
+        const fileName = `${Date.now()}.${type}`;
+        base64Images.push({ fileName, data });
+        return `<img data-file="${fileName}" />`;
+      }
+    );
+
+    const uploadedImages = await Promise.all(
+      base64Images.map(({ fileName, data }) => uploadImageToS3(fileName, data))
+    );
+
+    uploadedImages.forEach((imageUrl, index) => {
+      content = content.replace(
+        `<img data-file="${base64Images[index].fileName}" />`,
+        `<img src="${imageUrl}" />`
+      );
+    });
+
+    // DynamoDB UpdateExpression 구성
     const updateExpressionParts = [];
     const expressionAttributeValues = {};
-    const expressionAttributeNames = {
-      "#updatedAt": "updatedAt",
-    };
+    const expressionAttributeNames = { "#updatedAt": "updatedAt" };
 
     if (title) {
       updateExpressionParts.push("#title = :title");
@@ -105,12 +124,9 @@ export const handler = async (event) => {
 
     const data = await ddbClient.send(new UpdateItemCommand(params));
 
-    // 변환된 데이터 반환
-    const updatedPost = convertDynamoDBItem(data.Attributes);
-
     return createResponse(200, {
       message: "Post updated successfully",
-      updatedPost,
+      updatedPost: data.Attributes,
     });
   } catch (error) {
     console.error("Error updating post:", error);

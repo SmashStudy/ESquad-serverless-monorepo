@@ -48,7 +48,7 @@ const RegionSelection: React.FC<Props> = ({ setRegion, region }) => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [region, setRegion]);
 
   return (
     <FormField
@@ -58,7 +58,10 @@ const RegionSelection: React.FC<Props> = ({ setRegion, region }) => {
         setRegion(e.target.value);
       }}
       value={region}
-      label="호스트 지역"
+      label="호스트 지역 (자동 감지)"
+      fieldProps={{
+        disabled: true, // 드롭다운 비활성화
+      }}
     />
   );
 };
