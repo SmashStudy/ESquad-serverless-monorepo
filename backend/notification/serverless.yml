@@ -13,23 +13,23 @@ provider:
   stackName: ${self:service}-${self:provider.stage}
   environment:
     STAGE: ${opt:stage, 'dev'}
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
     ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
     WEBSOCKET_RESOURCE_ID: !Ref ApiGatewayWebsocketApi
-    FILE_METADATA_TABLE: ${env:FILE_METADATA_TABLE}
-    TEAM_TABLE: ${env:TEAM_TABLE}
-    TEAM_TABLE_STREAM_LABEL: ${env:TEAM_TABLE_STREAM_LABEL}
-    NOTIFICATION_CONNECTION_TABLE: ${env:NOTIFICATION_CONNECTION_TABLE}
-    NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
-    NOTIFICATION_DYNAMODB_TABLE: ${env:NOTIFICATION_TABLE}
-    NOTIFICATION_CREATED_INDEX: ${env:NOTIFICATION_CREATED_INDEX}
-    NOTIFICATION_READ_INDEX: ${env:NOTIFICATION_READ_INDEX}
-    NOTIFICATION_SAVE_INDEX: ${env:NOTIFICATION_SAVE_INDEX}
-    NOTIFICATION_TABLE_STREAM_LABEL: ${env:NOTIFICATION_TABLE_STREAM_LABEL}
-    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
-    METADATA_TABLE_STREAM_LABEL: ${env:METADATA_TABLE_STREAM_LABEL}
 
-#  apiGateway:
-#    role: DefaultRole   # API Gateway 역할 정의
+    TEAM_TABLE: ${env:TEAM_TABLE}
+    FILE_METADATA_TABLE: ${env:FILE_METADATA_TABLE}
+    NOTIFICATION_TABLE: ${env:NOTIFICATION_TABLE}
+    NOTIFICATION_CONNECTION_TABLE: ${env:NOTIFICATION_CONNECTION_TABLE}
+    NOTIFICATION_CONNECTION_USER_INDEX: userId-index
+    NOTIFICATION_CREATED_INDEX: user-created-index
+    NOTIFICATION_READ_INDEX: user-read-index
+    NOTIFICATION_SAVE_INDEX: user-save-index
+
+    TEAM_TABLE_ARN: ${cf:TeamStackName.TeamTableArn}
+    METADATA_TABLE_ARN: ${env:METADATA_TABLE_ARN}
+    NOTIFICATION_TABLE_ARN:
+      Ref: NotificationsTable
 
   # one IAM Role is shared by all the Lambda functions in my service
   # Also by default, my Lambda functions have permission to create and write to CloudWatch logs
@@ -37,17 +37,19 @@ provider:
   iam:
     role:
       name: esquad-user-01-${opt:stage}-role
-      assumeRolePolicyDocument: # Add the trust policy here
+      assumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: apigateway.amazonaws.com # Allow API Gateway to assume the role
             Action: sts:AssumeRole
-      # To add permissions to this role, add IAM statements in provider.iam.role.statements.
-      # These will be merged into the generated policy
-      # As those statements will be merged into the CloudFormation template, you can use Join, Ref or any other CloudFormation method or feature.
       statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource: ${cf:AnotherStackName.TeamTableArn}
         - Effect: Allow
           Action:
             - execute-api:ManageConnections   # WebSocket 연결 관리 권한
@@ -73,8 +75,8 @@ provider:
             - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_CREATED_INDEX}
             - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_READ_INDEX}
             - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_TABLE}/index/${env:NOTIFICATION_SAVE_INDEX}
-            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
-            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}/index/${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_CONNECTION_TABLE}
+            - arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:NOTIFICATION_CONNECTION_TABLE}/index/${env:NOTIFICATION_CONNECTION_USER_INDEX}
         - Effect: Allow
           Action:
             - logs:CreateLogGroup
@@ -172,7 +174,7 @@ functions:
     events:
       - stream: # DynamoDB Streams 트리거
           type: dynamodb
-          arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/stream/${env:METADATA_TABLE_STREAM_LABEL}
+          arn: ${env:METADATA_TABLE_ARN}
           batchSize: 5 # 스트림 배치 처리 크기
           startingPosition: LATEST # 최신 이벤트부터 시작
 
@@ -181,7 +183,7 @@ functions:
     events:
       - stream: # DynamoDB Streams 트리거
           type: dynamodb
-          arn: arn:aws:dynamodb:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:table/${env:TEAM_TABLE}/stream/${env:TEAM_TABLE_STREAM_LABEL}
+          arn: ${env:TEAM_TABLE_ARN}
           batchSize: 5 # 스트림 배치 처리 크기
           startingPosition: LATEST # 최신 이벤트부터 시작
 
@@ -198,7 +200,7 @@ resources:
     ConnectionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_TABLE}
+        TableName: ${env:NOTIFICATION_CONNECTION_TABLE}
         AttributeDefinitions:
           - AttributeName: connectionId
             AttributeType: S
@@ -208,7 +210,7 @@ resources:
           - AttributeName: connectionId
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: ${env:NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX}
+          - IndexName: ${env:NOTIFICATION_CONNECTION_USER_INDEX}
             KeySchema:
               - AttributeName: userId # 특정 사용자(userId)에 대한 모든 WebSocket 연결을 쿼리
                 KeyType: HASH
