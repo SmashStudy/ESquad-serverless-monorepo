@@ -60,6 +60,7 @@ const EndMeetingControl: React.FC = () => {
                 variant="primary"
                 label="회의 종료"
                 closesModal
+                style={{ backgroundColor: "#9F51E8", borderColor: "#9F51E8" }}
               />,
               <ModalButton
                 key="cancel-meeting-ending"
