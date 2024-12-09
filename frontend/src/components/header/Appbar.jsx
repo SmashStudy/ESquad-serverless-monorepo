@@ -103,9 +103,12 @@ const Appbar = ({
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
 
   const isHomePage = location.pathname === "/" || location.pathname === '/main';
-  if(isHomePage) {
-    onTabChange(-1);
-  }
+
+  useEffect(() => {
+    if(isHomePage) {
+      onTabChange(-1);
+    }
+  }, [isHomePage]);
 
   const fetchUserRole = async () => {
     try {
