@@ -701,7 +701,15 @@ const PostDetailsPage = () => {
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   {comment.writer?.nickname || "익명"}
                 </Typography>
-                <Typography variant="body2">{comment.content}</Typography>
+                <Typography
+                  variant="body2"
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {comment.content}
+                </Typography>
                 <Typography
                   variant="caption"
                   sx={{ color: "text.secondary", display: "block", mt: 1 }}
