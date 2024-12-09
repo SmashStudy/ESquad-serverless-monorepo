@@ -5,8 +5,10 @@ import {dynamoDb, LOG_TABLE} from "../utils/dynamoUtil.mjs";
 export const handler = async (event) => {
   console.log(`event is ${JSON.stringify(event, null, 2)}`);
 
-  const body = JSON.parse(event.body);
-  let uploaderEmail = body.uploaderEmail;
+  let {uploaderEmail} = event.queryStringParameters || {};
+
+  // const body = JSON.parse(event.body);
+  // let uploaderEmail = body.uploaderEmail;
 
   if (!uploaderEmail){
     console.error("Missing uploaderEmail in queryStringParameters.");

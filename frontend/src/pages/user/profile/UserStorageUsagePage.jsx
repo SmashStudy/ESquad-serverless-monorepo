@@ -44,9 +44,10 @@ const UserStorageUsageRenewed = () => {
     setLoading(true);
     try {
       // API 호출을 통해 유저 사용량 및 파일 목록 받아오기
-      const response = await axios.get(`${getStorageApi()}/get-user-usage`, {
+      const response = await axios.get(`${getStorageApi()}/user-usage`, {
         params: {userEmail: email},
       });
+      console.log(response.data);
       const files = response.data;
 
       // 파일 데이터 업데이트
@@ -64,9 +65,9 @@ const UserStorageUsageRenewed = () => {
 
   const fetchDownloadLogs = async () => {
     try {
-      const response = await axios.post(
-          `${getStorageApi()}/get-user-download-logs`, {
-            userEmail: email,
+      const response = await axios.get(
+          `${getStorageApi()}/user-download-logs`, {
+            params: {userEmail: email},
           });
       setDownloadLogs(response.data);
     } catch (error) {
@@ -76,9 +77,9 @@ const UserStorageUsageRenewed = () => {
 
   const fetchDeleteLogs = async () => {
     try {
-      const response = await axios.post(
-          `${getStorageApi()}/get-user-delete-logs`, {
-            uploaderEmail: email,
+      const response = await axios.get(
+          `${getStorageApi()}/user-delete-logs`, {
+            params: {uploaderEmail: email},
           });
       setDeleteLogs(response.data);
     } catch (error) {
