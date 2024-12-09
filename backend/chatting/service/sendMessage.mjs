@@ -10,7 +10,7 @@ export const handler = async (event) => {
     // 이벤트에서 연결 ID와 요청 컨텍스트를 추출
     const { requestContext } = event;
     // 이벤트 본문에서 메시지, 방 ID, 사용자 ID를 추출
-    const { message, room_id, user_id, fileKey, contentType, originalFileName } = JSON.parse(event.body);
+    const { message, room_id, user_id, fileKey, contentType, originalFileName, nickname } = JSON.parse(event.body);
 
 
     // API Gateway Management API 클라이언트 생성
@@ -25,6 +25,7 @@ export const handler = async (event) => {
             timestamp: Date.now(),
             message,
             user_id,
+            nickname,
         };
 
         if (fileKey) {
