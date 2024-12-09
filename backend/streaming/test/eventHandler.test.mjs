@@ -25,15 +25,15 @@ describe('EventBridge Lambda Handler', () => {
 
     const response = await handler(mockEvent);
 
-    // 응답 검증
+    // 응답 검증 (한글 메시지로 수정)
     expect(response).toEqual({
       statusCode: 200,
-      body: JSON.stringify({ message: 'Event processed successfully' }),
+      body: JSON.stringify({ message: '이벤트가 성공적으로 처리되었습니다.' }),
     });
 
-    // 로그 검증
+    // 로그 검증 (한글 로그 메시지로 수정)
     expect(consoleLogSpy).toHaveBeenCalledWith(
-      'Received Event:',
+      '수신된 이벤트:',
       JSON.stringify(mockEvent, null, 2)
     );
     expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -49,16 +49,16 @@ describe('EventBridge Lambda Handler', () => {
 
     const response = await handler(mockEvent);
 
-    // 응답 검증
+    // 응답 검증 (한글 메시지로 수정)
     expect(response).toEqual({
       statusCode: 500,
       body: JSON.stringify({
-        message: 'Internal Server Error',
+        message: '내부 서버 오류가 발생했습니다.',
         error: mockError.message,
       }),
     });
 
-    // 오류 로그 검증
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error processing event:', mockError);
+    // 오류 로그 검증 (한글 메시지로 수정)
+    expect(consoleErrorSpy).toHaveBeenCalledWith('이벤트 처리 중 오류 발생:', mockError);
   });
 });

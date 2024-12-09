@@ -38,65 +38,47 @@ describe('getAttendee 함수 테스트', () => {
       },
     };
 
-    // 모킹된 함수들의 반환 값 설정
     getItem.mockResolvedValue(fakeAttendee);
 
     const result = await getAttendee(title, attendeeId);
 
-    // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
       attendeeId: { S: `${title}/${attendeeId}` },
     });
-
-    // 반환 값 검증
     expect(result).toBe('참석자1');
-
-    // console.error가 호출되지 않았는지 검증
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  test('참가자가 존재하지 않을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자가 존재하지 않을 때 "알 수 없음"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
 
-    // 모킹된 함수들의 반환 값 설정
     getItem.mockResolvedValue(null);
 
     const result = await getAttendee(title, attendeeId);
 
-    // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
       attendeeId: { S: `${title}/${attendeeId}` },
     });
-
-    // 반환 값 검증
-    expect(result).toBe('Unknown');
-
-    // console.error가 호출되지 않았는지 검증
+    expect(result).toBe('알 수 없음');
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
-  test('참가자 정보에 Name 속성이 없을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자 정보에 name 속성이 없을 때 "알 수 없음"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
-      // Name 속성이 없음
+      // name 속성 없음
     };
 
-    // 모킹된 함수들의 반환 값 설정
     getItem.mockResolvedValue(fakeAttendee);
 
     const result = await getAttendee(title, attendeeId);
 
-    // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
       attendeeId: { S: `${title}/${attendeeId}` },
     });
-
-    // 반환 값 검증
-    expect(result).toBe('Unknown');
-
-    // console.error가 호출되지 않았는지 검증
+    expect(result).toBe('알 수 없음');
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 
@@ -105,44 +87,34 @@ describe('getAttendee 함수 테스트', () => {
     const attendeeId = 'attendee123';
     const error = new Error('DynamoDB 오류');
 
-    // getItem의 반환 값 설정 (오류 발생)
     getItem.mockRejectedValue(error);
 
-    // 오류 발생 여부 및 메시지 검증
-    await expect(getAttendee(title, attendeeId)).rejects.toThrow('Failed to retrieve attendee: DynamoDB 오류');
+    // 코드에서는 '참가자 정보를 가져오는 데 실패했습니다: DynamoDB 오류' 형태로 오류 메시지를 던집니다.
+    await expect(getAttendee(title, attendeeId)).rejects.toThrow(`참가자 정보를 가져오는 데 실패했습니다: ${error.message}`);
 
-    // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
       attendeeId: { S: `${title}/${attendeeId}` },
     });
-
-    // console.error 호출 검증
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching attendee:', error);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('참가자 정보 조회 중 오류 발생:', error);
   });
 
-  test('참가자 정보에 Name 속성이 S 속성을 갖지 않을 때 "Unknown"을 반환해야 합니다', async () => {
+  test('참가자 정보에 name 속성이 S 속성을 갖지 않을 때 "알 수 없음"을 반환해야 합니다', async () => {
     const title = '테스트 회의';
     const attendeeId = 'attendee123';
     const fakeAttendee = {
-      Name: {
-        // S 속성이 없음
+      name: {
+        // S 속성 없음
       },
     };
 
-    // 모킹된 함수들의 반환 값 설정
     getItem.mockResolvedValue(fakeAttendee);
 
     const result = await getAttendee(title, attendeeId);
 
-    // getItem 호출 검증
     expect(getItem).toHaveBeenCalledWith('AttendeesTable', {
       attendeeId: { S: `${title}/${attendeeId}` },
     });
-
-    // 반환 값 검증
-    expect(result).toBe('Unknown');
-
-    // console.error가 호출되지 않았는지 검증
+    expect(result).toBe('알 수 없음');
     expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 });

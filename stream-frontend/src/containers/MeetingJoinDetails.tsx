@@ -40,6 +40,7 @@ const MeetingJoinDetails = () => {
         <PrimaryButton
           label={isLoading ? "로딩중..." : "회의 참여하기"}
           onClick={handleJoinMeeting}
+          style={{ backgroundColor: '#9F51E8', borderColor: '#9F51E8' }}
         />
         <Label style={{ margin: ".75rem 0 0 0" }}>
           회의 참여 <b>{meetingId}</b> as <b>{localUserName}</b>
