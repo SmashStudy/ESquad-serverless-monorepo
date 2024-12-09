@@ -47,28 +47,10 @@ const AdminDownloadPage = () => {
             </Box>
         );
       }
-    },
-    {
-      headerName: '로그 식별자',
-      field: 'logId',
-      sortable: true,
-      filter: true
-    },
+    },// 이발시 파일이름 접근유저 파일 크기 IP 타겟 로그 파일키 유저 역할
     {
       headerName: '이벤트 발생 시점',
       field: 'createdAt',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '파일 키',
-      field: 'fileKey',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '접근 IP',
-      field: 'ipAddress',
       sortable: true,
       filter: true
     },
@@ -78,6 +60,32 @@ const AdminDownloadPage = () => {
       sortable: true,
       filter: true
     },
+    {
+      headerName: '접근한 유저',
+      field: 'userEmail',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '파일 크기',
+      field: 'fileSize',
+      sortable: true,
+      filter: true,
+      valueFormatter: ({value}) => formatFileSize(value)
+    },
+    {
+      headerName: '접근 IP',
+      field: 'ipAddress',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '유저 에이전트',
+      field: 'userAgent',
+      sortable: true,
+      filter: true
+    },
+    {headerName: '역할', field: 'userRole', sortable: true, filter: true},
     {
       headerName: '타겟 식별자',
       field: 'targetId',
@@ -91,31 +99,23 @@ const AdminDownloadPage = () => {
       filter: true
     },
     {
+      headerName: '로그 식별자',
+      field: 'logId',
+      sortable: true,
+      filter: true
+    },
+    {
+      headerName: '파일 키',
+      field: 'fileKey',
+      sortable: true,
+      filter: true
+    },
+    {
       headerName: '생성한 유저',
       field: 'uploaderEmail',
       sortable: true,
       filter: true
     },
-    {
-      headerName: '유저 에이전트',
-      field: 'userAgent',
-      sortable: true,
-      filter: true
-    },
-    {
-      headerName: '접근한 유저',
-      field: 'userEmail',
-      sortable: true,
-      filter: true
-    },
-    {headerName: '역할', field: 'userRole', sortable: true, filter: true},
-    {
-      headerName: '파일 크기',
-      field: 'fileSize',
-      sortable: true,
-      filter: true,
-      valueFormatter: ({value}) => formatFileSize(value)
-    }
   ];
 
   const fetchLogs = async () => {
