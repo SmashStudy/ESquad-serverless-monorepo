@@ -30,6 +30,7 @@ import Logout from './pages/user/authentication/LogoutPage.jsx';
 import UserProfile from './pages/user/profile/UserProfilePage.jsx';
 import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
 import {UserEmailProvider} from "./context/UserEmailContext.jsx";
+import StudyAnalysis from "./components/user/StudyAnalysis.jsx"
 
 import { decodeJWT } from "./utils/decodeJWT.js";
 
@@ -168,6 +169,7 @@ function App() {
                     <Route path="questions" element={<PostListPage />} />
                     <Route path="questions/:postId" element={<PostDetailsPage />} />
                     <Route path="questions/:postId/edit" element={<PostEditPage />} />
+                    <Route path="main/echart" element={<StudyAnalysis />} />
                 </Route>
               </Route>
 
