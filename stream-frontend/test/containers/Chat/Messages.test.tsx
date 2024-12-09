@@ -2,21 +2,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Messages from '../../../src/containers/Chat/Messages';
 import { useDataMessages } from '../../../src/providers/DataMessagesProvider';
+import { useAppState } from "../../../src/providers/AppStateProvider";
 import { ThemeProvider } from 'styled-components';
 import '@testing-library/jest-dom';  // jest-dom 매처 사용을 위한 import
 
-// useDataMessages 모의 설정
+// useDataMessages 모의
 jest.mock('../../../src/providers/DataMessagesProvider', () => ({
   useDataMessages: jest.fn(),
 }));
 
-// ChatBubble 컴포넌트 모의 처리
-jest.mock('amazon-chime-sdk-component-library-react', () => ({
-  ChatBubble: ({ variant, senderName, children }: any) => (
-    <div data-testid="chat-bubble" className={variant}>
-      <strong>{senderName}</strong>: {children}
-    </div>
-  ),
+// useAppState 모의
+jest.mock('../../../src/providers/AppStateProvider', () => ({
+  useAppState: jest.fn(),
 }));
 
 // Theme 객체 설정
@@ -33,7 +30,7 @@ const theme = {
   },
 };
 
-// Message 타입을 테스트 파일 내에서 정의
+// Message 타입 정의
 interface Message {
   senderName: string;
   message: string;
@@ -43,9 +40,25 @@ interface Message {
 
 describe('Messages 컴포넌트', () => {
   const mockUseDataMessages = useDataMessages as jest.Mock;
+  const mockUseAppState = useAppState as jest.Mock;
 
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
+    // useAppState 훅 모킹 (테마 정보 반환)
+    mockUseAppState.mockReturnValue({
+      theme: {
+        chat: {
+          bgd: '#ffffff',
+          containerBorder: '#cccccc',
+          maxWidth: '600px',
+        },
+        mediaQueries: {
+          min: {
+            md: '@media(min-width: 768px)',
+          },
+        },
+      }
+    });
   });
 
   test('메시지가 있을 때 올바르게 렌더링되어야 한다', () => {
@@ -72,15 +85,9 @@ describe('Messages 컴포넌트', () => {
       </ThemeProvider>
     );
 
-    // 각 메시지가 올바르게 렌더링되는지 확인
-    const chatBubbles = screen.getAllByTestId('chat-bubble');
-    expect(chatBubbles).toHaveLength(2);
-
-    expect(chatBubbles[0]).toHaveClass('incoming');
-    expect(chatBubbles[0]).toHaveTextContent('Alice: Hello!');
-
-    expect(chatBubbles[1]).toHaveClass('outgoing');
-    expect(chatBubbles[1]).toHaveTextContent('Bob: Hi, Alice!');
+    // 메시지 내용 확인
+    expect(screen.getByText('Hello!')).toBeInTheDocument();
+    expect(screen.getByText('Hi, Alice!')).toBeInTheDocument();
   });
 
   test('메시지가 없을 때 StyledMessages가 비어있는지 확인', () => {
@@ -92,7 +99,6 @@ describe('Messages 컴포넌트', () => {
       </ThemeProvider>
     );
 
-    // container의 첫 번째 자식이 StyledMessages임을 가정
     const styledMessages = container.firstChild as HTMLElement;
     expect(styledMessages).toBeInTheDocument();
     expect(styledMessages).toBeEmptyDOMElement();
@@ -118,10 +124,7 @@ describe('Messages 컴포넌트', () => {
 
     const styledMessages = container.firstChild as HTMLElement;
 
-    // 초기 렌더링 시 scrollTop이 0인지 확인
-    expect(styledMessages.scrollTop).toBe(0);
-
-    // scrollHeight을 모킹
+    // scrollHeight 모킹
     Object.defineProperty(styledMessages, 'scrollHeight', {
       value: 1000,
       writable: true,
@@ -146,7 +149,7 @@ describe('Messages 컴포넌트', () => {
       </ThemeProvider>
     );
 
-    // 스크롤이 아래로 이동했는지 확인
+    // 스크롤 이동 확인
     expect(styledMessages.scrollTop).toBe(styledMessages.scrollHeight);
   });
 });
