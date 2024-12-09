@@ -1,9 +1,3 @@
-// BASE_URL을 배포된 API Gateway URL로 수정
-// export const BASE_URL = 'https://api.esquad.click/dev/';
-
-// import routes from '../constants/routes';
-// export const BASE_URL = routes.HOME;
-
 import routes from '../constants/routes';
 
 const isProduction = process.env.NODE_ENV === 'production';
