@@ -8,8 +8,8 @@ import {createResponse} from '../util/responseHelper.mjs'
 
 const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
-const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_TABLE;
+const CONNECTION_TABLE = process.env.NOTIFICATION_CONNECTION_TABLE;
 const WEBSOCKET_RESOURCE_ID = process.env.WEBSOCKET_RESOURCE_ID;
 
 // WebSocket 으로 메시지 전송
@@ -73,7 +73,7 @@ export const handler = async (event) => {
       );
       await dynamoDb.send(
         new DeleteCommand({
-          TableName: CONNECTIONS_TABLE,
+          TableName: CONNECTION_TABLE,
           Key: { connectionId },
         })
       );

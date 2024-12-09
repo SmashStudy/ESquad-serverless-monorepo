@@ -3,7 +3,7 @@ import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDb = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_TABLE;
 const NOTIFICATION_CREATED_INDEX = process.env.NOTIFICATION_CREATED_INDEX;
 
 // 특정 사용자에 대한 모든 알림을 시간 역순으로 조회

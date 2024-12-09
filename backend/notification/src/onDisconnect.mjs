@@ -2,7 +2,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import {createResponse} from "../util/responseHelper.mjs";
 
-const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
+const CONNECTION_TABLE = process.env.NOTIFICATION_CONNECTION_TABLE;
 
 const dynamodbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -13,7 +13,7 @@ export const handler = async (event) => {
   try {
     await dynamodbClient.send(
       new DeleteCommand({
-        TableName: CONNECTIONS_TABLE,
+        TableName: CONNECTION_TABLE,
         Key: {
           connectionId: event.requestContext.connectionId, // connectionId를 기반으로 삭제
         },

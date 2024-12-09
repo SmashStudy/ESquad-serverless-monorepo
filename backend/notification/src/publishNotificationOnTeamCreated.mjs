@@ -8,8 +8,8 @@ import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-const TEAM_TABLE = process.env.TEAM_DYNAMODB_TABLE;
-const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const TEAM_TABLE = process.env.TEAM_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_TABLE;
 
 const MAX_BATCH_SIZE = 25;
 

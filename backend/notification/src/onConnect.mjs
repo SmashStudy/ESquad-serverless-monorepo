@@ -6,9 +6,9 @@ import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamodbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
+const CONNECTIONS_TABLE = process.env.NOTIFICATION_CONNECTION_TABLE;
 const NOTIFICATION_CONNECTION_USER_INDEX =
-  process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
+  process.env.NOTIFICATION_CONNECTION_USER_INDEX;
 
 // 클라이언트 연결 요청 처리
 export const handler = async (event) => {

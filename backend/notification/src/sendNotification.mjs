@@ -7,17 +7,17 @@ import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE =
-  process.env.NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE;
-const NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX =
-  process.env.NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX;
-const ENDPOINT = process.env.WEBSOCKET_ENDPOINT;
+const NOTIFICATION_CONNECTION_TABLE =
+  process.env.NOTIFICATION_CONNECTION_TABLE;
+const NOTIFICATION_CONNECTION_USER_INDEX =
+  process.env.NOTIFICATION_CONNECTION_USER_INDEX;
+const WEBSOCKET_RESOURCE_ID = process.env.WEBSOCKET_RESOURCE_ID;
 
 // 사용자ID 로 연결ID 조회
 const getConnectionIds = async (userId) => {
   const params = {
-    TableName: NOTIFICATION_CONNECTIONS_DYNAMODB_TABLE,
-    IndexName: NOTIFICATION_WEBSOCKET_CONNECTION_USER_INDEX,
+    TableName: NOTIFICATION_CONNECTION_TABLE,
+    IndexName: NOTIFICATION_CONNECTION_USER_INDEX,
     KeyConditionExpression: "#userId = :userId",
     ExpressionAttributeNames: {
       "#userId": "userId", // Handle reserved characters
@@ -44,7 +44,9 @@ const getConnectionIds = async (userId) => {
 // 연결된 웹소캣 커넥션(클라이언트)에 메시지 전송
 const sendToConnection = async (connectionId, studyNotification) => {
   const notification = { studyNotification };
-  const apiClient = new ApiGatewayManagementApiClient({ endpoint: ENDPOINT });
+  const apiClient = new ApiGatewayManagementApiClient({
+    endpoint: `https://${WEBSOCKET_RESOURCE_ID}.execute-api.${process.env.STAGE}.amazonaws.com/${process.env.STAGE}`,
+  })
 
   try {
     const command = new PostToConnectionCommand({

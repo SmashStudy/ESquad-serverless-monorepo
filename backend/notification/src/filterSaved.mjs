@@ -2,7 +2,7 @@ import { DynamoDBClient, QueryCommand } from "@aws-sdk/client-dynamodb";
 import {createResponse} from "../util/responseHelper.mjs";
 
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_TABLE;
 const NOTIFICATION_SAVE_INDEX = process.env.NOTIFICATION_SAVE_INDEX;
 
 export const handler = async (event) => {

@@ -1,7 +1,8 @@
 import {createResponse} from "../util/responseHelper.mjs";
 import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 const dynamoDbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-const NOTIFICATION_TABLE = process.env.NOTIFICATION_DYNAMODB_TABLE;
+const NOTIFICATION_TABLE = process.env.NOTIFICATION_TABLE;
+
 // 재시도 메커니즘을 사용하여 항목 업데이트 함수 (지수 백오프 적용)
 const updateItemWithRetry = async (params, maxRetries = 3, delay = 200) => {
   // 최대 재시도 횟수만큼 반복 시도
