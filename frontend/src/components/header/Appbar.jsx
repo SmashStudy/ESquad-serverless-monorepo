@@ -25,7 +25,7 @@ import {
   styled,
   Toolbar,
   useMediaQuery,
-  useTheme,
+  useTheme, CircularProgress,
 } from "@mui/material";
 import {
   fetchAll,
@@ -82,7 +82,7 @@ const Appbar = ({
   toggleChatDrawer, changeSelectedTeam
 }) => {
   const theme = useTheme();
-  const {teams, updateTeams} = useTeams();
+  const {teams, updateTeams, loading} = useTeams();
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState(null);
@@ -391,42 +391,39 @@ const Appbar = ({
                       handleTab={onTabChange}
                   />
 
-                  {teams.length === 0 ? (
+                  {loading ? ( <CircularProgress color="primary" size="30px" sx={{ ml: 7 }} /> ) :
+                    teams.length === 0 ? (
                       <ListItem>
                           <ListItemText primary="팀이 없습니다." />
                       </ListItem>
-                  ) : (
-                      <>
-                        {isLoading ? <Loading /> : (
-                          teams.map((team, index) => (
-                              <Link
-                                  to={`/teams/${encodeURIComponent(team.PK)}/main`}
-                                  key={team.PK}
-                                  style={{ textDecoration: "none", color: "inherit" }}
-                              >
-                                <ListItemButton
-                                    onClick={() => {
-                                      handleSelectedTeam(team); // selectedTeam 업데이트
-                                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
-                                    }}
-                                  sx={{
-                                    "&:hover": {
-                                      cursor: "pointer",
-                                      fontSize: "1.2rem",
-                                    },
-                                  }}>
-                                    <ListItemIcon>
-                                      <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={team?.teamName.length > 7 ? `${team?.teamName.slice(0, 7)}...` : team?.teamName} // Truncate teamName to 7 characters
-                                    />
-                                </ListItemButton>
-                              </Link>
-                          ))
-                        )}
-                      </>
-                  )}
+                    ) : (
+                      teams.map((team, index) => (
+                        <Link
+                          to={`/teams/${encodeURIComponent(team.PK)}/main`}
+                          key={team.PK}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <ListItemButton
+                            onClick={() => {
+                              handleSelectedTeam(team); // selectedTeam 업데이트
+                              handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
+                            }}
+                            sx={{
+                              "&:hover": {
+                                cursor: "pointer",
+                                fontSize: "1.2rem",
+                              },
+                            }}>
+                              <ListItemIcon>
+                                <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={team?.teamName.length > 7 ? `${team?.teamName.slice(0, 7)}...` : team?.teamName} // Truncate teamName to 7 characters
+                              />
+                          </ListItemButton>
+                        </Link>
+                      ))
+                    )}
                 </List>
             </Menu>
         </Box>

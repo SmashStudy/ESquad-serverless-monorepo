@@ -40,9 +40,8 @@ const AuthCallback = () => {
                     // JWT 토큰을 로컬 저장소에 저장
                     localStorage.setItem('jwtToken', id_token);
                     
-
                     // 메인 페이지로 이동
-                    navigate('/main');
+                    window.location.href = '/main';
                 }
 
             } catch (error) {
