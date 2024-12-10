@@ -24,13 +24,13 @@ import AdminRoute from "./components/routes/AdminRoute.jsx";
 import UnauthorizedPage from "./pages/user/admin/UnauthorizedPage.jsx";
 import UserPasswordReset from "./pages/user/authentication/UserPasswordResetPage.jsx";
 import UserConfirmPassword from "./pages/user/authentication/UserConfirmPasswordPage.jsx";
-import Login from "./pages/user/authentication/LoginPage.jsx";
-import AuthCallback from "./auth/AuthCallback.jsx";
-import Logout from "./pages/user/authentication/LogoutPage.jsx";
-import UserProfile from "./pages/user/profile/UserProfilePage.jsx";
-import { UserNicknameProvider } from "./context/UserNicknameContext.jsx";
-import { UserEmailProvider } from "./context/UserEmailContext.jsx";
 import PostTeamListPage from "./pages/community/PostTeamListPage.jsx";
+import Login from './pages/user/authentication/LoginPage.jsx';
+import AuthCallback from './auth/AuthCallback.jsx';
+import Logout from './pages/user/authentication/LogoutPage.jsx';
+import MainPage from './pages/home/MainPage.jsx';
+import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
+import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
 import { decodeJWT } from "./utils/decodeJWT.js";
 
@@ -124,77 +124,55 @@ function App() {
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/logout" element={<Logout />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route
-                path="/email/verification"
-                element={<UserEmailVerification />}
-              />
-              <Route
-                path="/confirm/password"
-                element={<UserConfirmPassword />}
-              />
-              <Route
-                path="/confirm/password/reset"
-                element={<UserPasswordReset />}
-              />
+              <Route path="/email/verification" element={<UserEmailVerification />} />
+              <Route path="/confirm/password" element={<UserConfirmPassword />} />
+              <Route path="/confirm/password/reset" element={<UserPasswordReset />} />
+
 
               {/* 보호된 경로 */}
               <Route path="/" element={ <PrivateRoute> <Home /> </PrivateRoute>}  >
+
+                <Route path="/" element={<MainPage />} />
+                <Route path="/main" element={<MainPage />} />
+
+
                 {/* user */}
-                <Route path="/user/profile" element={<UserProfile />} />
-                <Route path="/user/profile/manage-file" element={<UserStorageUsage />} />
-                <Route path="/user/profile/nickname" element={<UserProfileNickname />} />
-                <Route path="/user/profile/layout" element={<UserProfileLayout />} />
+                <Route path="/user/profile" element={<MainPage />} />
+                <Route path="/user/manage-file" element={<UserStorageUsage />} />
+                <Route path="/user/nickname" element={<UserProfileNickname />} />
+                <Route path="/user/layout" element={<UserProfileLayout />} />
 
                 {/* admin */}
-                <Route
-                  path="/admin"
-                  element={
-                    <AdminRoute>
-                      <AdminPage />
-                    </AdminRoute>
-                  }
-                />
+                <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
 
                 {/* 403 접근 금지 페이지 */}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
                 {/* community */}
                 <Route path="community/questions" element={<PostListPage />} />
-                <Route
-                  path="community/:boardType/:postId"
-                  element={<PostDetailsPage />}
-                />
+                <Route path="community/:boardType/:postId" element={<PostDetailsPage />} />
                 <Route path="community/general" element={<PostListPage />} />
-                <Route
-                  path="community/team-recruit"
-                  element={<PostListPage />}
-                />
+                <Route path="community/team-recruit" element={<PostListPage />} />
 
                 {/* team */}
-                <Route path="teams/:teamId">
-                  <Route path="main" element={<TeamMainPage />} />
-                  <Route path="manage/users" element={<ManageUserPage />} />
-                  <Route path="manage/settings" element={<ManageTeamPage />} />
-                  <Route path="study" element={<StudyListPage />} />
-                  <Route path="study/:studyId" element={<StudyDetailPage />} />
-                  <Route path="book/search" element={<BookListPage />} />
-                  <Route path="book/:bookId" element={<BookDetailPage />} />
-                  <Route path="questions" element={<PostTeamListPage />} />
-                  <Route
-                    path="questions/:postId"
-                    element={<PostDetailsPage />}
-                  />
-                  <Route
-                    path="questions/:postId/edit"
-                    element={<PostEditPage />}
-                  />
+                <Route path="teams/:teamId" >
+                    <Route path="main" element={<TeamMainPage />} />
+                    <Route path="manage/users" element={<ManageUserPage />} />
+                    <Route path="manage/settings" element={<ManageTeamPage />} />
+                    <Route path="study" element={<StudyListPage />} />
+                    <Route path="study/:studyId" element={<StudyDetailPage />} />
+                    <Route path="book/search" element={<BookListPage />} />
+                    <Route path="book/:bookId" element={<BookDetailPage />} />
+                    <Route path="questions" element={<PostListPage />} />
+                    <Route path="questions/:postId" element={<PostDetailsPage />} />
+                    <Route path="questions/:postId/edit" element={<PostEditPage />} />
                 </Route>
               </Route>
 
               <Route
                 path="*"
                 element={
-                  isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
+                  isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/login" />
                 }
               />
             </Routes>

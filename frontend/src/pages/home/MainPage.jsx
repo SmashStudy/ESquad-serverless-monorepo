@@ -19,13 +19,11 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import Layout from './UserProfileLayout';
+import Layout from '../user/profile/UserProfileLayout.jsx';
 import timeGridPlugin from '@fullcalendar/timegrid'; // 시간대 플러그인 추가
 import CloseIcon from "@mui/icons-material/Close";
 
-
-
-const UserProfile = () => {
+const MainPage = () => {
   const [teamPage, setTeamPage] = useState(0); // 팀 페이지
   const [studyPage, setStudyPage] = useState(0); // 스터디 페이지
   const [selectedTeam, setSelectedTeam] = useState(null); // 선택된 팀
@@ -402,4 +400,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default MainPage;
