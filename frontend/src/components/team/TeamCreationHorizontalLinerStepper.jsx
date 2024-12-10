@@ -132,10 +132,9 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, onTabChange}) => {
       alert('팀 ID가 설정되지 않았습니다. 팀을 다시 생성해 주세요.');
       return;
     }
-    onTabChange(1);
 
     onCancel();
-    navigate(`/teams/${encodeURIComponent(teamId)}`);
+    navigate(`/teams/${encodeURIComponent(teamId)}/main`);
     }
 
     // const handle
@@ -274,8 +273,8 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, onTabChange}) => {
 
           </Stack>
         )}
-                {/* 페이징 */}
-                <Box sx={{
+        {/* 페이징 */}
+        <Box sx={{
           width: '100%',
           position: 'absolute',
           marginTop:'0px',
@@ -299,7 +298,7 @@ const TeamCreationHorizontalLinerStepper = ({ onCancel, onTabChange}) => {
 
           <Button
             onClick={handleNext}
-            disabled={activeStep === 0 && !teamName.trim()}
+            disabled={(activeStep === 0 && !teamName.trim()) || activeStep === steps.length - 1 }
             size="large"
             endIcon={activeStep === steps.length - 2? <CheckIcon /> : <NavigateNextIcon />}
           > {activeStep === steps.length - 2 ? (loading ? '생성 중...' : '생성') : '다음'} </Button>
