@@ -42,7 +42,7 @@ const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
           "size", // 폰트 크기 포맷 추가
         ]}
         style={{
-          height: "600px",
+          height: "700px",
           width: "100%",
           backgroundColor: "#fff",
         }}

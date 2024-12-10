@@ -659,14 +659,15 @@ const PostDetailsPage = () => {
         />
         <style>
           {`
-      .content-container img {
-        max-width: 90%; 
-        max-height: 1000px; 
-        height: auto; 
-        display: block; 
-        margin: 10px auto; 
-      }
-    `}
+    .content-container img {
+      max-width: 90%; 
+      max-height: 1000px; 
+      height: auto; 
+      display: block; 
+      margin: 10px 0; /* 상하 간격만 유지 */
+      text-align: left; /* 왼쪽 정렬 */
+    }
+  `}
         </style>
       </Paper>
 

@@ -354,7 +354,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         height: "70vh",
         mx: "auto",
         my: "auto",
-        py: 2,
+        py: 3,
       }}
     >
       <Box
@@ -390,7 +390,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 9,
+          pt: 12,
         }}
       >
         <Button
