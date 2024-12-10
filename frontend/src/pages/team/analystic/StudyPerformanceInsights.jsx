@@ -81,13 +81,13 @@ const StudyPerformanceDashboard = ({teamId}) => {
     },
     legend: {
       orient: "vertical",
-      left: "left",
+      bottom: "left",
     },
     series: [
       {
         name: "스터디 참여율",
         type: "pie",
-        radius: "50%",
+        radius: "30%",
         data: participationData,
         emphasis: {
           itemStyle: {
@@ -101,8 +101,8 @@ const StudyPerformanceDashboard = ({teamId}) => {
   };
 
   return (
-    <div  style={{ height: '30vh', width: '900px'}} >
-      <ReactECharts option={option} style={{ height: "30vh", width: "100%" }} />
+    <div  style={{ height: '40vh'}} >
+      <ReactECharts option={option} style={{ height: "40vh", width: "100%" }} />
     </div>
   );
 };

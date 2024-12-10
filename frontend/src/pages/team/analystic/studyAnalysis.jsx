@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import * as echarts from "echarts/core";
 import { BarChart } from "echarts/charts";
-import { TooltipComponent, LegendComponent } from "echarts/components";
+import { TooltipComponent, LegendComponent, GridComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import { GridComponent } from "echarts/components";
 import { Card, CardContent, Typography, Box, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { styled } from "@mui/system";
-import dummyData from "../../../../public/data/dummy_data.json"
+import dummyData from "../../../../public/data/dummy_data.json";
 
 // ECharts 등록
 echarts.use([BarChart, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer]);
@@ -23,7 +22,7 @@ const StyledCard = styled(Card)({
 
 const StyledChartContainer = styled(Box)({
   width: "100%",
-  height: "500px",
+  height: "30vh",
 });
 
 const FilterContainer = styled(Box)({
@@ -32,21 +31,23 @@ const FilterContainer = styled(Box)({
   marginBottom: "20px",
 });
 
-const StudyTeamChart = () => {
+const StudyTeamChart = ({ teamId }) => {
   const [chartInstance, setChartInstance] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState("1"); // Default: January
   const [selectedWeek, setSelectedWeek] = useState("1주");
 
+  // ECharts 차트 인스턴스 설정
   useEffect(() => {
     const chartDom = document.getElementById("team-study-chart");
     const chart = echarts.init(chartDom);
     setChartInstance(chart);
 
     return () => {
-      chart.dispose(); // Clean up the chart
+      chart.dispose(); // 컴포넌트 언마운트 시 ECharts 정리
     };
   }, []);
 
+  // 차트 데이터 처리 및 ECharts 옵션 설정
   useEffect(() => {
     if (chartInstance) {
       const processedData = dummyData.reduce((acc, curr) => {
@@ -60,10 +61,8 @@ const StudyTeamChart = () => {
           const team = curr.team_Id.split("#")[1];
           const duration = (endDate - startDate) / 60000; // in minutes
 
-          // Month-level data
           if (!acc[month]) acc[month] = { weeks: {}, teams: {} };
 
-          // Week-level data
           if (!acc[month].weeks[week]) acc[month].weeks[week] = {};
           if (!acc[month].weeks[week][day]) acc[month].weeks[week][day] = {};
           if (!acc[month].weeks[week][day][team]) acc[month].weeks[week][day][team] = {
@@ -74,7 +73,6 @@ const StudyTeamChart = () => {
           acc[month].weeks[week][day][team].totalDuration += duration;
           acc[month].weeks[week][day][team].sessionCount += 1;
 
-          // Month-level team data
           if (!acc[month].teams[team]) acc[month].teams[team] = { totalDuration: 0, sessionCount: 0 };
           acc[month].teams[team].totalDuration += duration;
           acc[month].teams[team].sessionCount += 1;
@@ -111,10 +109,6 @@ const StudyTeamChart = () => {
             trigger: "axis",
             axisPointer: { type: "shadow" },
           },
-          legend: {
-            data: teams,
-            bottom: 0,
-          },
           grid: {
             left: "3%",
             right: "4%",
@@ -141,6 +135,7 @@ const StudyTeamChart = () => {
     }
   }, [chartInstance, selectedMonth, selectedWeek]);
 
+  // 주 목록 처리 (선택된 월에 따라 주 목록 필터링)
   const weeksInMonth = (month) => {
     const weekKeys = Object.keys(dummyData.reduce((acc, curr) => {
       const startDate = new Date(curr.start_At);
@@ -154,13 +149,12 @@ const StudyTeamChart = () => {
   };
 
   return (
-    <StyledCard>
-      <CardContent>
+    < >
         <Typography variant="h5" component="h2" align="center" gutterBottom>
           스터디 세션 분석
         </Typography>
         <FilterContainer>
-          <FormControl style={{ minWidth: 120, marginRight: "20px" }}>
+          <FormControl style={{ minWidth: 100, marginRight: "20px" }}>
             <InputLabel>월</InputLabel>
             <Select
               value={selectedMonth}
@@ -179,7 +173,7 @@ const StudyTeamChart = () => {
               })}
             </Select>
           </FormControl>
-          <FormControl style={{ minWidth: 120 }} disabled={!weeksInMonth(selectedMonth).length}>
+          <FormControl style={{ minWidth: 100 }} disabled={!weeksInMonth(selectedMonth).length}>
             <InputLabel>주</InputLabel>
             <Select
               value={selectedWeek}
@@ -194,8 +188,7 @@ const StudyTeamChart = () => {
           </FormControl>
         </FilterContainer>
         <StyledChartContainer id="team-study-chart"></StyledChartContainer>
-      </CardContent>
-    </StyledCard>
+    </>
   );
 };
 

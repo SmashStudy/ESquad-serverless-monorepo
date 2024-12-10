@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
+import { Box, Typography, Paper } from "@mui/material";
 
 // 스트리밍 방 데이터를 가져오는 함수
 const fetchStreamingRooms = async (teamId) => {
@@ -36,7 +37,7 @@ const getActiveStreamingRooms = (streamingRooms) => {
   const activeRooms = streamingRooms.filter((room) => {
     
     if (room.end_At == undefined || new Date(room.end_At.S) > new Date()) {
-      console.log(room.title.S); // 활성화된 방 출력
+      // console.log(room.title.S); // 활성화된 방 출력
       return true;
     }
     return false;
@@ -46,7 +47,7 @@ const getActiveStreamingRooms = (streamingRooms) => {
   return activeRooms.slice(0, 1);
 };
 
-const LiveActivityMonitor = ({ teamId }) => {
+const LiveActivityMonitor = ({ teamId}) => {
   const [streamingRooms, setStreamingRooms] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [activeRooms, setActiveRooms] = useState([]);
@@ -57,8 +58,6 @@ const LiveActivityMonitor = ({ teamId }) => {
       try {
         const roomsData = await fetchStreamingRooms(teamId);
         const participantsData = await fetchParticipants(teamId);
-        console.log(roomsData);
-        console.log(participantsData);
         setStreamingRooms(roomsData);
         setParticipants(participantsData);
       } catch (error) {
@@ -78,7 +77,7 @@ const LiveActivityMonitor = ({ teamId }) => {
       const activeParticipants = participants.filter((participant) =>
         activeRoomIds.includes(participant.title.S)
       );
-      console.log(activeParticipants);
+      // console.log(activeParticipants);
       
       setTotalParticipants(activeParticipants.length-60);
     
@@ -101,15 +100,15 @@ const LiveActivityMonitor = ({ teamId }) => {
     },
     legend: {
       orient: "vertical",
-      left: "left",
+      bottom: "left",
     },
     series: [
       {
         name: "참여자 수",
         type: "pie",
-        radius: "50%",
+        radius: "30%",
         data: activeRooms.map((room) => ({
-          name: room.title.S,
+          name: `어린왕자 타파 ${participants.length-266}`,
           value: participants.filter(
             (participant) => participant.title.S === room.title.S
           ).length-60,
@@ -129,7 +128,7 @@ const LiveActivityMonitor = ({ teamId }) => {
   const lineChartOption = {
     title: {
       text: "실시간 스트리밍 대시보드",
-      subtext: `팀 ID: ${teamId}`,
+      // subtext: `Esquad: ${teamId}`,
       left: "center",
     },
     xAxis: {
@@ -147,22 +146,45 @@ const LiveActivityMonitor = ({ teamId }) => {
     ],
   };
 
+
   return (
-    <div>
-      <h1>실시간 대시보드</h1>
-      <div style={{ display: "grid" }}>
-        <ReactECharts
-          option={pieChartOption}
-          style={{ height: "300px", width: "40vh" }}
-        />
-        <ReactECharts
-          option={lineChartOption}
-          style={{ height: "300px", width: "40vh" }}
-        />
-      </div>
-      <p>현재 활성 스트리밍 방: {activeRooms.length}</p>
-      <p>현재 총 참여자 수: {totalParticipants}</p>
-    </div>
+    <Box sx={{ padding: 1, backgroundColor: "#f5f5f5", height: "80vh" }}>
+      {/* 활성 스트리밍 정보 */}
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 1,
+          marginBottom: 4,
+          backgroundColor: "#ffffff",
+          textAlign: "center",
+          fontSize:'5px'        
+        }}
+      >
+        <Typography variant="h6" sx={{fontSize:"15px"}}>
+          현재 활성 스트리밍 방: {activeRooms.length}
+        </Typography>
+        <Typography variant="h6" sx={{fontSize:"15px"}}>
+          현재 총 참여자 수: {totalParticipants}
+        </Typography>
+      </Paper>
+        
+        {/* 활성 스트리밍 정보 */}
+        <Paper elevation={3} sx={{ padding: 1,
+          marginBottom: 4}}>
+            <ReactECharts
+              option={pieChartOption}
+              style={{ height: "300px", width: "100%" }}
+            />
+          </Paper>
+
+          <Paper elevation={3} sx={{ padding: 1,
+          marginBottom: 4 }}>
+            <ReactECharts
+              option={lineChartOption}
+              style={{ height: "300px", width: "100%" }}
+            />
+          </Paper>
+    </Box>
   );
 };
 

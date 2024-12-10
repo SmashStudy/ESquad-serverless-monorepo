@@ -71,13 +71,13 @@ const MemberContributionDashboard = ({teamId}) => {
   const option = {
     title: {
       text: "멤버별 기여도 분석",
-      subtext: "참여 횟수와 시간 분석",
     },
     tooltip: {
       trigger: "axis",
     },
     legend: {
       data: ["참여 횟수", "참여 시간 (분)"],
+      right: 0,
     },
     xAxis: {
       type: "category",
@@ -114,7 +114,7 @@ const MemberContributionDashboard = ({teamId}) => {
   };
 
   return (
-    <div  style={{ height: '30vh', width: '900px'}}  >
+    <div>
       <ReactECharts option={option} style={{ height: "30vh", width: "100%" }} />
     </div>
   );

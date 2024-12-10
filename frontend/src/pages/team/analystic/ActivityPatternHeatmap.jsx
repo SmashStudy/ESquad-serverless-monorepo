@@ -94,6 +94,7 @@ const ActivityPatternHeatmap = ({teamId}) => {
       calculable: true,
       orient: 'horizontal',
       left: 'center',
+
     },
     series: [
       {
@@ -135,9 +136,18 @@ const ActivityPatternHeatmap = ({teamId}) => {
   
 
   return (
-    <div  style={{ height: '30vh', width: '900px'}} >
-      <ReactECharts option={heatmapOption} style={{ height: '30vh', width: '100%'}} />
-      {/* <ReactECharts option={option} style={{ height: '50vh', width: '50vh'}} /> */}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px', height:'30vh' }}>
+      {/* 히트맵 */}
+      <div style={{ width: '100%'}}>
+        {/* <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>시간대별 스트리밍 빈도 히트맵</h2> */}
+        <ReactECharts option={heatmapOption} style={{ width: '100%', maxHeight:'30vh' }} />
+      </div>
+  
+      {/* 라인 차트
+      <div style={{ width: '100%', maxWidth: '900px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>시간대별 스트리밍 빈도</h2>
+        <ReactECharts option={option} style={{ height: '300px', width: '100%' }} />
+      </div> */}
     </div>
   );
 };

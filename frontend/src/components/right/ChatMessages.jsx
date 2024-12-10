@@ -95,34 +95,34 @@ function ChatMessages({currentChatRoom}) {
                 const data = JSON.parse(event.data);
 
                 // 수신한 이벤트에 따라 상태를 업데이트
-                switch (data.action) {
-                    case 'sendMessage':
-                        setMessages((prevMessages) => [...prevMessages, data]);
-                        break;
+                // switch (data.action) {
+                //     case 'sendMessage':
+                //         // setMessages((prevMessages) => [...prevMessages, data]);
+                //         break;
 
-                    case 'updateMessage':
-                        setMessages((prevMessages) =>
-                            prevMessages.map((message) =>
-                                message.timestamp === data.timestamp
-                                    ? { ...message, ...data }
-                                    : message
-                            )
-                        );
-                        break;
-                    case 'deleteMessage':
-                        setMessages((prevMessages) =>
-                            prevMessages.filter(
-                                (message) => message.timestamp !== data.timestamp
-                            )
-                        );
-                        break;
+                //     case 'updateMessage':
+                //         setMessages((prevMessages) =>
+                //             prevMessages.map((message) =>
+                //                 message.timestamp === data.timestamp
+                //                     ? { ...message, ...data }
+                //                     : message
+                //             )
+                //         );
+                //         break;
+                //     case 'deleteMessage':
+                //         setMessages((prevMessages) =>
+                //             prevMessages.filter(
+                //                 (message) => message.timestamp !== data.timestamp
+                //             )
+                //         );
+                //         break;
 
-                    default:
-                        console.warn("Unknown action received:", data.action);
-                }
+                //     default:
+                //         // console.warn("Unknown action received:", data.action);
+                // }
                 scrollToBottom(); // 새 메시지가 추가되었을 때 스크롤 이동
             } catch (error) {
-                console.error("Invalid JSON received:", event.data);
+                // console.error("Invalid JSON received:", event.data);
             }
         };
 
