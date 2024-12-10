@@ -46,7 +46,7 @@ const QuillEditor = ({ value = "", onChange, placeholder = "" }) => {
           "size",
         ]}
         style={{
-          height: "700px",
+          height: "550px",
           width: "100%",
           backgroundColor: "#fff",
         }}

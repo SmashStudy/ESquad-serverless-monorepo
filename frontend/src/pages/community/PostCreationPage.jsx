@@ -390,7 +390,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 12,
+          pt: 9,
         }}
       >
         <Button
@@ -399,7 +399,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             color: "#fff",
             backgroundColor: theme.palette.warning.main,
-            px: 4,
+            px: 3,
           }}
         >
           취소
@@ -410,7 +410,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             backgroundColor: theme.palette.primary.main,
             color: "#fff",
-            px: 4,
+            px: 3,
           }}
         >
           등록
