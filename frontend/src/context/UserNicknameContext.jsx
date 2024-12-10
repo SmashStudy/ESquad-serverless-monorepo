@@ -41,7 +41,7 @@ export const UserNicknameProvider = ({ children }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchNickname();
-    }, 2000); // 2초 지연
+    }, 1000); // 1초 지연
 
     return () => clearTimeout(timer);
   }, []);
