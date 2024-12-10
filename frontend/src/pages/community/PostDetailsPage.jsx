@@ -592,35 +592,37 @@ const PostDetailsPage = () => {
           gap: 2,
         }}
       >
-        {post.writer?.email === currentUser?.email && (
-          <Button
-            variant="contained"
-            color={
-              boardType === "questions"
-                ? post.resolved
+        {/* 조건부로 상태 변경 버튼 렌더링 */}
+        {post.writer?.email === currentUser?.email &&
+          boardType !== "general" && (
+            <Button
+              variant="contained"
+              color={
+                boardType === "questions"
+                  ? post.resolved
+                    ? "success"
+                    : "secondary"
+                  : post.recruitStatus
                   ? "success"
                   : "secondary"
+              }
+              onClick={toggleStatus} // 변경된 함수 호출
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                padding: "8px 16px",
+                borderRadius: "16px",
+              }}
+            >
+              {boardType === "questions"
+                ? post.resolved
+                  ? "해결됨"
+                  : "미해결"
                 : post.recruitStatus
-                ? "success"
-                : "secondary"
-            }
-            onClick={toggleStatus} // 변경된 함수 호출
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              padding: "8px 16px",
-              borderRadius: "16px",
-            }}
-          >
-            {boardType === "questions"
-              ? post.resolved
-                ? "해결됨"
-                : "미해결"
-              : post.recruitStatus
-              ? "모집 완료"
-              : "모집 중"}
-          </Button>
-        )}
+                ? "모집 완료"
+                : "모집 중"}
+            </Button>
+          )}
 
         {/* 좋아요 버튼 */}
         <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
