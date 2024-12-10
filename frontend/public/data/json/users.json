@@ -1,0 +1,4602 @@
+[
+  {
+    "email": {
+      "S": "bfht9bag@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-11-15T04:01:53.567Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송우석"
+    },
+    "nickname": {
+      "S": "bfht9bag"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "qyc5qrt3@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-06-04T01:54:28.241Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최수현"
+    },
+    "nickname": {
+      "S": "qyc5qrt3"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "sq4x0j7r@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-08-02T18:50:20.505Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정하림"
+    },
+    "nickname": {
+      "S": "sq4x0j7r"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "vusbelnn@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-06-28T01:38:24.499Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정수현"
+    },
+    "nickname": {
+      "S": "vusbelnn"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "22353lzp@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-02-05T00:23:53.839Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박경민"
+    },
+    "nickname": {
+      "S": "22353lzp"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "8i3uwn7q@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-06-26T00:22:07.490Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정영은"
+    },
+    "nickname": {
+      "S": "8i3uwn7q"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "9rb75k4b@daum.net"
+    },
+    "createdAt": {
+      "S": "2023-03-18T18:34:24.744Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최수진"
+    },
+    "nickname": {
+      "S": "9rb75k4b"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "ytapxv2z@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-10-10T09:10:46.980Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최하림"
+    },
+    "nickname": {
+      "S": "ytapxv2z"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "lmv2wzm4@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-03-15T07:53:40.315Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정서준"
+    },
+    "nickname": {
+      "S": "lmv2wzm4"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "hq7ru8ep@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-11-03T06:52:55.521Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황연수"
+    },
+    "nickname": {
+      "S": "hq7ru8ep"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "s12vdtcp@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-11-01T03:45:54.986Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안지호"
+    },
+    "nickname": {
+      "S": "s12vdtcp"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "c95twvwn@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-10-20T03:46:22.892Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "조병언"
+    },
+    "nickname": {
+      "S": "c95twvwn"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "4ou9wsam@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-07-10T11:40:07.713Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김수진"
+    },
+    "nickname": {
+      "S": "4ou9wsam"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "r5apytvh@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-08-05T18:55:39.203Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최강"
+    },
+    "nickname": {
+      "S": "r5apytvh"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "xtnb67pc@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-11-17T11:05:28.278Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김하은"
+    },
+    "nickname": {
+      "S": "xtnb67pc"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "rl98xfnn@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-05-19T19:57:41.432Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송하은"
+    },
+    "nickname": {
+      "S": "rl98xfnn"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "yq6vip3i@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-04-18T08:13:51.741Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최우미"
+    },
+    "nickname": {
+      "S": "yq6vip3i"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "942iha38@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-06-25T20:24:32.675Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송예지"
+    },
+    "nickname": {
+      "S": "942iha38"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "yt57442p@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-02-25T18:50:58.667Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황수지"
+    },
+    "nickname": {
+      "S": "yt57442p"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "5b02trau@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-02-13T14:53:35.428Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안연수"
+    },
+    "nickname": {
+      "S": "5b02trau"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "ktnuscke@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-04-06T11:50:21.526Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정수지"
+    },
+    "nickname": {
+      "S": "ktnuscke"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "orzrd7by@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-04-10T11:10:59.719Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김미루"
+    },
+    "nickname": {
+      "S": "orzrd7by"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "zokactnc@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-05-18T20:55:34.824Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정예슬"
+    },
+    "nickname": {
+      "S": "zokactnc"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "jjbg3og2@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-07-11T02:56:31.532Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황우석"
+    },
+    "nickname": {
+      "S": "jjbg3og2"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "ongi5y56@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-12-22T15:54:05.655Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송지민"
+    },
+    "nickname": {
+      "S": "ongi5y56"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "rd3auvgg@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-06-25T12:42:49.241Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김정민"
+    },
+    "nickname": {
+      "S": "rd3auvgg"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "1y2pem9b@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-02-09T06:51:13.696Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강수경"
+    },
+    "nickname": {
+      "S": "1y2pem9b"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "6ayfbzvg@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-05-31T04:10:24.231Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김서준"
+    },
+    "nickname": {
+      "S": "6ayfbzvg"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "la79ybg9@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-02-06T16:44:23.100Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박윤호"
+    },
+    "nickname": {
+      "S": "la79ybg9"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "26dxvijp@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-05-23T14:03:26.923Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "조지민"
+    },
+    "nickname": {
+      "S": "26dxvijp"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "i631y6yj@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-04-12T23:46:17.608Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송예지"
+    },
+    "nickname": {
+      "S": "i631y6yj"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "4hphbcqy@daum.net"
+    },
+    "createdAt": {
+      "S": "2023-06-05T03:53:53.155Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최태양"
+    },
+    "nickname": {
+      "S": "4hphbcqy"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "8fmc90zh@daum.net"
+    },
+    "createdAt": {
+      "S": "2022-07-15T10:53:06.795Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황예지"
+    },
+    "nickname": {
+      "S": "8fmc90zh"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "uhcdf6y9@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-03-21T07:02:32.860Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황현범"
+    },
+    "nickname": {
+      "S": "uhcdf6y9"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "qhn8lvij@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-04-16T19:21:37.580Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최예지"
+    },
+    "nickname": {
+      "S": "qhn8lvij"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "7mttw9hh@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-02-08T12:26:19.059Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이윤호"
+    },
+    "nickname": {
+      "S": "7mttw9hh"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "fi3pcvh2@gmail.com"
+    },
+    "createdAt": {
+      "S": "2022-06-01T00:25:20.666Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박수진"
+    },
+    "nickname": {
+      "S": "fi3pcvh2"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "2lgxamle@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-10-21T09:43:23.248Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강임록"
+    },
+    "nickname": {
+      "S": "2lgxamle"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "jowa4xj0@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-03-27T04:43:50.723Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이수경"
+    },
+    "nickname": {
+      "S": "jowa4xj0"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "scscztnu@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-01-03T00:01:38.648Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안정현"
+    },
+    "nickname": {
+      "S": "scscztnu"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "0p06fl0m@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-06-25T11:30:14.692Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박우석"
+    },
+    "nickname": {
+      "S": "0p06fl0m"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "om2gtid0@gmail.com"
+    },
+    "createdAt": {
+      "S": "2022-04-11T10:29:07.212Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정하늘"
+    },
+    "nickname": {
+      "S": "om2gtid0"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "z21mv9ej@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-08-31T17:24:37.494Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박수경"
+    },
+    "nickname": {
+      "S": "z21mv9ej"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "2xtat2ep@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-05-15T17:37:51.589Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강정현"
+    },
+    "nickname": {
+      "S": "2xtat2ep"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "d8k00meu@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-31T20:52:59.928Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최예슬"
+    },
+    "nickname": {
+      "S": "d8k00meu"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "r7uaqz04@daum.net"
+    },
+    "createdAt": {
+      "S": "2022-07-25T04:12:21.514Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안희정"
+    },
+    "nickname": {
+      "S": "r7uaqz04"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "xcddny7u@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-28T15:39:03.430Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정병언"
+    },
+    "nickname": {
+      "S": "xcddny7u"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "t2itl5zp@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-02-14T13:57:27.728Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안하림"
+    },
+    "nickname": {
+      "S": "t2itl5zp"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "t3uj64s3@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-12-01T20:13:59.307Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안수진"
+    },
+    "nickname": {
+      "S": "t3uj64s3"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "8jvepytn@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-02-12T21:10:11.376Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황지호"
+    },
+    "nickname": {
+      "S": "8jvepytn"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "hjlm1hrs@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-01-22T14:48:36.144Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황영은"
+    },
+    "nickname": {
+      "S": "hjlm1hrs"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "cjvqdh4u@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-05-04T01:14:47.103Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황영은"
+    },
+    "nickname": {
+      "S": "cjvqdh4u"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "03regcjg@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-09-23T03:35:08.434Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안하은"
+    },
+    "nickname": {
+      "S": "03regcjg"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "ukrcdyn5@daum.net"
+    },
+    "createdAt": {
+      "S": "2022-06-24T20:08:58.543Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김연수"
+    },
+    "nickname": {
+      "S": "ukrcdyn5"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "3vhrpuc0@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-06-19T11:50:44.799Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김태양"
+    },
+    "nickname": {
+      "S": "3vhrpuc0"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "6xmk4tcr@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-04-24T01:51:54.583Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강미루"
+    },
+    "nickname": {
+      "S": "6xmk4tcr"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "dh4m0641@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-02-23T06:48:55.090Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최정민"
+    },
+    "nickname": {
+      "S": "dh4m0641"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "7eqycpxd@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-11-18T16:38:31.495Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "최연수"
+    },
+    "nickname": {
+      "S": "7eqycpxd"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "lsq14y9p@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-03-28T23:22:41.278Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이지호"
+    },
+    "nickname": {
+      "S": "lsq14y9p"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "7rowxwl4@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-09-11T03:46:24.587Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송희정"
+    },
+    "nickname": {
+      "S": "7rowxwl4"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "z4y402a6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-12-16T20:27:00.295Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황수진"
+    },
+    "nickname": {
+      "S": "z4y402a6"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "nj6nr2f7@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-10-05T10:32:44.575Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정수지"
+    },
+    "nickname": {
+      "S": "nj6nr2f7"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "53g23gg1@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-11-14T21:31:01.087Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안예진"
+    },
+    "nickname": {
+      "S": "53g23gg1"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "i12hivjg@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-10-01T20:42:59.982Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정예지"
+    },
+    "nickname": {
+      "S": "i12hivjg"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "gvcx39cv@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-11-23T12:37:23.942Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "조경민"
+    },
+    "nickname": {
+      "S": "gvcx39cv"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "01nx2q3e@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-15T01:51:01.362Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안하림"
+    },
+    "nickname": {
+      "S": "01nx2q3e"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "h5arzg21@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-11-30T02:57:29.245Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정예슬"
+    },
+    "nickname": {
+      "S": "h5arzg21"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "2ajbhw9w@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-06-24T03:57:00.411Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이서준"
+    },
+    "nickname": {
+      "S": "2ajbhw9w"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "eb6qa58o@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-10-10T04:59:02.689Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "조수진"
+    },
+    "nickname": {
+      "S": "eb6qa58o"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "p4ae6hf4@gmail.com"
+    },
+    "createdAt": {
+      "S": "2022-09-30T17:48:20.447Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안수경"
+    },
+    "nickname": {
+      "S": "p4ae6hf4"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "ayu6919e@daum.net"
+    },
+    "createdAt": {
+      "S": "2023-04-16T09:59:32.253Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김수경"
+    },
+    "nickname": {
+      "S": "ayu6919e"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "fa5iesl5@daum.net"
+    },
+    "createdAt": {
+      "S": "2023-07-03T18:50:50.687Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송수지"
+    },
+    "nickname": {
+      "S": "fa5iesl5"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "dt6yy6bg@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-05-24T09:32:57.756Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정정민"
+    },
+    "nickname": {
+      "S": "dt6yy6bg"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "uth83mer@daum.net"
+    },
+    "createdAt": {
+      "S": "2023-07-25T23:43:10.941Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정우미"
+    },
+    "nickname": {
+      "S": "uth83mer"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "p6f19yom@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-12-31T06:48:14.295Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송지민"
+    },
+    "nickname": {
+      "S": "p6f19yom"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "fp24qaxt@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-06-14T07:34:02.542Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김임록"
+    },
+    "nickname": {
+      "S": "fp24qaxt"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "lvumiixd@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-12-10T16:05:16.325Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황정현"
+    },
+    "nickname": {
+      "S": "lvumiixd"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "yxtqxm57@gmail.com"
+    },
+    "createdAt": {
+      "S": "2022-05-26T12:49:06.438Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박희정"
+    },
+    "nickname": {
+      "S": "yxtqxm57"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "6buqvufi@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-11-27T10:13:23.216Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박희정"
+    },
+    "nickname": {
+      "S": "6buqvufi"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "724fuxe9@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-10-10T09:25:07.676Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강병언"
+    },
+    "nickname": {
+      "S": "724fuxe9"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "qez9fume@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-09-22T01:12:34.533Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강하림"
+    },
+    "nickname": {
+      "S": "qez9fume"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "jyippobq@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-04-04T11:19:11.253Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박수진"
+    },
+    "nickname": {
+      "S": "jyippobq"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "0z8et2u7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-05-27T03:48:00.412Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박미루"
+    },
+    "nickname": {
+      "S": "0z8et2u7"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "rtpnosbx@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-10-18T05:13:13.799Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정정민"
+    },
+    "nickname": {
+      "S": "rtpnosbx"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "xn7jyfd4@daum.net"
+    },
+    "createdAt": {
+      "S": "2022-07-14T21:18:10.358Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김태양"
+    },
+    "nickname": {
+      "S": "xn7jyfd4"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "g996jnyy@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-03-24T16:57:10.611Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박수지"
+    },
+    "nickname": {
+      "S": "g996jnyy"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "gf99xzrf@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-04-17T03:07:11.514Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "조경민"
+    },
+    "nickname": {
+      "S": "gf99xzrf"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "58f1lmsm@naver.com"
+    },
+    "createdAt": {
+      "S": "2023-10-13T21:40:10.232Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "박희정"
+    },
+    "nickname": {
+      "S": "58f1lmsm"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "a021tfjf@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-19T16:27:43.686Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황하은"
+    },
+    "nickname": {
+      "S": "a021tfjf"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "2agxsaky@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2022-12-09T07:28:25.849Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송현제"
+    },
+    "nickname": {
+      "S": "2agxsaky"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "wdru407k@naver.com"
+    },
+    "createdAt": {
+      "S": "2022-10-28T10:34:34.738Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김강"
+    },
+    "nickname": {
+      "S": "wdru407k"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "tphx2x0e@gmail.com"
+    },
+    "createdAt": {
+      "S": "2022-05-17T19:12:18.555Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "안병언"
+    },
+    "nickname": {
+      "S": "tphx2x0e"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "wfxdn0dz@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-04-02T04:18:09.514Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김예진"
+    },
+    "nickname": {
+      "S": "wfxdn0dz"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "bdr3hz1q@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-08-11T02:56:27.786Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "김하림"
+    },
+    "nickname": {
+      "S": "bdr3hz1q"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "zff145wm@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-07-16T19:19:24.227Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "송영은"
+    },
+    "nickname": {
+      "S": "zff145wm"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "9ebsb359@gmail.com"
+    },
+    "createdAt": {
+      "S": "2023-10-15T23:46:08.624Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "황지호"
+    },
+    "nickname": {
+      "S": "9ebsb359"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "12rh49z4@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-07-15T12:52:23.410Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이현범"
+    },
+    "nickname": {
+      "S": "12rh49z4"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "pdja0tsl@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-05-25T06:42:27.396Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "정강"
+    },
+    "nickname": {
+      "S": "pdja0tsl"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "dvq9mzpk@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-03-21T14:25:58.674Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "강하림"
+    },
+    "nickname": {
+      "S": "dvq9mzpk"
+    },
+    "role": {
+      "S": "user"
+    }
+  },
+  {
+    "email": {
+      "S": "3xwdux1p@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2023-02-21T20:27:11.615Z"
+    },
+    "entryPoint": {
+      "SS": [
+        "/",
+        "/auth/callback",
+        "/community/general",
+        "/community/questions",
+        "/community/team-recruit",
+        "/confirm/password",
+        "/confirm/password/reset",
+        "/email/verification",
+        "/login",
+        "/logout",
+        "/signup",
+        "/teams/:teamId/book/search",
+        "/teams/:teamId/book/search/:bookId",
+        "/teams/:teamId/main",
+        "/teams/:teamId/manage/settings",
+        "/teams/:teamId/manage/users",
+        "/teams/:teamId/questions",
+        "/teams/:teamId/questions/:postId",
+        "/teams/:teamId/questions/:postId/edit",
+        "/teams/:teamId/study",
+        "/teams/:teamId/study/:studyId",
+        "/user/profile",
+        "/user/profile/category",
+        "/user/profile/layout",
+        "/user/profile/nickname"
+      ]
+    },
+    "name": {
+      "S": "이현범"
+    },
+    "nickname": {
+      "S": "3xwdux1p"
+    },
+    "role": {
+      "S": "user"
+    }
+  }
+]

@@ -1,0 +1,462 @@
+[
+  {
+    "PK": {
+      "S": "TEAM#05367394-9207-4eeb-9caa-f431aaaa2743"
+    },
+    "SK": {
+      "S": "TEAM#05367394-9207-4eeb-9caa-f431aaaa2743"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 1"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team1"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#34716c2f-c374-4bc3-8575-882496407644"
+    },
+    "SK": {
+      "S": "TEAM#34716c2f-c374-4bc3-8575-882496407644"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 2"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team2"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f716e00a-ace3-450e-afcf-1b494d6beff6"
+    },
+    "SK": {
+      "S": "TEAM#f716e00a-ace3-450e-afcf-1b494d6beff6"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 3"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team3"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5657c644-b336-4c6b-b6f1-acd89e4edc33"
+    },
+    "SK": {
+      "S": "TEAM#5657c644-b336-4c6b-b6f1-acd89e4edc33"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 4"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a5b31d45-d81d-4f5b-9c22-564e7b4262b1"
+    },
+    "SK": {
+      "S": "TEAM#a5b31d45-d81d-4f5b-9c22-564e7b4262b1"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 5"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team5"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#6eb67b3e-735f-41f2-8ca4-03337a91b38c"
+    },
+    "SK": {
+      "S": "TEAM#6eb67b3e-735f-41f2-8ca4-03337a91b38c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    },
+    "description": {
+      "S": "Description for team 6"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team6"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.857Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#c175d6af-3615-44a9-ad79-f404fce87da0"
+    },
+    "SK": {
+      "S": "TEAM#c175d6af-3615-44a9-ad79-f404fce87da0"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 7"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team7"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#45b3c100-b0a6-4f2d-a3d2-256bc029e82f"
+    },
+    "SK": {
+      "S": "TEAM#45b3c100-b0a6-4f2d-a3d2-256bc029e82f"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 8"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team8"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2dd0db5-7c40-4b0e-a6ff-01fcd4bb99c6"
+    },
+    "SK": {
+      "S": "TEAM#b2dd0db5-7c40-4b0e-a6ff-01fcd4bb99c6"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 9"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team9"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#152f6d15-1621-479b-9f76-7eb6e995d3eb"
+    },
+    "SK": {
+      "S": "TEAM#152f6d15-1621-479b-9f76-7eb6e995d3eb"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 10"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team10"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#87402c88-efc3-49d4-aebe-4f72161f5699"
+    },
+    "SK": {
+      "S": "TEAM#87402c88-efc3-49d4-aebe-4f72161f5699"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 11"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team11"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#25123d67-2387-4e19-81df-6dd96238ae84"
+    },
+    "SK": {
+      "S": "TEAM#25123d67-2387-4e19-81df-6dd96238ae84"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 12"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team12"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#46603321-6465-46b8-a0ca-4c7aef8ebfc9"
+    },
+    "SK": {
+      "S": "TEAM#46603321-6465-46b8-a0ca-4c7aef8ebfc9"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 13"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team13"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#94aa22ef-b98e-482e-897e-2af6a249e078"
+    },
+    "SK": {
+      "S": "TEAM#94aa22ef-b98e-482e-897e-2af6a249e078"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 14"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team14"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#043ec4c2-163c-44a0-8cdd-64a581297152"
+    },
+    "SK": {
+      "S": "TEAM#043ec4c2-163c-44a0-8cdd-64a581297152"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 15"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team15"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#60f189c1-d64a-4a23-9c93-d060eef4fdca"
+    },
+    "SK": {
+      "S": "TEAM#60f189c1-d64a-4a23-9c93-d060eef4fdca"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 16"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team16"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e821bb7e-9795-4278-8e76-d8ebda189c17"
+    },
+    "SK": {
+      "S": "TEAM#e821bb7e-9795-4278-8e76-d8ebda189c17"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 17"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team17"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#86c4cb8e-ed51-4e20-a87c-c89124d9cfbb"
+    },
+    "SK": {
+      "S": "TEAM#86c4cb8e-ed51-4e20-a87c-c89124d9cfbb"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 18"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team18"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#94081497-4535-4b2a-bb56-63c5c285ff74"
+    },
+    "SK": {
+      "S": "TEAM#94081497-4535-4b2a-bb56-63c5c285ff74"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 19"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team19"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e8643ca4-d130-45ff-8b57-24f88d2a2f0c"
+    },
+    "SK": {
+      "S": "TEAM#e8643ca4-d130-45ff-8b57-24f88d2a2f0c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    },
+    "description": {
+      "S": "Description for team 20"
+    },
+    "itemType": {
+      "S": "Team"
+    },
+    "teamName": {
+      "S": "team20"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T05:31:07.858Z"
+    }
+  }
+]

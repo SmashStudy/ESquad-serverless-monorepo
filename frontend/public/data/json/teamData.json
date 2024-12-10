@@ -1,0 +1,30 @@
+{
+    "teamUsers": [
+      { "teamID": "TEAM#1", "userID": "USER#1" },
+      { "teamID": "TEAM#1", "userID": "USER#2" },
+      { "teamID": "TEAM#2", "userID": "USER#3" },
+      { "teamID": "TEAM#2", "userID": "USER#4" },
+      { "teamID": "TEAM#3", "userID": "USER#5" }
+    ],
+    "teamData": [
+      {
+        "teamID": "TEAM#1",
+        "teamName": "Team Alpha",
+        "description": "Alpha 팀 설명",
+        "createdAt": "2024-03-19T10:30:00Z"
+      },
+      {
+        "teamID": "TEAM#2",
+        "teamName": "Team Beta",
+        "description": "Beta 팀 설명",
+        "createdAt": "2024-03-20T11:30:00Z"
+      },
+      {
+        "teamID": "TEAM#3",
+        "teamName": "Team Gamma",
+        "description": "Gamma 팀 설명",
+        "createdAt": "2024-03-21T09:15:00Z"
+      }
+    ]
+  }
+  

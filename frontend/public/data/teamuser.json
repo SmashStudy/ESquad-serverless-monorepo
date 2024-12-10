@@ -1,0 +1,3222 @@
+[
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "hz40wstw@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "dblthqjf@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "an5i8irn@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "21ejqu9e@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "9knmhn4c@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "jrfj2xaq@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "jrfj2xaq@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "54frtg82@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "26f4mdw7@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.806Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "lqngh968@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "qy4f3mwc@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "SK": {
+      "S": "1b57sown@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "enyokild@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "ypb1iqq4@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "o1qjy9am@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "cdk6t8uf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "76rqmkfc@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "SK": {
+      "S": "s4h1z4k6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "ez2jl1gc@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "hdjqjk2h@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "pyinz4jb@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "4ypu99ch@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "v0i6zcs0@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "26f4mdw7@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "hhpqw4yo@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "SK": {
+      "S": "dblthqjf@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "4c4m462b@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "k2jirz2v@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "cdk6t8uf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "21ejqu9e@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "zf19dpx6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "ibryhspl@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "r6zvr49f@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "ez2jl1gc@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "26f4mdw7@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "vr5h8gn3@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "vr5xr1yb@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "SK": {
+      "S": "qfuxiuxr@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "xxgt0gd7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "lk8hxt3f@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "98b2ux05@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "r6zvr49f@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "r6zvr49f@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "amipe8bz@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "v0i6zcs0@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "SK": {
+      "S": "brbj9sgn@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "cdk6t8uf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "zbl1gdvt@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "rdir6ly9@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "z2zyt01i@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "gerq8b1p@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "j8rtdir6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "811gt6ki@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "u3sa4hzt@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "SK": {
+      "S": "dblthqjf@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "SK": {
+      "S": "ljy60i6c@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "SK": {
+      "S": "ibryhspl@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "SK": {
+      "S": "gerq8b1p@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "SK": {
+      "S": "4c4m462b@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "SK": {
+      "S": "9knmhn4c@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "ez3b0j5i@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "frqn88ni@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "sqehcwur@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "t9zewj6t@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "tlvmy5b7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "SK": {
+      "S": "o1qjy9am@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "SK": {
+      "S": "hz40wstw@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "SK": {
+      "S": "ypb1iqq4@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "SK": {
+      "S": "ez2jl1gc@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "SK": {
+      "S": "e1k54r6t@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.807Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "vr5h8gn3@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "37ifyakf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "tlvmy5b7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "ndf4sln8@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "enyokild@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "02ycu55a@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "hm8h5q4v@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "ypb1iqq4@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "54frtg82@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "xbgpkeu5@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "SK": {
+      "S": "sqehcwur@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "owh028tn@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "ooz7k39y@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "frqn88ni@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "xxgt0gd7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "ryon7yt2@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "s4h1z4k6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "k94awm09@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "xbgpkeu5@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "SK": {
+      "S": "k2jirz2v@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "8vftpika@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "zbl1gdvt@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "9pvdragl@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "lqngh968@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "bwig7c1r@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "SK": {
+      "S": "v0i6zcs0@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "SK": {
+      "S": "zf19dpx6@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "SK": {
+      "S": "9pvdragl@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "SK": {
+      "S": "9knmhn4c@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "SK": {
+      "S": "hime7z5f@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "SK": {
+      "S": "hz40wstw@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "SK": {
+      "S": "youg7fvh@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "SK": {
+      "S": "s805qs2t@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "SK": {
+      "S": "t50xfkb3@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "SK": {
+      "S": "xxgt0gd7@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "k2jirz2v@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "r6zvr49f@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "jo8dcidn@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "qfuxiuxr@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "v0i6zcs0@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "76rqmkfc@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "ojp4zyed@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "brbj9sgn@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "sqehcwur@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "pyinz4jb@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "SK": {
+      "S": "ulohdc4g@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "yaczho12@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "z2zyt01i@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "ibryhspl@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "hz40wstw@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "owy2boa0@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "yaczho12@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "amipe8bz@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "ez3b0j5i@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "37ifyakf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "1b57sown@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "enyokild@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "SK": {
+      "S": "ooz7k39y@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "k2jirz2v@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "8yhf54ba@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "hdjqjk2h@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "o1qjy9am@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "t9zewj6t@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "SK": {
+      "S": "sqehcwur@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "yaczho12@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "hdjqjk2h@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "k94awm09@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "u3sa4hzt@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "hm8h5q4v@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "e1k54r6t@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "1b57sown@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "vr5xr1yb@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "SK": {
+      "S": "c004evub@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "ryon7yt2@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "zbl1gdvt@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "st4em2hy@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "ooz7k39y@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "pz1kuh0f@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "ndf4sln8@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "SK": {
+      "S": "an5i8irn@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "8vftpika@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "k94awm09@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "bi89b5i7@naver.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "xk1sjnrs@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "ypb1iqq4@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "vr5h8gn3@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "xk1sjnrs@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "7rn23w62@daum.net"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "ecgy1y1m@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "cdk6t8uf@gmail.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  },
+  {
+    "PK": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "SK": {
+      "S": "qy4f3mwc@yahoo.com"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.808Z"
+    },
+    "inviteState": {
+      "S": "complete"
+    },
+    "itemType": {
+      "S": "TeamUser"
+    },
+    "role": {
+      "S": "Member"
+    }
+  }
+]

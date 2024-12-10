@@ -1,0 +1,2662 @@
+[
+  {
+    "PK": {
+      "S": "STUDY#0fe86c54-9915-411d-a37e-dc3493a2600a"
+    },
+    "SK": {
+      "S": "STUDY#0fe86c54-9915-411d-a37e-dc3493a2600a"
+    },
+    "bookId": {
+      "S": "BOOK#d0ecf665-863e-46ec-87e4-6299943ae101"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 1"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 1"
+    },
+    "teamId": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#e4406294-401f-4d69-825f-42b2e9ca9f74"
+    },
+    "SK": {
+      "S": "STUDY#e4406294-401f-4d69-825f-42b2e9ca9f74"
+    },
+    "bookId": {
+      "S": "BOOK#f1b6e688-a5f4-4188-86b5-08b133f358ba"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 2"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 2"
+    },
+    "teamId": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#d5645eef-9bcd-47e1-af01-ec4bda618b71"
+    },
+    "SK": {
+      "S": "STUDY#d5645eef-9bcd-47e1-af01-ec4bda618b71"
+    },
+    "bookId": {
+      "S": "BOOK#755cf034-304a-4826-a95d-9d64b9425b30"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 3"
+    },
+    "endDate": {
+      "S": "2024-12-21"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 3"
+    },
+    "teamId": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#a991daf9-3eff-453e-bea3-398ce65a9032"
+    },
+    "SK": {
+      "S": "STUDY#a991daf9-3eff-453e-bea3-398ce65a9032"
+    },
+    "bookId": {
+      "S": "BOOK#98323faf-1147-4f82-b0e0-d4d219f2dc44"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 4"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 4"
+    },
+    "teamId": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#a46a090a-ccbf-40af-b227-757c3423f3e1"
+    },
+    "SK": {
+      "S": "STUDY#a46a090a-ccbf-40af-b227-757c3423f3e1"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 5"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-29"
+    },
+    "studyName": {
+      "S": "Study Name 5"
+    },
+    "teamId": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#db502a48-8f06-4897-9933-632cfc5ad6a0"
+    },
+    "SK": {
+      "S": "STUDY#db502a48-8f06-4897-9933-632cfc5ad6a0"
+    },
+    "bookId": {
+      "S": "BOOK#e35ee521-449c-457c-9ced-a36dd28bda49"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 6"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 6"
+    },
+    "teamId": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#ba8015c7-1d74-47a5-8657-9edfb87c41fc"
+    },
+    "SK": {
+      "S": "STUDY#ba8015c7-1d74-47a5-8657-9edfb87c41fc"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 7"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 7"
+    },
+    "teamId": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#5aeec133-f716-43a3-9cc0-f16a9f671eac"
+    },
+    "SK": {
+      "S": "STUDY#5aeec133-f716-43a3-9cc0-f16a9f671eac"
+    },
+    "bookId": {
+      "S": "BOOK#3a78a72e-f263-495d-b558-d8f20cd78c01"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 8"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-29"
+    },
+    "studyName": {
+      "S": "Study Name 8"
+    },
+    "teamId": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#9b5c490a-c27b-42ea-a219-e69be2e36dac"
+    },
+    "SK": {
+      "S": "STUDY#9b5c490a-c27b-42ea-a219-e69be2e36dac"
+    },
+    "bookId": {
+      "S": "BOOK#e35ee521-449c-457c-9ced-a36dd28bda49"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 9"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 9"
+    },
+    "teamId": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#0d10133f-a39d-4373-80a2-09ddb4b7da12"
+    },
+    "SK": {
+      "S": "STUDY#0d10133f-a39d-4373-80a2-09ddb4b7da12"
+    },
+    "bookId": {
+      "S": "BOOK#9e8ddbd0-54d0-4521-8a8d-d577f1252f6c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.809Z"
+    },
+    "description": {
+      "S": "Description for study 10"
+    },
+    "endDate": {
+      "S": "2024-12-21"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 10"
+    },
+    "teamId": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#ef66da9e-0c47-4856-b914-3c142aa82fec"
+    },
+    "SK": {
+      "S": "STUDY#ef66da9e-0c47-4856-b914-3c142aa82fec"
+    },
+    "bookId": {
+      "S": "BOOK#4d51b0b8-a0b2-485a-ae4a-96c6950a6d0e"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 11"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-04"
+    },
+    "studyName": {
+      "S": "Study Name 11"
+    },
+    "teamId": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#b03252b1-9fc5-4115-816c-a4a7a1162875"
+    },
+    "SK": {
+      "S": "STUDY#b03252b1-9fc5-4115-816c-a4a7a1162875"
+    },
+    "bookId": {
+      "S": "BOOK#3a78a72e-f263-495d-b558-d8f20cd78c01"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 12"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-01"
+    },
+    "studyName": {
+      "S": "Study Name 12"
+    },
+    "teamId": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#a44e5deb-ff19-44d3-9338-59a8f77486f2"
+    },
+    "SK": {
+      "S": "STUDY#a44e5deb-ff19-44d3-9338-59a8f77486f2"
+    },
+    "bookId": {
+      "S": "BOOK#ba635623-7fd9-44c8-9d5b-30b86fb30c26"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 13"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 13"
+    },
+    "teamId": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#81232c34-3976-4793-b532-d1641f464b13"
+    },
+    "SK": {
+      "S": "STUDY#81232c34-3976-4793-b532-d1641f464b13"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 14"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 14"
+    },
+    "teamId": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#8a160a2a-f7e1-4249-ad40-3f080820e048"
+    },
+    "SK": {
+      "S": "STUDY#8a160a2a-f7e1-4249-ad40-3f080820e048"
+    },
+    "bookId": {
+      "S": "BOOK#98323faf-1147-4f82-b0e0-d4d219f2dc44"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 15"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 15"
+    },
+    "teamId": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#33281ebf-90f0-453f-8efd-7b8de099a070"
+    },
+    "SK": {
+      "S": "STUDY#33281ebf-90f0-453f-8efd-7b8de099a070"
+    },
+    "bookId": {
+      "S": "BOOK#b9369f3b-4648-492e-8f6a-d9c7c7d232e7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 16"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 16"
+    },
+    "teamId": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#b0755fc0-d732-4b56-9115-6b3b0767905f"
+    },
+    "SK": {
+      "S": "STUDY#b0755fc0-d732-4b56-9115-6b3b0767905f"
+    },
+    "bookId": {
+      "S": "BOOK#755cf034-304a-4826-a95d-9d64b9425b30"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 17"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 17"
+    },
+    "teamId": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#fdb785dd-26d8-40a5-a210-367e85c195af"
+    },
+    "SK": {
+      "S": "STUDY#fdb785dd-26d8-40a5-a210-367e85c195af"
+    },
+    "bookId": {
+      "S": "BOOK#149af5be-1e20-448f-8a88-174bd5610497"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 18"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 18"
+    },
+    "teamId": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#27bf2de9-e8e2-4e93-b4e0-35d85f3d8606"
+    },
+    "SK": {
+      "S": "STUDY#27bf2de9-e8e2-4e93-b4e0-35d85f3d8606"
+    },
+    "bookId": {
+      "S": "BOOK#4d51b0b8-a0b2-485a-ae4a-96c6950a6d0e"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 19"
+    },
+    "endDate": {
+      "S": "2024-12-20"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 19"
+    },
+    "teamId": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#e9fe6498-c392-4efc-a2de-462d17abd40e"
+    },
+    "SK": {
+      "S": "STUDY#e9fe6498-c392-4efc-a2de-462d17abd40e"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 20"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-04"
+    },
+    "studyName": {
+      "S": "Study Name 20"
+    },
+    "teamId": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#cd11e546-93b5-44eb-8ac9-44c53ec0990e"
+    },
+    "SK": {
+      "S": "STUDY#cd11e546-93b5-44eb-8ac9-44c53ec0990e"
+    },
+    "bookId": {
+      "S": "BOOK#cc9bcb40-7b40-4086-b958-c309f14301c7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 21"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 21"
+    },
+    "teamId": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#7fae47a2-7974-4105-82a8-8f7cbcae5171"
+    },
+    "SK": {
+      "S": "STUDY#7fae47a2-7974-4105-82a8-8f7cbcae5171"
+    },
+    "bookId": {
+      "S": "BOOK#9e8ddbd0-54d0-4521-8a8d-d577f1252f6c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 22"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 22"
+    },
+    "teamId": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#1cfb6805-2fe3-4938-b81b-456069aebf7e"
+    },
+    "SK": {
+      "S": "STUDY#1cfb6805-2fe3-4938-b81b-456069aebf7e"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 23"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 23"
+    },
+    "teamId": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#c3def658-4328-48fa-9e66-5ed228dd3a3f"
+    },
+    "SK": {
+      "S": "STUDY#c3def658-4328-48fa-9e66-5ed228dd3a3f"
+    },
+    "bookId": {
+      "S": "BOOK#1315572b-83cc-4ac0-b340-ee4172b31188"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 24"
+    },
+    "endDate": {
+      "S": "2024-12-24"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 24"
+    },
+    "teamId": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#482ff61f-f5b3-4ea5-8884-9e48ded96288"
+    },
+    "SK": {
+      "S": "STUDY#482ff61f-f5b3-4ea5-8884-9e48ded96288"
+    },
+    "bookId": {
+      "S": "BOOK#cc9bcb40-7b40-4086-b958-c309f14301c7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 25"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 25"
+    },
+    "teamId": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#509754f5-f64a-4fb4-9f85-62d84fd1ac0f"
+    },
+    "SK": {
+      "S": "STUDY#509754f5-f64a-4fb4-9f85-62d84fd1ac0f"
+    },
+    "bookId": {
+      "S": "BOOK#6fbdf2a9-61bd-491b-8f80-9291cc84f8f2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 26"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-04"
+    },
+    "studyName": {
+      "S": "Study Name 26"
+    },
+    "teamId": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#084236ec-b12c-46f7-b47a-e417109b9e52"
+    },
+    "SK": {
+      "S": "STUDY#084236ec-b12c-46f7-b47a-e417109b9e52"
+    },
+    "bookId": {
+      "S": "BOOK#e1847881-42b4-41ae-9369-0bd685ccc3c2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 27"
+    },
+    "endDate": {
+      "S": "2024-12-24"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 27"
+    },
+    "teamId": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#b2e1c6c0-29e7-4df7-b7d8-c3ed9a7d8b8f"
+    },
+    "SK": {
+      "S": "STUDY#b2e1c6c0-29e7-4df7-b7d8-c3ed9a7d8b8f"
+    },
+    "bookId": {
+      "S": "BOOK#98323faf-1147-4f82-b0e0-d4d219f2dc44"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 28"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 28"
+    },
+    "teamId": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#f4d3c01e-1a58-47b4-a3bb-ebe46cdf31c5"
+    },
+    "SK": {
+      "S": "STUDY#f4d3c01e-1a58-47b4-a3bb-ebe46cdf31c5"
+    },
+    "bookId": {
+      "S": "BOOK#7cf2df98-4e60-4842-9325-ee905595a161"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 29"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-01"
+    },
+    "studyName": {
+      "S": "Study Name 29"
+    },
+    "teamId": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#453f6c2c-7fa4-4b5c-99ca-e5dd86f47d02"
+    },
+    "SK": {
+      "S": "STUDY#453f6c2c-7fa4-4b5c-99ca-e5dd86f47d02"
+    },
+    "bookId": {
+      "S": "BOOK#b9369f3b-4648-492e-8f6a-d9c7c7d232e7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 30"
+    },
+    "endDate": {
+      "S": "2024-12-24"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 30"
+    },
+    "teamId": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#e8dc5ced-e788-4137-a053-a7383f44ec40"
+    },
+    "SK": {
+      "S": "STUDY#e8dc5ced-e788-4137-a053-a7383f44ec40"
+    },
+    "bookId": {
+      "S": "BOOK#b9369f3b-4648-492e-8f6a-d9c7c7d232e7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 31"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 31"
+    },
+    "teamId": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#89e75ef5-4a5f-4a10-aac8-f9e9af038b1e"
+    },
+    "SK": {
+      "S": "STUDY#89e75ef5-4a5f-4a10-aac8-f9e9af038b1e"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 32"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 32"
+    },
+    "teamId": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#f6727c84-aa68-4b4b-b329-b44ae93f42b6"
+    },
+    "SK": {
+      "S": "STUDY#f6727c84-aa68-4b4b-b329-b44ae93f42b6"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 33"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 33"
+    },
+    "teamId": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#fb1e8db2-b95f-4e98-9fc9-7a21b9a226e6"
+    },
+    "SK": {
+      "S": "STUDY#fb1e8db2-b95f-4e98-9fc9-7a21b9a226e6"
+    },
+    "bookId": {
+      "S": "BOOK#9e8ddbd0-54d0-4521-8a8d-d577f1252f6c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 34"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-29"
+    },
+    "studyName": {
+      "S": "Study Name 34"
+    },
+    "teamId": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#c3aa2c85-1de4-4002-a531-7daa1a8be683"
+    },
+    "SK": {
+      "S": "STUDY#c3aa2c85-1de4-4002-a531-7daa1a8be683"
+    },
+    "bookId": {
+      "S": "BOOK#cd1b9b3c-37ac-45ea-a4c0-259448c2a445"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 35"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-01"
+    },
+    "studyName": {
+      "S": "Study Name 35"
+    },
+    "teamId": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#f161c4d2-115f-41b1-af95-4aa5051bd65a"
+    },
+    "SK": {
+      "S": "STUDY#f161c4d2-115f-41b1-af95-4aa5051bd65a"
+    },
+    "bookId": {
+      "S": "BOOK#277efddb-03aa-4e8a-b27c-05a217b81bd6"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 36"
+    },
+    "endDate": {
+      "S": "2024-12-24"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 36"
+    },
+    "teamId": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#e1145b61-6c22-482e-a950-e2310e345ba3"
+    },
+    "SK": {
+      "S": "STUDY#e1145b61-6c22-482e-a950-e2310e345ba3"
+    },
+    "bookId": {
+      "S": "BOOK#3a78a72e-f263-495d-b558-d8f20cd78c01"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 37"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-01"
+    },
+    "studyName": {
+      "S": "Study Name 37"
+    },
+    "teamId": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#4f73f615-a409-4b91-8c52-1ec00c793d0e"
+    },
+    "SK": {
+      "S": "STUDY#4f73f615-a409-4b91-8c52-1ec00c793d0e"
+    },
+    "bookId": {
+      "S": "BOOK#ec859f90-888c-469f-8f64-72f21e062996"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 38"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 38"
+    },
+    "teamId": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#e0ec0e91-393c-4bd5-b9c0-2fca6fb48a96"
+    },
+    "SK": {
+      "S": "STUDY#e0ec0e91-393c-4bd5-b9c0-2fca6fb48a96"
+    },
+    "bookId": {
+      "S": "BOOK#b9369f3b-4648-492e-8f6a-d9c7c7d232e7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 39"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 39"
+    },
+    "teamId": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#7215bd33-4885-449a-8b28-96d9ce39e4e0"
+    },
+    "SK": {
+      "S": "STUDY#7215bd33-4885-449a-8b28-96d9ce39e4e0"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 40"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 40"
+    },
+    "teamId": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#9ba224ce-2c53-4405-915e-eb0f8dc0a6bb"
+    },
+    "SK": {
+      "S": "STUDY#9ba224ce-2c53-4405-915e-eb0f8dc0a6bb"
+    },
+    "bookId": {
+      "S": "BOOK#d0ecf665-863e-46ec-87e4-6299943ae101"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 41"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 41"
+    },
+    "teamId": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#67d1069c-9f46-4170-b863-77280004c2bf"
+    },
+    "SK": {
+      "S": "STUDY#67d1069c-9f46-4170-b863-77280004c2bf"
+    },
+    "bookId": {
+      "S": "BOOK#e1847881-42b4-41ae-9369-0bd685ccc3c2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 42"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 42"
+    },
+    "teamId": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#4c27dee6-d4ac-4553-8920-e97416ef63ee"
+    },
+    "SK": {
+      "S": "STUDY#4c27dee6-d4ac-4553-8920-e97416ef63ee"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 43"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 43"
+    },
+    "teamId": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#8ebff3cf-9d1c-449f-8e1d-5551ee3471a0"
+    },
+    "SK": {
+      "S": "STUDY#8ebff3cf-9d1c-449f-8e1d-5551ee3471a0"
+    },
+    "bookId": {
+      "S": "BOOK#5e487e62-4308-4c4b-999c-e8ce97e71493"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 44"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 44"
+    },
+    "teamId": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#610673e9-edd9-4122-9d9a-67f2e247a919"
+    },
+    "SK": {
+      "S": "STUDY#610673e9-edd9-4122-9d9a-67f2e247a919"
+    },
+    "bookId": {
+      "S": "BOOK#4a372e8e-382c-4611-a978-d45b86c81019"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 45"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 45"
+    },
+    "teamId": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#3551c6df-6a28-4b91-a56b-f239835b0a74"
+    },
+    "SK": {
+      "S": "STUDY#3551c6df-6a28-4b91-a56b-f239835b0a74"
+    },
+    "bookId": {
+      "S": "BOOK#149af5be-1e20-448f-8a88-174bd5610497"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 46"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 46"
+    },
+    "teamId": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#6b11b39c-6ab8-444e-8038-22eab74d9097"
+    },
+    "SK": {
+      "S": "STUDY#6b11b39c-6ab8-444e-8038-22eab74d9097"
+    },
+    "bookId": {
+      "S": "BOOK#6fbdf2a9-61bd-491b-8f80-9291cc84f8f2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 47"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 47"
+    },
+    "teamId": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#99e7ae03-49be-4a44-bb1b-fe99d45c57d1"
+    },
+    "SK": {
+      "S": "STUDY#99e7ae03-49be-4a44-bb1b-fe99d45c57d1"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 48"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-04"
+    },
+    "studyName": {
+      "S": "Study Name 48"
+    },
+    "teamId": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#04ef0449-06a3-4357-a6a7-003d22d58df2"
+    },
+    "SK": {
+      "S": "STUDY#04ef0449-06a3-4357-a6a7-003d22d58df2"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 49"
+    },
+    "endDate": {
+      "S": "2024-12-21"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 49"
+    },
+    "teamId": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#f1f0986b-b4e3-428e-99ee-5ae10bbe12df"
+    },
+    "SK": {
+      "S": "STUDY#f1f0986b-b4e3-428e-99ee-5ae10bbe12df"
+    },
+    "bookId": {
+      "S": "BOOK#98323faf-1147-4f82-b0e0-d4d219f2dc44"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 50"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 50"
+    },
+    "teamId": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#1a0c3bd7-39fa-41c2-a264-4f493985df67"
+    },
+    "SK": {
+      "S": "STUDY#1a0c3bd7-39fa-41c2-a264-4f493985df67"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 51"
+    },
+    "endDate": {
+      "S": "2024-12-20"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 51"
+    },
+    "teamId": {
+      "S": "TEAM#f10596b0-a2ed-49a0-ac80-1cbce8fb55f6"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#88f2a1a4-bbf0-4797-859a-0c81ea147d67"
+    },
+    "SK": {
+      "S": "STUDY#88f2a1a4-bbf0-4797-859a-0c81ea147d67"
+    },
+    "bookId": {
+      "S": "BOOK#22da6f86-bce4-4686-8d9e-5e7253571693"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 52"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 52"
+    },
+    "teamId": {
+      "S": "TEAM#4c6b790e-34c1-4730-88ba-b8df86f665fd"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#a316bc9f-fccc-4918-a6da-078b98135b5b"
+    },
+    "SK": {
+      "S": "STUDY#a316bc9f-fccc-4918-a6da-078b98135b5b"
+    },
+    "bookId": {
+      "S": "BOOK#2c1abbe1-4b0f-415f-8b80-bc087f0430b7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 53"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 53"
+    },
+    "teamId": {
+      "S": "TEAM#08f25842-a5f9-47d1-be8b-61253cf6cf28"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#89235aae-9a41-4f35-b9e2-69fdebc9199d"
+    },
+    "SK": {
+      "S": "STUDY#89235aae-9a41-4f35-b9e2-69fdebc9199d"
+    },
+    "bookId": {
+      "S": "BOOK#fae31765-f1ff-436c-8a2b-69dd86d76d5a"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 54"
+    },
+    "endDate": {
+      "S": "2024-12-25"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 54"
+    },
+    "teamId": {
+      "S": "TEAM#e0428a15-f541-4038-af03-7bb322e9f33a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#595bac57-71f2-4db1-acf9-bceff21aa21e"
+    },
+    "SK": {
+      "S": "STUDY#595bac57-71f2-4db1-acf9-bceff21aa21e"
+    },
+    "bookId": {
+      "S": "BOOK#25b026f3-45b5-499b-868c-745274e13289"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 55"
+    },
+    "endDate": {
+      "S": "2024-12-27"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 55"
+    },
+    "teamId": {
+      "S": "TEAM#456d1b18-ae71-4e97-9dfa-acc3b147a6a4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#56d8e251-a89a-4ba0-aa6b-894ed92cdcbc"
+    },
+    "SK": {
+      "S": "STUDY#56d8e251-a89a-4ba0-aa6b-894ed92cdcbc"
+    },
+    "bookId": {
+      "S": "BOOK#2c1abbe1-4b0f-415f-8b80-bc087f0430b7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 56"
+    },
+    "endDate": {
+      "S": "2024-12-21"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 56"
+    },
+    "teamId": {
+      "S": "TEAM#dba485e0-bd91-4e5e-a5c2-e61e6730a75c"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#f59e2312-66dc-40f9-b387-4fe532699815"
+    },
+    "SK": {
+      "S": "STUDY#f59e2312-66dc-40f9-b387-4fe532699815"
+    },
+    "bookId": {
+      "S": "BOOK#f8f48cda-cefe-4989-b102-85f0d0e2fe17"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 57"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 57"
+    },
+    "teamId": {
+      "S": "TEAM#9e5f8057-cccf-4fa9-80ec-e9af7d1bf754"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#fed9cf2a-b45d-4daf-8049-10b5ac3c15be"
+    },
+    "SK": {
+      "S": "STUDY#fed9cf2a-b45d-4daf-8049-10b5ac3c15be"
+    },
+    "bookId": {
+      "S": "BOOK#1622299b-771a-477a-9933-c6dc938c9e09"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 58"
+    },
+    "endDate": {
+      "S": "2024-12-21"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-02"
+    },
+    "studyName": {
+      "S": "Study Name 58"
+    },
+    "teamId": {
+      "S": "TEAM#51d3ec39-030c-4065-bb8c-0c8780565b4f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#d3c954fb-7de0-4fe3-b8ac-3cd375e6ef6c"
+    },
+    "SK": {
+      "S": "STUDY#d3c954fb-7de0-4fe3-b8ac-3cd375e6ef6c"
+    },
+    "bookId": {
+      "S": "BOOK#e1847881-42b4-41ae-9369-0bd685ccc3c2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 59"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 59"
+    },
+    "teamId": {
+      "S": "TEAM#23a5b703-d120-4eee-9bf9-16c6f0f26998"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#6c6bde13-9aaf-4417-a755-7419e4a0d6eb"
+    },
+    "SK": {
+      "S": "STUDY#6c6bde13-9aaf-4417-a755-7419e4a0d6eb"
+    },
+    "bookId": {
+      "S": "BOOK#277efddb-03aa-4e8a-b27c-05a217b81bd6"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 60"
+    },
+    "endDate": {
+      "S": "2024-12-28"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-29"
+    },
+    "studyName": {
+      "S": "Study Name 60"
+    },
+    "teamId": {
+      "S": "TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#2a55efd3-5e34-4386-8c48-444109856c37"
+    },
+    "SK": {
+      "S": "STUDY#2a55efd3-5e34-4386-8c48-444109856c37"
+    },
+    "bookId": {
+      "S": "BOOK#e1847881-42b4-41ae-9369-0bd685ccc3c2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 61"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-29"
+    },
+    "studyName": {
+      "S": "Study Name 61"
+    },
+    "teamId": {
+      "S": "TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#04c50253-bc8e-45ea-a3c3-f2d5d94a0149"
+    },
+    "SK": {
+      "S": "STUDY#04c50253-bc8e-45ea-a3c3-f2d5d94a0149"
+    },
+    "bookId": {
+      "S": "BOOK#1315572b-83cc-4ac0-b340-ee4172b31188"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 62"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 62"
+    },
+    "teamId": {
+      "S": "TEAM#1720cb55-5ebb-4c32-ba70-4ddbfc81386e"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#683fcb02-a259-4b1c-8a25-94aa102a3273"
+    },
+    "SK": {
+      "S": "STUDY#683fcb02-a259-4b1c-8a25-94aa102a3273"
+    },
+    "bookId": {
+      "S": "BOOK#cc9bcb40-7b40-4086-b958-c309f14301c7"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 63"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-04"
+    },
+    "studyName": {
+      "S": "Study Name 63"
+    },
+    "teamId": {
+      "S": "TEAM#e906f95e-9171-4871-b693-99abd26c34c1"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#3aca156a-397a-430a-aa98-1103f64d3288"
+    },
+    "SK": {
+      "S": "STUDY#3aca156a-397a-430a-aa98-1103f64d3288"
+    },
+    "bookId": {
+      "S": "BOOK#4a372e8e-382c-4611-a978-d45b86c81019"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 64"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-07"
+    },
+    "studyName": {
+      "S": "Study Name 64"
+    },
+    "teamId": {
+      "S": "TEAM#cf30f21d-4741-4210-b0c3-d632e7e5fcf8"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#902faf5c-f8e9-4dc9-a33a-255a8ef83858"
+    },
+    "SK": {
+      "S": "STUDY#902faf5c-f8e9-4dc9-a33a-255a8ef83858"
+    },
+    "bookId": {
+      "S": "BOOK#ba635623-7fd9-44c8-9d5b-30b86fb30c26"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 65"
+    },
+    "endDate": {
+      "S": "2024-12-22"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-08"
+    },
+    "studyName": {
+      "S": "Study Name 65"
+    },
+    "teamId": {
+      "S": "TEAM#a0bccfc2-a606-4448-99cb-8eb05ccdeb07"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#2d68a2ef-021f-4ef3-8ada-279db607523b"
+    },
+    "SK": {
+      "S": "STUDY#2d68a2ef-021f-4ef3-8ada-279db607523b"
+    },
+    "bookId": {
+      "S": "BOOK#149af5be-1e20-448f-8a88-174bd5610497"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 66"
+    },
+    "endDate": {
+      "S": "2024-12-20"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-05"
+    },
+    "studyName": {
+      "S": "Study Name 66"
+    },
+    "teamId": {
+      "S": "TEAM#8e408194-2dbd-4db1-b22f-96bc7a88c7c4"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#71921cd8-c40d-4c97-8f73-ba1bf5809055"
+    },
+    "SK": {
+      "S": "STUDY#71921cd8-c40d-4c97-8f73-ba1bf5809055"
+    },
+    "bookId": {
+      "S": "BOOK#f8f48cda-cefe-4989-b102-85f0d0e2fe17"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 67"
+    },
+    "endDate": {
+      "S": "2024-12-26"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-03"
+    },
+    "studyName": {
+      "S": "Study Name 67"
+    },
+    "teamId": {
+      "S": "TEAM#e30378b3-61b0-4f55-ba5a-d3d9f1002e7a"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#71a9790c-84d6-4343-abf2-af5f40ea5555"
+    },
+    "SK": {
+      "S": "STUDY#71a9790c-84d6-4343-abf2-af5f40ea5555"
+    },
+    "bookId": {
+      "S": "BOOK#277efddb-03aa-4e8a-b27c-05a217b81bd6"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 68"
+    },
+    "endDate": {
+      "S": "2024-12-29"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 68"
+    },
+    "teamId": {
+      "S": "TEAM#5ff9c215-89c9-48e4-8c5d-a7a63fdba44f"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#ee673964-0e86-444d-9ab3-c4ddb4caac21"
+    },
+    "SK": {
+      "S": "STUDY#ee673964-0e86-444d-9ab3-c4ddb4caac21"
+    },
+    "bookId": {
+      "S": "BOOK#9e8ddbd0-54d0-4521-8a8d-d577f1252f6c"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    },
+    "description": {
+      "S": "Description for study 69"
+    },
+    "endDate": {
+      "S": "2024-12-30"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-11-30"
+    },
+    "studyName": {
+      "S": "Study Name 69"
+    },
+    "teamId": {
+      "S": "TEAM#e890495c-c21a-4f62-aa70-262062c15e10"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.810Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "STUDY#82dba4d4-cc0e-4a10-8696-f9097b797dce"
+    },
+    "SK": {
+      "S": "STUDY#82dba4d4-cc0e-4a10-8696-f9097b797dce"
+    },
+    "bookId": {
+      "S": "BOOK#e1847881-42b4-41ae-9369-0bd685ccc3c2"
+    },
+    "createdAt": {
+      "S": "2024-12-10T07:09:12.811Z"
+    },
+    "description": {
+      "S": "Description for study 70"
+    },
+    "endDate": {
+      "S": "2024-12-23"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "itemType": {
+      "S": "Study"
+    },
+    "startDate": {
+      "S": "2024-12-06"
+    },
+    "studyName": {
+      "S": "Study Name 70"
+    },
+    "teamId": {
+      "S": "TEAM#b05f3446-8312-4b9a-8905-7e88d21e0162"
+    },
+    "updatedAt": {
+      "S": "2024-12-10T07:09:12.811Z"
+    }
+  }
+]

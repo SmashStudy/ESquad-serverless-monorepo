@@ -8,6 +8,7 @@ import {
     getTeamProfiles,
 } from '../../utils/team/TeamApi.jsx';
 import Loading from "../../components/custom/Loading.jsx";
+import TeamDashboard from './TeamDashboard.jsx';
 
 const TeamMainPage = () => {
     const { selectedTeam, handleTab , updateTeams} = useTeams();
@@ -44,8 +45,9 @@ const TeamMainPage = () => {
         >
             {loading ? <Loading /> : (
                 <>
-                    <h1>{teamData?.teamName}</h1>
+                    <h1>{teamData?.teamName}의 데이터 대시보드</h1>
                     <Outlet context={{selectedTeam, handleTab, updateTeams}}/>
+                    <TeamDashboard/>
                 </>
             )}
         </Box>

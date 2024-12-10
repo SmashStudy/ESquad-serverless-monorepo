@@ -1,0 +1,872 @@
+[
+  {
+    "PK": {
+      "S": "BOOK#04e4d04b-a81c-401c-8012-70cc574f769c"
+    },
+    "SK": {
+      "S": "BOOK#04e4d04b-a81c-401c-8012-70cc574f769c"
+    },
+    "authors": {
+      "S": "이희영"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "253154188074"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2006년 4월 23일"
+    },
+    "publisher": {
+      "S": "교보문고"
+    },
+    "title": {
+      "S": "HQU9IRG아D"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#4fe5d723-23c8-495f-913a-d117027ca5b4"
+    },
+    "SK": {
+      "S": "BOOK#4fe5d723-23c8-495f-913a-d117027ca5b4"
+    },
+    "authors": {
+      "S": "김종광"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "225328894592"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2014년 1월 27일"
+    },
+    "publisher": {
+      "S": "미디어창비"
+    },
+    "title": {
+      "S": "차8자1LS9AV"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#a0364ef7-9433-468a-a8dc-4d1f254a65ec"
+    },
+    "SK": {
+      "S": "BOOK#a0364ef7-9433-468a-a8dc-4d1f254a65ec"
+    },
+    "authors": {
+      "S": "박민규"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "732077175851"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2000년 12월 19일"
+    },
+    "publisher": {
+      "S": "알에이치코리아"
+    },
+    "title": {
+      "S": "AMIBWZ2라TTT4FU"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#68217a4d-a663-4d26-8e7d-e0c6f218a94b"
+    },
+    "SK": {
+      "S": "BOOK#68217a4d-a663-4d26-8e7d-e0c6f218a94b"
+    },
+    "authors": {
+      "S": "강경애"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "546783867099"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2001년 12월 7일"
+    },
+    "publisher": {
+      "S": "씨네21"
+    },
+    "title": {
+      "S": "K마YH나1RJ라라바"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#db9e4cdd-4d6e-4128-beef-ec602b4d426b"
+    },
+    "SK": {
+      "S": "BOOK#db9e4cdd-4d6e-4128-beef-ec602b4d426b"
+    },
+    "authors": {
+      "S": "윤고은"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "998978271969"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2021년 4월 11일"
+    },
+    "publisher": {
+      "S": "문학과지성사"
+    },
+    "title": {
+      "S": "H8파X마8"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#f30a537f-37eb-476b-b084-0bccff8b60b9"
+    },
+    "SK": {
+      "S": "BOOK#f30a537f-37eb-476b-b084-0bccff8b60b9"
+    },
+    "authors": {
+      "S": "장강명"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "381021740800"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1982년 5월 12일"
+    },
+    "publisher": {
+      "S": "길벗"
+    },
+    "title": {
+      "S": "Q자2K다X마2타I라"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#deac3fed-8f33-43dd-90ca-ac3ae9643d2f"
+    },
+    "SK": {
+      "S": "BOOK#deac3fed-8f33-43dd-90ca-ac3ae9643d2f"
+    },
+    "authors": {
+      "S": "박완서"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "331915938368"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2004년 9월 23일"
+    },
+    "publisher": {
+      "S": "창비"
+    },
+    "title": {
+      "S": "아432ZV2HA1자8아X"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#63f43655-10a0-4d25-a2dc-ad0d1bcd6c06"
+    },
+    "SK": {
+      "S": "BOOK#63f43655-10a0-4d25-a2dc-ad0d1bcd6c06"
+    },
+    "authors": {
+      "S": "조정래"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "181627434255"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1963년 9월 19일"
+    },
+    "publisher": {
+      "S": "민음사"
+    },
+    "title": {
+      "S": "LMW차0NX97YU"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#0b13d79c-4e98-4c28-8918-585c681d95ed"
+    },
+    "SK": {
+      "S": "BOOK#0b13d79c-4e98-4c28-8918-585c681d95ed"
+    },
+    "authors": {
+      "S": "김종광"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "912550409969"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1986년 8월 18일"
+    },
+    "publisher": {
+      "S": "창비"
+    },
+    "title": {
+      "S": "3APVHF9WNVCQ3"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#3809ac11-bd5c-42e4-bd9c-934845c0f371"
+    },
+    "SK": {
+      "S": "BOOK#3809ac11-bd5c-42e4-bd9c-934845c0f371"
+    },
+    "authors": {
+      "S": "하루키"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "194208476247"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2005년 7월 4일"
+    },
+    "publisher": {
+      "S": "알에이치코리아"
+    },
+    "title": {
+      "S": "6아가WH나바6"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#aefacfed-759c-45e2-abfb-4bed0aa7cc56"
+    },
+    "SK": {
+      "S": "BOOK#aefacfed-759c-45e2-abfb-4bed0aa7cc56"
+    },
+    "authors": {
+      "S": "고은정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "377616481191"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1996년 3월 5일"
+    },
+    "publisher": {
+      "S": "삼성출판사"
+    },
+    "title": {
+      "S": "1가사17P하EBY9WJ"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#5d5c103e-76d4-4916-a338-561540874127"
+    },
+    "SK": {
+      "S": "BOOK#5d5c103e-76d4-4916-a338-561540874127"
+    },
+    "authors": {
+      "S": "고은정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "712486470569"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2013년 11월 12일"
+    },
+    "publisher": {
+      "S": "웅진지식하우스"
+    },
+    "title": {
+      "S": "차IH카G나파IY라77"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#7551d968-a7ec-456a-af64-4313da20d413"
+    },
+    "SK": {
+      "S": "BOOK#7551d968-a7ec-456a-af64-4313da20d413"
+    },
+    "authors": {
+      "S": "김수영"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "25173650059"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1979년 6월 9일"
+    },
+    "publisher": {
+      "S": "창비"
+    },
+    "title": {
+      "S": "M4사IE나타2GL"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#f5487941-6359-4bde-a91d-83528843f8b6"
+    },
+    "SK": {
+      "S": "BOOK#f5487941-6359-4bde-a91d-83528843f8b6"
+    },
+    "authors": {
+      "S": "박민규"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "860100162693"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2003년 2월 16일"
+    },
+    "publisher": {
+      "S": "길벗"
+    },
+    "title": {
+      "S": "5M나IV"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#f9e9d0c7-7bc0-49f7-8791-d7b7fc75166b"
+    },
+    "SK": {
+      "S": "BOOK#f9e9d0c7-7bc0-49f7-8791-d7b7fc75166b"
+    },
+    "authors": {
+      "S": "박완서"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "611073532886"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2024년 1월 11일"
+    },
+    "publisher": {
+      "S": "민음사"
+    },
+    "title": {
+      "S": "카S라하G사YRB"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#85ec89f6-68f5-400e-b327-e41dae85f908"
+    },
+    "SK": {
+      "S": "BOOK#85ec89f6-68f5-400e-b327-e41dae85f908"
+    },
+    "authors": {
+      "S": "장강명"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "488842282149"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2000년 4월 15일"
+    },
+    "publisher": {
+      "S": "마이클이펙트"
+    },
+    "title": {
+      "S": "4마N4R8404차3RAI"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#ab4cbd86-1c81-42fe-aa16-51658239bde7"
+    },
+    "SK": {
+      "S": "BOOK#ab4cbd86-1c81-42fe-aa16-51658239bde7"
+    },
+    "authors": {
+      "S": "박민규"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "216398353756"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2001년 8월 27일"
+    },
+    "publisher": {
+      "S": "씨네21"
+    },
+    "title": {
+      "S": "LOBG자HB하타HT"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#454e2862-2993-4d3a-859c-79cc5314fa06"
+    },
+    "SK": {
+      "S": "BOOK#454e2862-2993-4d3a-859c-79cc5314fa06"
+    },
+    "authors": {
+      "S": "김영하"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "201012963727"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1997년 11월 23일"
+    },
+    "publisher": {
+      "S": "문학과지성사"
+    },
+    "title": {
+      "S": "바7SFF하9PGXI다Z"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#0012e06c-42b9-4593-a0a7-2072c3ebe7c0"
+    },
+    "SK": {
+      "S": "BOOK#0012e06c-42b9-4593-a0a7-2072c3ebe7c0"
+    },
+    "authors": {
+      "S": "조정래"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "806841143474"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1975년 3월 4일"
+    },
+    "publisher": {
+      "S": "우리가꿈꾸는책"
+    },
+    "title": {
+      "S": "5G나EE차WX사DBN"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#9f38feea-5d71-42e7-9df7-7a3d54fa2ded"
+    },
+    "SK": {
+      "S": "BOOK#9f38feea-5d71-42e7-9df7-7a3d54fa2ded"
+    },
+    "authors": {
+      "S": "김수영"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "64068368547"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1981년 3월 28일"
+    },
+    "publisher": {
+      "S": "한겨레출판"
+    },
+    "title": {
+      "S": "T하1E0나AVZ"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#7d4e2375-da29-4c95-ad9d-45279d541149"
+    },
+    "SK": {
+      "S": "BOOK#7d4e2375-da29-4c95-ad9d-45279d541149"
+    },
+    "authors": {
+      "S": "정유정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "470577285785"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1970년 12월 9일"
+    },
+    "publisher": {
+      "S": "우리가꿈꾸는책"
+    },
+    "title": {
+      "S": "7ABRB라U마EM6바5I"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#06c1b7be-d1c5-465d-8797-3d1f1234a3a8"
+    },
+    "SK": {
+      "S": "BOOK#06c1b7be-d1c5-465d-8797-3d1f1234a3a8"
+    },
+    "authors": {
+      "S": "이상"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "520856899126"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2007년 2월 24일"
+    },
+    "publisher": {
+      "S": "우리가꿈꾸는책"
+    },
+    "title": {
+      "S": "하QM가차7사7마Y"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#7d94c2f8-dd0f-4695-8b0c-658626a2fadb"
+    },
+    "SK": {
+      "S": "BOOK#7d94c2f8-dd0f-4695-8b0c-658626a2fadb"
+    },
+    "authors": {
+      "S": "고은정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "871861040188"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1974년 9월 21일"
+    },
+    "publisher": {
+      "S": "한겨레출판"
+    },
+    "title": {
+      "S": "카Z1하타EC0GI0"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#c2bf2c95-0d90-4065-9f95-a27c74b886e1"
+    },
+    "SK": {
+      "S": "BOOK#c2bf2c95-0d90-4065-9f95-a27c74b886e1"
+    },
+    "authors": {
+      "S": "이상"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "856941285276"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1965년 3월 27일"
+    },
+    "publisher": {
+      "S": "마이클이펙트"
+    },
+    "title": {
+      "S": "LITP3라48WR마U6"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#34da671a-2dae-4d34-80c1-9181523af645"
+    },
+    "SK": {
+      "S": "BOOK#34da671a-2dae-4d34-80c1-9181523af645"
+    },
+    "authors": {
+      "S": "이태준"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "155386204629"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1980년 4월 24일"
+    },
+    "publisher": {
+      "S": "계명문화사"
+    },
+    "title": {
+      "S": "0GU카P90P하X0WWG"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#95740cc4-0be5-4593-bf4d-9c33a0129053"
+    },
+    "SK": {
+      "S": "BOOK#95740cc4-0be5-4593-bf4d-9c33a0129053"
+    },
+    "authors": {
+      "S": "고은정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "613325638480"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2015년 9월 16일"
+    },
+    "publisher": {
+      "S": "북하우스"
+    },
+    "title": {
+      "S": "6MTU하나8차"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#51d0879b-51e5-4bd5-a21f-1de926a71ba6"
+    },
+    "SK": {
+      "S": "BOOK#51d0879b-51e5-4bd5-a21f-1de926a71ba6"
+    },
+    "authors": {
+      "S": "정유정"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "393853750040"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1979년 9월 9일"
+    },
+    "publisher": {
+      "S": "미디어창비"
+    },
+    "title": {
+      "S": "차8R1나"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#23df9172-32db-42ab-8f24-6ad0c9b38fca"
+    },
+    "SK": {
+      "S": "BOOK#23df9172-32db-42ab-8f24-6ad0c9b38fca"
+    },
+    "authors": {
+      "S": "김종광"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "995826592288"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "2000년 1월 25일"
+    },
+    "publisher": {
+      "S": "교보문고"
+    },
+    "title": {
+      "S": "T3UM나4가마"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#f0591f5d-30da-435f-bfac-000216871316"
+    },
+    "SK": {
+      "S": "BOOK#f0591f5d-30da-435f-bfac-000216871316"
+    },
+    "authors": {
+      "S": "하루키"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "396156252378"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1993년 6월 19일"
+    },
+    "publisher": {
+      "S": "삼성출판사"
+    },
+    "title": {
+      "S": "3라NC아CV"
+    }
+  },
+  {
+    "PK": {
+      "S": "BOOK#47d22e7b-bb3a-472b-9248-2ecdd0d30fcb"
+    },
+    "SK": {
+      "S": "BOOK#47d22e7b-bb3a-472b-9248-2ecdd0d30fcb"
+    },
+    "authors": {
+      "S": "장강명"
+    },
+    "imgPath": {
+      "S": "https://shopping-phinf.pstatic.net/main_3245629/32456297621.20231003084616.jpg"
+    },
+    "isbn": {
+      "S": "418286785136"
+    },
+    "itemType": {
+      "S": "Book"
+    },
+    "publishedDate": {
+      "S": "1963년 10월 2일"
+    },
+    "publisher": {
+      "S": "한겨레출판"
+    },
+    "title": {
+      "S": "타아ND6"
+    }
+  }
+]
