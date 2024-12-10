@@ -660,8 +660,8 @@ const PostDetailsPage = () => {
         <style>
           {`
     .content-container img {
-      max-width: 90%; 
-      max-height: 1000px; 
+      max-width: 100%; 
+      max-height: 600px; 
       height: auto; 
       display: block; 
       margin: 10px 0; /* 상하 간격만 유지 */
