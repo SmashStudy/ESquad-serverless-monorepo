@@ -85,7 +85,7 @@ const PostCreationDialog = ({ open, onClose }) => {
       </Dialog>
 
       {/* 작성 중 경고 모달 */}
-      <Dialog  u 한개
+      <Dialog
         open={showWarning}
         onClose={handleKeepWriting}
         sx={{
