@@ -94,7 +94,7 @@ const Login = () => {
       const { accessToken, idToken } = data;
       localStorage.setItem("jwtToken", idToken);
 
-      window.location.href = "/";
+      window.location.href = "/main";
     } catch (error) {
       console.error("로그인 오류:", error);
       setError(error.message || "로그인 중 문제가 발생했습니다.");

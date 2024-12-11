@@ -354,7 +354,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         height: "70vh",
         mx: "auto",
         my: "auto",
-        py: 2,
+        py: 3,
       }}
     >
       <Box
@@ -399,7 +399,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             color: "#fff",
             backgroundColor: theme.palette.warning.main,
-            px: 4,
+            px: 3,
           }}
         >
           취소
@@ -410,7 +410,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             backgroundColor: theme.palette.primary.main,
             color: "#fff",
-            px: 4,
+            px: 3,
           }}
         >
           등록
