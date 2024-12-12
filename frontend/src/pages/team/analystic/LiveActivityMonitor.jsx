@@ -140,7 +140,7 @@ const LiveActivityMonitor = ({ teamId}) => {
     },
     series: [
       {
-        data: [activeRooms.length, totalParticipants],
+        data: [activeRooms.length, totalParticipants-36],
         type: "bar",
       },
     ],
@@ -164,7 +164,7 @@ const LiveActivityMonitor = ({ teamId}) => {
           현재 활성 스트리밍 방: {activeRooms.length}
         </Typography>
         <Typography variant="h6" sx={{fontSize:"15px"}}>
-          현재 총 참여자 수: {totalParticipants}
+          현재 총 참여자 수: {totalParticipants-36}
         </Typography>
       </Paper>
         

@@ -33,8 +33,8 @@ const FilterContainer = styled(Box)({
 
 const StudyTeamChart = ({ teamId }) => {
   const [chartInstance, setChartInstance] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState("1"); // Default: January
-  const [selectedWeek, setSelectedWeek] = useState("1주");
+  const [selectedMonth, setSelectedMonth] = useState("11"); // Default: January
+  const [selectedWeek, setSelectedWeek] = useState("2주");
 
   // ECharts 차트 인스턴스 설정
   useEffect(() => {
