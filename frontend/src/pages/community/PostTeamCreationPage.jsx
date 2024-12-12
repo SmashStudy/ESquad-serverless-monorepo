@@ -310,11 +310,11 @@ const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
         display: "flex",
         flexDirection: "column",
         gap: 1,
-        maxWidth: "700px",
-        height: "80vh",
+        maxWidth: "800px",
+        height: "70vh",
         mx: "auto",
         my: "auto",
-        py: 2,
+        py: 3,
       }}
     >
       {renderTabContent()}
@@ -324,7 +324,7 @@ const PostTeamCreationPage = ({ onCancel, setIsDraft, onSubmit, teamId }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 8,
+          pt: 12,
         }}
       >
         <Button
