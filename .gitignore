@@ -41,3 +41,6 @@ tmp/
 # 백업 파일
 *.bak
 *.swp
+
+#
+frontend/public/data/
