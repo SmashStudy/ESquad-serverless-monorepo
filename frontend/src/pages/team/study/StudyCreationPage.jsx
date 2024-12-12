@@ -408,10 +408,7 @@ const StudyCreationPage = ({ onCancel, selectedBook }) => {
 
         const hasInvalidSchedule = reminds.some((remind) => {
             return (
-                remind.dayType === "" ||
-                remind.startTime === "" ||
-                remind.endTime === "" ||
-                !(remind.dayType) ||
+                remind.dayType === '' ||
                 !(remind.startTime)  ||
                 !(remind.endTime)
             );
