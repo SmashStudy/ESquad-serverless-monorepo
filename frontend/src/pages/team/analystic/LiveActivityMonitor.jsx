@@ -34,25 +34,26 @@ const fetchParticipants = async (teamId) => {
 
 // 현재 시간과 비교해 활성 스트리밍 방 확인
 const getActiveStreamingRooms = (streamingRooms) => {
+  // console.log(streamingRooms);
   const activeRooms = streamingRooms.filter((room) => {
-    
-    if (room.end_At == undefined || new Date(room.end_At.S) > new Date()) {
-      // console.log(room.title.S); // 활성화된 방 출력
+    if (room.end_At == undefined) {
+      console.log(room.title.S); // 활성화된 방 출력
       return true;
     }
     return false;
   });
 
   // 최대 4개만 반환
-  return activeRooms.slice(0, 1);
+  return activeRooms;
+
 };
 
-const LiveActivityMonitor = ({ teamId}) => {
+const LiveActivityMonitor = () => {
   const [streamingRooms, setStreamingRooms] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [activeRooms, setActiveRooms] = useState([]);
   const [totalParticipants, setTotalParticipants] = useState(0);
-
+  const teamId = 'TEAM#dafac672-2401-42bb-b2a8-7f9a94331ee9';
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,20 +71,19 @@ const LiveActivityMonitor = ({ teamId}) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const activeRooms = getActiveStreamingRooms(streamingRooms, teamId);
-      
+      // console.log(activeRooms);
       setActiveRooms(activeRooms);
 
       const activeRoomIds = activeRooms.map((room) => room.title.S);
+      // console.log(activeRoomIds);
       const activeParticipants = participants.filter((participant) =>
         activeRoomIds.includes(participant.title.S)
-      );
-      // console.log(activeParticipants);
-      
-      setTotalParticipants(activeParticipants.length-60);
+      );      
+      console.log(activeParticipants);
+
+      setTotalParticipants(activeParticipants.length);
     
       return activeRooms.slice(0, 1);
-      
-
       }, 1000); // 매초마다 업데이트
     return () => clearInterval(interval);
   }, [streamingRooms, participants, teamId]);
@@ -108,10 +108,10 @@ const LiveActivityMonitor = ({ teamId}) => {
         type: "pie",
         radius: "30%",
         data: activeRooms.map((room) => ({
-          name: `어린왕자 타파 ${participants.length-266}`,
+          name: "바람이 분다",
           value: participants.filter(
             (participant) => participant.title.S === room.title.S
-          ).length-60,
+          ).length,
         })),
         emphasis: {
           itemStyle: {
@@ -128,7 +128,6 @@ const LiveActivityMonitor = ({ teamId}) => {
   const lineChartOption = {
     title: {
       text: "실시간 스트리밍 대시보드",
-      // subtext: `Esquad: ${teamId}`,
       left: "center",
     },
     xAxis: {
@@ -140,7 +139,7 @@ const LiveActivityMonitor = ({ teamId}) => {
     },
     series: [
       {
-        data: [activeRooms.length, totalParticipants-36],
+        data: [activeRooms.length, totalParticipants],
         type: "bar",
       },
     ],
@@ -164,7 +163,7 @@ const LiveActivityMonitor = ({ teamId}) => {
           현재 활성 스트리밍 방: {activeRooms.length}
         </Typography>
         <Typography variant="h6" sx={{fontSize:"15px"}}>
-          현재 총 참여자 수: {totalParticipants-36}
+          현재 총 참여자 수: {totalParticipants}
         </Typography>
       </Paper>
         
