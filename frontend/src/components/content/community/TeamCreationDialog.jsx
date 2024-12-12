@@ -61,8 +61,8 @@ const TeamCreationDialog = ({ open, onClose, teamId }) => {
         fullWidth
         sx={{
           "& .MuiPaper-root": {
-            height: "calc(100vh - 50px)",
-            maxHeight: "calc(100vh - 50px)",
+            height: "calc(100vh - 90px)",
+            maxHeight: "calc(100vh - 70px)",
           },
         }}
       >
