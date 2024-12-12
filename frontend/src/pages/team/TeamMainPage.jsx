@@ -16,8 +16,7 @@ const TeamMainPage = () => {
     const { teamId } = useParams();
     const teamIds = 'TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66';
     const [teamData, setTeamData] = useState(null);
-
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedBoard, setSelectedBoard] = useState("live");  // "live" 또는 "team"
     const [selectedStat, setSelectedStat] = useState('월별');
 
@@ -35,7 +34,7 @@ const TeamMainPage = () => {
             console.log(teamData);
             
             setTeamData(teamProfile);
-            setLoading(false);
+            setIsLoading(false);
 
         } catch (error) {
             console.error('팀 데이터를 불러오는 중 오류 발생:', error);

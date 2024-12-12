@@ -107,10 +107,10 @@ function ChatMessages({currentChatRoom}) {
                 const data = JSON.parse(event.data);
 
                 // 수신한 이벤트에 따라 상태를 업데이트
-                // switch (data.action) {
-                //     case 'sendMessage':
-                //         // setMessages((prevMessages) => [...prevMessages, data]);
-                //         break;
+                switch (data.action) {
+                    case 'sendMessage':
+                        // setMessages((prevMessages) => [...prevMessages, data]);
+                        break;
 
                     case 'updateMessage':
                         setMessages((prevMessages) =>
