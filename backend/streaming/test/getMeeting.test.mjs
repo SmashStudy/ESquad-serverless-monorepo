@@ -66,10 +66,11 @@ describe('getMeeting 함수 테스트', () => {
     // getItem Mock 설정
     getItem.mockRejectedValue(mockError);
 
-    await expect(getMeeting(meetingTitle)).rejects.toThrow(`Failed to retrieve meeting: ${mockError.message}`);
+    // 코드에서 던지는 에러 메시지에 맞게 수정
+    await expect(getMeeting(meetingTitle)).rejects.toThrow(`회의 정보를 가져오는 데 실패했습니다: ${mockError.message}`);
 
     expect(getItem).toHaveBeenCalledWith('MeetingsTable', { title: { S: meetingTitle } });
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching meeting:', mockError);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('회의 정보를 조회하는 중 오류 발생:', mockError);
   });
 
   test('회의 정보에 Data가 없으면 null을 반환', async () => {

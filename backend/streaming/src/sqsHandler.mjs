@@ -10,24 +10,24 @@ export const handler = async (event) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message: 'SQS records processed successfully.' }),
+    body: JSON.stringify({ message: 'SQS 레코드가 성공적으로 처리되었습니다.' }),
     isBase64Encoded: false,
   };
 
   try {
     // 이벤트 로깅 (디버깅 용도)
-    console.log('Received SQS Event:', JSON.stringify(event, null, 2));
+    console.log('수신된 SQS 이벤트:', JSON.stringify(event, null, 2));
 
     // 이벤트 레코드 검증
     if (!event.Records || !Array.isArray(event.Records)) {
-      console.error('Invalid event structure: Records are missing or not an array.');
+      console.error('잘못된 이벤트 구조: Records가 없거나 배열이 아닙니다.');
       return {
         statusCode: 400,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: 'Invalid event structure: Records are missing or not an array.',
+          message: '잘못된 이벤트 구조: Records가 없거나 배열이 아닙니다.',
         }),
         isBase64Encoded: false,
       };
@@ -40,22 +40,16 @@ export const handler = async (event) => {
       try {
         // 레코드 검증
         if (!record.body) {
-          console.warn('Record is missing body:', record);
+          console.warn('레코드에 body가 없습니다:', record);
           continue; // 다음 레코드로 이동
         }
 
         const messageBody = JSON.parse(record.body);
 
-        // 메시지 처리 로직을 여기에 추가
-        // 예: 특정 필드 기반으로 작업 수행
-        // if (messageBody.type === 'SomeType') {
-        //   // 처리 로직
-        // }
-
-        console.log('Processed message:', messageBody);
+        console.log('처리된 메시지:', messageBody);
       } catch (recordError) {
         // 개별 레코드 처리 중 발생한 오류 로깅
-        console.error('Error processing record:', recordError, record);
+        console.error('레코드 처리 중 오류 발생:', recordError, record);
         // 필요에 따라 SQS 메시지를 다시 시도하도록 할 수 있습니다.
       }
     }
@@ -64,7 +58,7 @@ export const handler = async (event) => {
     return response;
   } catch (error) {
     // 전체 핸들러 처리 중 발생한 오류 로깅
-    console.error('Error processing SQS event:', error);
+    console.error('SQS 이벤트 처리 중 오류 발생:', error);
 
     return {
       statusCode: 500,
@@ -72,7 +66,7 @@ export const handler = async (event) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: 'Internal Server Error',
+        message: '서버 내부 오류가 발생했습니다.',
         error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       }),
       isBase64Encoded: false,

@@ -16,6 +16,7 @@ const TeamMainPage = () => {
     const { teamId } = useParams();
     const teamIds = 'TEAM#b2c5dfb5-7a03-4fcb-b8b7-c23be94d9f66';
     const [teamData, setTeamData] = useState(null);
+
     const [loading, setLoading] = useState(true);
     const [selectedBoard, setSelectedBoard] = useState("live");  // "live" 또는 "team"
     const [selectedStat, setSelectedStat] = useState('월별');
@@ -27,10 +28,9 @@ const TeamMainPage = () => {
     const handleTabChange = (event, newValue) => {
         setSelectedStat(newValue); // 선택된 통계 타입을 업데이트
     };
-
     const fetchTeamData = async () => {
         try {
-            setLoading(true);
+            setIsLoading(true);
             const teamProfile = await getTeamProfiles(teamId);
             console.log(teamData);
             
@@ -39,6 +39,7 @@ const TeamMainPage = () => {
 
         } catch (error) {
             console.error('팀 데이터를 불러오는 중 오류 발생:', error);
+
         }
     }
     
@@ -58,7 +59,7 @@ const TeamMainPage = () => {
                 position: 'relative',
             }}
         >
-            {loading ? <Loading /> : (
+            {isLoading ? <Loading /> : (
                 <>
                     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', minHeight:'90vh' }}>
                         {/* 제목 및 보드 토글 버튼 */}

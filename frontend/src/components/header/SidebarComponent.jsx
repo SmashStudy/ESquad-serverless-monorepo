@@ -24,11 +24,17 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import HomeIcon from "@mui/icons-material/Home";
 import CategoryIcon from "@mui/icons-material/Category";
 import PersonIcon from "@mui/icons-material/Person";
-import {Link, useLocation} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getUserApi } from "../../utils/apiConfig.js";
 import axios from "axios";
 
-const SidebarList = ({ items, drawerOpen, sidebarOpen, selectedSection, onSectionClick }) => {
+const SidebarList = ({
+  items,
+  drawerOpen,
+  sidebarOpen,
+  selectedSection,
+  onSectionClick,
+}) => {
   const theme = useTheme();
 
   return (
@@ -37,62 +43,63 @@ const SidebarList = ({ items, drawerOpen, sidebarOpen, selectedSection, onSectio
         const itemId = item.link;
 
         return (
-            <Link
-                to={itemId}
-                key={itemId}
-                style={{textDecoration: "none", color: "inherit"}}
-                onClick={() => onSectionClick(itemId)} // 클릭 시 선택 상태 업데이트
+          <Link
+            to={itemId}
+            key={itemId}
+            style={{ textDecoration: "none", color: "inherit" }}
+            onClick={() => onSectionClick(itemId)} // 클릭 시 선택 상태 업데이트
+          >
+            <ListItemButton
+              sx={{
+                display: "flex",
+                flexDirection: drawerOpen
+                  ? "row"
+                  : sidebarOpen
+                  ? "row"
+                  : "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                padding: sidebarOpen ? "8px 16px" : "8px 0",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                backgroundColor:
+                  selectedSection === itemId
+                    ? alpha(theme.palette.primary.main, 0.1) // 선택된 아이템에 theme의 primary 색상 사용
+                    : "transparent",
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1), // hover 시에도 같은 색상
+                },
+              }}
             >
-              <ListItemButton
-                  sx={{
-                    display: "flex",
-                    flexDirection: drawerOpen
-                        ? "row"
-                        : sidebarOpen
-                            ? "row"
-                            : "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    textAlign: "center",
-                    padding: sidebarOpen ? "8px 16px" : "8px 0",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    backgroundColor:
-                        selectedSection === itemId
-                            ? alpha(theme.palette.primary.main, 0.1) // 선택된 아이템에 theme의 primary 색상 사용
-                            : "transparent",
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.1), // hover 시에도 같은 색상
-                    },
-                  }}
+              <ListItemIcon
+                sx={{
+                  minWidth: "auto !important",
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: sidebarOpen ? 0 : 1,
+                  alignItems: "center",
+                }}
               >
-                <ListItemIcon
-                    sx={{
-                      minWidth: "auto !important",
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: sidebarOpen ? 0 : 1,
-                      alignItems: "center",
-                    }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                {sidebarOpen && (
-                  <ListItemText
-                      primary={item.text}
-                      sx={{
-                        whiteSpace: "wrap",
-                        textAlign: "center",
-                        transition: "font-size 0.3s ease",
-                        fontWeight: selectedSection === itemId ? "bold" : "normal",
-                        color: selectedSection === itemId
-                            ? theme.palette.primary.main
-                            : "inherit",
-                      }}
-                  />
-                )}
-              </ListItemButton>
-            </Link>
+                {item.icon}
+              </ListItemIcon>
+              {sidebarOpen && (
+                <ListItemText
+                  primary={item.text}
+                  sx={{
+                    whiteSpace: "wrap",
+                    textAlign: "center",
+                    transition: "font-size 0.3s ease",
+                    fontWeight: selectedSection === itemId ? "bold" : "normal",
+                    color:
+                      selectedSection === itemId
+                        ? theme.palette.primary.main
+                        : "inherit",
+                  }}
+                />
+              )}
+            </ListItemButton>
+          </Link>
         );
       })}
     </List>
@@ -104,10 +111,11 @@ const SidebarComponent = ({
   drawerOpen,
   sidebarOpen,
   handleDrawerClose,
-  selectedTab, selectedTeam
+  selectedTab,
+  selectedTeam,
 }) => {
   const theme = useTheme();
-  
+
   const [selectedSection, setSelectedSection] = useState(null);
   const location = useLocation();
   const [userInfo, setUserInfo] = useState(null);
@@ -135,12 +143,12 @@ const SidebarComponent = ({
   const communityItems = [
     { text: "질문 및 답변", icon: <QuizIcon />, link: "/community/questions" },
     { text: "자유게시판", icon: <SpaceDashboardIcon />, link: "/community/general" },
-    { text: "스터디 모집", icon: <Groups3Icon />, link: "/community/team-recruit" },
+    { text: "스터디 팀 모집", icon: <Groups3Icon />, link: "/community/team-recruit" },
   ];
 
   const studyItems = [
-      { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
       { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search` },
+      { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
       { text: '질문', icon: <QuizIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions` },
   ];
 
@@ -156,14 +164,18 @@ const SidebarComponent = ({
   // 마이페이지 관련 항목
   const profileItems = [
     { text: "홈", icon: <HomeIcon />, link: "/user/profile" },
-    { text: "파일 관리", icon: <CategoryIcon />, link: "/user/profile/manage-file" },
-    { text: "닉네임 관리", icon: <PersonIcon />, link: "/user/profile/nickname" },
-    { text: "설정", icon: <SettingsIcon />, link: "/user/profile/settings" },
+    { text: "파일 관리", icon: <CategoryIcon />, link: "/user/manage-file" },
+    { text: "닉네임 관리", icon: <PersonIcon />, link: "/user/nickname" },
+    { text: "설정", icon: <SettingsIcon />, link: "/user/settings" },
   ];
+
+  if(location.pathname === "/main" || location.pathname === "/") {
+    return null;
+  }
 
   const sidebarContent = (
     <>
-      {location.pathname.startsWith("/user/profile") ? ( // 마이페이지 경로일 경우
+      {location.pathname.startsWith("/user")  ? ( // 마이페이지 경로일 경우
         <>
           <Box
             sx={{
@@ -190,7 +202,10 @@ const SidebarComponent = ({
               <>
                 {window.innerWidth >= 600 ? ( // 큰 화면에서는 전체 프로필 표시
                   <Box sx={{ textAlign: "center" }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 1 }}>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: "bold", mt: 1 }}
+                    >
                       {userInfo?.nickname}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
@@ -226,7 +241,7 @@ const SidebarComponent = ({
             onSectionClick={setSelectedSection}
           />
         </>
-        ):selectedTab === 0 ? (
+      ) : selectedTab === 0 ? (
         <SidebarList
           items={communityItems}
           drawerOpen={drawerOpen}
@@ -251,41 +266,48 @@ const SidebarComponent = ({
               },
             }}
           >
-              <Link
-                  to={selectedTeam ? `/teams/${encodeURIComponent(selectedTeam?.PK)}/main` : "#"}
-                  style={{ textDecoration: "none", color: "inherit" }}
+            <Link
+              to={
+                selectedTeam
+                  ? `/teams/${encodeURIComponent(selectedTeam?.PK)}/main`
+                  : "#"
+              }
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <IconButton
+                color="inherit"
+                sx={{
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.primary.main, 0),
+                  },
+                  gap: 3,
+                }}
               >
-                <IconButton
-                  color="inherit"
+                <Avatar
+                  alt="Team Profile"
+                  src="/src/assets/user-avatar.png"
                   sx={{
-                    "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0),
-                    },
-                    gap: 3,
+                    transition: "width 0.3s ease",
+                    width: 46,
+                    height: 46,
                   }}
-                >
-                  <Avatar
-                    alt="Team Profile"
-                    src="/src/assets/user-avatar.png"
+                />
+                {sidebarOpen && (
+                  <Typography
+                    variant="h6"
                     sx={{
-                      transition: "width 0.3s ease",
-                      width: 46,
-                      height: 46,
+                      fontWeight: "bolder",
+                      whiteSpace: "nowrap", // 텍스트가 길어서 부모 요소 안의 가로폭을 넘어가더라도 자동으로 줄바꿈이 일어나지 않게 처리
+                      overflow: "hidden", // overflow 숨김처리
+                      textOverflow: "ellipsis", // overflowed 된 텍스트 ellipsis 처리
+                      maxWidth: "120px", // Set a max width for truncation
                     }}
-                  />
-                  {sidebarOpen && (
-                    <Typography variant="h6" sx={{
-                        fontWeight: "bolder",
-                        whiteSpace: "nowrap", // 텍스트가 길어서 부모 요소 안의 가로폭을 넘어가더라도 자동으로 줄바꿈이 일어나지 않게 처리
-                        overflow: "hidden",     // overflow 숨김처리
-                        textOverflow: "ellipsis", // overflowed 된 텍스트 ellipsis 처리
-                        maxWidth: "120px", // Set a max width for truncation
-                    }}>
-                      {selectedTeam?.teamName}
-                    </Typography>
-                  )}
-                </IconButton>
-              </Link>
+                  >
+                    {selectedTeam?.teamName}
+                  </Typography>
+                )}
+              </IconButton>
+            </Link>
           </Box>
           <Divider sx={{ borderBottom: "1px solid #ddd" }} />
 
@@ -358,10 +380,10 @@ const SidebarComponent = ({
     !isSmallScreen && (
       <Box
         sx={{
-          width: sidebarOpen ? "200px" : "4rem",
+          width: sidebarOpen ? "200px" : "5rem",
           flexShrink: 0,
           backgroundColor: "#fff",
-          transition: "width 0.3s ease",
+          transition: "width 0.5s ease, opacity 0.5s ease",
           overflow: "hidden",
           height: "100%",
         }}

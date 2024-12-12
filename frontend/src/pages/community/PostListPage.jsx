@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, List, InputBase, Chip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  List,
+  InputBase,
+  Chip,
+  colors,
+} from "@mui/material";
 import { alpha, useTheme } from "@mui/material";
 import CreateIcon from "@mui/icons-material/Create";
 import PostCreationDialog from "../../components/content/community/PostCreationDialog.jsx";
@@ -10,6 +18,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ImageIcon from "@mui/icons-material/Image";
 import { getCommunityApi } from "../../utils/apiConfig";
 import { useTeams } from "../../context/TeamContext.jsx";
+import Loading from "../../components/custom/Loading.jsx";
 
 const PostListPage = ({ isSmallScreen }) => {
   const theme = useTheme();
@@ -22,6 +31,7 @@ const PostListPage = ({ isSmallScreen }) => {
   const [boardType, setBoardType] = useState("");
   const [filterTab, setFilterTab] = useState("전체");
   const [texts, setTexts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // URL 경로에 따라 boardType 설정
   useEffect(() => {
@@ -48,6 +58,7 @@ const PostListPage = ({ isSmallScreen }) => {
     if (!boardType) return;
 
     try {
+      setIsLoading(true);
       const params = {
         limit: 10,
       };
@@ -82,6 +93,8 @@ const PostListPage = ({ isSmallScreen }) => {
       setLastEvaluatedKeys(newLastEvaluatedKeys);
     } catch (err) {
       console.error("게시글을 불러오는 중 오류가 발생했습니다:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -282,176 +295,209 @@ const PostListPage = ({ isSmallScreen }) => {
         </Button>
       </Box>
       {/* 게시글 목록 */}
-      <List sx={{ width: "100%", pr: 2 }}>
-        {posts.map((post) => {
-          const hasImage = /<img[^>]*src=["']([^"']+)["'][^>]*>/.test(
-            post.content
-          );
-          const plainText = post.content.replace(/<[^>]+>/g, "");
+      {isLoading ? <Loading /> : (
+        <>
+          <List sx={{ width: "100%", pr: 2 }}>
+            {posts.map((post) => {
+              const hasImage = /<img[^>]*src=["']([^"']+)["'][^>]*>/.test(
+                post.content
+              );
+              const plainText = post.content.replace(/<[^>]+>/g, "");
 
-          return (
-            <Link
-              to={`/community/${boardType}/${
-                post.postId
-              }?createdAt=${encodeURIComponent(post.createdAt)}`}
-              key={post.postId}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Box
-                sx={{
-                  mb: 2,
-                  borderBottom: "1px solid #ddd",
-                  px: 2,
-                  py: 2,
-                  backgroundColor: "#f9f6ff",
-                  "&:hover": {
-                    backgroundColor: alpha(theme.palette.primary.light, 0.1),
-                    cursor: "pointer",
-                  },
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  {boardType === "questions" && (
-                    <Chip
-                      label={post.resolved ? "해결됨" : "미해결"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.resolved ? "#FFFFFF" : "#FFFFFF",
-                        backgroundColor: post.resolved
-                          ? theme.palette.primary.main
-                          : "#CED4DA",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
-                  {boardType === "team-recruit" && (
-                    <Chip
-                      label={post.recruitStatus ? "모집완료" : "모집중"}
-                      sx={{
-                        mr: 2,
-                        borderRadius: "16px",
-                        fontWeight: "bold",
-                        color: post.recruitStatus ? "#fff" : "#fff",
-                        backgroundColor: post.recruitStatus
-                          ? "#CED4DA"
-                          : theme.palette.primary.main,
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        height: "30px",
-                        minWidth: "60px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    />
-                  )}
-                  <Typography variant="body1" fontWeight="bold">
-                    {post.title}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: theme.palette.grey[700],
-                    mb: 1,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+              return (
+                <Link
+                  to={`/community/${boardType}/${
+                    post.postId
+                  }?createdAt=${encodeURIComponent(post.createdAt)}`}
+                  key={post.postId}
+                  style={{ textDecoration: "none", color: "inherit" }}
                 >
-                  {hasImage && <ImageIcon sx={{ fontSize: "large", mr: 2 }} />}
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: plainText.substring(0, 100),
-                    }}
-                  />
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    flexWrap: "wrap",
-                    mb: 0,
-                    minHeight: "40px",
-                  }}
-                >
-                  {post.tags &&
-                    post.tags.length > 0 &&
-                    post.tags.map((tag, idx) => (
-                      <Chip
-                        key={`${post.postId}-${idx}`}
-                        label={tag}
-                        variant="outlined"
-                        sx={{
-                          borderRadius: "16px",
-                          color: theme.palette.primary.main,
-                          borderColor: theme.palette.primary.main,
-                        }}
-                      />
-                    ))}
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mt: 1,
-                  }}
-                >
-                  {/* 작성자와 작성일 */}
-                  <Typography variant="caption" color="text.secondary">
-                    {post.writer?.nickname || "익명"} ·{" "}
-                    {new Date(post.createdAt).toLocaleString()}
-                  </Typography>
-
-                  {/* 좋아요, 조회수, 댓글 */}
                   <Box
                     sx={{
+                      mb: 2,
+                      borderBottom: "1px solid #ddd",
+                      px: 2,
+                      py: 2,
+                      backgroundColor: "#f9f6ff",
+                      "&:hover": {
+                        backgroundColor: alpha(theme.palette.primary.light, 0.1),
+                        cursor: "pointer",
+                      },
                       display: "flex",
-                      gap: 2,
-                      alignItems: "center",
+                      flexDirection: "column",
                     }}
                   >
-                    <Typography variant="caption">
-                      👍 {post.likeCount || 0}
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      {boardType === "questions" && (
+                        <Chip
+                          label={post.resolved ? "해결됨" : "미해결"}
+                          sx={{
+                            mr: 2,
+                            borderRadius: "16px",
+                            fontWeight: "bold",
+                            color: post.resolved ? "#FFFFFF" : "#FFFFFF",
+                            backgroundColor: post.resolved
+                              ? theme.palette.primary.main
+                              : "#CED4DA",
+                            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                            height: "30px",
+                            minWidth: "60px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        />
+                      )}
+                      {boardType === "team-recruit" && (
+                        <Chip
+                          label={post.recruitStatus ? "모집완료" : "모집중"}
+                          sx={{
+                            mr: 2,
+                            borderRadius: "16px",
+                            fontWeight: "bold",
+                            color: post.recruitStatus ? "#fff" : "#fff",
+                            backgroundColor: post.recruitStatus
+                              ? "#CED4DA"
+                              : theme.palette.primary.main,
+                            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                            height: "30px",
+                            minWidth: "60px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        />
+                      )}
+                      <Typography variant="body1" fontWeight="bold">
+                        {post.title}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: theme.palette.grey[700],
+                        display: "flex",
+                        alignItems: "center",
+                        my: 2,
+                      }}
+                    >
+                      {hasImage && (
+                        <ImageIcon
+                          sx={{
+                            color: theme.palette.primary.light,
+                            fontSize: "35px",
+                            mr: 2,
+                          }}
+                        />
+                      )}
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: plainText.substring(0, 100),
+                        }}
+                      />
                     </Typography>
-                    <Typography variant="caption">
-                      👁 {post.viewCount || 0}
-                    </Typography>
-                    <Typography variant="caption">
-                      💬 {post.commentCount || 0}
-                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap",
+                        mt: 1,
+                        minHeight: "40px",
+                      }}
+                    >
+                      {post.tags &&
+                        post.tags.length > 0 &&
+                        post.tags.map((tag, idx) => (
+                          <Chip
+                            key={`${post.postId}-${idx}`}
+                            label={tag}
+                            variant="outlined"
+                            sx={{
+                              borderRadius: "16px",
+                              color: theme.palette.primary.main,
+                              borderColor: theme.palette.primary.main,
+                            }}
+                          />
+                        ))}
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mt: 1,
+                      }}
+                    >
+                      {/* 작성자와 작성일 */}
+                      <Typography variant="caption" color="text.secondary">
+                        {post.writer?.nickname || "익명"} ·{" "}
+                        {new Date(post.createdAt).toLocaleString()}
+                      </Typography>
+
+                      {/* 좋아요, 조회수, 댓글 */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 2,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: "1.1rem",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          🤍{post.likeCount || 0}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: "1.1rem",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          👀 {post.viewCount || 0}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: "1.1rem",
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          💬 {post.commentCount || 0}
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Box>
-                </Box>
-              </Box>
-            </Link>
-          );
-        })}
-      </List>
-      {/* Pagination */}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button
-          onClick={() => handlePageChange("prev")}
-          disabled={curPage === 1}
-          sx={{ marginRight: 2 }}
-        >
-          이전
-        </Button>
-        <Button
-          onClick={() => handlePageChange("next")}
-          disabled={!lastEvaluatedKeys[curPage]}
-        >
-          다음
-        </Button>
-      </Box>
+                </Link>
+              );
+            })}
+          </List>
+          {/* Pagination */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Button
+              onClick={() => handlePageChange("prev")}
+              disabled={curPage === 1}
+              sx={{ marginRight: 2 }}
+            >
+              이전
+            </Button>
+            <Button
+              onClick={() => handlePageChange("next")}
+              disabled={!lastEvaluatedKeys[curPage]}
+            >
+              다음
+            </Button>
+          </Box>
+        </>
+      )}
       <PostCreationDialog
         open={isPostModalOpen}
         onClose={handleClosePostModal}

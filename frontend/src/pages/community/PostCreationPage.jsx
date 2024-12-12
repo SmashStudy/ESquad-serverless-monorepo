@@ -80,6 +80,25 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
     setContent(""); // 내용 초기화
     setTags([]); // 태그 초기화
     setIsDraft(false); // 드래프트 상태 초기화
+    if (tab === "팀 모집") {
+      setContent(`
+        <h2>[스터디 팀 모집 내용 예시]</h2>
+        <ul>
+          <li>스터디 주제 :</li>
+          <li>스터디 목표 :</li>
+          <li>예상 스터디 일정(횟수) :</li>
+          <li>예상 커리큘럼 간략히 :</li>
+          <li>예상 모집인원 :</li>
+          <li>스터디 소개와 개설 이유 :</li>
+          <li>스터디 관련 주의사항 :</li>
+          <li>팀 지원 방법 : 스터디에 지원할 수 있는 방법을 남겨주세요. (이메일, 카카오 오픈채팅방, 구글폼 등)</li>
+        </ul>
+        <br>
+        <p><em>참고 사항:</em> 스터디를 함께하려면 이메일이 필요해요! </p>
+      `);
+    } else {
+      setContent(""); // 내용 초기화
+    }
   };
   const renderTabContent = () => {
     const handleTagKeyDown = (event) => {
@@ -141,7 +160,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
                 ? "제목에 핵심 내용을 요약해보세요."
                 : activeTab === "자유"
                 ? "자유게시판 제목을 입력하세요."
-                : "스터디 제목을 입력하세요."
+                : "팀 모집 제목을 입력하세요."
             }
             value={title}
             onChange={(e) => {
@@ -179,15 +198,20 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               handleTagChange(event, newValue, reason)
             }
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={`tag-${index}`}
-                  variant="outlined"
-                  size="small"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
+              value.map((option, index) => {
+                const tagProps = getTagProps({ index });
+                delete tagProps.key; // key를 제거
+
+                return (
+                  <Chip
+                    key={`tag-${index}`} // 고유 key 설정
+                    variant="outlined"
+                    size="small"
+                    label={option}
+                    {...tagProps} // key가 제거된 props 전달
+                  />
+                );
+              })
             }
             renderInput={(params) => (
               <TextField
@@ -224,7 +248,9 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
               setContent(value);
               setIsDraft(true);
             }}
-            placeholder="내용을 입력하세요."
+            placeholder={`- 마크다운, 단축키를 이용해서 편리하게 글을 작성할 수 있어요.
+- 먼저 유사한 질문이 있었는지 검색해보세요.
+- 서로 예의를 지키며 존중하는 문화를 만들어가요.`}
           />
         </Box>
       </>
@@ -324,11 +350,11 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
         display: "flex",
         flexDirection: "column",
         gap: 1,
-        maxWidth: "700px",
-        height: "80vh",
+        maxWidth: "800px",
+        height: "70vh",
         mx: "auto",
         my: "auto",
-        py: 2,
+        py: 3,
       }}
     >
       <Box
@@ -339,7 +365,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           borderBottom: `1px solid ${theme.palette.primary.light}`,
         }}
       >
-        {["질문", "자유", "스터디"].map((tab) => (
+        {["질문", "자유", "팀 모집"].map((tab) => (
           <Button
             key={tab}
             variant="text"
@@ -364,7 +390,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           display: "flex",
           justifyContent: "space-between",
           px: 0,
-          pt: 8,
+          pt: 9,
         }}
       >
         <Button
@@ -373,7 +399,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             color: "#fff",
             backgroundColor: theme.palette.warning.main,
-            px: 4,
+            px: 3,
           }}
         >
           취소
@@ -384,7 +410,7 @@ const PostCreationPage = ({ onCancel, setIsDraft, onSubmit }) => {
           sx={{
             backgroundColor: theme.palette.primary.main,
             color: "#fff",
-            px: 4,
+            px: 3,
           }}
         >
           등록

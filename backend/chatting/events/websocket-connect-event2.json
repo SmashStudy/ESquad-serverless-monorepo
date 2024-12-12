@@ -1,9 +1,0 @@
-{
-    "queryStringParameters": {
-      "room_id": "room1",
-      "user_id": "user2"
-    },
-    "requestContext": {
-      "connectionId": "test-connection-id"
-    }
-  }

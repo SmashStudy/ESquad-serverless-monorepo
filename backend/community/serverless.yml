@@ -47,6 +47,14 @@ functions:
           method: POST
           cors: true
 
+  teamCreatePost:
+    handler: src/handlers/teamCreatePost.handler
+    events:
+      - http:
+          path: /teams/new-question-post
+          method: POST
+          cors: true
+
   getPost:
     handler: src/handlers/getPost.handler
     events:
@@ -60,6 +68,13 @@ functions:
     events:
       - http:
           path: /{boardType}
+          method: GET
+          cors: true
+  listTeamPosts:
+    handler: src/handlers/listTeamPosts.handler
+    events:
+      - http:
+          path: /team-questions
           method: GET
           cors: true
 
@@ -126,6 +141,13 @@ functions:
           path: /{boardType}/{postId}/like
           method: POST
           cors: true
+  toggleResolvedStatus:
+    handler: src/handlers/toggleResolvedStatus.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/status
+          method: PUT
+          cors: true
 
 resources:
   Resources:
@@ -145,6 +167,8 @@ resources:
             AttributeType: S
           - AttributeName: recruitStatus
             AttributeType: S
+          - AttributeName: teamId
+            AttributeType: S # teamId 추가
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -175,6 +199,15 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+          - IndexName: team-create-index # teamId 인덱스 추가
+            KeySchema:
+              - AttributeName: teamId
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
         SSESpecification:
           SSEEnabled: true
 
@@ -182,3 +215,8 @@ useDotenv: true
 
 plugins:
   - serverless-dotenv-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 3

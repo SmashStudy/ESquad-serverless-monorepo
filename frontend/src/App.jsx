@@ -1,5 +1,5 @@
-import React, { useEffect, useState, createContext } from 'react';
-import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
+import React, { useEffect, useState, createContext } from "react";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import Home from "./pages/home/Home.jsx";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./index.css";
@@ -11,52 +11,53 @@ import StudyDetailPage from "./pages/team/study/StudyDetailPage.jsx";
 import PostDetailsPage from "./pages/community/PostDetailsPage.jsx";
 import TeamMainPage from "./pages/team/TeamMainPage.jsx";
 import PostEditPage from "./pages/community/PostEditPage.jsx";
-import ManageUserPage from './pages/team/ManageUserPage.jsx';
-import ManageTeamPage from './pages/team/ManageTeamPage.jsx';
+import ManageUserPage from "./pages/team/ManageUserPage.jsx";
+import ManageTeamPage from "./pages/team/ManageTeamPage.jsx";
 import UserStorageUsage from "./pages/user/profile/UserStorageUsagePage.jsx";
 import UserProfileNickname from "./pages/user/profile/UserProfileNicknamePage.jsx";
 import UserProfileLayout from "./pages/user/profile/UserProfileLayout.jsx";
 import SignUp from "./pages/user/authentication/SignUpPage.jsx";
-import UserEmailVerification from "./pages/user/authentication/UserEmailVerificationPage.jsx"
+import UserEmailVerification from "./pages/user/authentication/UserEmailVerificationPage.jsx";
 import PrivateRoute from "./components/routes/PrivateRoute.jsx";
 import AdminPage from "./pages/user/admin/AdminPage.jsx";
 import AdminRoute from "./components/routes/AdminRoute.jsx";
 import UnauthorizedPage from "./pages/user/admin/UnauthorizedPage.jsx";
 import UserPasswordReset from "./pages/user/authentication/UserPasswordResetPage.jsx";
 import UserConfirmPassword from "./pages/user/authentication/UserConfirmPasswordPage.jsx";
+import PostTeamListPage from "./pages/community/PostTeamListPage.jsx";
 import Login from './pages/user/authentication/LoginPage.jsx';
 import AuthCallback from './auth/AuthCallback.jsx';
 import Logout from './pages/user/authentication/LogoutPage.jsx';
-import UserProfile from './pages/user/profile/UserProfilePage.jsx';
+import MainPage from './pages/home/MainPage.jsx';
 import {UserNicknameProvider} from "./context/UserNicknameContext.jsx";
 import {UserEmailProvider} from "./context/UserEmailContext.jsx";
 
 import { decodeJWT } from "./utils/decodeJWT.js";
 
 const theme = createTheme({
-    palette: {
-        info: {
-            main: '#090909'
-        },
-        primary: {
-            main: '#9f51e8', // Home color
-            light: '#ac71e5',
-        },
-        secondary: {
-            main: '#0095ff', // Emphasis color
-            light: '#04a4ea',
-        },
-        warning: {
-            main: '#f51738',
-        },
-        background: {
-            default: '#ffffff', // Background color
-            paper: '#ffffff',
-        },
+  palette: {
+    info: {
+      main: "#090909",
     },
-    typography: {
-        fontFamily: 'AppleSDGothicNeo, Noto Sans KR, sans-serif',
+    primary: {
+      main: "#9f51e8", // Home color
+      light: "#ac71e5",
     },
+    secondary: {
+      main: "#0095ff", // Emphasis color
+      light: "#04a4ea",
+    },
+    warning: {
+      main: "#f51738",
+    },
+    background: {
+      default: "#ffffff", // Background color
+      paper: "#ffffff",
+    },
+  },
+  typography: {
+    fontFamily: "AppleSDGothicNeo, Noto Sans KR, sans-serif",
+  },
 });
 
 function App() {
@@ -69,17 +70,17 @@ function App() {
         setIsLoggedIn(false); // 토큰이 없으면 로그인 상태 해제
         return;
       }
-  
+
       try {
         // decodeJWT를 사용하여 토큰 디코딩
         const decoded = decodeJWT(token);
-  
+
         if (!decoded) {
           throw new Error("유효하지 않은 JWT 토큰입니다.");
         }
-  
+
         const now = Date.now() / 1000; // 현재 시간 (초 단위)
-  
+
         if (decoded.exp && decoded.exp < now) {
           // 만료된 토큰인 경우
           console.log("토큰이 만료되었습니다.");
@@ -96,17 +97,16 @@ function App() {
         setIsLoggedIn(false); // 오류 발생 시 로그인 상태 해제
       }
     };
-  
+
     checkTokenValidity(); // 컴포넌트 로드 시 토큰 유효성 확인
-  
+
     // 주기적으로 토큰 유효성 확인 (예: 5분마다)
     const interval = setInterval(() => {
       checkTokenValidity();
     }, 5 * 60 * 1000); // 5분마다 실행
-  
+
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 타이머 정리
   }, []);
-
 
   return (
     <UserNicknameProvider>
@@ -130,19 +130,17 @@ function App() {
 
 
               {/* 보호된 경로 */}
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <Home />
-                  </PrivateRoute>
-                }
-              >
+              <Route path="/" element={ <PrivateRoute> <Home /> </PrivateRoute>}  >
+
+                <Route path="/" element={<MainPage />} />
+                <Route path="/main" element={<MainPage />} />
+
+
                 {/* user */}
-                <Route path="/user/profile" element={<UserProfile />} />
-                <Route path="/user/profile/manage-file" element={<UserStorageUsage />} />
-                <Route path="/user/profile/nickname" element={<UserProfileNickname />} />
-                <Route path="/user/profile/layout" element={<UserProfileLayout />} />
+                <Route path="/user/profile" element={<MainPage />} />
+                <Route path="/user/manage-file" element={<UserStorageUsage />} />
+                <Route path="/user/nickname" element={<UserProfileNickname />} />
+                <Route path="/user/layout" element={<UserProfileLayout />} />
 
                 {/* admin */}
                 <Route path="/admin" element={<AdminRoute><AdminPage /></ AdminRoute >}/>
@@ -174,7 +172,7 @@ function App() {
               <Route
                 path="*"
                 element={
-                  isLoggedIn ? <Navigate to="/" /> : <Navigate to="/login" />
+                  isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/login" />
                 }
               />
             </Routes>
