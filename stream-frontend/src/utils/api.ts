@@ -1,8 +1,10 @@
 import routes from '../constants/routes';
 
+const environment = (import.meta.env?.VITE_ENVIRONMENT) || 'dev';
+
 const isProduction = process.env.NODE_ENV === 'production';
 
-export const BASE_URL = isProduction ? 'https://api.esquad.click/dev/' : routes.HOME;
+export const BASE_URL = isProduction ? `https://api.esquad.click/${environment}/` : routes.HOME;
 
 
 export type MeetingFeatures = {

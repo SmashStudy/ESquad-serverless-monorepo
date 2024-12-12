@@ -1,16 +1,30 @@
-export const CORS_HEADERS = {
-    "Access-Control-Allow-Origin": "https://live.dev.esquad.click", // 특정 도메인 허용
-    "Access-Control-Allow-Credentials": true, // 필요 시 true로 설정
-    "Access-Control-Allow-Headers": "Content-Type, Authorization", // 필요한 헤더 추가
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET" // 허용할 메소드
-  };
-  
-  /**
-   * OPTIONS 요청에 대한 응답을 생성하는 함수
-   * @returns {Object} - CORS 헤더가 포함된 응답 객체
-   */
-  export const handleOptions = () => ({
+const allowedOrigins = [
+  "https://www.live.esquad.click",
+  "https://live.dev.esquad.click",
+];
+
+export const handleOptions = (origin) => {
+  const isAllowedOrigin = allowedOrigins.includes(origin);
+
+  return {
     statusCode: 200,
-    headers: CORS_HEADERS,
-    body: ''
-  });
+    headers: {
+      "Access-Control-Allow-Origin": isAllowedOrigin ? origin : "null", // 허용된 Origin만 설정
+      "Access-Control-Allow-Credentials": true,
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+    },
+    body: "",
+  };
+};
+
+export const CORS_HEADERS = (origin) => {
+  const isAllowedOrigin = allowedOrigins.includes(origin);
+
+  return {
+    "Access-Control-Allow-Origin": isAllowedOrigin ? origin : "null", // 허용된 Origin만 설정
+    "Access-Control-Allow-Credentials": true,
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+  };
+};

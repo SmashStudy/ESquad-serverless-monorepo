@@ -13,17 +13,17 @@ const TeamMainPage = () => {
     const { selectedTeam, handleTab , updateTeams} = useTeams();
     const {teamId} = useParams();
     const [teamData, setTeamData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchTeamData = async () => {
         try {
-            setLoading(true);
+            setIsLoading(true);
             const teamProfile = await getTeamProfiles(teamId);
             setTeamData(teamProfile);
         } catch (error) {
             console.error('팀 데이터를 불러오는 중 오류 발생:', error);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -42,7 +42,7 @@ const TeamMainPage = () => {
                 position: 'relative',
             }}
         >
-            {loading ? <Loading /> : (
+            {isLoading ? <Loading /> : (
                 <>
                     <h1>{teamData?.teamName}</h1>
                     <Outlet context={{selectedTeam, handleTab, updateTeams}}/>

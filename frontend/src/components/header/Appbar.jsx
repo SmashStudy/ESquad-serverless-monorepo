@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, {useState, useEffect, useCallback} from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ChatIcon from "@mui/icons-material/Chat";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,7 +25,7 @@ import {
   styled,
   Toolbar,
   useMediaQuery,
-  useTheme,
+  useTheme, CircularProgress,
 } from "@mui/material";
 import {
   fetchAll,
@@ -82,8 +82,9 @@ const Appbar = ({
   toggleChatDrawer, changeSelectedTeam
 }) => {
   const theme = useTheme();
-  const {teams, updateTeams} = useTeams();
+  const {teams, updateTeams, loading} = useTeams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -100,6 +101,14 @@ const Appbar = ({
 
   const teamTabOpen = Boolean(teamAnchorEl);
   const [isTeamCreationModalOpen, setIsTeamCreationModalOpen] = useState(false);
+
+  const isHomePage = location.pathname === "/" || location.pathname === '/main';
+
+  useEffect(() => {
+    if(isHomePage) {
+      onTabChange(-1);
+    }
+  }, [isHomePage]);
 
   const fetchUserRole = async () => {
     try {
@@ -118,7 +127,7 @@ const Appbar = ({
       const data = await response.json();
       setRole(data.role); // 역할 정보 설정
     } catch (error) {
-      console.error("사용자 역할 가져오기 중 오류:", error);
+      console.error("사용자 역할 가져오기 중 오류:", error);``
     }
   };
 
@@ -268,30 +277,34 @@ const Appbar = ({
       sx={{ width: `100%`, backgroundColor: "#fff" }}
     >
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box sx={{ display: "flex", alignItems: "center", flex: 3 }}>
+        <Box sx={{ display: "flex", alignItems: "center", flex: 3}}>
+          <Box>
           {showSearchBar ? (
             <IconButton
               edge="start"
               color="inherit"
               aria-label="back"
               onClick={() => setShowSearchBar(false)}
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, my: 2, }}
             >
               <ArrowBackIcon />
             </IconButton>
           ) : (
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleSidebarToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
+              !isHomePage && (
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleSidebarToggle}
+                  sx={{ mr: 2}}
+                >
+                  <MenuIcon />
+                </IconButton>
+            )
           )}
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <NavLink to="/community/questions" activeclassname="nav-logo">
+            <NavLink to="/main" activeclassname="nav-logo">
               <img
                 src="https://s3-esquad-public.s3.us-east-1.amazonaws.com/esquad-logo-nbk.png"
                 alt="Logo"
@@ -299,7 +312,9 @@ const Appbar = ({
               />
             </NavLink>
           </Box>
+
           {!showSearchBar && !isVerySmallScreen && (
+
             <Box sx={{ display: "flex", gap: 1 }}>
               <NavLink
                 to="/community/questions"
@@ -382,42 +397,39 @@ const Appbar = ({
                       handleTab={onTabChange}
                   />
 
-                  {teams.length === 0 ? (
+                  {loading ? ( <CircularProgress color="primary" size="30px" sx={{ ml: 7 }} /> ) :
+                    teams.length === 0 ? (
                       <ListItem>
                           <ListItemText primary="팀이 없습니다." />
                       </ListItem>
-                  ) : (
-                      <>
-                        {isLoading ? <Loading /> : (
-                          teams.map((team, index) => (
-                              <Link
-                                  to={`/teams/${encodeURIComponent(team.PK)}/main`}
-                                  key={team.PK}
-                                  style={{ textDecoration: "none", color: "inherit" }}
-                              >
-                                <ListItemButton
-                                    onClick={() => {
-                                      handleSelectedTeam(team); // selectedTeam 업데이트
-                                      handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
-                                    }}
-                                  sx={{
-                                    "&:hover": {
-                                      cursor: "pointer",
-                                      fontSize: "1.2rem",
-                                    },
-                                  }}>
-                                    <ListItemIcon>
-                                      <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={team?.teamName.length > 7 ? `${team?.teamName.slice(0, 7)}...` : team?.teamName} // Truncate teamName to 7 characters
-                                    />
-                                </ListItemButton>
-                              </Link>
-                          ))
-                        )}
-                      </>
-                  )}
+                    ) : (
+                      teams.map((team, index) => (
+                        <Link
+                          to={`/teams/${encodeURIComponent(team.PK)}/main`}
+                          key={team.PK}
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <ListItemButton
+                            onClick={() => {
+                              handleSelectedTeam(team); // selectedTeam 업데이트
+                              handleTeamMenuClose();      // 클릭 이후 Menu 닫기 처리
+                            }}
+                            sx={{
+                              "&:hover": {
+                                cursor: "pointer",
+                                fontSize: "1.2rem",
+                              },
+                            }}>
+                              <ListItemIcon>
+                                <Avatar alt={team?.teamName} src='/src/assets/user-avatar.png' />
+                              </ListItemIcon>
+                              <ListItemText
+                                  primary={team?.teamName.length > 7 ? `${team?.teamName.slice(0, 7)}...` : team?.teamName} // Truncate teamName to 7 characters
+                              />
+                          </ListItemButton>
+                        </Link>
+                      ))
+                    )}
                 </List>
             </Menu>
         </Box>

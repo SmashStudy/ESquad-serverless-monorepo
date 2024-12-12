@@ -138,49 +138,23 @@ const SidebarComponent = ({
     fetchUserInfo();
   }, []);
 
+  
+
   const communityItems = [
     { text: "질문 및 답변", icon: <QuizIcon />, link: "/community/questions" },
-    {
-      text: "자유게시판",
-      icon: <SpaceDashboardIcon />,
-      link: "/community/general",
-    },
-    {
-      text: "스터디 팀 모집",
-      icon: <Groups3Icon />,
-      link: "/community/team-recruit",
-    },
+    { text: "자유게시판", icon: <SpaceDashboardIcon />, link: "/community/general" },
+    { text: "스터디 팀 모집", icon: <Groups3Icon />, link: "/community/team-recruit" },
   ];
 
   const studyItems = [
-    {
-      text: "스터디",
-      icon: <AbcIcon />,
-      link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study`,
-    },
-    {
-      text: "도서 검색",
-      icon: <MenuBookIcon />,
-      link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search`,
-    },
-    {
-      text: "질문",
-      icon: <QuizIcon />,
-      link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions`,
-    },
+      { text: '도서 검색', icon: <MenuBookIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/book/search` },
+      { text: '스터디', icon: <AbcIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/study` },
+      { text: '질문', icon: <QuizIcon />, link: `/teams/${encodeURIComponent(selectedTeam?.PK)}/questions` },
   ];
 
   const manageItems = [
-    {
-      text: "크루",
-      icon: <PeopleIcon />,
-      link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/users`,
-    },
-    {
-      text: "설정",
-      icon: <SettingsIcon />,
-      link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/settings`,
-    },
+    { text: '크루', icon: <PeopleIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/users` },
+    { text: '설정', icon: <SettingsIcon  />, link: `teams/${encodeURIComponent(selectedTeam?.PK)}/manage/settings` },
   ];
 
   const dangerItems = [
@@ -190,22 +164,18 @@ const SidebarComponent = ({
   // 마이페이지 관련 항목
   const profileItems = [
     { text: "홈", icon: <HomeIcon />, link: "/user/profile" },
-    {
-      text: "파일 관리",
-      icon: <CategoryIcon />,
-      link: "/user/profile/manage-file",
-    },
-    {
-      text: "닉네임 관리",
-      icon: <PersonIcon />,
-      link: "/user/profile/nickname",
-    },
-    { text: "설정", icon: <SettingsIcon />, link: "/user/profile/settings" },
+    { text: "파일 관리", icon: <CategoryIcon />, link: "/user/manage-file" },
+    { text: "닉네임 관리", icon: <PersonIcon />, link: "/user/nickname" },
+    { text: "설정", icon: <SettingsIcon />, link: "/user/settings" },
   ];
+
+  if(location.pathname === "/main" || location.pathname === "/") {
+    return null;
+  }
 
   const sidebarContent = (
     <>
-      {location.pathname.startsWith("/user/profile") ? ( // 마이페이지 경로일 경우
+      {location.pathname.startsWith("/user")  ? ( // 마이페이지 경로일 경우
         <>
           <Box
             sx={{
@@ -410,10 +380,10 @@ const SidebarComponent = ({
     !isSmallScreen && (
       <Box
         sx={{
-          width: sidebarOpen ? "200px" : "4rem",
+          width: sidebarOpen ? "200px" : "5rem",
           flexShrink: 0,
           backgroundColor: "#fff",
-          transition: "width 0.3s ease",
+          transition: "width 0.5s ease, opacity 0.5s ease",
           overflow: "hidden",
           height: "100%",
         }}

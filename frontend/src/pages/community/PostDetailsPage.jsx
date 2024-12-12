@@ -592,35 +592,37 @@ const PostDetailsPage = () => {
           gap: 2,
         }}
       >
-        {post.writer?.email === currentUser?.email && (
-          <Button
-            variant="contained"
-            color={
-              boardType === "questions"
-                ? post.resolved
+        {/* 조건부로 상태 변경 버튼 렌더링 */}
+        {post.writer?.email === currentUser?.email &&
+          boardType !== "general" && (
+            <Button
+              variant="contained"
+              color={
+                boardType === "questions"
+                  ? post.resolved
+                    ? "success"
+                    : "secondary"
+                  : post.recruitStatus
                   ? "success"
                   : "secondary"
+              }
+              onClick={toggleStatus} // 변경된 함수 호출
+              sx={{
+                textTransform: "none",
+                fontWeight: "bold",
+                padding: "8px 16px",
+                borderRadius: "16px",
+              }}
+            >
+              {boardType === "questions"
+                ? post.resolved
+                  ? "해결됨"
+                  : "미해결"
                 : post.recruitStatus
-                ? "success"
-                : "secondary"
-            }
-            onClick={toggleStatus} // 변경된 함수 호출
-            sx={{
-              textTransform: "none",
-              fontWeight: "bold",
-              padding: "8px 16px",
-              borderRadius: "16px",
-            }}
-          >
-            {boardType === "questions"
-              ? post.resolved
-                ? "해결됨"
-                : "미해결"
-              : post.recruitStatus
-              ? "모집 완료"
-              : "모집 중"}
-          </Button>
-        )}
+                ? "모집 완료"
+                : "모집 중"}
+            </Button>
+          )}
 
         {/* 좋아요 버튼 */}
         <Tooltip title={`${post.likeCount}명이 이 글을 좋아합니다!`} arrow>
@@ -659,14 +661,15 @@ const PostDetailsPage = () => {
         />
         <style>
           {`
-      .content-container img {
-        max-width: 90%; 
-        max-height: 1000px; 
-        height: auto; 
-        display: block; 
-        margin: 10px auto; 
-      }
-    `}
+    .content-container img {
+      max-width: 100%; 
+      max-height: 600px; 
+      height: auto; 
+      display: block; 
+      margin: 10px 0; /* 상하 간격만 유지 */
+      text-align: left; /* 왼쪽 정렬 */
+    }
+  `}
         </style>
       </Paper>
 
@@ -701,7 +704,15 @@ const PostDetailsPage = () => {
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   {comment.writer?.nickname || "익명"}
                 </Typography>
-                <Typography variant="body2">{comment.content}</Typography>
+                <Typography
+                  variant="body2"
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {comment.content}
+                </Typography>
                 <Typography
                   variant="caption"
                   sx={{ color: "text.secondary", display: "block", mt: 1 }}

@@ -75,7 +75,7 @@ functions:
     handler: src/handlers/getUserFiles.handler
     events:
       - http:
-          path: /get-user-usage
+          path: /user-usage
           method: get
           cors: true
 
@@ -109,8 +109,8 @@ functions:
     handler: src/handlers/getUserDeleteLogs.handler
     events:
       - http:
-          path: /get-user-delete-logs
-          method: post
+          path: /user-delete-logs
+          method: get
           cors: true
 
   # 유저가 다운로드한 기록 가져오기
@@ -118,8 +118,8 @@ functions:
     handler: src/handlers/getUserDownloadLogs.handler
     events:
       - http:
-          path: /get-user-download-logs
-          method: post
+          path: /user-download-logs
+          method: get
           cors: true
 
   # 어드민이 로그 관리 할 때 사용할 수 있는 로그 삭제 기능

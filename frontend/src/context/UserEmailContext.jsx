@@ -38,7 +38,11 @@ export const UserEmailProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchEmail();
+    const timer = setTimeout(() => {
+      fetchEmail();
+    }, 1000); // 1초 지연
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
