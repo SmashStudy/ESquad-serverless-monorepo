@@ -244,7 +244,7 @@ const PostDetailsPage = () => {
         params: { createdAt },
       });
       alert("게시글이 삭제되었습니다.");
-      navigate(`/community/${boardType}`);
+      navigate(-1);
     } catch (error) {
       console.error("게시글 삭제 중 오류 발생:", error);
       alert("게시글 삭제에 실패했습니다.");
