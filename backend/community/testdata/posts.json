@@ -1,0 +1,87 @@
+{
+  "PK": {
+    "S": "POST#473ce788-9d4c-471e-874d-7f9777b777ad"
+  },
+  "SK": {
+    "S": "2024-12-05T04:32:21.117Z"
+  },
+  "boardType": {
+    "S": "questions"
+  },
+  "book": {
+    "NULL": true
+  },
+  "comments": {
+    "L": [
+      {
+        "M": {
+          "content": {
+            "S": "댓글입니다"
+          },
+          "createdAt": {
+            "S": "2024-12-05T04:35:08.354Z"
+          },
+          "id": {
+            "S": "367ba3de-9317-4b98-aead-b6794a5ad8b3"
+          },
+          "likeCount": {
+            "N": "0"
+          },
+          "updatedAt": {
+            "S": "2024-12-05T04:35:08.354Z"
+          },
+          "writer": {
+            "M": {
+              "email": {
+                "S": "ffjjo0310@gmail.com"
+              },
+              "name": {
+                "S": "박준형"
+              },
+              "nickname": {
+                "S": "ffjjo0310"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "content": {
+    "S": "<p><strong>질문내용입니다</strong><img src=\"https://quill-image-local.s3.us-east-1.amazonaws.com/uploads/84d06a73-7443-4733-9fb8-da96db471771-1733373135659.png\" /></p>"
+  },
+  "createdAt": {
+    "S": "2024-12-05T04:32:21.117Z"
+  },
+  "likeCount": {
+    "N": "0"
+  },
+  "resolved": {
+    "S": "false"
+  },
+  "tags": {
+    "SS": ["공부", "스터디", "자바"]
+  },
+  "title": {
+    "S": "질문 & 답변 게시판 제목입니다"
+  },
+  "updatedAt": {
+    "S": "2024-12-05T04:32:21.117Z"
+  },
+  "viewCount": {
+    "N": "1"
+  },
+  "writer": {
+    "M": {
+      "email": {
+        "S": "ffjjo0310@gmail.com"
+      },
+      "name": {
+        "S": "박준형"
+      },
+      "nickname": {
+        "S": "ffjjo0310"
+      }
+    }
+  }
+}

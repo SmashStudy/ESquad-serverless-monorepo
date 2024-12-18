@@ -1,16 +1,222 @@
-service: example-service
+service: community-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  environment:
+    DYNAMODB_TABLE: ${env:METADATA_TABLE}
+    REGION: ${aws:region}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    QUILL_S3: ${env:QUILL_S3}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+            - "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}/index/*"
+
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource:
+            - "arn:aws:s3:::${env:QUILL_S3}/uploads/*"
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+  createPost:
+    handler: src/handlers/createPost.handler
     events:
       - http:
-          path: test
-          method: get
+          path: /{boardType}
+          method: POST
           cors: true
 
+  teamCreatePost:
+    handler: src/handlers/teamCreatePost.handler
+    events:
+      - http:
+          path: /teams/new-question-post
+          method: POST
+          cors: true
+
+  getPost:
+    handler: src/handlers/getPost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: GET
+          cors: true
+
+  listPosts:
+    handler: src/handlers/listPosts.handler
+    events:
+      - http:
+          path: /{boardType}
+          method: GET
+          cors: true
+  listTeamPosts:
+    handler: src/handlers/listTeamPosts.handler
+    events:
+      - http:
+          path: /team-questions
+          method: GET
+          cors: true
+
+  updatePost:
+    handler: src/handlers/updatePost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: PUT
+          cors: true
+
+  deletePost:
+    handler: src/handlers/deletePost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: DELETE
+          cors: true
+
+  createComment:
+    handler: src/handlers/createComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}
+          method: POST
+          cors: true
+
+  listComments:
+    handler: src/handlers/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments
+          method: GET
+          cors: true
+
+  getComment:
+    handler: src/handlers/listComments.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: GET
+          cors: true
+
+  updateComment:
+    handler: src/handlers/updateComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: PUT
+          cors: true
+
+  deleteComment:
+    handler: src/handlers/deleteComment.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/comments/{commentId}
+          method: DELETE
+          cors: true
+
+  likePost:
+    handler: src/handlers/likePost.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/like
+          method: POST
+          cors: true
+  toggleResolvedStatus:
+    handler: src/handlers/toggleResolvedStatus.handler
+    events:
+      - http:
+          path: /{boardType}/{postId}/status
+          method: PUT
+          cors: true
+
+resources:
+  Resources:
+    EsquadPostsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          - AttributeName: boardType
+            AttributeType: S
+          - AttributeName: resolved
+            AttributeType: S
+          - AttributeName: recruitStatus
+            AttributeType: S
+          - AttributeName: teamId
+            AttributeType: S # teamId 추가
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: BoardIndex
+            KeySchema:
+              - AttributeName: boardType
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: board-resolved-create-index
+            KeySchema:
+              - AttributeName: resolved
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: board-recruited-create-index
+            KeySchema:
+              - AttributeName: recruitStatus
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: team-create-index # teamId 인덱스 추가
+            KeySchema:
+              - AttributeName: teamId
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+        SSESpecification:
+          SSEEnabled: true
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 3

@@ -1,39 +1,53 @@
-import React, { useState } from 'react';
+import React,{useState,useEffect} from 'react';
+import { useOutletContext, Outlet, useParams } from 'react-router-dom';
+import { Box } from '@mui/material';
+import axios from 'axios';
+import { getTeamApi } from '../../utils/apiConfig';
+import {useTeams} from "../../context/TeamContext.jsx";
 import {
-    Box,
-    Button,
-    Typography,
-    InputBase,
-    Dialog,
-    DialogContent,
-    Card,
-    CardContent,
-    CardActions,
-    Grid,
-    Fab
-} from '@mui/material';
-import { alpha, useTheme } from '@mui/material';
-import { Link, Outlet } from 'react-router-dom';
-import AddIcon from '@mui/icons-material/Add';
+    getTeamProfiles,
+} from '../../utils/team/TeamApi.jsx';
+import Loading from "../../components/custom/Loading.jsx";
 
-const TeamMainPage = ({ isSmallScreen, isMediumScreen }) => {
-    const theme = useTheme();
+const TeamMainPage = () => {
+    const { selectedTeam, handleTab , updateTeams} = useTeams();
+    const {teamId} = useParams();
+    const [teamData, setTeamData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
+    const fetchTeamData = async () => {
+        try {
+            setIsLoading(true);
+            const teamProfile = await getTeamProfiles(teamId);
+            setTeamData(teamProfile);
+        } catch (error) {
+            console.error('팀 데이터를 불러오는 중 오류 발생:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTeamData();
+      }, [teamId]);
+    
     return (
         <Box
             sx={{
-                border: '1px solid',     // 추후 삭제
                 mb: 2,
                 height: '100%',
                 width: '100%',
                 overflowX: 'auto',
                 overflowY: 'auto',
-                position: 'relative',   // Added to make Fab relative to parent Box
+                position: 'relative',
             }}
         >
-            <Outlet/>
-
-
+            {isLoading ? <Loading /> : (
+                <>
+                    <h1>{teamData?.teamName}</h1>
+                    <Outlet context={{selectedTeam, handleTab, updateTeams}}/>
+                </>
+            )}
         </Box>
     );
 };

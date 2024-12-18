@@ -1,16 +1,348 @@
-service: example-service
+service: esquad-google-login
+frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:GetItem
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:${env:REGION}:${env:AWS_ID}:table/${env:USER_TABLE_NAME}
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminAddUserToGroup
+            - cognito-idp:AdminGetUser
+            - "cognito-idp:ListUsers"
+            - cognito-idp:AdminEnableUser 
+            - cognito-idp:AdminDisableUser
+            - cognito-idp:AdminListGroupsForUser
+            - cognito-idp:AdminRemoveUserFromGroup
+          Resource:
+            - arn:aws:cognito-idp:${env:REGION}:${env:AWS_ID}:userpool/${env:COGNITO_USER_POOL_ID}
+        
+  environment:
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+    COGNITO_DOMAIN: ${env:VITE_COGNITO_DOMAIN}
+    CALLBACK_URLS: ${env:CALLBACK_URLS}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    REGION: ${env:REGION}
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+
+  manageuserstatus:
+    handler: src/manageuserstatus.handler
     events:
       - http:
-          path: test
-          method: get
+          path: admin/status
+          method: POST
           cors: true
 
+  grouprole:
+    handler: src/grouprole.handler
+    events:
+      - http:
+          path: role
+          method: get
+          cors: true
+    
+  admingetuser:
+    handler: src/admingetuser.handler
+    events:
+      - http:
+          path: admin
+          method: get
+          cors: true
+    
+  adminGroupHandler:
+    handler: src/admingroup.handler
+    events:
+      - http:
+          path: admin/group/add
+          method: post
+          cors: true
+      - http:
+          path: admin/group/remove
+          method: post
+          cors: true
+
+  signup:
+    handler: src/signup.handler
+    events:
+      - http:
+          path: signup
+          method: post
+          cors: true # CORS 활성화
+
+  signin:
+    handler: src/signin.handler
+    events:
+      - http:
+          path: signin
+          method: post
+          cors: true
+  
+  signout:
+    handler: src/signout.handler # Lambda 핸들러 파일 경로
+    events:
+      - http:
+          path: signout
+          method: post
+          cors: true
+
+  confirm:
+    handler: src/confirmsignup.handler
+    events:
+      - http:
+          path: confirm
+          method: post
+          cors: true
+
+  confirmPassword:
+    handler: src/confirmpassword.handler
+    events:
+      - http:
+          path: confirm/password
+          method: post
+          cors: true
+
+  reset:
+    handler: src/resetpassword.handler
+    events:
+      - http:
+          path: reset
+          method: post
+          cors: true
+
+  authorizer:
+    handler: src/handler.authorizer
+    events:
+      - http:
+          path: authorize
+          method: post
+
+  saveUserToDynamoDB:
+    handler: src/handler.saveUserToDynamoDB
+
+  updateUserNickname:
+    handler: src/handler.updateUserNickname
+    events:
+      - http:
+          path: update-nickname
+          method: put
+          cors: true
+
+  getUserNickname:
+    handler: src/handler.getUserNickname
+    events:
+      - http:
+          path: get-nickname
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
+  
+  myEnvironments:
+    handler: src/handler.myEnvironments
+    events:
+      - http:
+          path: environments
+          method: get
+          cors: true
+  
+  getUserByEmail:
+    handler: src/handler.getUserByEmail
+    events:
+      - http:
+          path: get-user
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
+  
+  getUserInfoByToken:
+    handler: src/handler.getUserInfoByToken
+    events:
+      - http:
+          path: get-user-info
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            methods:
+              - OPTIONS
+              - GET
+
+  getEmailFromToken:
+    handler: src/handler.getEmailFromToken
+    events:
+      - http:
+          path: get-email
+          method: get
+          authorizer:
+            type: REQUEST
+            name: authorizer # 연결된 Authorizer 함수
+          cors: true
+
+  triggerUserEntryPoint:
+    handler: src/triggerUserEntryPoint.handler
+  
+
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      DependsOn:
+        - SaveUserToDynamoDBLambdaFunction
+      Properties:
+        UserPoolName: ${env:COGNITO_USER_POOL_NAME}
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: true
+          - Name: name
+            Required: true
+            Mutable: true
+        LambdaConfig:
+          PostConfirmation: 
+            Fn::GetAtt:
+              - SaveUserToDynamoDBLambdaFunction
+              - Arn
+
+
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      DependsOn:
+        - GoogleIdentityProvider
+      Properties:
+        ClientName: ${env:COGNITO_USER_POOL_CLIENT_NAME}
+        UserPoolId:
+          Ref: CognitoUserPool
+        AllowedOAuthFlows:
+          - code
+        AllowedOAuthScopes:
+          - email
+          - openid
+          - profile
+        CallbackURLs:
+          - ${env:CALLBACK_URLS}
+        LogoutURLs:
+          - ${env:LOGOUT_URLS}
+        SupportedIdentityProviders:
+          - Google
+        GenerateSecret: false
+        AllowedOAuthFlowsUserPoolClient: true
+        ExplicitAuthFlows: # 추가된 섹션
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_CUSTOM_AUTH
+
+    CognitoIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${env:COGNITO_IDENTITY_POOL_NAME}
+        AllowUnauthenticatedIdentities: false
+        CognitoIdentityProviders:
+          - ClientId:
+              Ref: CognitoUserPoolClient
+            ProviderName:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - ProviderName
+
+    CognitoUserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        Domain: ${env:COGNITO_DOMAIN}
+        UserPoolId:
+          Ref: CognitoUserPool
+
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:USER_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    GoogleIdentityProvider:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        ProviderName: Google
+        UserPoolId: 
+          Ref: CognitoUserPool
+        ProviderType: Google
+        AttributeMapping:
+          email: email
+          name: name
+          phone_number: phone_number
+        ProviderDetails:
+          client_id: ${env:COGNITO_GOOGLE_CLIENT_ID}
+          client_secret: ${env:COGNITO_GOOGLE_CLIENT_SECRET}
+          authorize_scopes: ${env:COGNITO_AUTHORIZE_SCOPES}
+
+  Outputs:
+    UserPoolId:
+      Value:
+        Ref: CognitoUserPool
+    UserPoolClientId:
+      Value:
+        Ref: CognitoUserPoolClient
+    IdentityPoolId:
+      Value:
+        Ref: CognitoIdentityPool
+    UserTableName:
+      Value:
+        Ref: UserTable
+
+package:
+  individually: true
+  include:
+    - node_modules/**
+    - backend/user/service/handler.mjs
+    - backend/user/service/authcallback.mjs
+useDotenv: true
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 1

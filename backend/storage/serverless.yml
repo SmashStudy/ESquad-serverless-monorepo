@@ -1,16 +1,349 @@
-service: example-service
+service: storage-service
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-northeast-2
+  region: ${env:REGION}
+  tags:
+    User: bs-dev-user-3
+  environment:
+    S3_BUCKET: ${env:S3_BUCKET}
+    METADATA_TABLE: ${env:METADATA_TABLE}
+    AWS_ACCOUNT_ID: ${env:AWS_ACCOUNT_ID}
+    ALLOWED_ORIGIN: ${env:ALLOWED_ORIGIN}
+    USER_TABLE_STREAM_ARN: ${env:USER_TABLE_STREAM_ARN}
+    FILE_LOG_TABLE: ${env:FILE_LOG_TABLE}
+    QUILL_S3_BUCKET: ${env:QUILL_S3_BUCKET}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Query
+        - dynamodb:DeleteItem
+        - dynamodb:UpdateItem
+        - dynamodb:Scan
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource:
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/FetchFileIndexByDate
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:METADATA_TABLE}/index/UserUsageIndex
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:FILE_LOG_TABLE}
+        - arn:aws:dynamodb:${env:REGION}:${env:AWS_ACCOUNT_ID}:table/${env:FILE_LOG_TABLE}/index/*
+        - arn:aws:s3:::${env:QUILL_S3_BUCKET}/*
 
 functions:
-  testEndpoint:
-    handler: service/handler.js
+
+  # 메타데이터 관련
+  uploadFile: # 메타데이터 저장 및 Presigned URL 응답
+    handler: src/handlers/uploadFile.handler
     events:
       - http:
-          path: test
+          path: /upload-file
+          method: post
+          cors: true
+
+  getFile: # 파일에 대한 Presigned URL을 응답. 미리보기시 사용
+    handler: src/handlers/getFile.handler
+    events:
+      - http:
+          path: /{fileKey}
           method: get
           cors: true
+
+  getAllFiles: # 모든 파일의 메타데이터를 가져옴
+    handler: src/handlers/getAllFiles.handler
+    events:
+      - http:
+          path: /admin/metadata
+          method: get
+          cors: true
+
+  fetchFiles: # targetId, targetType을 통해 정렬된 리스트를 가져옴. Pagination 가능
+    handler: src/handlers/fetchFiles.handler
+    events:
+      - http:
+          path: /metadata
+          method: get
+          cors: true
+
+  getUserFiles: # 유저가 올려둔 파일에 대한 메타데이터들을 가져옴. 이를 통해 본인의 파일 관리 가능
+    handler: src/handlers/getUserFiles.handler
+    events:
+      - http:
+          path: /user-usage
+          method: get
+          cors: true
+
+  # 로그 관련
+  downloadFile: #요청 시 Presigned URL 응답 + 로그 저장
+    handler: src/handlers/downloadFile.handler
+    events:
+      - http:
+          path: /metadata/{fileKey}
+          method: patch
+          cors: true
+
+  deleteFile: # 요청 시 Presigned URL 응답 + 메타데이터에서 삭제 + 로그 저장
+    handler: src/handlers/deleteFile.handler
+    events:
+      - http:
+          path: /{fileKey}
+          method: delete
+          cors: true
+
+  getLogsByAction: # action DOWNLOAD, DELETE 분기를 두고 로그 데이터 가져옴.
+    handler: src/handlers/getLogsByAction.handler
+    events:
+      - http:
+          path: /admin/logs/{action}
+          method: get
+          cors: true
+
+  # 유저가 삭제한 기록 가져오기
+  getUserDeleteLogs:
+    handler: src/handlers/getUserDeleteLogs.handler
+    events:
+      - http:
+          path: /user-delete-logs
+          method: get
+          cors: true
+
+  # 유저가 다운로드한 기록 가져오기
+  getUserDownloadLogs:
+    handler: src/handlers/getUserDownloadLogs.handler
+    events:
+      - http:
+          path: /user-download-logs
+          method: get
+          cors: true
+
+  # 어드민이 로그 관리 할 때 사용할 수 있는 로그 삭제 기능
+  deleteLog:
+    handler: src/handlers/deleteLog.handler
+    events:
+      - http:
+          path: /admin/delete-log/{logId}
+          method: delete
+          cors: true
+
+  # Quill에서 이미지 올릴 때 사용하는 람다. quill-image 버킷 Presigned URL 응답
+  generatePresignedUrlForQuill:
+    handler: src/handlers/generatePresignedUrlForQuill.handler
+    events:
+      - http:
+          path: /presigned-url
+          method: post
+          cors: true
+
+  # Trigger
+  updateFileMetadataNickname: # DynamoDB Streams 기능을 통해 닉네임 변경시 자동으로 반영.
+    handler: src/triggers/updateFileMetadataNickname.trigger
+    events:
+      - stream:
+          type: dynamodb
+          arn: ${env:USER_TABLE_STREAM_ARN}
+          batchSize: 5
+          startingPosition: LATEST
+
+
+
+
+resources:
+  Resources:
+
+    FileLogTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:FILE_LOG_TABLE}
+        AttributeDefinitions:
+          - AttributeName: logId
+            AttributeType: S
+          - AttributeName: action
+            AttributeType: S
+          - AttributeName: uploaderEmail
+            AttributeType: S
+          - AttributeName: userEmail
+            AttributeType: S
+          - AttributeName: targetId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: logId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ActionIndex # 서비스 내에 파일 다운로드 삭제 로그 추적용 (어드민 전용)
+            KeySchema:
+              - AttributeName: action
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UploaderEmailIndex # 유저가 삭제한 기록 추적용 필터로 Action -> DELETE
+            KeySchema:
+              - AttributeName: uploaderEmail
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserEmailIndex # 유저의 다운로드 기록 추적용 필터로 Action -> DOWNLOAD
+            KeySchema:
+              - AttributeName: userEmail
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: TargetIndex # 공간 내의 기록 추적용 필터로 targetType
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    MetadataTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${env:METADATA_TABLE}
+        AttributeDefinitions:
+          - AttributeName: fileKey
+            AttributeType: S
+          - AttributeName: targetId
+            AttributeType: S
+          - AttributeName: targetType
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: userEmail
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileKey
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: FetchFileIndex
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: targetType
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: FetchFileIndexByDate
+            KeySchema:
+              - AttributeName: targetId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: UserUsageIndex
+            KeySchema:
+              - AttributeName: userEmail
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:S3_BUCKET}
+        AccelerateConfiguration:
+          AccelerationStatus: Enabled
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - ${env:ALLOWED_ORIGIN}
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - DELETE
+                - POST
+
+    S3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${env:S3_BUCKET}
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: !GetAtt IamRoleLambdaExecution.Arn
+              Action:
+                - "s3:GetObject"
+                - "s3:PutObject"
+                - "s3:DeleteObject"
+              Resource:
+                - "arn:aws:s3:::${env:S3_BUCKET}/athena-results/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/metadata/*"
+                - "arn:aws:s3:::${env:S3_BUCKET}/files/*"
+
+#    for Quill
+    QuillImageBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:QUILL_S3_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - ${env:ALLOWED_ORIGIN}
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+              MaxAge: 3000
+        VersioningConfiguration:
+          Status: Enabled
+
+    QuillImageBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref QuillImageBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !Sub '${QuillImageBucket.Arn}/*'
+
+
+# plugin setting
+
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
+
+package:
+  exclude:
+    - tests/**
+
+custom:
+  prune:
+    automatic: true
+    number: 3
 
